@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/koko-menu-v6.html" }
+  ]
+}
