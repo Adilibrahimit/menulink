@@ -8,7 +8,7 @@
  *  - WhatsApp/Maps links: pass through (always live)
  * ============================================================ */
 
-const VERSION       = 'koko-v1.0.0';
+const VERSION       = 'koko-v1.1.0';
 const CACHE_STATIC  = `koko-static-${VERSION}`;
 const CACHE_RUNTIME = `koko-runtime-${VERSION}`;
 
@@ -82,11 +82,27 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Static assets + everything else: cache-first
+  // Navigation / HTML requests: network-first (so deploys take effect immediately).
+  // Falls back to cache only if the network is unavailable.
+  const isHtml = req.mode === 'navigate' ||
+                 (req.headers.get('accept') || '').includes('text/html');
+  if (isHtml) {
+    event.respondWith(
+      fetch(req).then((res) => {
+        if (res && res.ok && url.origin === self.location.origin) {
+          const copy = res.clone();
+          caches.open(CACHE_STATIC).then((c) => c.put(req, copy));
+        }
+        return res;
+      }).catch(() => caches.match(req).then((c) => c || caches.match('./koko-menu-v6.html')))
+    );
+    return;
+  }
+
+  // Static assets (icons, fonts, CDN libs): cache-first stale-while-revalidate
   event.respondWith(
     caches.match(req).then((cached) => {
       if (cached) {
-        // Refresh in background (stale-while-revalidate)
         fetch(req).then((fresh) => {
           if (fresh && fresh.ok) {
             caches.open(CACHE_STATIC).then((c) => c.put(req, fresh.clone()));
@@ -100,11 +116,6 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE_STATIC).then((c) => c.put(req, copy));
         }
         return res;
-      }).catch(() => {
-        // Offline + no cache hit → return generic offline response for HTML requests
-        if (req.headers.get('accept')?.includes('text/html')) {
-          return caches.match('./koko-menu-v6.html');
-        }
       });
     })
   );
