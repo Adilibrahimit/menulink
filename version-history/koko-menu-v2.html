@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#FAF6EE">
+<title>KO-KO Chicky Licky · قائمة الطعام</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+/* ====================================================================
+ *  KO-KO Menu v2 — Burgerizzr-style, light theme, bulletproof fallbacks
+ * ==================================================================== */
+
+:root {
+  --bg:          #FAF6EE;
+  --card:        #FFFFFF;
+  --ink:         #2A1810;
+  --ink-soft:    #6B5D4F;
+  --ink-muted:   #9B8B7D;
+  --line:        #EBE2D2;
+  --brand:       #D32027;
+  --brand-dark:  #A0181D;
+  --brand-light: #FFE5E6;
+  --gold:        #FFC619;
+  --gold-dark:   #E5A800;
+  --hot:         #E63946;
+  --premium:     #F4A300;
+  --whatsapp:    #25D366;
+  --whatsapp-dk: #128C7E;
+  --shadow-sm:   0 2px 8px rgba(42, 24, 16, 0.06);
+  --shadow-md:   0 6px 22px rgba(42, 24, 16, 0.10);
+  --shadow-lg:   0 16px 40px rgba(42, 24, 16, 0.18);
+  --r-sm: 10px; --r-md: 16px; --r-lg: 22px; --r-xl: 28px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body {
+  font-family: 'Cairo', 'Tajawal', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.5;
+  overflow-x: hidden;
+  background-image:
+    radial-gradient(ellipse at top, rgba(255, 198, 25, 0.07), transparent 60%),
+    radial-gradient(ellipse at bottom right, rgba(211, 32, 39, 0.04), transparent 70%);
+  background-attachment: fixed;
+}
+img { max-width: 100%; display: block; }
+button { font: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+input, textarea { font: inherit; color: inherit; }
+
+.app { max-width: 520px; margin: 0 auto; min-height: 100vh; background: var(--bg); }
+
+/* ============== APP BAR ============== */
+.appbar {
+  position: relative;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  padding: 12px 16px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  z-index: 10;
+}
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.brand-mark .logo-sm { width: 38px; height: 38px; }
+.brand-mark .name {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 900;
+  font-size: 16px;
+  color: var(--brand);
+  letter-spacing: 1px;
+  line-height: 1;
+}
+.brand-mark .sub {
+  font-size: 9px;
+  color: var(--ink-muted);
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+.branch {
+  text-align: center;
+  display: flex; flex-direction: column; gap: 1px;
+}
+.branch .b-title { font-size: 13px; font-weight: 800; color: var(--ink); }
+.branch .b-sub { font-size: 10px; color: var(--ink-muted); font-weight: 600; }
+
+.appbar-icon {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--brand-light);
+  color: var(--brand);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.appbar-icon svg { width: 18px; height: 18px; }
+
+/* ============== HERO PROMO ============== */
+.hero {
+  padding: 14px 16px 6px;
+}
+.hero-card {
+  position: relative;
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  height: 170px;
+  background: linear-gradient(135deg, #2a1810 0%, #1a0e08 100%);
+  box-shadow: var(--shadow-md);
+}
+.hero-card .hero-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.hero-card .hero-img.loaded { opacity: 0.7; }
+.hero-card .hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(105deg, rgba(211, 32, 39, 0.85) 0%, rgba(160, 24, 29, 0.5) 50%, transparent 100%);
+}
+.hero-card .hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 18px 22px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #fff;
+}
+.hero-card .h-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(6px);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  align-self: flex-start;
+  margin-bottom: 8px;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+.hero-card .h-title {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 900;
+  font-size: 24px;
+  line-height: 1.2;
+  margin-bottom: 4px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.hero-card .h-sub {
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.95;
+}
+.hero-card .h-decor {
+  position: absolute;
+  bottom: -20px; left: -10px;
+  font-size: 110px;
+  opacity: 0.18;
+  transform: rotate(-15deg);
+  pointer-events: none;
+}
+
+/* ============== STICKY TABS ============== */
+.tabs-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(250, 246, 238, 0.96);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 10px 0 6px;
+  border-bottom: 1px solid var(--line);
+}
+.tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 0 16px 4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  flex: 0 0 auto;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1.5px solid var(--line);
+  color: var(--ink-soft);
+  font-weight: 800;
+  font-size: 13px;
+  white-space: nowrap;
+  transition: all 0.22s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.tab .e { font-size: 14px; }
+.tab.active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(211, 32, 39, 0.32);
+}
+
+/* ============== SECTION ============== */
+.section { padding: 18px 16px 6px; scroll-margin-top: 80px; }
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+.section-head .s-title {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 900;
+  font-size: 22px;
+  color: var(--ink);
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.section-head .s-title .emoji { font-size: 22px; }
+.section-head .s-line { flex: 1; height: 2px; background: linear-gradient(90deg, transparent, var(--brand) 50%, transparent); margin: 0 12px; opacity: 0.4; }
+.section-head .s-count { font-size: 12px; color: var(--ink-muted); font-weight: 700; }
+
+.info-strip {
+  margin: 4px 4px 14px;
+  padding: 10px 14px;
+  border-radius: var(--r-sm);
+  background: linear-gradient(90deg, #FFF8E0, #FFF3D6);
+  border: 1px dashed var(--gold);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.info-strip .star { color: var(--gold-dark); }
+
+/* ============== ITEM CARD ============== */
+.item {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 14px;
+  background: var(--card);
+  border-radius: var(--r-lg);
+  padding: 12px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--line);
+  position: relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.item:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.item:active { transform: translateY(0); }
+
+/* Image container — has a styled fallback under the real image */
+.thumb {
+  width: 100px; height: 100px;
+  border-radius: var(--r-md);
+  position: relative;
+  overflow: hidden;
+}
+.thumb .fb {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 46px;
+  z-index: 1;
+}
+.thumb .fb::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.25), transparent 60%);
+  pointer-events: none;
+}
+.thumb .fb-mark {
+  position: absolute;
+  bottom: 5px; left: 5px; right: 5px;
+  text-align: center;
+  font-size: 8px;
+  font-weight: 900;
+  color: rgba(0,0,0,0.4);
+  letter-spacing: 1px;
+}
+.thumb img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.thumb img.loaded { opacity: 1; }
+
+/* Per-category fallback colors */
+.cat-broasted .fb { background: linear-gradient(135deg, #FFB845, #E07B00); }
+.cat-tender   .fb { background: linear-gradient(135deg, #FFA040, #D9520A); }
+.cat-burger   .fb { background: linear-gradient(135deg, #FF7B5C, #C53929); }
+.cat-sandwich .fb { background: linear-gradient(135deg, #FFC76A, #DE8B2A); }
+.cat-sides    .fb { background: linear-gradient(135deg, #FFDC62, #F4A300); }
+.cat-sauces   .fb { background: linear-gradient(135deg, #FFB0B0, #D85F5F); }
+.cat-drinks   .fb { background: linear-gradient(135deg, #6BAFFF, #2E6BC7); }
+
+.info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.row1 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.name {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 800;
+  font-size: 17px;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.desc {
+  font-size: 12.5px;
+  color: var(--ink-muted);
+  line-height: 1.4;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+.badge.hot     { background: var(--hot); color: #fff; }
+.badge.premium { background: var(--gold); color: var(--ink); }
+
+.prices {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+.price-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #FFF6F6;
+  border: 1px solid #F8D9DB;
+}
+.price-pill .pl { font-size: 10px; color: var(--ink-muted); font-weight: 700; }
+.price-pill .pv { font-size: 14px; color: var(--brand); font-weight: 900; }
+.price-pill .pc { font-size: 10px; color: var(--brand); font-weight: 800; }
+.price-pill.meal { background: var(--brand-light); border-color: #F5BFC1; }
+
+.actions { margin-top: 8px; display: flex; gap: 6px; }
+.add {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--brand);
+  color: #fff;
+  font-weight: 800;
+  font-size: 12.5px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  transition: transform 0.15s ease, background 0.2s ease;
+  box-shadow: 0 4px 12px rgba(211, 32, 39, 0.22);
+}
+.add:active { transform: scale(0.95); background: var(--brand-dark); }
+.add svg { width: 13px; height: 13px; }
+.add.dim { background: #fff; color: var(--brand); border: 1.5px solid var(--brand); box-shadow: none; }
+
+/* ============== FOOTER ============== */
+footer {
+  padding: 32px 20px 130px;
+  text-align: center;
+  color: var(--ink-muted);
+  font-size: 12px;
+}
+footer .ft-logo { width: 56px; margin: 0 auto 10px; opacity: 0.6; }
+footer .ft-tag { color: var(--brand); font-weight: 800; margin-top: 4px; }
+
+/* ============== CART FAB ============== */
+.cart-fab {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%) translateY(120px);
+  background: var(--brand);
+  color: #fff;
+  padding: 12px 18px 12px 14px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 800;
+  font-size: 14px;
+  box-shadow: 0 14px 36px rgba(211, 32, 39, 0.4), 0 0 0 4px rgba(255,255,255,0.5);
+  z-index: 80;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  min-width: 220px;
+  justify-content: space-between;
+}
+.cart-fab.show { transform: translateX(-50%) translateY(0); }
+.cart-fab svg { width: 19px; height: 19px; }
+.cart-fab .left-side { display: inline-flex; align-items: center; gap: 8px; }
+.cart-fab .qty-pill {
+  min-width: 24px; height: 24px;
+  background: #fff;
+  color: var(--brand);
+  border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 900;
+}
+
+/* ============== DRAWER ============== */
+.backdrop {
+  position: fixed; inset: 0;
+  background: rgba(42, 24, 16, 0.55);
+  backdrop-filter: blur(3px);
+  opacity: 0; pointer-events: none;
+  z-index: 90;
+  transition: opacity 0.3s ease;
+}
+.backdrop.open { opacity: 1; pointer-events: auto; }
+
+.drawer {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(100%);
+  width: 100%;
+  max-width: 520px;
+  max-height: 88vh;
+  background: var(--bg);
+  border-radius: 28px 28px 0 0;
+  box-shadow: 0 -20px 60px rgba(0,0,0,0.3);
+  z-index: 100;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex; flex-direction: column;
+}
+.drawer.open { transform: translateX(-50%) translateY(0); }
+.drawer-handle {
+  width: 44px; height: 4px;
+  background: #D8CCB8;
+  border-radius: 999px;
+  margin: 10px auto 4px;
+}
+.drawer-head {
+  padding: 8px 20px 12px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+}
+.drawer-head .title {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 900;
+  font-size: 20px;
+  color: var(--brand);
+}
+.drawer-close {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--brand-light);
+  color: var(--brand);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.drawer-body { padding: 14px 16px; overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch; }
+
+.line-item {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  background: #fff;
+  padding: 10px;
+  border-radius: var(--r-md);
+  margin-bottom: 8px;
+  border: 1px solid var(--line);
+}
+.line-item .li-thumb {
+  width: 56px; height: 56px;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+}
+.line-item .li-thumb .fb { font-size: 28px; }
+.line-item .li-info { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.line-item .li-name { font-weight: 800; font-size: 13.5px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.line-item .li-variant { font-size: 11px; color: var(--ink-muted); font-weight: 600; }
+.line-item .li-price { font-size: 12.5px; color: var(--brand); font-weight: 800; margin-top: 2px; }
+
+.qctrl {
+  display: inline-flex; align-items: center;
+  background: var(--brand-light);
+  border-radius: 999px;
+  padding: 2px;
+}
+.qctrl button {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--brand);
+  font-weight: 900;
+  font-size: 15px;
+  display: inline-flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-sm);
+}
+.qctrl .qn {
+  min-width: 28px;
+  text-align: center;
+  font-weight: 900;
+  font-size: 14px;
+  color: var(--brand);
+}
+
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--ink-muted);
+}
+.empty .e-emoji { font-size: 52px; margin-bottom: 12px; opacity: 0.55; }
+.empty h3 { color: var(--ink-soft); font-size: 16px; margin-bottom: 4px; font-weight: 800; }
+
+/* ============== CHECKOUT ============== */
+.checkout {
+  background: #fff;
+  border-top: 1px solid var(--line);
+  padding: 14px 16px 18px;
+  display: none;
+}
+.checkout.show { display: block; }
+
+.section-label {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+  padding: 0 2px;
+}
+.order-types {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+  margin-bottom: 12px;
+}
+.ot-btn {
+  padding: 10px 4px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1.5px solid var(--line);
+  color: var(--ink-soft);
+  font-weight: 800;
+  font-size: 11.5px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  transition: all 0.2s ease;
+}
+.ot-btn .ot-e { font-size: 19px; }
+.ot-btn.active {
+  background: var(--brand);
+  color: #fff;
+  border-color: var(--brand);
+  box-shadow: 0 4px 14px rgba(211, 32, 39, 0.28);
+}
+
+.form { display: grid; gap: 8px; margin-bottom: 12px; }
+.form input, .form textarea {
+  padding: 11px 14px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1.5px solid var(--line);
+  color: var(--ink);
+  font-size: 14px;
+  outline: none;
+  font-family: inherit;
+  width: 100%;
+  transition: border-color 0.2s ease;
+}
+.form input:focus, .form textarea:focus { border-color: var(--brand); }
+.form input::placeholder, .form textarea::placeholder { color: var(--ink-muted); }
+.form textarea { resize: none; min-height: 56px; }
+
+.totals {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 12px 4px 14px;
+  border-top: 1px dashed var(--line);
+  margin-bottom: 10px;
+}
+.totals .t-l { font-size: 14px; color: var(--ink-soft); font-weight: 700; }
+.totals .t-v { font-size: 22px; color: var(--brand); font-weight: 900; font-family: 'Tajawal', sans-serif; }
+
+.wa-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, var(--whatsapp), var(--whatsapp-dk));
+  color: #fff;
+  font-weight: 900;
+  font-size: 16px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  box-shadow: 0 10px 26px rgba(37, 211, 102, 0.4);
+  transition: transform 0.15s ease;
+}
+.wa-btn:active { transform: scale(0.98); }
+.wa-btn svg { width: 22px; height: 22px; }
+.wa-note { font-size: 11px; color: var(--ink-muted); text-align: center; margin-top: 8px; font-weight: 600; }
+
+/* ============== TOAST ============== */
+.toast {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  background: var(--ink);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 700;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+  z-index: 200;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: inline-flex; align-items: center; gap: 8px;
+  max-width: 90vw;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast .t-check {
+  width: 22px; height: 22px;
+  background: var(--whatsapp);
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+/* ====================================================================
+ *  KO-KO logo — cleaner version with smooth curves
+ * ==================================================================== */
+.logo-clean .feather { fill: #D32027; }
+.logo-clean .dome    { fill: #1a1108; }
+.logo-clean .beak    { fill: #FFC619; }
+</style>
+</head>
+
+<body>
+<div class="app">
+
+  <!-- ============== APP BAR ============== -->
+  <header class="appbar">
+    <div class="brand-mark">
+      <svg class="logo-sm logo-clean" viewBox="0 0 100 100" aria-hidden="true">
+        <!-- Left dome -->
+        <path class="dome" d="M 8,52 C 8,32 22,28 32,28 L 32,55 L 8,55 Z"/>
+        <path class="feather" d="M 8,52 C 8,32 22,28 32,28 L 32,42 C 26,38 14,42 8,52 Z"/>
+        <!-- Right dome -->
+        <path class="dome" d="M 92,52 C 92,32 78,28 68,28 L 68,55 L 92,55 Z"/>
+        <path class="feather" d="M 92,52 C 92,32 78,28 68,28 L 68,42 C 74,38 86,42 92,52 Z"/>
+        <!-- Middle (large) dome -->
+        <path class="dome" d="M 28,55 C 28,16 40,10 50,10 C 60,10 72,16 72,55 Z"/>
+        <path class="feather" d="M 28,55 C 28,16 40,10 50,10 C 60,10 72,16 72,55 C 68,40 60,32 50,32 C 40,32 32,40 28,55 Z"/>
+        <!-- Beak -->
+        <path class="beak" d="M 38,55 L 62,55 L 50,78 Z"/>
+      </svg>
+      <div>
+        <div class="name">KO-KO</div>
+        <div class="sub">CHICKY LICKY</div>
+      </div>
+    </div>
+    <div class="branch">
+      <div class="b-title">📍 الروضة</div>
+      <div class="b-sub">الفرع الأول · مفتوح الآن</div>
+    </div>
+    <div class="appbar-icon" aria-label="Phone">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    </div>
+  </header>
+
+  <!-- ============== HERO PROMO ============== -->
+  <section class="hero">
+    <div class="hero-card">
+      <img class="hero-img" alt=""
+           src="https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=900&q=80&auto=format&fit=crop"
+           onload="this.classList.add('loaded')"
+           onerror="this.remove()">
+      <div class="hero-overlay"></div>
+      <div class="h-decor">🍗</div>
+      <div class="hero-content">
+        <span class="h-tag">🔥 جديد · عروض اليوم</span>
+        <div class="h-title">طعم ما تقدر تقاومه</div>
+        <div class="h-sub">قائمة الطعام الجديدة · أطلب ووصلك خلال 30 دقيقة</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== STICKY TABS ============== -->
+  <nav class="tabs-wrap">
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-target="cat-broasted"><span class="e">🍗</span> بروستد</button>
+      <button class="tab" data-target="cat-tender"><span class="e">🍖</span> تندر</button>
+      <button class="tab" data-target="cat-burger"><span class="e">🍔</span> برجر</button>
+      <button class="tab" data-target="cat-sandwich"><span class="e">🌯</span> ساندويش</button>
+      <button class="tab" data-target="cat-sides"><span class="e">🍟</span> جانبية</button>
+      <button class="tab" data-target="cat-sauces"><span class="e">🥫</span> صوصات</button>
+      <button class="tab" data-target="cat-drinks"><span class="e">🥤</span> مشروبات</button>
+    </div>
+  </nav>
+
+  <main id="menu-root"></main>
+
+  <footer>
+    <svg class="ft-logo logo-clean" viewBox="0 0 100 100" aria-hidden="true">
+      <path class="dome" d="M 28,55 C 28,16 40,10 50,10 C 60,10 72,16 72,55 Z"/>
+      <path class="dome" d="M 8,52 C 8,32 22,28 32,28 L 32,55 L 8,55 Z"/>
+      <path class="dome" d="M 92,52 C 92,32 78,28 68,28 L 68,55 L 92,55 Z"/>
+      <path class="beak" d="M 38,55 L 62,55 L 50,78 Z"/>
+    </svg>
+    <div style="font-weight:800;color:var(--ink-soft);">KO-KO Chicky Licky</div>
+    <div style="margin-top:4px;">الروضة · طريق عبد الرحمن الغافقي</div>
+    <div class="ft-tag">طعم ما تقدر تقاومه 🔥</div>
+  </footer>
+
+</div>
+
+<!-- ============== CART FAB ============== -->
+<button class="cart-fab" id="cart-fab" aria-label="عرض السلة">
+  <span class="left-side">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    عرض السلة
+  </span>
+  <span style="display:inline-flex;align-items:center;gap:8px;">
+    <span id="cart-total-pill">0 ر</span>
+    <span class="qty-pill" id="cart-count">0</span>
+  </span>
+</button>
+
+<!-- ============== DRAWER ============== -->
+<div class="backdrop" id="backdrop"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-handle"></div>
+  <div class="drawer-head">
+    <div class="title">🛒 سلة طلبك</div>
+    <button class="drawer-close" id="drawer-close" aria-label="إغلاق">✕</button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+
+  <div class="checkout" id="checkout">
+    <div class="section-label">نوع الطلب</div>
+    <div class="order-types">
+      <button class="ot-btn active" data-order="delivery"><span class="ot-e">🛵</span>توصيل</button>
+      <button class="ot-btn" data-order="pickup"><span class="ot-e">🛍️</span>استلام</button>
+      <button class="ot-btn" data-order="dinein"><span class="ot-e">🍽️</span>تناول</button>
+    </div>
+
+    <div class="section-label">بيانات الطلب</div>
+    <div class="form">
+      <input type="text" id="cust-name" placeholder="الاسم الكامل" autocomplete="name"/>
+      <input type="tel" id="cust-phone" placeholder="رقم الجوال · 05XXXXXXXX" autocomplete="tel"/>
+      <textarea id="cust-addr" placeholder="العنوان · الحي، الشارع، رقم المبنى، شقة" autocomplete="street-address"></textarea>
+      <input type="text" id="cust-notes" placeholder="ملاحظات إضافية (اختياري)"/>
+    </div>
+
+    <div class="totals">
+      <span class="t-l">المجموع الكلي</span>
+      <span class="t-v" id="cart-total">0 ر</span>
+    </div>
+
+    <button class="wa-btn" id="wa-btn">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.382c-.301-.15-1.767-.867-2.04-.966-.273-.099-.471-.15-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413"/></svg>
+      <span>إرسال الطلب عبر واتساب</span>
+    </button>
+    <div class="wa-note">سيتم تحويلك لواتساب لتأكيد الطلب مع المطعم 📲</div>
+  </div>
+</aside>
+
+<!-- ============== TOAST ============== -->
+<div class="toast" id="toast"><span class="t-check">✓</span><span id="toast-msg">تمت الإضافة</span></div>
+
+<script>
+/* =========================================================================
+ *  KO-KO Menu — v2 logic
+ *
+ *  TO REBRAND for any other client (cafes, restaurants):
+ *  1. Change CONFIG below (whatsappPhone is the only required change)
+ *  2. Edit MENU below — categories and items
+ *  3. Optionally swap colors in :root at top of <style>
+ * ======================================================================== */
+
+const CONFIG = {
+  restaurantName: 'KO-KO Chicky Licky',
+  currency: 'ر',
+  whatsappPhone: '966500000000',   // ← Change to client's WhatsApp number (no + or 00)
+};
+
+const MENU = [
+  {
+    key: 'cat-broasted', name: 'بروستد', emoji: '🍗', fbEmoji: '🍗',
+    info: '⭐ أي قطعة إضافية بـ ٤ ريال',
+    items: [
+      { id:'br-reg',  name:'بروستد عادي', img:'https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=300&q=80&auto=format&fit=crop',
+        prices:{ piece:20, meal:24 } },
+      { id:'br-hot',  name:'بروستد حار', img:'https://images.unsplash.com/photo-1426869981800-95ebf51ce900?w=300&q=80&auto=format&fit=crop',
+        badges:[{type:'hot', label:'حار', e:'🌶️'}], prices:{ piece:20, meal:24 } },
+      { id:'br-jal',  name:'بروستد لهاليبو', img:'https://images.unsplash.com/photo-1566918214014-a3b3e0132267?w=300&q=80&auto=format&fit=crop',
+        badges:[{type:'premium', label:'مميز', e:'✨'}], prices:{ piece:22, meal:26 } },
+      { id:'br-nash', name:'بروستد ناشفل', img:'https://images.unsplash.com/photo-1569691899455-88464f6d3ab1?w=300&q=80&auto=format&fit=crop',
+        badges:[{type:'premium', label:'مميز', e:'✨'}], prices:{ piece:24, meal:28 } },
+    ]
+  },
+  {
+    key: 'cat-tender', name: 'تندر', emoji: '🍖', fbEmoji: '🍖',
+    info: '⭐ أي قطعة إضافية بـ ٤ ريال',
+    items: [
+      { id:'tn-reg',  name:'تندر عادي', img:'https://images.unsplash.com/photo-1562967914-608f82629710?w=300&q=80&auto=format&fit=crop',
+        prices:{ piece:20, meal:24 } },
+      { id:'tn-hot',  name:'تندر حار',  img:'https://images.unsplash.com/photo-1638439430466-b2bb7fdc1d67?w=300&q=80&auto=format&fit=crop',
+        badges:[{type:'hot', label:'حار', e:'🌶️'}], prices:{ piece:20, meal:24 } },
+      { id:'tn-jal',  name:'تندر لهاليبو', img:'https://images.unsplash.com/photo-1614398751058-eb2e0bf63e53?w=300&q=80&auto=format&fit=crop',
+        badges:[{type:'premium', label:'مميز', e:'✨'}], prices:{ piece:22, meal:26 } },
+      { id:'tn-nash', name:'تندر ناشفل', img:'https://images.unsplash.com/photo-1696265498747-efc4c0dd7b98?w=300&q=80&auto=format&fit=crop',
+        badges:[{type:'premium', label:'مميز', e:'✨'}], prices:{ piece:24, meal:28 } },
+    ]
+  },
+  {
+    key: 'cat-burger', name: 'برجر', emoji: '🍔', fbEmoji: '🍔',
+    items: [
+      { id:'bg-crispy', name:'كرسبي برجر', desc:'عادي · حار',
+        img:'https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=300&q=80&auto=format&fit=crop',
+        prices:{ piece:17, meal:25 } },
+      { id:'bg-maple',  name:'ميبل برجر',
+        img:'https://images.unsplash.com/photo-1692737349870-e3bfc704ebf9?w=300&q=80&auto=format&fit=crop',
+        badges:[{type:'premium', label:'مميز', e:'✨'}], prices:{ piece:20, meal:28 } },
+      { id:'bg-nash',   name:'ناشفل برجر',
+        img:'https://images.unsplash.com/photo-1615297928064-24977384d0da?w=300&q=80&auto=format&fit=crop',
+        badges:[{type:'premium', label:'مميز', e:'✨'}], prices:{ piece:20, meal:28 } },
+    ]
+  },
+  {
+    key: 'cat-sandwich', name: 'ساندويش', emoji: '🌯', fbEmoji: '🌯',
+    items: [
+      { id:'tw-reg',  name:'تويستر',
+        img:'https://images.unsplash.com/photo-1637710847214-f91d99669e18?w=300&q=80&auto=format&fit=crop',
+        prices:{ piece:15, meal:23 } },
+      { id:'tw-hot',  name:'تويستر حار',
+        img:'https://images.unsplash.com/photo-1645024679624-e8351ac98f01?w=300&q=80&auto=format&fit=crop',
+        badges:[{type:'hot', label:'حار', e:'🌶️'}], prices:{ piece:15, meal:23 } },
+      { id:'tw-maple',name:'تويستر ميبل',
+        img:'https://images.unsplash.com/photo-1671106571674-a89083d27e60?w=300&q=80&auto=format&fit=crop',
+        badges:[{type:'premium', label:'مميز', e:'✨'}], prices:{ piece:18, meal:26 } },
+    ]
+  },
+  {
+    key: 'cat-sides', name: 'أصناف جانبية', emoji: '🍟', fbEmoji: '🍟',
+    items: [
+      { id:'sd-cf',   name:'تشيكن فرايز', img:'https://images.unsplash.com/photo-1562967916-eb82221dfb92?w=300&q=80&auto=format&fit=crop', prices:{ single:17 } },
+      { id:'sd-chf',  name:'تشيز فرايز',  img:'https://images.unsplash.com/photo-1586793783658-261cddf883ef?w=300&q=80&auto=format&fit=crop', prices:{ single:12 } },
+      { id:'sd-fries',name:'فرايز',       img:'https://images.unsplash.com/photo-1614398751058-eb2e0bf63e53?w=300&q=80&auto=format&fit=crop', prices:{ single:7  } },
+      { id:'sd-cb',   name:'تشيكن بايتس', desc:'بافلو · سويت · عادي',
+        img:'https://images.unsplash.com/photo-1588923930957-81c81fd6262b?w=300&q=80&auto=format&fit=crop', prices:{ single:12 } },
+      { id:'sd-slaw', name:'سلطة ملفوف',  img:'https://images.unsplash.com/photo-1600555379765-f82335a7b1b0?w=300&q=80&auto=format&fit=crop', prices:{ single:4  } },
+    ]
+  },
+  {
+    key: 'cat-sauces', name: 'صوصات', emoji: '🥫', fbEmoji: '🥫',
+    items: [
+      { id:'sc-koko',  name:'كوكو صوص',     prices:{ single:3 } },
+      { id:'sc-ched',  name:'شيدر صوص',     prices:{ single:3 } },
+      { id:'sc-spec',  name:'سبيشل صوص',    prices:{ single:2 } },
+      { id:'sc-bbq',   name:'باربكيو صوص',  prices:{ single:2 } },
+      { id:'sc-ranch', name:'رانش صوص',     prices:{ single:2 } },
+      { id:'sc-jal',   name:'لهاليبو صوص',  prices:{ single:2 } },
+      { id:'sc-garlic',name:'صوص ثوم',      prices:{ single:2 } },
+      { id:'sc-hummus',name:'حمص', desc:'علبة وسط', prices:{ single:4 } },
+    ]
+  },
+  {
+    key: 'cat-drinks', name: 'المشروبات', emoji: '🥤', fbEmoji: '🥤',
+    items: [
+      { id:'dr-cola-s', name:'كولا',         desc:'صغير', prices:{ single:4 } },
+      { id:'dr-cola-l', name:'كولا',         desc:'كبير', prices:{ single:6 } },
+      { id:'dr-oj-s',   name:'عصير برتقال',  desc:'صغير', fbEmoji:'🍊', prices:{ single:6  } },
+      { id:'dr-oj-l',   name:'عصير برتقال',  desc:'كبير', fbEmoji:'🍊', prices:{ single:10 } },
+      { id:'dr-water',  name:'ماء',          fbEmoji:'💧', prices:{ single:1 } },
+    ]
+  },
+];
+
+/* ===== STATE ===== */
+const cart = {};
+let orderType = 'delivery';
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const fmt = p => `${p} ${CONFIG.currency}`;
+
+/* ===== HELPERS ===== */
+function thumbHTML(catKey, fbEmoji, imgUrl, alt) {
+  // Always render the fallback emoji card. The <img>, if provided, is overlaid on top once it loads.
+  const imgTag = imgUrl
+    ? `<img src="${imgUrl}" alt="${alt}" loading="lazy"
+            onload="this.classList.add('loaded')"
+            onerror="this.remove()">`
+    : '';
+  return `
+    <div class="thumb ${catKey}">
+      <div class="fb">
+        <span>${fbEmoji}</span>
+        <span class="fb-mark">KO-KO</span>
+      </div>
+      ${imgTag}
+    </div>`;
+}
+
+function badgesHTML(badges) {
+  if (!badges) return '';
+  return badges.map(b => `<span class="badge ${b.type}">${b.e||''} ${b.label}</span>`).join('');
+}
+
+function pricesHTML(p) {
+  const out = [];
+  if (p.piece  != null) out.push(`<span class="price-pill"><span class="pl">قطعة</span><span class="pv">${p.piece}</span><span class="pc">${CONFIG.currency}</span></span>`);
+  if (p.meal   != null) out.push(`<span class="price-pill meal"><span class="pl">وجبة</span><span class="pv">${p.meal}</span><span class="pc">${CONFIG.currency}</span></span>`);
+  if (p.single != null) out.push(`<span class="price-pill"><span class="pv">${p.single}</span><span class="pc">${CONFIG.currency}</span></span>`);
+  return `<div class="prices">${out.join('')}</div>`;
+}
+
+function actionsHTML(item) {
+  if (item.prices.piece != null && item.prices.meal != null) {
+    return `
+      <div class="actions">
+        <button class="add dim" onclick="addToCart('${item.id}','piece')">+ قطعة</button>
+        <button class="add" onclick="addToCart('${item.id}','meal')">+ وجبة</button>
+      </div>`;
+  }
+  return `
+    <div class="actions">
+      <button class="add" onclick="addToCart('${item.id}','single')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        أضف للسلة
+      </button>
+    </div>`;
+}
+
+function itemHTML(item, catKey, catFbEmoji) {
+  const fbEmoji = item.fbEmoji || catFbEmoji;
+  return `
+    <article class="item">
+      ${thumbHTML(catKey, fbEmoji, item.img, item.name)}
+      <div class="info">
+        <div class="row1">
+          <h3 class="name">${item.name}</h3>
+          ${badgesHTML(item.badges)}
+        </div>
+        ${item.desc ? `<p class="desc">${item.desc}</p>` : ''}
+        ${pricesHTML(item.prices)}
+        ${actionsHTML(item)}
+      </div>
+    </article>`;
+}
+
+function sectionHTML(cat) {
+  return `
+    <section class="section" id="${cat.key}">
+      <div class="section-head">
+        <div class="s-title"><span class="emoji">${cat.emoji}</span>${cat.name}</div>
+        <div class="s-line"></div>
+        <div class="s-count">${cat.items.length} صنف</div>
+      </div>
+      ${cat.info ? `<div class="info-strip"><span class="star">⭐</span>${cat.info.replace('⭐ ','')}</div>` : ''}
+      ${cat.items.map(i => itemHTML(i, cat.key, cat.fbEmoji)).join('')}
+    </section>`;
+}
+
+/* ===== RENDER ===== */
+function renderMenu() {
+  $('#menu-root').innerHTML = MENU.map(sectionHTML).join('');
+}
+
+/* ===== CART ===== */
+function findItem(id) {
+  for (const c of MENU) { const f = c.items.find(i => i.id === id); if (f) return { item:f, cat:c }; }
+  return null;
+}
+
+window.addToCart = function(id, variant='single') {
+  const found = findItem(id);
+  if (!found) return;
+  const { item, cat } = found;
+  const price = item.prices[variant];
+  if (price == null) return;
+
+  const lineId = `${id}__${variant}`;
+  const variantLabel = variant === 'piece' ? 'قطعة' : (variant === 'meal' ? 'وجبة' : (item.desc || ''));
+
+  if (cart[lineId]) {
+    cart[lineId].qty += 1;
+  } else {
+    cart[lineId] = {
+      id, lineId, name: item.name, img: item.img,
+      variant: variantLabel, price, qty: 1,
+      catKey: cat.key, fbEmoji: item.fbEmoji || cat.fbEmoji,
+    };
+  }
+  toast(`أضيف ${item.name}${variantLabel && variant !== 'single' ? ' · '+variantLabel : ''}`);
+  updateCart();
+};
+
+function changeQty(lineId, d) {
+  if (!cart[lineId]) return;
+  cart[lineId].qty += d;
+  if (cart[lineId].qty <= 0) delete cart[lineId];
+  updateCart();
+  renderDrawer();
+}
+window.changeQty = changeQty;
+
+const cartCount = () => Object.values(cart).reduce((s,l)=>s+l.qty,0);
+const cartTotal = () => Object.values(cart).reduce((s,l)=>s+l.qty*l.price,0);
+
+function updateCart() {
+  const n = cartCount(), t = cartTotal();
+  $('#cart-count').textContent = n;
+  $('#cart-total-pill').textContent = fmt(t);
+  $('#cart-total').textContent = fmt(t);
+  $('#cart-fab').classList.toggle('show', n > 0);
+}
+
+function renderDrawer() {
+  const body = $('#drawer-body');
+  const lines = Object.values(cart);
+  if (lines.length === 0) {
+    body.innerHTML = `<div class="empty"><div class="e-emoji">🛒</div><h3>السلة فارغة</h3><div>تصفّح القائمة وأضف ما يعجبك</div></div>`;
+    $('#checkout').classList.remove('show');
+    return;
+  }
+  $('#checkout').classList.add('show');
+  body.innerHTML = lines.map(l => `
+    <div class="line-item">
+      <div class="li-thumb ${l.catKey}">
+        <div class="fb"><span>${l.fbEmoji}</span></div>
+        ${l.img ? `<img src="${l.img}" alt="" loading="lazy" onload="this.classList.add('loaded')" onerror="this.remove()">` : ''}
+      </div>
+      <div class="li-info">
+        <div class="li-name">${l.name}</div>
+        ${l.variant ? `<div class="li-variant">${l.variant}</div>` : ''}
+        <div class="li-price">${fmt(l.price * l.qty)}</div>
+      </div>
+      <div class="qctrl">
+        <button onclick="changeQty('${l.lineId}', -1)" aria-label="نقص">−</button>
+        <span class="qn">${l.qty}</span>
+        <button onclick="changeQty('${l.lineId}', 1)" aria-label="زيادة">+</button>
+      </div>
+    </div>`).join('');
+}
+
+/* ===== DRAWER ===== */
+function openDrawer()  { renderDrawer(); $('#drawer').classList.add('open'); $('#backdrop').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeDrawer() { $('#drawer').classList.remove('open'); $('#backdrop').classList.remove('open'); document.body.style.overflow=''; }
+
+/* ===== TOAST ===== */
+let toastTimer;
+function toast(msg) {
+  $('#toast-msg').textContent = msg;
+  $('#toast').classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>$('#toast').classList.remove('show'), 1700);
+}
+
+/* ===== WHATSAPP ===== */
+function buildMsg() {
+  const name  = $('#cust-name').value.trim()  || '—';
+  const phone = $('#cust-phone').value.trim() || '—';
+  const addr  = $('#cust-addr').value.trim()  || '—';
+  const notes = $('#cust-notes').value.trim();
+  const types = { delivery:'توصيل 🛵', pickup:'استلام من الفرع 🛍️', dinein:'تناول في المطعم 🍽️' };
+
+  let m = `🌟 *طلب جديد · ${CONFIG.restaurantName}* 🌟\n`;
+  m += `━━━━━━━━━━━━━━━━\n`;
+  m += `📦 *نوع الطلب:* ${types[orderType]}\n`;
+  m += `👤 *الاسم:* ${name}\n`;
+  m += `📞 *الجوال:* ${phone}\n`;
+  if (orderType === 'delivery') m += `📍 *العنوان:* ${addr}\n`;
+  m += `━━━━━━━━━━━━━━━━\n`;
+  m += `🛒 *الطلبات:*\n`;
+  Object.values(cart).forEach((l, i) => {
+    const v = l.variant ? ` (${l.variant})` : '';
+    m += `${i+1}. ${l.name}${v}  ×${l.qty}  =  ${fmt(l.price*l.qty)}\n`;
+  });
+  m += `━━━━━━━━━━━━━━━━\n`;
+  m += `💰 *المجموع: ${fmt(cartTotal())}*\n`;
+  if (notes) m += `📝 *ملاحظات:* ${notes}\n`;
+  m += `━━━━━━━━━━━━━━━━\n`;
+  m += `شكراً لاختياركم KO-KO 🍗✨`;
+  return m;
+}
+
+function sendWA() {
+  if (cartCount() === 0) return;
+  const phone = $('#cust-phone').value.trim();
+  if (!phone) { toast('الرجاء إدخال رقم الجوال'); $('#cust-phone').focus(); return; }
+  if (orderType === 'delivery' && !$('#cust-addr').value.trim()) {
+    toast('الرجاء إدخال عنوان التوصيل'); $('#cust-addr').focus(); return;
+  }
+  const text = encodeURIComponent(buildMsg());
+  window.open(`https://wa.me/${CONFIG.whatsappPhone}?text=${text}`, '_blank');
+}
+
+/* ===== SCROLLSPY ===== */
+function setupScrollSpy() {
+  const tabEls = $$('#tabs .tab');
+  function setActive(key) {
+    tabEls.forEach(t => t.classList.toggle('active', t.dataset.target === key));
+    const tab = tabEls.find(t => t.dataset.target === key);
+    if (tab) tab.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
+  }
+  tabEls.forEach(t => t.addEventListener('click', () => {
+    const sec = document.getElementById(t.dataset.target);
+    if (!sec) return;
+    const top = sec.getBoundingClientRect().top + window.pageYOffset - 64;
+    window.scrollTo({ top, behavior:'smooth' });
+  }));
+  const io = new IntersectionObserver(es => {
+    es.forEach(e => { if (e.isIntersecting) setActive(e.target.id); });
+  }, { rootMargin: '-25% 0px -65% 0px' });
+  MENU.forEach(c => { const el = document.getElementById(c.key); if (el) io.observe(el); });
+}
+
+/* ===== INIT ===== */
+document.addEventListener('DOMContentLoaded', () => {
+  renderMenu();
+  setupScrollSpy();
+  updateCart();
+
+  $('#cart-fab').addEventListener('click', openDrawer);
+  $('#drawer-close').addEventListener('click', closeDrawer);
+  $('#backdrop').addEventListener('click', closeDrawer);
+
+  $$('.ot-btn').forEach(b => b.addEventListener('click', () => {
+    $$('.ot-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    orderType = b.dataset.order;
+  }));
+
+  $('#wa-btn').addEventListener('click', sendWA);
+});
+</script>
+</body>
+</html>

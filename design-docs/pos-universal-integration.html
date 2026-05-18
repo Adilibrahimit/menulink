@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POS Integration · أي نظام، أي تقنية</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Tajawal:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:        #FAF6EE;
+  --paper:     #FFFFFF;
+  --ink:       #1A1108;
+  --ink-soft:  #4A3B2E;
+  --ink-mute:  #8B7B6B;
+  --line:      #E8DDC9;
+  --brand:     #D32027;
+  --brand-dk:  #A0181D;
+  --brand-tint:#FFF0F1;
+  --gold:      #FFC619;
+  --gold-dk:   #B88A00;
+  --ok:        #128C7E;
+  --ok-tint:   #DDF0EA;
+  --azure:     #2E6BC7;
+  --azure-tint:#E1ECF9;
+  --plum:      #6B3FA0;
+  --plum-tint: #EDE5F7;
+  --net-purple:#512BD4;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: 'Cairo', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.7;
+  font-size: 16px;
+  background-image:
+    radial-gradient(ellipse 800px 600px at 20% -10%, rgba(255, 198, 25, 0.08), transparent 60%),
+    radial-gradient(ellipse 600px 400px at 100% 30%, rgba(81, 43, 212, 0.04), transparent 70%);
+  background-attachment: fixed;
+}
+.wrap { max-width: 920px; margin: 0 auto; padding: 32px 22px 80px; }
+
+header.hero { padding: 32px 0 24px; border-bottom: 1px solid var(--line); margin-bottom: 40px; }
+header.hero .eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 3px;
+  color: var(--brand); font-weight: 600;
+  text-transform: uppercase; margin-bottom: 12px;
+  direction: ltr; text-align: right;
+}
+header.hero h1 {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 900; font-size: clamp(28px, 5vw, 44px);
+  line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 14px;
+}
+header.hero h1 .red { color: var(--brand); }
+header.hero h1 .net { color: var(--net-purple); }
+header.hero .lede {
+  font-size: clamp(15px, 2vw, 18px); color: var(--ink-soft);
+  font-weight: 500; max-width: 640px;
+}
+
+section.chapter { margin: 56px 0; scroll-margin-top: 20px; }
+.section-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 600;
+  color: var(--brand); letter-spacing: 2px;
+  margin-bottom: 8px; direction: ltr; text-align: right;
+}
+h2 {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 900; font-size: clamp(22px, 3.5vw, 32px);
+  margin-bottom: 16px; letter-spacing: -0.01em; line-height: 1.25;
+}
+h3 {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 800; font-size: 19px;
+  margin: 26px 0 10px;
+}
+p { color: var(--ink-soft); margin-bottom: 12px; font-size: 15.5px; }
+p strong { color: var(--ink); font-weight: 800; }
+code, .code {
+  background: var(--paper); border: 1px solid var(--line);
+  padding: 1px 7px; border-radius: 5px;
+  font-family: 'JetBrains Mono', monospace; font-size: 13.5px;
+  color: var(--brand); direction: ltr;
+  display: inline-block; vertical-align: middle;
+}
+ul, ol { padding-right: 22px; margin-bottom: 16px; }
+li { color: var(--ink-soft); margin-bottom: 6px; font-size: 15.5px; }
+li::marker { color: var(--brand); font-weight: 700; }
+
+.card {
+  background: var(--paper); border: 1px solid var(--line);
+  border-radius: 14px; padding: 22px 24px; margin: 18px 0;
+}
+.card.tinted { background: var(--brand-tint); border-color: rgba(211, 32, 39, 0.2); }
+.card.ok     { background: var(--ok-tint);    border-color: rgba(18, 140, 126, 0.25); }
+.card.azure  { background: var(--azure-tint); border-color: rgba(46, 107, 199, 0.2); }
+.card.net    { background: rgba(81, 43, 212, 0.06); border-color: rgba(81, 43, 212, 0.25); }
+
+.pull-quote {
+  font-family: 'Tajawal', sans-serif;
+  font-size: 21px; font-weight: 800;
+  padding: 14px 24px; border-right: 4px solid var(--brand);
+  background: linear-gradient(90deg, var(--brand-tint), transparent 80%);
+  margin: 24px 0; border-radius: 0 12px 12px 0; line-height: 1.5;
+}
+.pull-quote .by {
+  display: block; font-size: 12px; color: var(--ink-mute);
+  font-weight: 600; margin-top: 6px; font-family: 'Cairo', sans-serif;
+}
+
+.diagram {
+  background: var(--paper); border: 1px solid var(--line);
+  border-radius: 18px; padding: 24px 18px 18px;
+  margin: 28px 0; overflow-x: auto;
+}
+.diagram .d-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 600;
+  color: var(--ink-mute); letter-spacing: 1.5px;
+  text-transform: uppercase; margin-bottom: 14px;
+  direction: ltr; text-align: left;
+}
+.diagram svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+.diagram .caption {
+  margin-top: 16px; padding-top: 14px;
+  border-top: 1px dashed var(--line);
+  font-size: 13.5px; color: var(--ink-mute);
+  font-weight: 500; text-align: center; line-height: 1.6;
+}
+
+/* Tier ladder */
+.tier {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 18px;
+  margin-bottom: 14px;
+  padding: 22px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  position: relative;
+}
+.tier .t-num {
+  width: 64px; height: 64px;
+  border-radius: 18px;
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 900; font-size: 28px;
+  color: #fff;
+  flex-shrink: 0;
+}
+.tier.tier-1 .t-num { background: var(--ok); }
+.tier.tier-2 .t-num { background: var(--azure); }
+.tier.tier-3 .t-num { background: var(--gold-dk); }
+.tier.tier-4 .t-num { background: var(--brand); }
+.tier.tier-5 .t-num { background: var(--ink); }
+
+.tier h4 {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 900; font-size: 19px;
+  margin-bottom: 4px;
+}
+.tier .label {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 1.5px;
+  padding: 2px 8px; border-radius: 5px;
+  margin-bottom: 8px;
+  direction: ltr;
+}
+.tier.tier-1 .label { background: var(--ok-tint); color: var(--ok); }
+.tier.tier-2 .label { background: var(--azure-tint); color: var(--azure); }
+.tier.tier-3 .label { background: #FFF6D8; color: var(--gold-dk); }
+.tier.tier-4 .label { background: var(--brand-tint); color: var(--brand); }
+.tier.tier-5 .label { background: #F0EAE0; color: var(--ink); }
+.tier p { font-size: 14.5px; margin-bottom: 8px; }
+.tier .examples {
+  margin-top: 6px;
+  font-size: 12.5px;
+  color: var(--ink-mute);
+}
+.tier .examples strong { color: var(--ink); }
+
+.code-block {
+  background: #1A1108;
+  color: #FAF6EE;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+  direction: ltr; text-align: left;
+  line-height: 1.7;
+  padding: 22px;
+  border-radius: 12px;
+  margin: 18px 0;
+  overflow-x: auto;
+  white-space: pre;
+}
+.code-block .c-comment { color: #8B7B6B; }
+.code-block .c-keyword { color: #FFC619; }
+.code-block .c-func    { color: #2E6BC7; }
+.code-block .c-string  { color: #DDF0EA; }
+.code-block .c-type    { color: #D32027; }
+.code-block .c-attr    { color: #B88A00; }
+
+.code-block.net {
+  background: linear-gradient(135deg, #1A1108 0%, #2A1A4A 100%);
+}
+
+.code-tab {
+  display: inline-block;
+  padding: 6px 12px;
+  background: var(--ink);
+  color: var(--gold);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 8px 8px 0 0;
+  margin-bottom: -2px;
+  border-bottom: 2px solid var(--gold);
+}
+
+/* Decision tree */
+.decision-tree {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 20px;
+  margin: 20px 0;
+}
+.dt-question {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--ink);
+  padding: 10px 14px;
+  background: var(--bg);
+  border-radius: 10px;
+  margin: 8px 0;
+  border-right: 3px solid var(--brand);
+}
+.dt-answer {
+  font-size: 13px;
+  color: var(--ok);
+  font-weight: 700;
+  padding-right: 22px;
+  margin-bottom: 6px;
+}
+.dt-answer .yes { color: var(--ok); }
+.dt-answer .no { color: var(--brand); }
+
+.cta {
+  margin-top: 56px;
+  padding: 32px;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 18px;
+  text-align: center;
+  background-image:
+    radial-gradient(ellipse at top right, rgba(81, 43, 212, 0.2), transparent 70%),
+    radial-gradient(ellipse at bottom left, rgba(255, 198, 25, 0.1), transparent 70%);
+}
+.cta h3 { color: var(--bg); font-size: 24px; margin-bottom: 8px; }
+.cta p { color: rgba(250, 246, 238, 0.78); margin-bottom: 0; }
+
+@media (max-width: 600px) {
+  .wrap { padding: 20px 14px 60px; }
+  .card { padding: 18px; }
+  .diagram { padding: 18px 10px 14px; }
+  .tier { grid-template-columns: 56px 1fr; gap: 12px; padding: 16px; }
+  .tier .t-num { width: 48px; height: 48px; font-size: 22px; }
+  .code-block { font-size: 11px; padding: 16px; }
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <!-- =================== HEADER =================== -->
+  <header class="hero">
+    <div class="eyebrow">POS INTEGRATION · UNIVERSAL ARCHITECTURE</div>
+    <h1>كيف نتكامل مع <span class="red">أي POS</span><br>حتى لو <span class="net">.NET</span> صنعته بنفسك</h1>
+    <p class="lede">
+      السؤال الكبير: هل ممكن template واحد يخدم كل أنظمة POS؟ الإجابة الصادقة: لا، لكن معمارية متدرّجة ٥ مستويات تغطي ٩٥٪ من الحالات. والـ POS اللي تبنيه بنفسك يدخل في أسهل مستوى.
+    </p>
+  </header>
+
+  <!-- =================== 01 THE HONEST ANSWER =================== -->
+  <section class="chapter">
+    <div class="section-num">01 / REALITY CHECK</div>
+    <h2>الحقيقة الكاملة قبل الكود</h2>
+
+    <p>
+      لا يوجد "template سحري" يدمج مع كل POS في العالم لأن:
+    </p>
+    <ul>
+      <li>كل POS له API مختلف (لو عنده API أصلاً)</li>
+      <li>أساليب المصادقة تتفاوت (API key، OAuth، JWT، توقيع رقمي)</li>
+      <li>أشكال البيانات مختلفة (JSON، XML، حتى ملفات نصية)</li>
+      <li>منطق الأعمال يختلف (بعضها يطلب SKU، بعضها يطلب item name، بعضها لا يقبل تعديل)</li>
+      <li>نسبة كبيرة من أنظمة POS القديمة في السعودية <strong>ما عندها API أصلاً</strong></li>
+    </ul>
+
+    <div class="pull-quote">
+      الحل ليس "template واحد" — الحل "<strong>سلّم متدرّج</strong>" من ٥ مستويات. كل مستوى يغطي فئة من أنظمة POS. مجتمعةً، تغطي كل ما تحتاج.
+    </div>
+  </section>
+
+  <!-- =================== 02 THE 5-TIER LADDER =================== -->
+  <section class="chapter">
+    <div class="section-num">02 / THE 5-TIER LADDER</div>
+    <h2>السلّم: ٥ مستويات لتغطية أي POS</h2>
+    <p>
+      كل مستوى أصعب قليلاً من السابق، لكن يحلّ مشاكل أكثر. ابدأ من الأعلى، انزل حسب الحاجة.
+    </p>
+
+    <div class="tier tier-1">
+      <div class="t-num">1</div>
+      <div>
+        <span class="label">EASIEST · OUR CODE</span>
+        <h4>POS تبنيه بنفسك (مثل .NET POS تبعك)</h4>
+        <p>
+          أنت تتحكم بالكود ١٠٠٪. تضيف REST API endpoint في الـ POS، وMenuLink يرسل الطلبات لها. <strong>هذا الأسهل والأقوى</strong> — لا قيود من شركة خارجية، لا حاجة لإذن، لا توثيق محدود.
+        </p>
+        <p class="examples"><strong>أمثلة:</strong> .NET POS تبنيه · أي POS مفتوح المصدر · أي شيء تطوّره أنت</p>
+      </div>
+    </div>
+
+    <div class="tier tier-2">
+      <div class="t-num">2</div>
+      <div>
+        <span class="label">EASY · NATIVE API</span>
+        <h4>POS تجاري له REST API عام</h4>
+        <p>
+          نكتب adapter يتحدث مع API الخاص بهم. أحياناً OAuth، أحياناً API key. توثيقهم يخبرنا بالحقول والـ endpoints. <strong>عمل ١-٢ أسبوع لكل POS جديد.</strong>
+        </p>
+        <p class="examples"><strong>أمثلة:</strong> Foodics ⭐ · Marn · Loyverse · Square · Toast · Lightspeed</p>
+      </div>
+    </div>
+
+    <div class="tier tier-3">
+      <div class="t-num">3</div>
+      <div>
+        <span class="label">MODERATE · WEBHOOK</span>
+        <h4>POS يقبل webhooks فقط</h4>
+        <p>
+          POS لا يعطي API كامل، لكن يقدر يستقبل HTTP POST. نرسل الطلب لـ URL يحدده المطعم، الـ POS يستقبله ويعالجه. <strong>أبسط لكن أقل تحكم.</strong>
+        </p>
+        <p class="examples"><strong>أمثلة:</strong> بعض أنظمة POS الإقليمية الناشئة · حلول مخصّصة</p>
+      </div>
+    </div>
+
+    <div class="tier tier-4">
+      <div class="t-num">4</div>
+      <div>
+        <span class="label">FALLBACK · DIRECT PRINT</span>
+        <h4>POS ما عنده API — نطبع مباشرة على طابعة المطبخ</h4>
+        <p>
+          نتجاوز POS كلياً. نتصل بطابعة حرارية في المطبخ عبر بروتوكول <code>ESC/POS</code> (معيار منذ ١٩٩٠ في كل طابعة حرارية). الطابعة تطبع الطلب → الطباخ يبدأ التحضير → الكاشير يدخل الطلب يدوياً في POS لاحقاً.
+        </p>
+        <p class="examples"><strong>أمثلة:</strong> أنظمة POS قديمة بدون API · مطاعم بـ Excel · ٥٠٪+ من المطاعم الصغيرة</p>
+      </div>
+    </div>
+
+    <div class="tier tier-5">
+      <div class="t-num">5</div>
+      <div>
+        <span class="label">LAST RESORT · BRIDGE APP</span>
+        <h4>برنامج جسر (Bridge) يُثبَّت على كمبيوتر المطعم</h4>
+        <p>
+          آخر حل: نطوّر تطبيق Windows صغير يُثبَّت في المطعم. يسحب الطلبات من MenuLink API كل ٣٠ ثانية، ثم يدخلها في POS عبر:
+        </p>
+        <ul style="margin-top: 4px; margin-bottom: 4px;">
+          <li>إدخال مباشر لقاعدة بيانات POS (لو نعرف schema)</li>
+          <li>محاكاة لوحة المفاتيح (يكتب الطلب في POS تلقائياً)</li>
+          <li>استدعاء COM أو DLL خاص بـ POS</li>
+        </ul>
+        <p class="examples"><strong>هذا حل تقني صعب — نستخدمه فقط لعميل كبير ضروري ولا يمكن إقناعه بترقية POS.</strong></p>
+      </div>
+    </div>
+
+    <div class="card ok" style="margin-top: 24px;">
+      <p style="margin: 0;">
+        <strong>القاعدة الذهبية:</strong> ابدأ بـ Tier 1 (POS الخاص بك .NET) أو Tier 2 (Foodics). غطّ ٨٠٪ من السوق. لا تبني Tier 4 أو 5 إلا لمّا يطلبها عميل ضروري وقيمته تستحق التطوير الإضافي.
+      </p>
+    </div>
+  </section>
+
+  <!-- =================== 03 DECISION TREE =================== -->
+  <section class="chapter">
+    <div class="section-num">03 / DECISION TREE</div>
+    <h2>أي مستوى لأي POS؟</h2>
+    <p>
+      ضع POS أي مطعم في هذه الشجرة، تعرف فوراً وش الحل المناسب:
+    </p>
+
+    <div class="decision-tree">
+      <div class="dt-question">❓ هل أنت طوّرت الـ POS بنفسك؟</div>
+      <div class="dt-answer"><span class="yes">✓ نعم</span> → استخدم <strong>Tier 1</strong> · أضف REST API endpoint في .NET POS</div>
+      <div class="dt-answer"><span class="no">✗ لا</span> → السؤال التالي</div>
+
+      <div class="dt-question">❓ هل POS التجاري عنده REST API عام موثّق؟</div>
+      <div class="dt-answer"><span class="yes">✓ نعم</span> → <strong>Tier 2</strong> · اكتب adapter (Foodics, Marn, إلخ)</div>
+      <div class="dt-answer"><span class="no">✗ لا</span> → السؤال التالي</div>
+
+      <div class="dt-question">❓ هل POS يقبل HTTP webhooks خارجية؟</div>
+      <div class="dt-answer"><span class="yes">✓ نعم</span> → <strong>Tier 3</strong> · أرسل الطلبات للـ URL</div>
+      <div class="dt-answer"><span class="no">✗ لا</span> → السؤال التالي</div>
+
+      <div class="dt-question">❓ هل المطعم عنده طابعة حرارية في المطبخ؟</div>
+      <div class="dt-answer"><span class="yes">✓ نعم</span> → <strong>Tier 4</strong> · ارسل ESC/POS مباشرة للطابعة</div>
+      <div class="dt-answer"><span class="no">✗ لا</span> → السؤال التالي</div>
+
+      <div class="dt-question">❓ هل قيمة العميل تستحق ٤ أسابيع تطوير؟</div>
+      <div class="dt-answer"><span class="yes">✓ نعم</span> → <strong>Tier 5</strong> · بناء Bridge App</div>
+      <div class="dt-answer"><span class="no">✗ لا</span> → استخدم واتساب فقط · يكفي</div>
+    </div>
+  </section>
+
+  <!-- =================== 04 .NET POS INTEGRATION =================== -->
+  <section class="chapter">
+    <div class="section-num">04 / .NET POS</div>
+    <h2>تكامل MenuLink مع POS تبنيه بـ .NET</h2>
+
+    <div class="card net">
+      <p style="margin: 0;">
+        <strong>الخبر الجيد:</strong> لأنك تطوّر POS بنفسك بـ .NET، التكامل أسهل بكثير من Foodics. لا تنتظر إذن من شركة، لا قيود توثيق، لا rate limits. <strong>تتحكم في كل شيء.</strong> .NET يحتوي أصلاً على كل شيء تحتاجه لبناء API احترافي.
+      </p>
+    </div>
+
+    <h3>المعمارية: كيف يتحدث MenuLink مع POS تبعك</h3>
+
+    <div class="diagram">
+      <div class="d-title">Fig 01 · MenuLink → Your custom .NET POS</div>
+      <svg viewBox="0 0 760 380" xmlns="http://www.w3.org/2000/svg" font-family="Cairo, sans-serif">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#1A1108"/>
+          </marker>
+          <marker id="arrP" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#512BD4"/>
+          </marker>
+        </defs>
+
+        <!-- MenuLink side (right) -->
+        <g transform="translate(540,40)">
+          <rect width="200" height="290" rx="14" fill="#DDF0EA" stroke="#128C7E" stroke-width="2"/>
+          <text x="100" y="32" text-anchor="middle" font-size="15" font-weight="900" fill="#128C7E">🍔 MenuLink Cloud</text>
+          <text x="100" y="52" text-anchor="middle" font-size="11" fill="#4A3B2E">Next.js + Supabase</text>
+
+          <g transform="translate(20,80)">
+            <rect width="160" height="40" rx="8" fill="#fff" stroke="#128C7E"/>
+            <text x="80" y="18" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">1. زبون يرسل طلب</text>
+            <text x="80" y="32" text-anchor="middle" font-size="10" fill="#4A3B2E">في PWA</text>
+          </g>
+          <g transform="translate(20,135)">
+            <rect width="160" height="40" rx="8" fill="#fff" stroke="#128C7E"/>
+            <text x="80" y="18" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">2. حفظ في DB</text>
+            <text x="80" y="32" text-anchor="middle" font-size="10" fill="#4A3B2E">orders.status = 'new'</text>
+          </g>
+          <g transform="translate(20,190)">
+            <rect width="160" height="40" rx="8" fill="#fff" stroke="#128C7E"/>
+            <text x="80" y="18" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">3. Edge Function</text>
+            <text x="80" y="32" text-anchor="middle" font-size="10" fill="#4A3B2E">يُطلَق تلقائياً</text>
+          </g>
+          <g transform="translate(20,245)">
+            <rect width="160" height="40" rx="8" fill="#FFC619" stroke="#B88A00"/>
+            <text x="80" y="18" text-anchor="middle" font-size="11" font-weight="800" fill="#1A1108">4. HTTP POST</text>
+            <text x="80" y="32" text-anchor="middle" font-size="10" fill="#1A1108">→ POS endpoint</text>
+          </g>
+        </g>
+
+        <!-- Arrow between -->
+        <line x1="540" y1="265" x2="225" y2="265" stroke="#1A1108" stroke-width="2.5" marker-end="url(#arr)"/>
+        <rect x="280" y="240" width="220" height="20" rx="6" fill="#FFF6D8" stroke="#B88A00"/>
+        <text x="390" y="254" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108" font-family="JetBrains Mono">POST /api/orders + JSON</text>
+
+        <text x="390" y="280" text-anchor="middle" font-size="9" fill="#4A3B2E">عبر الإنترنت · مشفّر HTTPS · مع API key</text>
+
+        <!-- .NET POS side (left) -->
+        <g transform="translate(20,40)">
+          <rect width="200" height="290" rx="14" fill="rgba(81, 43, 212, 0.08)" stroke="#512BD4" stroke-width="2"/>
+          <text x="100" y="32" text-anchor="middle" font-size="15" font-weight="900" fill="#512BD4">⚙️ .NET POS</text>
+          <text x="100" y="52" text-anchor="middle" font-size="11" fill="#4A3B2E">عند المطعم محلياً</text>
+
+          <g transform="translate(20,80)">
+            <rect width="160" height="40" rx="8" fill="#fff" stroke="#512BD4"/>
+            <text x="80" y="18" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">ASP.NET Core API</text>
+            <text x="80" y="32" text-anchor="middle" font-size="10" fill="#4A3B2E" font-family="JetBrains Mono">OrdersController</text>
+          </g>
+          <g transform="translate(20,135)">
+            <rect width="160" height="40" rx="8" fill="#fff" stroke="#512BD4"/>
+            <text x="80" y="18" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">يتحقّق من API Key</text>
+            <text x="80" y="32" text-anchor="middle" font-size="10" fill="#4A3B2E">authentication middleware</text>
+          </g>
+          <g transform="translate(20,190)">
+            <rect width="160" height="40" rx="8" fill="#fff" stroke="#512BD4"/>
+            <text x="80" y="18" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">يحفظ في DB</text>
+            <text x="80" y="32" text-anchor="middle" font-size="10" fill="#4A3B2E">Entity Framework</text>
+          </g>
+          <g transform="translate(20,245)">
+            <rect width="160" height="40" rx="8" fill="#512BD4"/>
+            <text x="80" y="18" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">🖨️ يطبع للمطبخ</text>
+            <text x="80" y="32" text-anchor="middle" font-size="10" fill="#fff">via thermal printer</text>
+          </g>
+        </g>
+
+        <!-- Bottom note -->
+        <g transform="translate(120,345)">
+          <rect width="520" height="25" rx="8" fill="#1A1108"/>
+          <text x="260" y="17" text-anchor="middle" font-size="11" font-weight="700" fill="#FFC619">⚡ كل الرحلة: من الزبون للطابعة في أقل من ٢ ثانية</text>
+        </g>
+      </svg>
+      <div class="caption">
+        MenuLink لا يهتم إن POS كان Foodics أو .NET تبعك أو أي شيء آخر. الواجهة <code>POSAdapter</code> هي اللي تترجم لكل نوع.
+      </div>
+    </div>
+
+    <h3>الكود الفعلي · في .NET POS تبعك (الجانب المستقبل)</h3>
+
+    <div>
+      <span class="code-tab">OrdersController.cs</span>
+      <div class="code-block net"><span class="c-comment">// ASP.NET Core 8 · أضف هذا في مشروع POS الموجود</span>
+
+<span class="c-attr">[ApiController]</span>
+<span class="c-attr">[Route("api/orders")]</span>
+<span class="c-attr">[Authorize(AuthenticationSchemes = "ApiKey")]</span>
+<span class="c-keyword">public class</span> <span class="c-type">OrdersController</span> : <span class="c-type">ControllerBase</span>
+{
+    <span class="c-keyword">private readonly</span> <span class="c-type">IOrderService</span> _orderService;
+    <span class="c-keyword">private readonly</span> <span class="c-type">IPrinterService</span> _printer;
+
+    <span class="c-keyword">public</span> <span class="c-func">OrdersController</span>(<span class="c-type">IOrderService</span> orderService, <span class="c-type">IPrinterService</span> printer)
+    {
+        _orderService = orderService;
+        _printer = printer;
+    }
+
+    <span class="c-comment">// MenuLink يستدعي هذا الـ endpoint لإرسال طلب جديد</span>
+    <span class="c-attr">[HttpPost]</span>
+    <span class="c-keyword">public async</span> <span class="c-type">Task</span>&lt;<span class="c-type">IActionResult</span>&gt; <span class="c-func">CreateOrder</span>([<span class="c-attr">FromBody</span>] <span class="c-type">MenuLinkOrderDto</span> dto)
+    {
+        <span class="c-comment">// 1. تحقّق من البيانات</span>
+        <span class="c-keyword">if</span> (!<span class="c-type">ModelState</span>.IsValid) <span class="c-keyword">return</span> <span class="c-func">BadRequest</span>(<span class="c-type">ModelState</span>);
+
+        <span class="c-comment">// 2. حوّل من شكل MenuLink لشكل POS الداخلي</span>
+        <span class="c-keyword">var</span> order = <span class="c-keyword">new</span> <span class="c-type">Order</span>
+        {
+            CustomerName  = dto.CustomerName,
+            CustomerPhone = dto.CustomerPhone,
+            OrderType     = dto.OrderType,    <span class="c-comment">// delivery/pickup/dinein</span>
+            Source        = <span class="c-string">"MenuLink"</span>,
+            ExternalId    = dto.OrderId,      <span class="c-comment">// reference for tracking</span>
+            Items = dto.Items.<span class="c-func">Select</span>(i =&gt; <span class="c-keyword">new</span> <span class="c-type">OrderItem</span>
+            {
+                ProductCode = i.ProductCode,
+                Quantity    = i.Quantity,
+                UnitPrice   = i.Price,
+                Notes       = i.Notes
+            }).<span class="c-func">ToList</span>(),
+            DeliveryAddress = dto.Address,
+            Latitude  = dto.Latitude,
+            Longitude = dto.Longitude,
+            Status    = <span class="c-type">OrderStatus</span>.New
+        };
+
+        <span class="c-comment">// 3. احفظ في قاعدة بيانات POS</span>
+        <span class="c-keyword">await</span> _orderService.<span class="c-func">CreateAsync</span>(order);
+
+        <span class="c-comment">// 4. اطبع التذكرة في المطبخ تلقائياً</span>
+        <span class="c-keyword">await</span> _printer.<span class="c-func">PrintKitchenTicketAsync</span>(order);
+
+        <span class="c-comment">// 5. ارجع التأكيد لـ MenuLink</span>
+        <span class="c-keyword">return</span> <span class="c-func">Ok</span>(<span class="c-keyword">new</span>
+        {
+            success = <span class="c-keyword">true</span>,
+            posOrderId = order.Id,
+            estimatedReadyAt = <span class="c-type">DateTime</span>.Now.<span class="c-func">AddMinutes</span>(20)
+        });
+    }
+}</div>
+    </div>
+
+    <div>
+      <span class="code-tab">Program.cs</span>
+      <div class="code-block net"><span class="c-comment">// إعداد مصادقة API Key — مفتاح واحد سرّي بين MenuLink وPOS</span>
+
+builder.Services.<span class="c-func">AddAuthentication</span>(<span class="c-string">"ApiKey"</span>)
+    .<span class="c-func">AddScheme</span>&lt;<span class="c-type">AuthenticationSchemeOptions</span>, <span class="c-type">ApiKeyAuthHandler</span>&gt;(<span class="c-string">"ApiKey"</span>, <span class="c-keyword">null</span>);
+
+builder.Services.<span class="c-func">AddControllers</span>();
+builder.Services.<span class="c-func">AddScoped</span>&lt;<span class="c-type">IOrderService</span>, <span class="c-type">OrderService</span>&gt;();
+builder.Services.<span class="c-func">AddScoped</span>&lt;<span class="c-type">IPrinterService</span>, <span class="c-type">EscPosPrinterService</span>&gt;();
+
+<span class="c-keyword">var</span> app = builder.<span class="c-func">Build</span>();
+app.<span class="c-func">UseAuthentication</span>();
+app.<span class="c-func">UseAuthorization</span>();
+app.<span class="c-func">MapControllers</span>();
+app.<span class="c-func">Run</span>();
+
+<span class="c-comment">// كل ما يحتاج .NET POS تبعك للتكامل مع MenuLink:</span>
+<span class="c-comment">//   1. هذا الـ Controller</span>
+<span class="c-comment">//   2. ApiKeyAuthHandler البسيط</span>
+<span class="c-comment">//   3. تكوين الـ DI أعلاه</span>
+<span class="c-comment">// خلاص.</span></div>
+    </div>
+
+    <h3>السحرية: SignalR للوقت الحقيقي (اختياري لكن قوي)</h3>
+    <p>
+      .NET فيه SignalR — مكتبة مبنية لـ real-time messaging. مع SignalR، POS لا ينتظر بل يستقبل الطلبات لحظياً بدون polling:
+    </p>
+
+    <div>
+      <span class="code-tab">في POS .NET (Client)</span>
+      <div class="code-block net"><span class="c-comment">// POS يتصل بـ MenuLink مرة وحدة عند بدء التشغيل</span>
+
+<span class="c-keyword">var</span> connection = <span class="c-keyword">new</span> <span class="c-type">HubConnectionBuilder</span>()
+    .<span class="c-func">WithUrl</span>(<span class="c-string">"https://menulink.app/hubs/orders"</span>, options =&gt;
+    {
+        options.AccessTokenProvider = () =&gt; <span class="c-type">Task</span>.<span class="c-func">FromResult</span>(restaurantApiKey);
+    })
+    .<span class="c-func">WithAutomaticReconnect</span>()
+    .<span class="c-func">Build</span>();
+
+<span class="c-comment">// لمّا يرسل زبون طلب، MenuLink يرسله فوراً للـ POS</span>
+connection.<span class="c-func">On</span>&lt;<span class="c-type">MenuLinkOrderDto</span>&gt;(<span class="c-string">"NewOrder"</span>, <span class="c-keyword">async</span> order =&gt;
+{
+    <span class="c-keyword">await</span> _orderService.<span class="c-func">CreateAsync</span>(order);
+    <span class="c-keyword">await</span> _printer.<span class="c-func">PrintKitchenTicketAsync</span>(order);
+});
+
+<span class="c-keyword">await</span> connection.<span class="c-func">StartAsync</span>();
+<span class="c-comment">// POS الآن يستقبل أي طلب جديد في أقل من 100 ميلي ثانية</span></div>
+    </div>
+
+    <div class="card net">
+      <p style="margin: 0;">
+        <strong>الميزة الكبيرة لـ SignalR:</strong> ما تحتاج كمبيوتر POS يكون عنده IP عام (public IP). يفتح اتصال خارج من جوّا، يبقى مفتوح. يعمل من أي مكان حتى وراء راوتر منزلي. هذا أمان وراحة في آن واحد.
+      </p>
+    </div>
+  </section>
+
+  <!-- =================== 05 BEST PRACTICES =================== -->
+  <section class="chapter">
+    <div class="section-num">05 / BEST PRACTICES</div>
+    <h2>أفضل الممارسات لتكامل آمن وموثوق</h2>
+
+    <h3>١. Idempotency — منع التكرار</h3>
+    <p>
+      لو MenuLink أرسل طلباً وسقط الاتصال قبل وصول الرد، MenuLink يعيد الإرسال. لازم POS يكون ذكي ولا يحفظ الطلب مرتين. الحل:
+    </p>
+
+    <div>
+      <span class="code-tab">منطق Idempotency</span>
+      <div class="code-block net"><span class="c-comment">// قبل حفظ الطلب، تحقّق إذا كان موجوداً</span>
+<span class="c-keyword">var</span> existing = <span class="c-keyword">await</span> _orderService
+    .<span class="c-func">GetByExternalIdAsync</span>(dto.OrderId);
+
+<span class="c-keyword">if</span> (existing != <span class="c-keyword">null</span>)
+{
+    <span class="c-comment">// طلب مكرر — ارجع نفس الرد، لا تعيد الحفظ ولا الطباعة</span>
+    <span class="c-keyword">return</span> <span class="c-func">Ok</span>(<span class="c-keyword">new</span> { success = <span class="c-keyword">true</span>, posOrderId = existing.Id });
+}
+
+<span class="c-comment">// لو ما كان موجوداً، احفظ واطبع كالعادة</span></div>
+    </div>
+
+    <h3>٢. Retry مع Exponential Backoff</h3>
+    <p>
+      في جانب MenuLink، لو فشل الإرسال، نعيد المحاولة بفترات متباعدة: ١ ثانية، ٢ ثانية، ٤ ثوان، ٨ ثوان. لو فشل بعد ٤ محاولات، نرسل تنبيه لصاحب المطعم عبر واتساب: "طلب لم يصل لـ POS — تحقّق يدوياً". <strong>صفر طلبات ضائعة</strong>.
+    </p>
+
+    <h3>٣. الـ Order Status Loop</h3>
+    <p>
+      MenuLink ↔ POS اتصال في الاتجاهين. لما يحدّث الكاشير حالة الطلب (تم القبول → قيد التحضير → جاهز → خرج للتوصيل)، الـ POS يخبر MenuLink. الزبون يشوف التحديثات على الـ PWA لحظياً.
+    </p>
+
+    <h3>٤. Menu Mapping</h3>
+    <p>
+      الصنف "بروستد عادي" في MenuLink قد يكون "PROD-001" في POS تبعك. عند الإعداد، تحدد المطابقة مرة وحدة. بعدها MenuLink يرسل المعرفات الداخلية بدل الأسماء، وPOS يطبع المسمّى الذي يفهمه الكاشير.
+    </p>
+
+    <div class="card tinted">
+      <p style="margin: 0;">
+        <strong>كل هذه الممارسات سهلة في .NET لأنك تتحكم بالكود.</strong> أصعب جزء في تكامل Foodics هو القيود على التوثيق وعدم القدرة على تعديل سلوكه. مع POS تبنيه بنفسك، أي مشكلة تظهر تحلّها فوراً في الكود.
+      </p>
+    </div>
+  </section>
+
+  <!-- =================== 06 BUSINESS ANGLE =================== -->
+  <section class="chapter">
+    <div class="section-num">06 / STRATEGY</div>
+    <h2>الاستراتيجية: تجمع بين المنصة والـ POS</h2>
+
+    <div class="card net">
+      <h3 style="margin-top: 0;">🎯 فرصة كبيرة لك تحديداً</h3>
+      <p>
+        لأنك تطوّر POS بـ .NET <strong>وتطوّر MenuLink</strong> في نفس الوقت، عندك ميزة فريدة: تقدر تبيع <strong>الباقة الكاملة</strong> للمطاعم — POS + Menu أونلاين + توصيل + تكامل تام.
+      </p>
+      <p>
+        المنافسون (Foodics + أي menu link خارجي) يكلّفون المطعم ٢٬٠٠٠+ ريال شهرياً. أنت تقدر تعرض الباقة بـ ٧٠٠-١٠٠٠ ريال وتربح أكثر منهم لأن:
+      </p>
+      <ul>
+        <li>لا تدفع نسبة لشركة POS خارجية</li>
+        <li>تتحكم بكل تجربة المطعم — تطوير أسرع، صيانة أبسط</li>
+        <li>كل ميزة جديدة تبنيها مرة في الـ POS تنعكس فوراً على MenuLink</li>
+      </ul>
+    </div>
+
+    <h3>التسعير المقترح للباقة المدمجة</h3>
+
+    <table style="width: 100%; border-collapse: collapse; margin: 14px 0; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; font-size: 14px;">
+      <thead>
+        <tr>
+          <th style="background: var(--ink); color: var(--bg); padding: 13px 12px; text-align: right; font-weight: 700;">الباقة</th>
+          <th style="background: var(--ink); color: var(--bg); padding: 13px 12px; text-align: right; font-weight: 700;">السعر/شهر</th>
+          <th style="background: var(--ink); color: var(--bg); padding: 13px 12px; text-align: right; font-weight: 700;">المكوّنات</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding: 13px 12px; font-weight: 800;">MenuLink فقط</td>
+          <td style="padding: 13px 12px; color: var(--brand); font-weight: 800; font-family: 'JetBrains Mono', monospace;">249 ر</td>
+          <td style="padding: 13px 12px; color: var(--ink-soft); border-top: 1px solid var(--line);">PWA + واتساب + لوحة تحكم</td>
+        </tr>
+        <tr style="background: rgba(232,221,201,0.15);">
+          <td style="padding: 13px 12px; font-weight: 800;">POS .NET فقط</td>
+          <td style="padding: 13px 12px; color: var(--brand); font-weight: 800; font-family: 'JetBrains Mono', monospace;">399 ر</td>
+          <td style="padding: 13px 12px; color: var(--ink-soft); border-top: 1px solid var(--line);">كاشير + طابعات + تقارير + مخزون</td>
+        </tr>
+        <tr>
+          <td style="padding: 13px 12px; font-weight: 800; color: var(--net-purple);">⭐ الباقة الكاملة</td>
+          <td style="padding: 13px 12px; color: var(--brand); font-weight: 800; font-family: 'JetBrains Mono', monospace;">599 ر</td>
+          <td style="padding: 13px 12px; color: var(--ink-soft); border-top: 1px solid var(--line);"><strong>POS + MenuLink + تكامل تلقائي + دعم أولوية</strong></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pull-quote">
+      الفائدة الحقيقية: <strong>عميل واحد، سعر واحد، فاتورة واحدة.</strong>
+      <span class="by">المطعم ما يحتاج يتعامل مع شركتين، يدفع لاثنين، يتصل دعمين فني. أنت المرجع الوحيد لكل احتياجات المطعم التقنية. هذا تماسك يصعب على المنافسين تقليده.</span>
+    </div>
+  </section>
+
+  <!-- =================== CTA =================== -->
+  <div class="cta">
+    <h3>الخلاصة</h3>
+    <p style="font-size: 16px; line-height: 1.7;">
+      أي POS = ممكن. .NET POS تبعك = <strong style="color: #FFC619;">الأسهل والأقوى</strong>.<br>
+      اكتب <code style="color: #FFC619; background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2);">OrdersController</code> ٥٠ سطر، أضف API key، خلاص — جاهز.<br>
+      الباقة المدمجة (POS + MenuLink) تفتح لك سوقاً ما يقدر المنافسون يدخلونه.
+    </p>
+  </div>
+
+</div>
+</body>
+</html>

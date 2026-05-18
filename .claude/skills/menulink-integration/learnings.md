@@ -1,0 +1,285 @@
+# Learnings · MenuLink Integration
+
+> **This file is read at the start of every session.** It accumulates knowledge across deployments so the same mistake never costs us twice.
+> 
+> **Last updated:** 2026-05-18 (foundation plan executed — Obsidian + Supabase schema + analytics views)
+> **Update protocol:** Append new entries under the right section. Keep each entry to 2-4 lines. Tag with confidence level.
+
+---
+
+## 🗂️ Customer Taxonomy (CRITICAL — read first)
+
+We have **two distinct customer profiles** and they must never be conflated:
+
+| Profile | Name | POS | Role | Relationship |
+|---------|------|-----|------|--------------|
+| 🥇 **First paying customer** | KO-KO Chicky Licky | TBD (probably none / WhatsApp only) | Revenue proof | Direct lead |
+| 🔧 **Integration testbed** | RzRz Restaurant (name TBD) | RzRz (Punnelifosys ResApp) | Engineering R&D lab | User's brother is operations manager |
+
+**Do not assume KO-KO has RzRz.** Do not assume the RzRz restaurant wants to pay. They serve different strategic purposes.
+
+---
+
+## ✅ What Has Worked
+
+### LRN-2026-05-18-direct-db-rzrz (confidence: high)
+**Context:** Investigating how to push MenuLink orders into RzRz POS  
+**Learning:** RzRz stored procedure `InsertInvoice` accepts XML and automatically handles kitchen printing via `KitichenOrderForPrint` table — we can integrate WITHOUT modifying the .NET POS source code. The system has `OnlineCustomerID` field built-in, meaning it was designed for online orders from the start.  
+**Source:** session:2026-05-18 | applies-to:rzrz-restaurant  
+**Triggers:** RzRz integration, .NET POS, InsertInvoice, kitchen printing, online order
+
+### LRN-2026-05-18-zatca-already-handled (confidence: high)
+**Context:** Wondering if MenuLink needs to handle Saudi ZATCA e-invoicing for RzRz customers  
+**Learning:** RzRz already has ZATCA support built-in (folder `2025/10/Zatca Service`). When we push orders via `InsertInvoice`, the tax calculations happen inside the procedure automatically. **We do not need to compute ZATCA on the MenuLink side.**  
+**Source:** session:2026-05-18 | applies-to:rzrz-restaurant  
+**Triggers:** ZATCA, e-invoicing, tax, فاتورة, Saudi compliance
+
+### LRN-2026-05-18-multibranch-architecture (confidence: high)
+**Context:** Understanding RzRz deployment topology  
+**Learning:** RzRz uses central SQL Server (hosted at 192.250.231.22) + local branch DBs (`RZRZCLIENT.mdf`). Sync happens via `IsSyncRequired=1` flag. For MenuLink integration, write to the central server when DB is remote; use Bridge App pattern when DB is local-only.  
+**Source:** session:2026-05-18 | applies-to:rzrz-restaurant  
+**Triggers:** multi-branch, sync, central database, local database, IsSyncRequired
+
+### LRN-2026-05-18-supabase-cli-same-software (confidence: high)
+**Context:** Choosing between Docker Postgres → migrate-to-Supabase vs Supabase CLI for local dev
+**Learning:** Supabase CLI's local stack (`npx supabase start`) is the SAME software as Supabase Cloud — Postgres, Auth, Storage, Realtime, Studio. So there's no "migration" step from local to cloud: write schema once as `supabase/migrations/*.sql`, run `supabase db push` when cloud creds arrive. Raw Docker Postgres would have meant rebuilding auth/RLS at deploy time.
+**Why:** Avoiding schema drift was the deciding factor; the local-vs-prod-software parity guarantees that what works locally works in cloud.
+**How to apply:** For any new MenuLink app (admin, bridge integrations), always use `supabase init` + `supabase start` rather than rolling raw Postgres. Resolves [[opn-local-dev-strategy]].
+**Source:** session:2026-05-18 | applies-to:all customers
+**Triggers:** local dev, Supabase, Docker Postgres, migration, schema drift
+
+### LRN-2026-05-18-apps-web-monorepo-layout (confidence: high)
+**Context:** Naming the Next.js+Supabase project directory
+**Learning:** Code lives under `apps/web/` (monorepo convention), not `backend/`. Next.js is fullstack (frontend + serverless API routes), and the layout makes room for `apps/admin/` (restaurant dashboard) and `apps/bridge/` (.NET RzRz Bridge App) later without restructuring.
+**Why:** Calling Next.js code "backend" is misleading; the `apps/*` convention matches Vercel/Turborepo norms and won't need rename when sibling apps land.
+**How to apply:** New runnable apps go under `apps/<name>/`. Shared libs/types eventually under `packages/`.
+**Source:** session:2026-05-18 (user correction during plan execution)
+**Triggers:** project structure, monorepo, backend vs frontend, app naming
+
+### LRN-2026-05-18-rls-tenant-via-jwt-claim (confidence: high)
+**Context:** Designing multi-tenant RLS for `restaurants`, `customers`, `orders`, `order_items`
+**Learning:** Use `restaurant_id::text = (auth.jwt() ->> 'restaurant_id')` for owner-side policies; Supabase puts custom JWT claims under `auth.jwt()`. Child tables (`order_items`, `customer_tags`) check parent via `EXISTS` subquery instead of duplicating `restaurant_id` on every row. Service role bypasses RLS so seed scripts and server-side Next.js routes Just Work.
+**Why:** Keeps the schema normalised, makes RLS policies self-evident, and matches Supabase's JWT-claim mechanic.
+**How to apply:** When adding any per-tenant table, follow this pattern. When adding an admin dashboard, the auth flow must inject `restaurant_id` into the JWT.
+**Source:** session:2026-05-18 (first migration)
+**Triggers:** RLS, multi-tenant, JWT claims, restaurant_id, owner policy
+
+### LRN-2026-05-18-rfm-bucket-thresholds (confidence: medium)
+**Context:** Defining customer segments for the analytics view `v_customer_rfm`
+**Learning:** Initial bucket thresholds: Champion = recency ≤14d AND frequency ≥5; Loyal = recency ≤30d AND frequency ≥3; At-Risk = recency 31-60d; Lost = recency >60d; New = frequency = 1. These are starting heuristics for Saudi small-restaurant ordering cadence (most loyal customers order weekly).
+**Why:** RFM thresholds are domain-sensitive; "recency ≤30 days" feels right for weekly-ordering food, would be wrong for monthly subscriptions.
+**How to apply:** After first paying restaurant has 60+ days of real data, re-tune thresholds against actual cohort behaviour. Don't ship the dashboard with these as gospel.
+**Source:** session:2026-05-18 (seed + view design)
+**Triggers:** RFM, segmentation, customer analytics, churn, recency
+
+### LRN-2026-05-18-snapshot-order-items (confidence: high)
+**Context:** Designing `order_items` schema — link to a `menu_items` table or snapshot?
+**Learning:** **Snapshot.** Store `item_name`, `variant`, `unit_price` directly on `order_items` rather than FK-ing to a `menu_items` row. If the owner edits the menu or changes a price next week, historical orders must still report what was actually sold at the time. Same reasoning for `total` on `orders` — frozen at submit time.
+**Why:** Foreign key to a mutable menu would silently rewrite history; reporting and disputes would break.
+**How to apply:** Any table representing a completed business event (order, invoice, payment) snapshots the relevant fields. Reference tables are for live state, not history.
+**Source:** session:2026-05-18 (schema design)
+**Triggers:** historical data, snapshot vs reference, order_items, menu changes
+
+### LRN-2026-05-18-graphify-icons-noise (confidence: medium)
+**Context:** Running `/graphify` on D:\menulink — detected 10 PWA icon images (all variants of the rooster logo)
+**Learning:** Default detection treats every PNG as a separate input and would dispatch one subagent per image. For icon sets (identical content at different sizes), filter them out before extraction — they produce N redundant "rooster logo" nodes with no useful edges. Patched `.graphify_detect.json` to set `images: []` before semantic step.
+**Why:** Graphify's strength is cross-document surprise; identical assets add noise, not signal.
+**How to apply:** Before running `/graphify` on any project with sized-icon variants, drop the icon list from detection. Same trick for build output folders if they leak into detection.
+**Source:** session:2026-05-18
+**Triggers:** graphify, knowledge graph, image dedup, icons, PWA assets
+
+### LRN-2026-05-18-fire-and-forget-persist (confidence: high)
+**Context:** Wiring v6 PWA to write each order to Supabase before opening WhatsApp.
+**Learning:** Do NOT `await` the Supabase insert before opening the wa.me URL. Use fire-and-forget: kick off `persistOrder(...)` (no await), then immediately `window.open(...)`. Reasons: (1) zero perceived latency for the customer, (2) WhatsApp opens even if Supabase is down, (3) the Promise keeps running in the background after window.open. The persist function has its own try/catch so unhandled rejections never bubble.
+**Why:** The customer's order experience must never depend on our database being healthy. Lost analytics row > lost customer order.
+**How to apply:** Any "side-effect on action" call (analytics, telemetry, audit log) should fire-and-forget when latency to the user-visible action matters more than guaranteed delivery. Use awaited writes only when the next user action genuinely depends on the result.
+**Source:** session:2026-05-18 (PWA wiring)
+**Triggers:** fire-and-forget, await, latency, analytics, fail open
+
+### LRN-2026-05-18-phone-normalization-saudi (confidence: high)
+**Context:** Unique index `(restaurant_id, phone)` on customers — needed to catch repeat customers
+**Learning:** Saudi customers type phones in at least 4 formats: `0501234567`, `966501234567`, `+966501234567`, and `٠٥٠١٢٣٤٥٦٧` (Arabic-Indic digits). Without normalization, the SAME customer creates a new row per format. Normalize to `+9665XXXXXXXX` at insert time: map Arabic-Indic → ASCII digits, strip non-digits, drop `00966`/`966`/`0` prefix, prepend `+966`.
+**Why:** Repeat-customer detection drives RFM frequency, LTV, dormant-customer targeting. Wrong phone format = the analytics value layer silently breaks.
+**How to apply:** Every new ingestion point (PWA, admin tool, POS import, CSV upload) must call `normalizePhone()` before any DB write. Same function lives in v6 PWA — copy it forward to apps/web later, don't reimplement.
+**Source:** session:2026-05-18 (PWA wiring)
+**Triggers:** phone normalization, Arabic-Indic digits, duplicate customers, unique index, RFM
+
+### LRN-2026-05-18-cloud-pivot-via-mgmt-api (confidence: high)
+**Context:** Docker daemon froze mid-pull during `supabase start`. User had just provided a Supabase access token (sbp_*) and project was already created in dashboard.
+**Learning:** When the local Docker stack is unavailable, you can apply migrations directly to Supabase Cloud via the Management API: `POST https://api.supabase.com/v1/projects/{ref}/database/query` with `Authorization: Bearer <access_token>` and `{"query":"<sql>"}`. No DB password needed, no Docker needed, no `supabase db push`. Used this to apply 0001_init.sql, 0002_analytics_views.sql, and seed.sql in 3 calls.
+**Why:** The Supabase CLI's `db push` workflow requires Docker (for shadow DB diff) AND the database password. The Management API skips both.
+**How to apply:** For any future "Docker is dead but I need to ship" moment, OR for one-off operational SQL on a cloud project, use the Management API. Save the user the trouble of a Docker Desktop restart.
+**Source:** session:2026-05-18 (encountered + recovered live)
+**Triggers:** supabase cloud, management API, Docker frozen, db push, alternative deploy path
+
+### LRN-2026-05-18-mcp-vs-cli-account-separation (confidence: high)
+**Context:** The Claude.ai Supabase MCP server is configured with one Supabase account (project "alsamlah", ap-northeast-2). The user created a separate MenuLink Supabase account (id.menulink@gmail.com) with project "Menu Link Project" in Singapore.
+**Learning:** The MCP `mcp__claude_ai_Supabase__*` tools operate on whichever account the MCP server was wired to during Claude Code setup. They cannot reach a project on a different account, even if a personal access token for that account is available in the session. **For multi-account work, use the Management API via PowerShell + Invoke-RestMethod**, not the MCP.
+**Why:** MCP tools are stateless wrappers around stored credentials in the MCP server config; the access token in chat does not retroactively switch accounts.
+**How to apply:** Whenever the MCP `list_projects` shows a different project than the user is talking about, fall back to the Management API. Don't waste a tool call trying.
+**Source:** session:2026-05-18
+**Triggers:** Supabase MCP, multiple accounts, project ref mismatch, management API fallback
+
+### LRN-2026-05-18-supabase-start-saturates-docker (confidence: medium)
+**Context:** First-time `npx supabase start` on a clean Docker Desktop install
+**Learning:** Supabase pulls ~14 images in parallel (postgres, kong, gotrue, postgrest, storage, realtime, studio, edge-runtime, logflare, imgproxy, vector, mailpit, postgres-meta, supabase-vector). On a moderately fast network this saturated Docker Desktop on Windows so badly that even `docker version` started timing out (>60s). Killed the start, daemon stayed unresponsive — Docker Desktop needed a manual restart.
+**Why:** Parallel pull + parallel extract of multi-GB images stresses Docker Desktop's WSL2 layer.
+**How to apply:** Warn the user before first `supabase start` that pulls will be slow and Docker may need a restart. After the initial pull, subsequent starts use cached layers and are fast (~30s). Consider pre-pulling images serially next time: `docker pull supabase/postgres:<ver>; docker pull supabase/gotrue:<ver>; ...` to avoid the saturation.
+**Source:** session:2026-05-18 (encountered during plan execution)
+**Triggers:** supabase start, Docker Desktop, frozen daemon, first-run pull, Windows WSL2
+
+### LRN-2026-05-18-customer-segmentation (confidence: high)
+**Context:** Initial assumption that KO-KO was the brother's restaurant and our test bed for RzRz  
+**Learning:** **WRONG.** KO-KO is a paying customer who approached us directly, wants 2 instances of MenuLink, and may not use RzRz at all. The RzRz integration testbed is a DIFFERENT restaurant where brother is operations manager. **Always verify which customer you're working with before applying RzRz-specific knowledge.**  
+**Source:** user correction on session:2026-05-18  
+**Triggers:** KO-KO, brother's restaurant, customer taxonomy, RzRz testbed
+
+---
+
+## ❌ What Has Failed (Avoid These)
+
+### LRN-2026-05-18-direct-db-only-if-remote (confidence: medium)
+**Context:** Initially assumed direct SQL connection from Supabase Edge Functions would always work for RzRz  
+**Learning:** Direct DB integration only works if the customer's SQL Server is publicly accessible (the central hosted server at 192.250.231.22). For local-only deployments (DB on cashier's PC behind a router), direct connection is impossible — **Bridge App is required.** The RzRz restaurant testbed is likely a local-only deployment.  
+**Source:** session:2026-05-18  
+**Triggers:** SQL connection, firewall, local database, port forwarding, NAT
+
+### LRN-2026-05-18-no-overengineering (confidence: high)
+**Context:** Tempted to evaluate Ruflo agent orchestration framework for the project  
+**Learning:** Frameworks like Ruflo (314 MCP tools, 26 CLI commands, alpha-stage) are designed for complex enterprise software engineering with parallel agent swarms. For a solo developer building a restaurant SaaS, this is severe over-engineering. **Decision: skip. Stick with managed services + clear handoff docs + this skill.**  
+**Source:** session:2026-05-18  
+**Triggers:** Ruflo, agent orchestration, multi-agent, swarm, framework adoption
+
+### LRN-2026-05-18-assumption-customer-conflation (confidence: high)
+**Context:** Mistake in earlier session: I assumed KO-KO was the brother's restaurant with RzRz access  
+**Learning:** When a user mentions a customer name and a technical detail (like POS access), **never assume they refer to the same restaurant.** Ask: "Is the POS at the same restaurant as the one ordering MenuLink, or a different one?" The cost of asking is 10 seconds; the cost of building on wrong assumption can be days.  
+**Source:** user correction on session:2026-05-18  
+**Triggers:** customer info, restaurant details, assumption check
+
+---
+
+## 🏷️ Customer-Specific Quirks
+
+### KO-KO Chicky Licky (first paying customer)
+- POS: TBD (not RzRz — confirmed)
+- Wants **2 instances** of MenuLink — meaning unclear (2 branches? 2 brands? 2 languages?)
+- Has v6 PWA already built and ready
+- Already has full menu, branding, design assets
+- **Blocker:** clarify "نسختين" meaning before doing anything else
+- See `customers/koko-chicky-licky.md` for full details
+
+### RzRz Restaurant (integration testbed)
+- POS: **RzRz (Punnelifosys ResApp)** — full version
+- User's brother is operations manager → privileged access
+- Likely Tier 1b (Bridge App) — local DB assumption
+- This is where we build & validate Bridge App before selling to other RzRz customers
+- Real production load — can't break for long
+- **No pricing pressure** — free or discounted in exchange for R&D access
+- See `customers/rzrz-restaurant.md` for full details
+
+---
+
+## ❓ Open Questions
+
+### ~~OPN-2026-05-18-local-dev-strategy~~ ✅ RESOLVED
+**Resolution:** Use Supabase CLI (`npx supabase start`), not raw Docker Postgres. See [[lrn-2026-05-18-supabase-cli-same-software]].
+
+### OPN-2026-05-18-koko-instances (priority: critical, blocker)
+**Question:** What does KO-KO mean by "نسختين من MenuLink"? Two branches? Two brands? Arabic+English versions? Test+Production?  
+**How to investigate:** WhatsApp/call the owner directly. This is a blocker — we can't onboard them until we know.  
+**Quick script:** "أهلاً، قبل ما نبدأ — قصدك في النسختين الفرعَين الاثنين، أو ايش بالضبط؟"
+
+### OPN-2026-05-18-koko-pos (priority: high)
+**Question:** Does KO-KO use any POS system? If yes, which?  
+**How to investigate:** Ask owner during the same call as above. Affects which integration tier to plan.
+
+### OPN-2026-05-18-rzrz-db-topology (priority: high)
+**Question:** At the RzRz restaurant (brother's), is the SQL database hosted on the central server (192.250.231.22) or local-only on the cashier PC?  
+**How to investigate:** Brother can answer. Look at `.exe.config` connection string on the cashier PC. Determines Tier 1a (direct DB) vs Tier 1b (Bridge App).
+
+### OPN-2026-05-18-counterid-for-online (priority: high)
+**Question:** What value of `CounterID` should online orders use in `InsertInvoice`? The procedure requires it but POS counters are physical terminals. Need to either:
+(a) Create a virtual "online counter" in RzRz settings  
+(b) Reuse counter #1 with a different flag  
+(c) Check if `CounterID=0` is acceptable  
+**How to investigate:** Try each option on RzRz restaurant DB (with brother's permission), watch what shows up in POS UI.
+
+### OPN-2026-05-18-createdby-for-online (priority: high)
+**Question:** Same as above but for `CreatedBy`. This is a user ID. We need either a special "MenuLink Bot" user or reuse owner's user ID. Affects audit trail.
+
+### OPN-2026-05-18-menu-sync-direction (priority: medium)
+**Question:** For RzRz customers, should MenuLink read menu FROM RzRz (single source of truth) or maintain its own menu and rely on item ID mapping? Foodics integration plan was: read from Foodics. RzRz allows the same since we control both ends. **Tentative decision:** Read from RzRz `Items` table on initial onboarding, then sync nightly.
+
+### OPN-2026-05-18-bridge-app-tech (priority: medium)
+**Question:** When we build the Bridge App for the RzRz testbed, should it be a Windows Service or a Tray App? Service = invisible, robust. Tray App = visible, owner can see status. **Likely answer:** Tray App (better UX for non-technical staff, brother can see if it's running).
+
+### OPN-2026-05-18-bridge-app-as-product (priority: low, but strategic)
+**Question:** After the Bridge App works for the testbed, can we sell it to other RzRz customers via Punnelifosys? Would they partner with us?  
+**How to investigate:** After 30 days of clean operation at the testbed, reach out to Punnelifosys with a partnership pitch.
+
+---
+
+## 📜 Reflection Log (Chronological)
+
+### 2026-05-18 · Foundation Plan Executed (Obsidian + Supabase + Analytics Schema)
+- **What worked:**
+  - The plan workflow (explore → ask → plan → execute) caught real ambiguity early (apps/web vs backend, wikilink conversion scope).
+  - Supabase CLI strategy was the right call — schema written once, no migration step planned for cloud cutover.
+  - Graphify on this small corpus produced 19 communities that map cleanly to the project's actual mental model (Frontend stack, Backend stack, RzRz integration, KO-KO customer, Pricing landscape, etc.). The community names match how a human would explain the project.
+  - Determinist seed (`setseed(0.42)`) means `db reset` will produce the same data every time — useful for reproducible debugging.
+- **What hit friction:**
+  - `npx supabase start` on first run pulled ~14 Docker images in parallel and froze Docker Desktop on Windows. Daemon became unresponsive (>60s timeouts on `docker version`). The user will need to restart Docker Desktop and re-run `supabase start`; pulls will resume from cached layers.
+  - PowerShell's cp1252 default broke the graphify benchmark step (Unicode box-drawing chars). Set `PYTHONIOENCODING=utf-8` to fix.
+  - PowerShell escaping inside `python -c "..."` strings forced rewriting one-liners to avoid nested quotes.
+- **What surprised me:**
+  - The semantic extraction subagent identified `Open: Two Instances Interpretation` as a real node in the graph and linked it to the KO-KO customer cluster — meaning the **unresolved business question is now visually surfaced as a hub** in Obsidian. The graph effectively makes blockers impossible to forget.
+  - Graphify clustered `menulink-integration Skill` together with `RzRz Restaurant (Testbed)` and `Brother as Operations Manager` — correctly identifying the skill as a knowledge-hub for the testbed customer specifically, not for KO-KO.
+  - The Docker freeze turned out to be a *better* situation than success: it forced the cloud-pivot via Management API, which means we deployed to Supabase Cloud directly on the first day with no migration step needed later. The schema is live in Singapore right now.
+- **Captured learnings:**
+  - [[lrn-2026-05-18-supabase-cli-same-software]] (success pattern)
+  - [[lrn-2026-05-18-apps-web-monorepo-layout]] (user-correction-driven)
+  - [[lrn-2026-05-18-rls-tenant-via-jwt-claim]] (design pattern)
+  - [[lrn-2026-05-18-rfm-bucket-thresholds]] (initial heuristic, needs tuning later)
+  - [[lrn-2026-05-18-snapshot-order-items]] (design pattern)
+  - [[lrn-2026-05-18-graphify-icons-noise]] (tool quirk)
+  - [[lrn-2026-05-18-supabase-start-saturates-docker]] (friction documented)
+- **Resolved:** [[opn-local-dev-strategy]] → Supabase CLI.
+
+### 2026-05-18 · Customer Taxonomy Correction
+- User clarified: KO-KO is a **paying customer** (first one!), not the brother's restaurant
+- Brother is operations manager at a **different** restaurant which is the RzRz testbed
+- Created separate customer files: `koko-chicky-licky.md` (paying) and `rzrz-restaurant.md` (testbed)
+- Major lesson: **never conflate two pieces of customer info just because they were mentioned in the same context**
+- Updated learnings with new customer segmentation
+- KO-KO has a HUGE open question: what does "نسختين" mean? Blocks onboarding.
+
+### 2026-05-18 · RzRz Discovery Session
+- Connected to user's PC, explored `D:\Samer\RZRZ-CODE`
+- Confirmed: .NET Framework 4.7.2, EF + SQL Server, Windows Forms, ZATCA-ready
+- Found `InsertInvoice` stored procedure → integration path is clear
+- Discovered DB credentials in plain text in `.exe.config` ⚠️ flagged as future security task
+- Initially confused: which restaurant has this? Now clarified → it's the RzRz testbed (brother's), not KO-KO
+
+### 2026-05-18 · Skill Created
+- Built `menulink-integration` skill with:
+  - SKILL.md, learnings.md, 5 references, customer template
+  - Pre-seeded with everything learned so far
+- This is the first iteration — will improve as customers reveal more quirks
+
+---
+
+## 📝 How To Update This File
+
+When you have a new learning to capture, follow these rules:
+
+1. **Pick the right section** (worked / failed / customer / open question / log)
+2. **Generate an ID:** `LRN-YYYY-MM-DD-<3-word-slug>` (or `OPN-` for open questions)
+3. **Assign confidence:** 
+   - `high` = directly observed multiple times, or a user correction
+   - `medium` = inferred from one observation, plausible
+   - `low` = hypothesis worth testing
+4. **Keep it short:** 2-4 lines max. Long explanations go in references/.
+5. **Add triggers:** keywords that should make this learning surface later.
+6. **Always add a log entry** under "Reflection Log" with the date.
+
+When the file gets too long (~50 entries), consolidate: merge similar entries, archive resolved open questions to a `learnings-archive.md`, keep only active patterns here.

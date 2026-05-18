@@ -1,0 +1,1522 @@
+{
+  "nodes": [
+    {
+      "id": "g0",
+      "type": "group",
+      "label": "Frontend and PWA Stack",
+      "x": 0,
+      "y": 0,
+      "width": 880,
+      "height": 620,
+      "color": "1"
+    },
+    {
+      "id": "n_deploy_https_requirement",
+      "type": "file",
+      "file": "graphify/obsidian/HTTPS Requirement for PWA.md",
+      "x": 20,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_claude_leaflet",
+      "type": "file",
+      "file": "graphify/obsidian/Leaflet + OpenStreetMap.md",
+      "x": 220,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_deploy_manus_space",
+      "type": "file",
+      "file": "graphify/obsidian/Manus.space Hosting.md",
+      "x": 420,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_deploy_netlify",
+      "type": "file",
+      "file": "graphify/obsidian/Netlify Hosting.md",
+      "x": 20,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_deploy_install_prompt",
+      "type": "file",
+      "file": "graphify/obsidian/PWA Install Prompt.md",
+      "x": 220,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_claude_pwa_v6",
+      "type": "file",
+      "file": "graphify/obsidian/PWA v6.md",
+      "x": 420,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_handoff_phase_1_pwa",
+      "type": "file",
+      "file": "graphify/obsidian/Phase 1 PWA.md",
+      "x": 20,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_handoff_principle_stateless_frontend",
+      "type": "file",
+      "file": "graphify/obsidian/Principle Stateless Frontend.md",
+      "x": 220,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_claude_rule_managed_services",
+      "type": "file",
+      "file": "graphify/obsidian/Rule Use Managed Services.md",
+      "x": 420,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_deploy_service_worker",
+      "type": "file",
+      "file": "graphify/obsidian/Service Worker (Offline Support).md",
+      "x": 20,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_claude_tailwind",
+      "type": "file",
+      "file": "graphify/obsidian/Tailwind CSS.md",
+      "x": 220,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_claude_vercel",
+      "type": "file",
+      "file": "graphify/obsidian/Vercel.md",
+      "x": 420,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_deploy_manifest_json",
+      "type": "file",
+      "file": "graphify/obsidian/manifest.json.md",
+      "x": 20,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_claude_shadcn_ui",
+      "type": "file",
+      "file": "graphify/obsidian/shadcnui.md",
+      "x": 220,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g1",
+      "type": "group",
+      "label": "Backend and Auth Stack",
+      "x": 960,
+      "y": 0,
+      "width": 880,
+      "height": 620,
+      "color": "2"
+    },
+    {
+      "id": "n_roadmap_admin_dashboard",
+      "type": "file",
+      "file": "graphify/obsidian/Admin Dashboard (Restaurant CRUD).md",
+      "x": 980,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_roadmap_db_schema",
+      "type": "file",
+      "file": "graphify/obsidian/Database Schema (restaurants, menu, customers, orders).md",
+      "x": 1180,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_pricing_phase2_pro_tier",
+      "type": "file",
+      "file": "graphify/obsidian/MenuLink Pro Tier (1491499 SAR).md",
+      "x": 1380,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_claude_nextjs_14",
+      "type": "file",
+      "file": "graphify/obsidian/Next.js 14.md",
+      "x": 980,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_roadmap_order_history",
+      "type": "file",
+      "file": "graphify/obsidian/Order History + Reorder.md",
+      "x": 1180,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_handoff_phase_2_backend",
+      "type": "file",
+      "file": "graphify/obsidian/Phase 2 Backend (Next.js+Supabase).md",
+      "x": 1380,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_roadmap_plausible",
+      "type": "file",
+      "file": "graphify/obsidian/PlausibleUmami Analytics.md",
+      "x": 980,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_handoff_principle_no_custom_backend",
+      "type": "file",
+      "file": "graphify/obsidian/Principle No Custom Backend.md",
+      "x": 1180,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_roadmap_phased_build_rationale",
+      "type": "file",
+      "file": "graphify/obsidian/Rationale Don't Build Everything At Once.md",
+      "x": 1380,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_roadmap_rls",
+      "type": "file",
+      "file": "graphify/obsidian/Row Level Security (RLS).md",
+      "x": 980,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_claude_rule_3_customers",
+      "type": "file",
+      "file": "graphify/obsidian/Rule Don't Build Before 3 Customers Request.md",
+      "x": 1180,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_claude_supabase",
+      "type": "file",
+      "file": "graphify/obsidian/Supabase.md",
+      "x": 1380,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_claude_supabase_auth",
+      "type": "file",
+      "file": "graphify/obsidian/Supabase Auth (OTP via SMS).md",
+      "x": 980,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_claude_unifonic",
+      "type": "file",
+      "file": "graphify/obsidian/Unifonic SMS.md",
+      "x": 1180,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g2",
+      "type": "group",
+      "label": "POS Landscape and Pricing",
+      "x": 1920,
+      "y": 0,
+      "width": 880,
+      "height": 520,
+      "color": "3"
+    },
+    {
+      "id": "n_pricing_free_trial_14_days",
+      "type": "file",
+      "file": "graphify/obsidian/14-Day Free Trial.md",
+      "x": 1940,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_handoff_chatfood",
+      "type": "file",
+      "file": "graphify/obsidian/ChatFood Competitor.md",
+      "x": 2140,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_pricing_competitor_comparison",
+      "type": "file",
+      "file": "graphify/obsidian/Competitor Pricing Comparison.md",
+      "x": 2340,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_handoff_foodics",
+      "type": "file",
+      "file": "graphify/obsidian/Foodics POS.md",
+      "x": 1940,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_handoff_loyverse",
+      "type": "file",
+      "file": "graphify/obsidian/Loyverse POS.md",
+      "x": 2140,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_handoff_marn",
+      "type": "file",
+      "file": "graphify/obsidian/Marn POS.md",
+      "x": 2340,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_handoff_phase_4_pos",
+      "type": "file",
+      "file": "graphify/obsidian/Phase 4 POS Integration.md",
+      "x": 1940,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_claude_pricing_59_monthly",
+      "type": "file",
+      "file": "graphify/obsidian/Pricing 59 SAR Monthly.md",
+      "x": 2140,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_handoff_pricing_rationale",
+      "type": "file",
+      "file": "graphify/obsidian/Pricing Rationale (12x cheaper than Foodics).md",
+      "x": 2340,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_pricing_profit_margin",
+      "type": "file",
+      "file": "graphify/obsidian/Profit Margin (~90%).md",
+      "x": 1940,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_pricing_floor_rationale",
+      "type": "file",
+      "file": "graphify/obsidian/Rationale Price Floor 59 SAR (Avoid Cheap Perception).md",
+      "x": 2140,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_handoff_rewaa",
+      "type": "file",
+      "file": "graphify/obsidian/Rewaa POS.md",
+      "x": 2340,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g3",
+      "type": "group",
+      "label": "RzRz Integration",
+      "x": 2880,
+      "y": 0,
+      "width": 660,
+      "height": 420,
+      "color": "4"
+    },
+    {
+      "id": "n_rzrz_dotnet_stack",
+      "type": "file",
+      "file": "graphify/obsidian/.NET Framework 4.7.2 + EF + SQL Server.md",
+      "x": 2900,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_handoff_addon_pricing",
+      "type": "file",
+      "file": "graphify/obsidian/Add-On Pricing for RzRz Bridge (99 SAR  899 SAR).md",
+      "x": 3100,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_handoff_bridge_app",
+      "type": "file",
+      "file": "graphify/obsidian/Bridge App (.NET).md",
+      "x": 3300,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_handoff_insert_invoice",
+      "type": "file",
+      "file": "graphify/obsidian/InsertInvoice Stored Procedure.md",
+      "x": 2900,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_pricing_phase3_pos_bundle",
+      "type": "file",
+      "file": "graphify/obsidian/POS Bundle (2992999 SAR).md",
+      "x": 3100,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_handoff_rzrz_pos",
+      "type": "file",
+      "file": "graphify/obsidian/RzRz POS (Punnelifosys ResApp).md",
+      "x": 3300,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_rzrz_schema_invoice",
+      "type": "file",
+      "file": "graphify/obsidian/RzRz Schema (InvoiceInvoiceDetailsItems).md",
+      "x": 2900,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_rzrz_strategic_endgame",
+      "type": "file",
+      "file": "graphify/obsidian/Strategic Endgame Punnelifosys Partnership.md",
+      "x": 3100,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_rzrz_zatca_compliance",
+      "type": "file",
+      "file": "graphify/obsidian/ZATCA Compliance (Built-In to RzRz).md",
+      "x": 3300,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g4",
+      "type": "group",
+      "label": "Project Foundation",
+      "x": 3620,
+      "y": 0,
+      "width": 660,
+      "height": 420,
+      "color": "5"
+    },
+    {
+      "id": "n_claude_menulink_project",
+      "type": "file",
+      "file": "graphify/obsidian/MenuLink Project.md",
+      "x": 3640,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_claude_pricing_499_yearly",
+      "type": "file",
+      "file": "graphify/obsidian/Pricing 499 SAR Yearly.md",
+      "x": 3840,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_readme_overview",
+      "type": "file",
+      "file": "graphify/obsidian/README Project Overview.md",
+      "x": 4040,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_handoff_whatsapp_market_rationale",
+      "type": "file",
+      "file": "graphify/obsidian/Rationale WhatsApp Dominates Saudi Market.md",
+      "x": 3640,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_pricing_yearly_cashflow_rationale",
+      "type": "file",
+      "file": "graphify/obsidian/Rationale Yearly Plan = Upfront Cash Flow + Lock-In.md",
+      "x": 3840,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_claude_rule_arabic_rtl_mobile_first",
+      "type": "file",
+      "file": "graphify/obsidian/Rule Arabic-First, RTL-First, Mobile-First.md",
+      "x": 4040,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_handoff_saas_idea",
+      "type": "file",
+      "file": "graphify/obsidian/SaaS Idea Digital Menus + WhatsApp Orders.md",
+      "x": 3640,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_handoff_target_audience",
+      "type": "file",
+      "file": "graphify/obsidian/Target Audience Small-Medium Saudi Restaurants.md",
+      "x": 3840,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g5",
+      "type": "group",
+      "label": "KO-KO Customer",
+      "x": 0,
+      "y": 700,
+      "width": 660,
+      "height": 420,
+      "color": "6"
+    },
+    {
+      "id": "n_koko_burgerizzr_aesthetic",
+      "type": "file",
+      "file": "graphify/obsidian/Burgerizzr-Inspired Aesthetic.md",
+      "x": 20,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_koko_brand_red_cream",
+      "type": "file",
+      "file": "graphify/obsidian/KO-KO Brand (Red D32027  Cream FAF6EE).md",
+      "x": 220,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_claude_koko_chicky_licky",
+      "type": "file",
+      "file": "graphify/obsidian/KO-KO Chicky Licky.md",
+      "x": 420,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_koko_location_rawdah",
+      "type": "file",
+      "file": "graphify/obsidian/KO-KO Location Al-Rawdah Riyadh.md",
+      "x": 20,
+      "y": 860,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_koko_pos_tier_0",
+      "type": "file",
+      "file": "graphify/obsidian/KO-KO POS Tier 0 (WhatsApp Only).md",
+      "x": 220,
+      "y": 860,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_koko_first_paying_customer",
+      "type": "file",
+      "file": "graphify/obsidian/KO-KO First Paying Customer.md",
+      "x": 420,
+      "y": 860,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_koko_two_instances_question",
+      "type": "file",
+      "file": "graphify/obsidian/Open Two Instances Interpretation.md",
+      "x": 20,
+      "y": 940,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g6",
+      "type": "group",
+      "label": "RzRz Testbed Restaurant",
+      "x": 960,
+      "y": 700,
+      "width": 660,
+      "height": 400,
+      "color": "1"
+    },
+    {
+      "id": "n_rzrz_brother_ops_manager",
+      "type": "file",
+      "file": "graphify/obsidian/Brother as Operations Manager.md",
+      "x": 980,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_rzrz_tier_1b_bridge",
+      "type": "file",
+      "file": "graphify/obsidian/Integration Tier 1b (Bridge App).md",
+      "x": 1180,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_rzrz_testbed_rationale",
+      "type": "file",
+      "file": "graphify/obsidian/Rationale Risk-Tolerant Testbed Before Paying Customers.md",
+      "x": 1380,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_claude_rzrz_restaurant",
+      "type": "file",
+      "file": "graphify/obsidian/RzRz Restaurant (Testbed).md",
+      "x": 980,
+      "y": 860,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_rzrz_strategic_partner",
+      "type": "file",
+      "file": "graphify/obsidian/RzRz Strategic R&D Partner (Not Paying).md",
+      "x": 1180,
+      "y": 860,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_claude_menulink_integration_skill",
+      "type": "file",
+      "file": "graphify/obsidian/menulink-integration Skill.md",
+      "x": 1380,
+      "y": 860,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g7",
+      "type": "group",
+      "label": "Marketing and Push",
+      "x": 1920,
+      "y": 700,
+      "width": 600,
+      "height": 400,
+      "color": "2"
+    },
+    {
+      "id": "n_roadmap_loyalty_points",
+      "type": "file",
+      "file": "graphify/obsidian/Loyalty Points.md",
+      "x": 1940,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_claude_onesignal",
+      "type": "file",
+      "file": "graphify/obsidian/OneSignal Push.md",
+      "x": 2140,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_handoff_phase_3_push",
+      "type": "file",
+      "file": "graphify/obsidian/Phase 3 Push Notifications & Marketing.md",
+      "x": 2340,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_roadmap_resend",
+      "type": "file",
+      "file": "graphify/obsidian/Resend (Marketing Email).md",
+      "x": 1940,
+      "y": 860,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g8",
+      "type": "group",
+      "label": "Payment Gateways",
+      "x": 2880,
+      "y": 700,
+      "width": 600,
+      "height": 400,
+      "color": "3"
+    },
+    {
+      "id": "n_handoff_hyperpay",
+      "type": "file",
+      "file": "graphify/obsidian/HyperPay.md",
+      "x": 2900,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_handoff_moyasar",
+      "type": "file",
+      "file": "graphify/obsidian/Moyasar.md",
+      "x": 3100,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_handoff_phase_6_payments",
+      "type": "file",
+      "file": "graphify/obsidian/Phase 6 Payment Gateway.md",
+      "x": 3300,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g9",
+      "type": "group",
+      "label": "Web App Layout",
+      "x": 3620,
+      "y": 700,
+      "width": 600,
+      "height": 400,
+      "color": "4"
+    },
+    {
+      "id": "n_layout_rootlayout",
+      "type": "file",
+      "file": "graphify/obsidian/RootLayout().md",
+      "x": 3640,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_d_menulink_apps_web_app_layout_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/layout.tsx.md",
+      "x": 3840,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g10",
+      "type": "group",
+      "label": "Web App Home Page",
+      "x": 0,
+      "y": 1200,
+      "width": 600,
+      "height": 400,
+      "color": "5"
+    },
+    {
+      "id": "n_page_homepage",
+      "type": "file",
+      "file": "graphify/obsidian/HomePage().md",
+      "x": 20,
+      "y": 1280,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_d_menulink_apps_web_app_page_tsx",
+      "type": "file",
+      "file": "graphify/obsidian/page.tsx.md",
+      "x": 220,
+      "y": 1280,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g11",
+      "type": "group",
+      "label": "Multi-Tenant Routing",
+      "x": 960,
+      "y": 1200,
+      "width": 600,
+      "height": 400,
+      "color": "6"
+    },
+    {
+      "id": "n_handoff_phase_5_multi_tenant",
+      "type": "file",
+      "file": "graphify/obsidian/Phase 5 Multi-Tenant.md",
+      "x": 980,
+      "y": 1280,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_roadmap_subdomain_routing",
+      "type": "file",
+      "file": "graphify/obsidian/Subdomain Routing.md",
+      "x": 1180,
+      "y": 1280,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g12",
+      "type": "group",
+      "label": "Next.js Config",
+      "x": 1920,
+      "y": 1200,
+      "width": 600,
+      "height": 400,
+      "color": "1"
+    },
+    {
+      "id": "n_d_menulink_apps_web_next_config_js",
+      "type": "file",
+      "file": "graphify/obsidian/next.config.js.md",
+      "x": 1940,
+      "y": 1280,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g13",
+      "type": "group",
+      "label": "PostCSS Config",
+      "x": 2880,
+      "y": 1200,
+      "width": 600,
+      "height": 400,
+      "color": "2"
+    },
+    {
+      "id": "n_d_menulink_apps_web_postcss_config_js",
+      "type": "file",
+      "file": "graphify/obsidian/postcss.config.js.md",
+      "x": 2900,
+      "y": 1280,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g14",
+      "type": "group",
+      "label": "Tailwind Config",
+      "x": 3620,
+      "y": 1200,
+      "width": 600,
+      "height": 400,
+      "color": "3"
+    },
+    {
+      "id": "n_d_menulink_apps_web_tailwind_config_ts",
+      "type": "file",
+      "file": "graphify/obsidian/tailwind.config.ts.md",
+      "x": 3640,
+      "y": 1280,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g15",
+      "type": "group",
+      "label": "Service Worker",
+      "x": 0,
+      "y": 1680,
+      "width": 600,
+      "height": 400,
+      "color": "4"
+    },
+    {
+      "id": "n_d_menulink_current_state_pwa_starter_service_worker_js",
+      "type": "file",
+      "file": "graphify/obsidian/service-worker.js.md",
+      "x": 20,
+      "y": 1760,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g16",
+      "type": "group",
+      "label": "Tenant Config Example",
+      "x": 960,
+      "y": 1680,
+      "width": 600,
+      "height": 400,
+      "color": "5"
+    },
+    {
+      "id": "n_d_menulink_design_docs_tenant_config_example_js",
+      "type": "file",
+      "file": "graphify/obsidian/tenant-config-example.js.md",
+      "x": 980,
+      "y": 1760,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g17",
+      "type": "group",
+      "label": "Principle: Single Source of Data",
+      "x": 1920,
+      "y": 1680,
+      "width": 600,
+      "height": 400,
+      "color": "6"
+    },
+    {
+      "id": "n_handoff_principle_data_single_source",
+      "type": "file",
+      "file": "graphify/obsidian/Principle Single Source of Data.md",
+      "x": 1940,
+      "y": 1760,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g18",
+      "type": "group",
+      "label": "Principle: Fail-Safe Features",
+      "x": 2880,
+      "y": 1680,
+      "width": 600,
+      "height": 400,
+      "color": "1"
+    },
+    {
+      "id": "n_handoff_principle_fail_safe",
+      "type": "file",
+      "file": "graphify/obsidian/Principle Fail-Safe Features.md",
+      "x": 2900,
+      "y": 1760,
+      "width": 180,
+      "height": 60
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_d_menulink_apps_web_app_layout_tsx_layout_rootlayout",
+      "fromNode": "n_d_menulink_apps_web_app_layout_tsx",
+      "toNode": "n_layout_rootlayout",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_d_menulink_apps_web_app_page_tsx_page_homepage",
+      "fromNode": "n_d_menulink_apps_web_app_page_tsx",
+      "toNode": "n_page_homepage",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_menulink_project_claude_pwa_v6",
+      "fromNode": "n_claude_menulink_project",
+      "toNode": "n_claude_pwa_v6",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_menulink_project_claude_pricing_59_monthly",
+      "fromNode": "n_claude_menulink_project",
+      "toNode": "n_claude_pricing_59_monthly",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_menulink_project_claude_pricing_499_yearly",
+      "fromNode": "n_claude_menulink_project",
+      "toNode": "n_claude_pricing_499_yearly",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_menulink_project_claude_koko_chicky_licky",
+      "fromNode": "n_claude_menulink_project",
+      "toNode": "n_claude_koko_chicky_licky",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_menulink_project_claude_rzrz_restaurant",
+      "fromNode": "n_claude_menulink_project",
+      "toNode": "n_claude_rzrz_restaurant",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_menulink_project_readme_overview",
+      "fromNode": "n_claude_menulink_project",
+      "toNode": "n_readme_overview",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_pricing_59_monthly_handoff_pricing_rationale",
+      "fromNode": "n_claude_pricing_59_monthly",
+      "toNode": "n_handoff_pricing_rationale",
+      "label": "rationale_for [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_pricing_59_monthly_pricing_profit_margin",
+      "fromNode": "n_claude_pricing_59_monthly",
+      "toNode": "n_pricing_profit_margin",
+      "label": "rationale_for [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_pricing_59_monthly_pricing_floor_rationale",
+      "fromNode": "n_claude_pricing_59_monthly",
+      "toNode": "n_pricing_floor_rationale",
+      "label": "rationale_for [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_pricing_59_monthly_pricing_free_trial_14_days",
+      "fromNode": "n_claude_pricing_59_monthly",
+      "toNode": "n_pricing_free_trial_14_days",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_pricing_499_yearly_pricing_yearly_cashflow_rationale",
+      "fromNode": "n_claude_pricing_499_yearly",
+      "toNode": "n_pricing_yearly_cashflow_rationale",
+      "label": "rationale_for [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_pwa_v6_claude_nextjs_14",
+      "fromNode": "n_claude_pwa_v6",
+      "toNode": "n_claude_nextjs_14",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_pwa_v6_claude_tailwind",
+      "fromNode": "n_claude_pwa_v6",
+      "toNode": "n_claude_tailwind",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_pwa_v6_claude_shadcn_ui",
+      "fromNode": "n_claude_pwa_v6",
+      "toNode": "n_claude_shadcn_ui",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_pwa_v6_claude_supabase",
+      "fromNode": "n_claude_pwa_v6",
+      "toNode": "n_claude_supabase",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_pwa_v6_claude_vercel",
+      "fromNode": "n_claude_pwa_v6",
+      "toNode": "n_claude_vercel",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_pwa_v6_claude_leaflet",
+      "fromNode": "n_claude_pwa_v6",
+      "toNode": "n_claude_leaflet",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_pwa_v6_claude_onesignal",
+      "fromNode": "n_claude_pwa_v6",
+      "toNode": "n_claude_onesignal",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_pwa_v6_handoff_phase_1_pwa",
+      "fromNode": "n_claude_pwa_v6",
+      "toNode": "n_handoff_phase_1_pwa",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_pwa_v6_deploy_service_worker",
+      "fromNode": "n_claude_pwa_v6",
+      "toNode": "n_deploy_service_worker",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_pwa_v6_deploy_manifest_json",
+      "fromNode": "n_claude_pwa_v6",
+      "toNode": "n_deploy_manifest_json",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_pwa_v6_deploy_install_prompt",
+      "fromNode": "n_claude_pwa_v6",
+      "toNode": "n_deploy_install_prompt",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_pwa_v6_deploy_manus_space",
+      "fromNode": "n_claude_pwa_v6",
+      "toNode": "n_deploy_manus_space",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_pwa_v6_deploy_netlify",
+      "fromNode": "n_claude_pwa_v6",
+      "toNode": "n_deploy_netlify",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_koko_chicky_licky_koko_first_paying_customer",
+      "fromNode": "n_claude_koko_chicky_licky",
+      "toNode": "n_koko_first_paying_customer",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_koko_chicky_licky_koko_two_instances_question",
+      "fromNode": "n_claude_koko_chicky_licky",
+      "toNode": "n_koko_two_instances_question",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_koko_chicky_licky_koko_location_rawdah",
+      "fromNode": "n_claude_koko_chicky_licky",
+      "toNode": "n_koko_location_rawdah",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_koko_chicky_licky_koko_brand_red_cream",
+      "fromNode": "n_claude_koko_chicky_licky",
+      "toNode": "n_koko_brand_red_cream",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_koko_chicky_licky_koko_pos_tier_0",
+      "fromNode": "n_claude_koko_chicky_licky",
+      "toNode": "n_koko_pos_tier_0",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_rzrz_restaurant_claude_menulink_integration_skill",
+      "fromNode": "n_claude_rzrz_restaurant",
+      "toNode": "n_claude_menulink_integration_skill",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_rzrz_restaurant_rzrz_strategic_partner",
+      "fromNode": "n_claude_rzrz_restaurant",
+      "toNode": "n_rzrz_strategic_partner",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_rzrz_restaurant_rzrz_brother_ops_manager",
+      "fromNode": "n_claude_rzrz_restaurant",
+      "toNode": "n_rzrz_brother_ops_manager",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_rzrz_restaurant_rzrz_tier_1b_bridge",
+      "fromNode": "n_claude_rzrz_restaurant",
+      "toNode": "n_rzrz_tier_1b_bridge",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_rzrz_restaurant_rzrz_testbed_rationale",
+      "fromNode": "n_claude_rzrz_restaurant",
+      "toNode": "n_rzrz_testbed_rationale",
+      "label": "rationale_for [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_nextjs_14_handoff_phase_2_backend",
+      "fromNode": "n_claude_nextjs_14",
+      "toNode": "n_handoff_phase_2_backend",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_supabase_claude_supabase_auth",
+      "fromNode": "n_claude_supabase",
+      "toNode": "n_claude_supabase_auth",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_supabase_claude_rule_managed_services",
+      "fromNode": "n_claude_supabase",
+      "toNode": "n_claude_rule_managed_services",
+      "label": "rationale_for [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_supabase_handoff_phase_2_backend",
+      "fromNode": "n_claude_supabase",
+      "toNode": "n_handoff_phase_2_backend",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_supabase_handoff_principle_no_custom_backend",
+      "fromNode": "n_claude_supabase",
+      "toNode": "n_handoff_principle_no_custom_backend",
+      "label": "rationale_for [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_supabase_roadmap_rls",
+      "fromNode": "n_claude_supabase",
+      "toNode": "n_roadmap_rls",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_vercel_claude_rule_managed_services",
+      "fromNode": "n_claude_vercel",
+      "toNode": "n_claude_rule_managed_services",
+      "label": "rationale_for [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_vercel_handoff_principle_stateless_frontend",
+      "fromNode": "n_claude_vercel",
+      "toNode": "n_handoff_principle_stateless_frontend",
+      "label": "rationale_for [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_supabase_auth_claude_unifonic",
+      "fromNode": "n_claude_supabase_auth",
+      "toNode": "n_claude_unifonic",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_onesignal_handoff_phase_3_push",
+      "fromNode": "n_claude_onesignal",
+      "toNode": "n_handoff_phase_3_push",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_rule_3_customers_handoff_phase_2_backend",
+      "fromNode": "n_claude_rule_3_customers",
+      "toNode": "n_handoff_phase_2_backend",
+      "label": "rationale_for [EXTRACTED]"
+    },
+    {
+      "id": "e_handoff_saas_idea_handoff_target_audience",
+      "fromNode": "n_handoff_saas_idea",
+      "toNode": "n_handoff_target_audience",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_handoff_saas_idea_handoff_whatsapp_market_rationale",
+      "fromNode": "n_handoff_saas_idea",
+      "toNode": "n_handoff_whatsapp_market_rationale",
+      "label": "rationale_for [EXTRACTED]"
+    },
+    {
+      "id": "e_handoff_saas_idea_readme_overview",
+      "fromNode": "n_handoff_saas_idea",
+      "toNode": "n_readme_overview",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_handoff_pricing_rationale_handoff_foodics",
+      "fromNode": "n_handoff_pricing_rationale",
+      "toNode": "n_handoff_foodics",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_handoff_pricing_rationale_handoff_chatfood",
+      "fromNode": "n_handoff_pricing_rationale",
+      "toNode": "n_handoff_chatfood",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_handoff_foodics_handoff_phase_4_pos",
+      "fromNode": "n_handoff_foodics",
+      "toNode": "n_handoff_phase_4_pos",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_handoff_foodics_pricing_competitor_comparison",
+      "fromNode": "n_handoff_foodics",
+      "toNode": "n_pricing_competitor_comparison",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_handoff_chatfood_pricing_competitor_comparison",
+      "fromNode": "n_handoff_chatfood",
+      "toNode": "n_pricing_competitor_comparison",
+      "label": "cites [EXTRACTED]"
+    },
+    {
+      "id": "e_handoff_phase_2_backend_roadmap_db_schema",
+      "fromNode": "n_handoff_phase_2_backend",
+      "toNode": "n_roadmap_db_schema",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_handoff_phase_2_backend_roadmap_order_history",
+      "fromNode": "n_handoff_phase_2_backend",
+      "toNode": "n_roadmap_order_history",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_handoff_phase_2_backend_roadmap_admin_dashboard",
+      "fromNode": "n_handoff_phase_2_backend",
+      "toNode": "n_roadmap_admin_dashboard",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_handoff_phase_3_push_roadmap_loyalty_points",
+      "fromNode": "n_handoff_phase_3_push",
+      "toNode": "n_roadmap_loyalty_points",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_handoff_phase_4_pos_handoff_rzrz_pos",
+      "fromNode": "n_handoff_phase_4_pos",
+      "toNode": "n_handoff_rzrz_pos",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_handoff_phase_5_multi_tenant_roadmap_subdomain_routing",
+      "fromNode": "n_handoff_phase_5_multi_tenant",
+      "toNode": "n_roadmap_subdomain_routing",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_handoff_phase_6_payments_handoff_hyperpay",
+      "fromNode": "n_handoff_phase_6_payments",
+      "toNode": "n_handoff_hyperpay",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_handoff_phase_6_payments_handoff_moyasar",
+      "fromNode": "n_handoff_phase_6_payments",
+      "toNode": "n_handoff_moyasar",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_handoff_rzrz_pos_handoff_bridge_app",
+      "fromNode": "n_handoff_rzrz_pos",
+      "toNode": "n_handoff_bridge_app",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_handoff_rzrz_pos_rzrz_dotnet_stack",
+      "fromNode": "n_handoff_rzrz_pos",
+      "toNode": "n_rzrz_dotnet_stack",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_handoff_rzrz_pos_rzrz_zatca_compliance",
+      "fromNode": "n_handoff_rzrz_pos",
+      "toNode": "n_rzrz_zatca_compliance",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_handoff_rzrz_pos_rzrz_schema_invoice",
+      "fromNode": "n_handoff_rzrz_pos",
+      "toNode": "n_rzrz_schema_invoice",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_handoff_bridge_app_handoff_insert_invoice",
+      "fromNode": "n_handoff_bridge_app",
+      "toNode": "n_handoff_insert_invoice",
+      "label": "implements [EXTRACTED]"
+    },
+    {
+      "id": "e_handoff_bridge_app_handoff_addon_pricing",
+      "fromNode": "n_handoff_bridge_app",
+      "toNode": "n_handoff_addon_pricing",
+      "label": "rationale_for [EXTRACTED]"
+    },
+    {
+      "id": "e_handoff_insert_invoice_rzrz_schema_invoice",
+      "fromNode": "n_handoff_insert_invoice",
+      "toNode": "n_rzrz_schema_invoice",
+      "label": "shares_data_with [EXTRACTED]"
+    },
+    {
+      "id": "e_handoff_addon_pricing_rzrz_strategic_endgame",
+      "fromNode": "n_handoff_addon_pricing",
+      "toNode": "n_rzrz_strategic_endgame",
+      "label": "rationale_for [EXTRACTED]"
+    },
+    {
+      "id": "e_deploy_service_worker_deploy_https_requirement",
+      "fromNode": "n_deploy_service_worker",
+      "toNode": "n_deploy_https_requirement",
+      "label": "rationale_for [EXTRACTED]"
+    },
+    {
+      "id": "e_roadmap_db_schema_roadmap_rls",
+      "fromNode": "n_roadmap_db_schema",
+      "toNode": "n_roadmap_rls",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_claude_rule_3_customers_roadmap_phased_build_rationale",
+      "fromNode": "n_claude_rule_3_customers",
+      "toNode": "n_roadmap_phased_build_rationale",
+      "label": "semantically_similar_to [INFERRED]"
+    },
+    {
+      "id": "e_handoff_hyperpay_handoff_moyasar",
+      "fromNode": "n_handoff_hyperpay",
+      "toNode": "n_handoff_moyasar",
+      "label": "semantically_similar_to [INFERRED]"
+    },
+    {
+      "id": "e_handoff_bridge_app_rzrz_tier_1b_bridge",
+      "fromNode": "n_handoff_bridge_app",
+      "toNode": "n_rzrz_tier_1b_bridge",
+      "label": "semantically_similar_to [INFERRED]"
+    },
+    {
+      "id": "e_claude_rule_arabic_rtl_mobile_first_handoff_target_audience",
+      "fromNode": "n_claude_rule_arabic_rtl_mobile_first",
+      "toNode": "n_handoff_target_audience",
+      "label": "rationale_for [INFERRED]"
+    },
+    {
+      "id": "e_koko_brand_red_cream_koko_burgerizzr_aesthetic",
+      "fromNode": "n_koko_brand_red_cream",
+      "toNode": "n_koko_burgerizzr_aesthetic",
+      "label": "semantically_similar_to [INFERRED]"
+    },
+    {
+      "id": "e_deploy_manus_space_deploy_netlify",
+      "fromNode": "n_deploy_manus_space",
+      "toNode": "n_deploy_netlify",
+      "label": "semantically_similar_to [INFERRED]"
+    },
+    {
+      "id": "e_handoff_foodics_handoff_marn",
+      "fromNode": "n_handoff_foodics",
+      "toNode": "n_handoff_marn",
+      "label": "semantically_similar_to [INFERRED]"
+    },
+    {
+      "id": "e_handoff_foodics_handoff_loyverse",
+      "fromNode": "n_handoff_foodics",
+      "toNode": "n_handoff_loyverse",
+      "label": "semantically_similar_to [INFERRED]"
+    },
+    {
+      "id": "e_handoff_foodics_handoff_rewaa",
+      "fromNode": "n_handoff_foodics",
+      "toNode": "n_handoff_rewaa",
+      "label": "semantically_similar_to [INFERRED]"
+    },
+    {
+      "id": "e_handoff_phase_2_backend_pricing_phase2_pro_tier",
+      "fromNode": "n_handoff_phase_2_backend",
+      "toNode": "n_pricing_phase2_pro_tier",
+      "label": "conceptually_related_to [INFERRED]"
+    },
+    {
+      "id": "e_handoff_phase_3_push_roadmap_resend",
+      "fromNode": "n_handoff_phase_3_push",
+      "toNode": "n_roadmap_resend",
+      "label": "implements [INFERRED]"
+    },
+    {
+      "id": "e_handoff_rzrz_pos_pricing_phase3_pos_bundle",
+      "fromNode": "n_handoff_rzrz_pos",
+      "toNode": "n_pricing_phase3_pos_bundle",
+      "label": "conceptually_related_to [INFERRED]"
+    },
+    {
+      "id": "e_roadmap_admin_dashboard_roadmap_plausible",
+      "fromNode": "n_roadmap_admin_dashboard",
+      "toNode": "n_roadmap_plausible",
+      "label": "conceptually_related_to [INFERRED]"
+    }
+  ]
+}

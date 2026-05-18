@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POS Integration · تكامل MenuLink مع أنظمة الكاشير</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Tajawal:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:        #FAF6EE;
+  --paper:     #FFFFFF;
+  --ink:       #1A1108;
+  --ink-soft:  #4A3B2E;
+  --ink-mute:  #8B7B6B;
+  --line:      #E8DDC9;
+  --brand:     #D32027;
+  --brand-dk:  #A0181D;
+  --brand-tint:#FFF0F1;
+  --gold:      #FFC619;
+  --gold-dk:   #B88A00;
+  --ok:        #128C7E;
+  --ok-tint:   #DDF0EA;
+  --azure:     #2E6BC7;
+  --azure-tint:#E1ECF9;
+  --plum:      #6B3FA0;
+  --plum-tint: #EDE5F7;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: 'Cairo', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.7;
+  font-size: 16px;
+  background-image:
+    radial-gradient(ellipse 800px 600px at 20% -10%, rgba(255, 198, 25, 0.08), transparent 60%),
+    radial-gradient(ellipse 600px 400px at 100% 30%, rgba(211, 32, 39, 0.05), transparent 70%);
+  background-attachment: fixed;
+}
+.wrap { max-width: 920px; margin: 0 auto; padding: 32px 22px 80px; }
+
+header.hero {
+  padding: 32px 0 24px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 40px;
+}
+header.hero .eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--brand);
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  direction: ltr;
+  text-align: right;
+}
+header.hero h1 {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 900;
+  font-size: clamp(28px, 5vw, 44px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 14px;
+}
+header.hero h1 .red { color: var(--brand); }
+header.hero .lede {
+  font-size: clamp(15px, 2vw, 18px);
+  color: var(--ink-soft);
+  font-weight: 500;
+  max-width: 620px;
+}
+
+section.chapter { margin: 56px 0; scroll-margin-top: 20px; }
+.section-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brand);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  direction: ltr;
+  text-align: right;
+}
+h2 {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 900;
+  font-size: clamp(22px, 3.5vw, 32px);
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+h3 {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 800;
+  font-size: 19px;
+  margin: 26px 0 10px;
+}
+p { color: var(--ink-soft); margin-bottom: 12px; font-size: 15.5px; }
+p strong { color: var(--ink); font-weight: 800; }
+code, .code {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  padding: 1px 7px;
+  border-radius: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13.5px;
+  color: var(--brand);
+  direction: ltr;
+  display: inline-block;
+  vertical-align: middle;
+}
+ul, ol { padding-right: 22px; margin-bottom: 16px; }
+li { color: var(--ink-soft); margin-bottom: 6px; font-size: 15.5px; }
+li::marker { color: var(--brand); font-weight: 700; }
+
+.card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 22px 24px;
+  margin: 18px 0;
+}
+.card.tinted { background: var(--brand-tint); border-color: rgba(211, 32, 39, 0.2); }
+.card.ok     { background: var(--ok-tint);    border-color: rgba(18, 140, 126, 0.25); }
+.card.azure  { background: var(--azure-tint); border-color: rgba(46, 107, 199, 0.2); }
+.card.gold   { background: rgba(255, 246, 216, 0.7); border-color: rgba(184, 138, 0, 0.3); }
+
+.pull-quote {
+  font-family: 'Tajawal', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  padding: 14px 24px;
+  border-right: 4px solid var(--brand);
+  background: linear-gradient(90deg, var(--brand-tint), transparent 80%);
+  margin: 24px 0;
+  border-radius: 0 12px 12px 0;
+  line-height: 1.5;
+}
+.pull-quote .by { display: block; font-size: 12px; color: var(--ink-mute); font-weight: 600; margin-top: 6px; font-family: 'Cairo', sans-serif; }
+
+.diagram {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 24px 18px 18px;
+  margin: 28px 0;
+  overflow-x: auto;
+}
+.diagram .d-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-mute);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  direction: ltr;
+  text-align: left;
+}
+.diagram svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+.diagram .caption {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
+  font-size: 13.5px;
+  color: var(--ink-mute);
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.pos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin: 24px 0;
+}
+.pos {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 20px;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.pos:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26, 17, 8, 0.08); }
+.pos .priority {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  direction: ltr;
+}
+.pos .priority.p1 { background: var(--brand); color: #fff; }
+.pos .priority.p2 { background: var(--gold); color: var(--ink); }
+.pos .priority.p3 { background: var(--ink-mute); color: #fff; }
+.pos .priority.skip { background: #E0D5C2; color: var(--ink-soft); }
+.pos h4 {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 900;
+  font-size: 21px;
+  margin-bottom: 4px;
+  margin-top: 16px;
+}
+.pos .market { font-size: 11px; color: var(--ink-mute); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; direction: ltr; text-align: right; }
+.pos .desc { font-size: 13.5px; color: var(--ink-soft); margin-top: 8px; line-height: 1.55; }
+.pos .api {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+}
+.pos .api span {
+  font-size: 10px; font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--ok-tint); color: var(--ok);
+}
+.pos .api span.no { background: #F5E2E2; color: var(--brand); }
+
+.steps {
+  counter-reset: step;
+  margin: 24px 0;
+}
+.step {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 18px;
+  padding: 22px 24px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  margin-bottom: 12px;
+  counter-increment: step;
+}
+.step .step-num {
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  background: var(--ink);
+  color: var(--bg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 900;
+  font-size: 22px;
+}
+.step h4 {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 800;
+  font-size: 17px;
+  margin-bottom: 6px;
+}
+.step p { font-size: 14.5px; margin-bottom: 6px; }
+.step .time {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ok);
+  background: var(--ok-tint);
+  padding: 2px 9px;
+  border-radius: 999px;
+  margin-top: 4px;
+}
+
+.code-block {
+  background: #1A1108;
+  color: #FAF6EE;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  direction: ltr;
+  text-align: left;
+  line-height: 1.7;
+  padding: 22px;
+  border-radius: 12px;
+  margin: 18px 0;
+  overflow-x: auto;
+  white-space: pre;
+}
+.code-block .c-comment { color: #8B7B6B; }
+.code-block .c-keyword { color: #FFC619; }
+.code-block .c-func    { color: #2E6BC7; }
+.code-block .c-string  { color: #DDF0EA; }
+.code-block .c-type    { color: #D32027; }
+
+.cta {
+  margin-top: 56px;
+  padding: 32px;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 18px;
+  text-align: center;
+  background-image:
+    radial-gradient(ellipse at top right, rgba(211, 32, 39, 0.2), transparent 70%),
+    radial-gradient(ellipse at bottom left, rgba(255, 198, 25, 0.1), transparent 70%);
+}
+.cta h3 { color: var(--bg); font-size: 24px; margin-bottom: 8px; }
+.cta p { color: rgba(250, 246, 238, 0.75); margin-bottom: 0; }
+
+@media (max-width: 600px) {
+  .wrap { padding: 20px 14px 60px; }
+  .card, .step { padding: 18px; }
+  .step { grid-template-columns: 40px 1fr; gap: 14px; }
+  .step .step-num { width: 36px; height: 36px; font-size: 17px; }
+  .diagram { padding: 18px 10px 14px; }
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <!-- =================== HEADER =================== -->
+  <header class="hero">
+    <div class="eyebrow">POS INTEGRATION · v1.0</div>
+    <h1>كيف يتدفّق طلب MenuLink<br>إلى <span class="red">كاشير المطعم</span> ويُطبع تلقائياً</h1>
+    <p class="lede">
+      السؤال: هل ممكن لـ MenuLink أن يرسل الطلب مباشرة لنظام POS الخاص بالمطعم بحيث الفاتورة تطبع تلقائياً في المطبخ بدون أي تدخل بشري؟ الجواب نعم. هذه التفاصيل.
+    </p>
+  </header>
+
+  <!-- =================== 01 THE ANSWER =================== -->
+  <section class="chapter">
+    <div class="section-num">01 / THE ANSWER</div>
+    <h2>الإجابة المختصرة</h2>
+
+    <div class="pull-quote">
+      نعم، ممكن. وهي ميزة قاتلة في السوق السعودي تحديداً، لأن <strong>Foodics</strong> يهيمن على ٧٠٪+ من مطاعم المملكة، وعنده API عام مُوثّق بالكامل.
+    </div>
+
+    <p>
+      كل ما يصير عند الزبون "إرسال الطلب" في MenuLink، نظامنا يستطيع <strong>فوراً</strong> إرسال نفس الطلب لـ Foodics (أو Marn أو Loyverse) عبر API، ومن لحظتها كل شيء يحدث تلقائياً:
+    </p>
+
+    <ul>
+      <li>الطلب يظهر في شاشة الكاشير</li>
+      <li>الفاتورة تطبع في طابعة المطبخ (الطباخ يبدأ التحضير)</li>
+      <li>التذكرة تطبع للكاشير</li>
+      <li>المخزون ينقص تلقائياً</li>
+      <li>تقارير المبيعات تتحدّث</li>
+    </ul>
+
+    <p>
+      <strong>كل هذا في أقل من ٢ ثانية</strong> بعد ضغط الزبون على "إرسال". وللمطعم: لا داعي لإعادة كتابة الطلب يدوياً، لا أخطاء تحويل، لا تأخير.
+    </p>
+  </section>
+
+  <!-- =================== 02 ORDER FLOW WITH POS =================== -->
+  <section class="chapter">
+    <div class="section-num">02 / ORDER FLOW</div>
+    <h2>المسار الكامل للطلب</h2>
+    <p>
+      من ضغطة الزبون في الواتساب إلى ورقة الفاتورة في يد الطباخ:
+    </p>
+
+    <div class="diagram">
+      <div class="d-title">Fig 01 · Order-to-print pipeline</div>
+      <svg viewBox="0 0 760 440" xmlns="http://www.w3.org/2000/svg" font-family="Cairo, sans-serif">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#1A1108"/>
+          </marker>
+          <marker id="arrG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#128C7E"/>
+          </marker>
+        </defs>
+
+        <!-- Step 1: Customer -->
+        <g transform="translate(620,30)">
+          <rect width="120" height="60" rx="12" fill="#D32027"/>
+          <text x="60" y="28" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">📱 الزبون</text>
+          <text x="60" y="46" text-anchor="middle" font-size="10" fill="#fff" opacity="0.85">يضغط "إرسال الطلب"</text>
+        </g>
+
+        <line x1="680" y1="92" x2="680" y2="120" stroke="#1A1108" stroke-width="1.5" marker-end="url(#arr)"/>
+
+        <!-- Step 2: Save to Supabase -->
+        <g transform="translate(580,125)">
+          <rect width="160" height="62" rx="10" fill="#DDF0EA" stroke="#128C7E" stroke-width="1.5"/>
+          <text x="80" y="22" text-anchor="middle" font-size="12" font-weight="800" fill="#128C7E">1. Supabase Database</text>
+          <text x="80" y="40" text-anchor="middle" font-size="10" fill="#4A3B2E">INSERT INTO orders</text>
+          <text x="80" y="54" text-anchor="middle" font-size="10" fill="#4A3B2E">status='confirmed'</text>
+        </g>
+
+        <line x1="660" y1="189" x2="660" y2="218" stroke="#128C7E" stroke-width="1.5" marker-end="url(#arrG)"/>
+
+        <!-- Step 3: Trigger fires -->
+        <g transform="translate(580,222)">
+          <rect width="160" height="62" rx="10" fill="#FFF6D8" stroke="#B88A00" stroke-width="1.5"/>
+          <text x="80" y="22" text-anchor="middle" font-size="12" font-weight="800" fill="#B88A00">2. Database Trigger</text>
+          <text x="80" y="40" text-anchor="middle" font-size="10" fill="#4A3B2E">on INSERT → call</text>
+          <text x="80" y="54" text-anchor="middle" font-size="10" fill="#4A3B2E">Edge Function</text>
+        </g>
+
+        <line x1="660" y1="286" x2="660" y2="315" stroke="#1A1108" stroke-width="1.5" marker-end="url(#arr)"/>
+
+        <!-- Step 4: Edge Function -->
+        <g transform="translate(540,320)">
+          <rect width="200" height="80" rx="12" fill="#EDE5F7" stroke="#6B3FA0" stroke-width="2"/>
+          <text x="100" y="22" text-anchor="middle" font-size="12" font-weight="800" fill="#6B3FA0">3. POS Adapter</text>
+          <text x="100" y="40" text-anchor="middle" font-size="10" fill="#4A3B2E">read restaurant.pos_type</text>
+          <text x="100" y="54" text-anchor="middle" font-size="10" fill="#4A3B2E">→ "foodics" / "marn"</text>
+          <text x="100" y="70" text-anchor="middle" font-size="10" fill="#4A3B2E">build POS-specific payload</text>
+        </g>
+
+        <line x1="540" y1="360" x2="395" y2="360" stroke="#1A1108" stroke-width="1.5" marker-end="url(#arr)"/>
+
+        <!-- Step 5: POS API -->
+        <g transform="translate(225,320)">
+          <rect width="170" height="80" rx="12" fill="#E1ECF9" stroke="#2E6BC7" stroke-width="2"/>
+          <text x="85" y="22" text-anchor="middle" font-size="12" font-weight="800" fill="#2E6BC7">4. Foodics API</text>
+          <text x="85" y="40" text-anchor="middle" font-size="10" fill="#4A3B2E">POST /v5/orders</text>
+          <text x="85" y="54" text-anchor="middle" font-size="10" fill="#4A3B2E" font-family="JetBrains Mono">Bearer {API_TOKEN}</text>
+          <text x="85" y="70" text-anchor="middle" font-size="10" fill="#4A3B2E">→ HTTP 201 Created</text>
+        </g>
+
+        <line x1="225" y1="360" x2="190" y2="360" stroke="#1A1108" stroke-width="1.5" marker-end="url(#arr)"/>
+
+        <!-- Step 6: Kitchen printer -->
+        <g transform="translate(20,320)">
+          <rect width="170" height="80" rx="12" fill="#FFF0F1" stroke="#D32027" stroke-width="2"/>
+          <text x="85" y="22" text-anchor="middle" font-size="12" font-weight="800" fill="#D32027">5. 🖨️ طابعة المطبخ</text>
+          <text x="85" y="40" text-anchor="middle" font-size="10" fill="#4A3B2E">فاتورة + تذكرة مطبخ</text>
+          <text x="85" y="54" text-anchor="middle" font-size="10" fill="#4A3B2E">تطبع تلقائياً</text>
+          <text x="85" y="74" text-anchor="middle" font-size="12" font-weight="800" fill="#128C7E">✓ خلال ٢ ثانية</text>
+        </g>
+
+        <!-- Customer side success -->
+        <g transform="translate(20,30)">
+          <rect width="170" height="60" rx="10" fill="#fff" stroke="#128C7E" stroke-width="1.5"/>
+          <text x="85" y="22" text-anchor="middle" font-size="12" font-weight="800" fill="#128C7E">📢 رد للزبون</text>
+          <text x="85" y="38" text-anchor="middle" font-size="10" fill="#4A3B2E">"تم استلام طلبك #2847"</text>
+          <text x="85" y="52" text-anchor="middle" font-size="10" fill="#4A3B2E">"الوقت المتوقع: 22 دقيقة"</text>
+        </g>
+
+        <!-- Connection from step 4 back to customer (success notification) -->
+        <path d="M 225,360 Q 100,200 100,90" stroke="#128C7E" stroke-width="1.5" fill="none" stroke-dasharray="3 3" marker-end="url(#arrG)"/>
+        <text x="55" y="220" text-anchor="middle" font-size="9" font-weight="600" fill="#128C7E" transform="rotate(-90 55 220)">عبر Realtime</text>
+
+        <!-- Restaurant dashboard -->
+        <g transform="translate(225,40)">
+          <rect width="280" height="40" rx="10" fill="#1A1108"/>
+          <text x="140" y="18" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">💼 لوحة تحكم المطعم</text>
+          <text x="140" y="32" text-anchor="middle" font-size="10" fill="#FAF6EE" opacity="0.7">تشوف الطلب مباشرة (لو ما عندهم POS)</text>
+        </g>
+      </svg>
+      <div class="caption">
+        ٥ خطوات في الخلفية · كلها أوتوماتيكية · صفر تدخل بشري بين الزبون والطباخ
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== 03 SAUDI POS LANDSCAPE =================== -->
+  <section class="chapter">
+    <div class="section-num">03 / SAUDI POS LANDSCAPE</div>
+    <h2>خريطة أنظمة POS في السعودية</h2>
+    <p>
+      ما نقدر ندمج مع كل نظام POS موجود — كل واحد له API مختلف. القرار الذكي: ندمج مع <strong>الأكثر انتشاراً أولاً</strong>، ونغطّي ٨٠٪ من السوق بـ ٢-٣ تكاملات فقط.
+    </p>
+
+    <div class="pos-grid">
+      <div class="pos">
+        <span class="priority p1">START HERE</span>
+        <div class="market">🇸🇦 SAUDI ARABIA</div>
+        <h4>Foodics</h4>
+        <p class="desc">
+          المهيمن في السوق السعودي. ~٧٠٪ من المطاعم المنظمة تستخدمه. API كامل ومُوثّق. OAuth2 للتسجيل بنقرة. <strong>هذا أول تكامل نبنيه.</strong>
+        </p>
+        <div class="api">
+          <span>REST API</span>
+          <span>OAuth 2.0</span>
+          <span>Webhooks</span>
+          <span>Menu Sync</span>
+        </div>
+      </div>
+
+      <div class="pos">
+        <span class="priority p2">PHASE 2</span>
+        <div class="market">🇸🇦 SAUDI ARABIA</div>
+        <h4>Marn</h4>
+        <p class="desc">
+          نظام سعودي نامي بسرعة. منتشر في المطاعم الصغيرة والمتوسطة. API متاح للشركاء (يحتاج طلب رسمي). نضيفه بعد Foodics.
+        </p>
+        <div class="api">
+          <span>REST API</span>
+          <span>API Key</span>
+        </div>
+      </div>
+
+      <div class="pos">
+        <span class="priority p2">PHASE 2</span>
+        <div class="market">🌍 GLOBAL · FREE</div>
+        <h4>Loyverse POS</h4>
+        <p class="desc">
+          مجاني للمطاعم الصغيرة. منتشر عند المقاهي وعربات الطعام. API بسيط ومفتوح. ممتاز للعملاء ذوي الميزانية المحدودة.
+        </p>
+        <div class="api">
+          <span>REST API</span>
+          <span>API Token</span>
+        </div>
+      </div>
+
+      <div class="pos">
+        <span class="priority p3">PHASE 3</span>
+        <div class="market">🇸🇦 SAUDI ARABIA</div>
+        <h4>Rewaa</h4>
+        <p class="desc">
+          أكثر شهرة في التجزئة، لكن يدخل قطاع المطاعم. API متاح. نضيفه إذا طلب العملاء.
+        </p>
+        <div class="api">
+          <span>REST API</span>
+        </div>
+      </div>
+
+      <div class="pos">
+        <span class="priority p3">PHASE 3</span>
+        <div class="market">🇸🇦 MENA</div>
+        <h4>Posbytz</h4>
+        <p class="desc">
+          نامي في الخليج. واجهة عربية ممتازة. API متاح. نراقب نموّه ونضيفه عند الحاجة.
+        </p>
+        <div class="api">
+          <span>REST API</span>
+        </div>
+      </div>
+
+      <div class="pos">
+        <span class="priority skip">NO POS</span>
+        <div class="market">🍔 SMALL BUSINESSES</div>
+        <h4>المطاعم بدون POS</h4>
+        <p class="desc">
+          نسبة كبيرة من المطاعم الصغيرة لا تستخدم أي نظام كاشير. هؤلاء يستلمون الطلب عبر <strong>واتساب</strong> أو لوحة تحكم بسيطة عندنا. <strong>لا نتركهم</strong>.
+        </p>
+        <div class="api">
+          <span class="no">No API</span>
+          <span>WhatsApp ✓</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card tinted">
+      <p style="margin: 0;">
+        <strong>القرار الاستراتيجي:</strong> نبدأ بـ Foodics فقط في النسخة الأولى. هذا يفتح لنا ٧٠٪+ من السوق. تكامل واحد قوي > ٥ تكاملات نصف مكتملة. نضيف Marn و Loyverse في المرحلة الثانية بعد التحقق من قيمة الميزة.
+      </p>
+    </div>
+  </section>
+
+  <!-- =================== 04 ADAPTER PATTERN =================== -->
+  <section class="chapter">
+    <div class="section-num">04 / ARCHITECTURE</div>
+    <h2>نمط Adapter · واجهة واحدة، عدة POS</h2>
+    <p>
+      المشكلة: كل POS له API مختلف، حقول مختلفة، أسلوب تسجيل دخول مختلف. كيف نخفي هذا التعقيد عن باقي المنصة؟ الإجابة: <strong>نمط Adapter</strong>.
+    </p>
+
+    <div class="diagram">
+      <div class="d-title">Fig 02 · Adapter pattern · one contract, many POS</div>
+      <svg viewBox="0 0 760 380" xmlns="http://www.w3.org/2000/svg" font-family="Cairo, sans-serif">
+        <defs>
+          <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#4A3B2E"/>
+          </marker>
+        </defs>
+
+        <!-- MenuLink core (top) -->
+        <g transform="translate(280,30)">
+          <rect width="200" height="70" rx="12" fill="#1A1108"/>
+          <text x="100" y="28" text-anchor="middle" font-size="14" font-weight="900" fill="#fff">⚙️ MenuLink Core</text>
+          <text x="100" y="48" text-anchor="middle" font-size="11" fill="#FAF6EE" opacity="0.7">order.send_to_pos()</text>
+          <text x="100" y="62" text-anchor="middle" font-size="10" fill="#FAF6EE" opacity="0.6">يستدعي الواجهة الموحّدة</text>
+        </g>
+
+        <line x1="380" y1="100" x2="380" y2="130" stroke="#4A3B2E" stroke-width="2" marker-end="url(#arr2)"/>
+
+        <!-- POSAdapter interface (middle) -->
+        <g transform="translate(180,135)">
+          <rect width="400" height="70" rx="12" fill="#fff" stroke="#D32027" stroke-width="2.5" stroke-dasharray="6 4"/>
+          <text x="200" y="26" text-anchor="middle" font-size="13" font-weight="900" fill="#D32027" font-family="JetBrains Mono">interface POSAdapter</text>
+          <text x="200" y="44" text-anchor="middle" font-size="10" fill="#4A3B2E" font-family="JetBrains Mono">connect() · pushOrder() · syncMenu() · disconnect()</text>
+          <text x="200" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">العقد الموحّد · كل adapter يطبّقه</text>
+        </g>
+
+        <!-- Three adapters below -->
+        <line x1="280" y1="205" x2="160" y2="245" stroke="#4A3B2E" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <line x1="380" y1="205" x2="380" y2="245" stroke="#4A3B2E" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <line x1="480" y1="205" x2="610" y2="245" stroke="#4A3B2E" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+        <!-- Foodics adapter -->
+        <g transform="translate(50,250)">
+          <rect width="220" height="62" rx="10" fill="#FFF0F1" stroke="#D32027" stroke-width="1.5"/>
+          <text x="110" y="22" text-anchor="middle" font-size="12" font-weight="800" fill="#D32027">FoodicsAdapter</text>
+          <text x="110" y="40" text-anchor="middle" font-size="10" fill="#4A3B2E">OAuth2 · POST /v5/orders</text>
+          <text x="110" y="54" text-anchor="middle" font-size="10" fill="#4A3B2E">webhook for status updates</text>
+        </g>
+
+        <!-- Marn adapter -->
+        <g transform="translate(280,250)">
+          <rect width="200" height="62" rx="10" fill="#FFF6D8" stroke="#B88A00" stroke-width="1.5"/>
+          <text x="100" y="22" text-anchor="middle" font-size="12" font-weight="800" fill="#B88A00">MarnAdapter</text>
+          <text x="100" y="40" text-anchor="middle" font-size="10" fill="#4A3B2E">API key auth</text>
+          <text x="100" y="54" text-anchor="middle" font-size="10" fill="#4A3B2E">different JSON shape</text>
+        </g>
+
+        <!-- Loyverse adapter -->
+        <g transform="translate(490,250)">
+          <rect width="220" height="62" rx="10" fill="#E1ECF9" stroke="#2E6BC7" stroke-width="1.5"/>
+          <text x="110" y="22" text-anchor="middle" font-size="12" font-weight="800" fill="#2E6BC7">LoyverseAdapter</text>
+          <text x="110" y="40" text-anchor="middle" font-size="10" fill="#4A3B2E">Token auth · v1.0</text>
+          <text x="110" y="54" text-anchor="middle" font-size="10" fill="#4A3B2E">receipt-based API</text>
+        </g>
+
+        <!-- Their respective APIs at the bottom -->
+        <line x1="160" y1="312" x2="160" y2="340" stroke="#4A3B2E" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <line x1="380" y1="312" x2="380" y2="340" stroke="#4A3B2E" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <line x1="600" y1="312" x2="600" y2="340" stroke="#4A3B2E" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+        <g transform="translate(80,344)">
+          <rect width="160" height="28" rx="6" fill="#fff" stroke="#D32027"/>
+          <text x="80" y="18" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">api.foodics.com</text>
+        </g>
+        <g transform="translate(300,344)">
+          <rect width="160" height="28" rx="6" fill="#fff" stroke="#B88A00"/>
+          <text x="80" y="18" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">api.marnpos.com</text>
+        </g>
+        <g transform="translate(520,344)">
+          <rect width="160" height="28" rx="6" fill="#fff" stroke="#2E6BC7"/>
+          <text x="80" y="18" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">api.loyverse.com</text>
+        </g>
+      </svg>
+      <div class="caption">
+        نواة MenuLink لا تعرف ولا تهتم بأي POS · هي تستدعي <code>POSAdapter</code> فقط · كل adapter يترجم للـ API الخاص بنظامه
+      </div>
+    </div>
+
+    <h3>الواجهة الموحّدة (TypeScript)</h3>
+
+    <div class="code-block"><span class="c-comment">// كل adapter يحقّق هذه الواجهة. النواة لا تهتم بالتفاصيل.</span>
+<span class="c-keyword">interface</span> <span class="c-type">POSAdapter</span> {
+  <span class="c-func">name</span>: <span class="c-type">string</span>;
+  <span class="c-func">connect</span>(credentials: <span class="c-type">Credentials</span>): <span class="c-type">Promise</span>&lt;<span class="c-type">Session</span>&gt;;
+  <span class="c-func">pushOrder</span>(order: <span class="c-type">MenuLinkOrder</span>): <span class="c-type">Promise</span>&lt;<span class="c-type">POSOrderId</span>&gt;;
+  <span class="c-func">syncMenu</span>?(restaurantId: <span class="c-type">string</span>): <span class="c-type">Promise</span>&lt;<span class="c-type">Menu</span>&gt;;
+  <span class="c-func">disconnect</span>(restaurantId: <span class="c-type">string</span>): <span class="c-type">Promise</span>&lt;<span class="c-type">void</span>&gt;;
+}
+
+<span class="c-comment">// الـ Foodics implementation</span>
+<span class="c-keyword">class</span> <span class="c-type">FoodicsAdapter</span> <span class="c-keyword">implements</span> <span class="c-type">POSAdapter</span> {
+  <span class="c-func">name</span> = <span class="c-string">"foodics"</span>;
+
+  <span class="c-keyword">async</span> <span class="c-func">pushOrder</span>(order: <span class="c-type">MenuLinkOrder</span>) {
+    <span class="c-keyword">const</span> payload = <span class="c-func">translateToFoodicsFormat</span>(order);
+    <span class="c-keyword">const</span> res = <span class="c-keyword">await</span> <span class="c-func">fetch</span>(<span class="c-string">"https://api.foodics.com/v5/orders"</span>, {
+      method: <span class="c-string">"POST"</span>,
+      headers: { Authorization: <span class="c-string">`Bearer ${token}`</span> },
+      body: <span class="c-type">JSON</span>.<span class="c-func">stringify</span>(payload),
+    });
+    <span class="c-keyword">return</span> res.data.id;
+  }
+}
+
+<span class="c-comment">// الـ registry — نختار حسب نوع المطعم</span>
+<span class="c-keyword">const</span> ADAPTERS = {
+  foodics: <span class="c-keyword">new</span> <span class="c-type">FoodicsAdapter</span>(),
+  marn:    <span class="c-keyword">new</span> <span class="c-type">MarnAdapter</span>(),
+  loyverse:<span class="c-keyword">new</span> <span class="c-type">LoyverseAdapter</span>(),
+};
+
+<span class="c-comment">// الاستخدام</span>
+<span class="c-keyword">const</span> adapter = ADAPTERS[restaurant.pos_type];
+<span class="c-keyword">await</span> adapter.<span class="c-func">pushOrder</span>(order);  <span class="c-comment">// خلاص. هذا كل الكود.</span>
+</div>
+
+    <div class="card ok">
+      <p style="margin: 0;">
+        <strong>فائدة هذا النمط:</strong> لإضافة POS جديد، نكتب ملف واحد فقط (<code>NewPOSAdapter.ts</code>) ونضيفه في الـ registry. <strong>صفر تعديلات</strong> على باقي الكود. هذا "extensibility" بمعناه الحقيقي.
+      </p>
+    </div>
+  </section>
+
+  <!-- =================== 05 RESTAURANT OWNER UX =================== -->
+  <section class="chapter">
+    <div class="section-num">05 / RESTAURANT UX</div>
+    <h2>تجربة صاحب المطعم · ٣ ضغطات للربط</h2>
+    <p>
+      أنت سألت "بدون تعقيد، بطريقة واضحة وأوتوماتيكية لصاحب المطعم". هذا الجوهر — لو الربط كان معقّداً، الميزة كلها فاشلة. هذه هي التجربة المستهدفة:
+    </p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">١</div>
+        <div>
+          <h4>صاحب المطعم يفتح إعدادات MenuLink</h4>
+          <p>قسم "ربط نظام الكاشير". يرى قائمة بالأنظمة المدعومة (Foodics, Marn, Loyverse). يضغط على نظامه.</p>
+          <span class="time">⏱️ ٥ ثواني</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">٢</div>
+        <div>
+          <h4>تسجيل دخول OAuth (مع Foodics)</h4>
+          <p>يضغط "ربط مع Foodics". يفتح له صفحة Foodics. يسجل دخول. يضغط "أوافق على المشاركة". <strong>تم.</strong> لا API key يكتبه يدوياً، لا تكوين معقّد.</p>
+          <p style="margin-top:8px;">للأنظمة الأخرى (Marn): يلصق API key واحد من إعدادات Marn عنده. خطوة واحدة فقط.</p>
+          <span class="time">⏱️ ٢٠ ثانية</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">٣</div>
+        <div>
+          <h4>استيراد المنيو تلقائياً 🎁</h4>
+          <p>
+            <strong>هذه هي السحرية:</strong> ما نطلب من صاحب المطعم إعادة كتابة المنيو في MenuLink. نقرأ منيوه من Foodics تلقائياً (الأصناف، الأسعار، الصور)، نُدخلها في MenuLink، ونعرضها له للمراجعة. يضغط "اعتمد" → جاهز.
+          </p>
+          <span class="time">⏱️ ٢ دقيقة (لمراجعة المنيو)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pull-quote">
+      مجموع الوقت لربط مطعم جديد من الصفر: <strong>أقل من ٣ دقائق</strong>.
+      <span class="by">قارن مع المنافسين اللي يأخذون ساعات أو أيام لإعداد المنيو يدوياً.</span>
+    </div>
+
+    <h3>اختبار الربط (للتأكد)</h3>
+    <p>
+      بعد الربط، نعرض زر "إرسال طلب تجريبي". إذا ضغطه:
+    </p>
+    <ul>
+      <li>نرسل طلباً وهمياً بقيمة ١ ريال إلى POS</li>
+      <li>الطابعة في المطعم تطبع: "طلب تجريبي — MenuLink — تجاهل"</li>
+      <li>صاحب المطعم يلغيه من POS</li>
+      <li><strong>الآن متأكد ١٠٠٪ إن النظام شغّال</strong></li>
+    </ul>
+  </section>
+
+  <!-- =================== 06 SMART FEATURE: AUTO MENU SYNC =================== -->
+  <section class="chapter">
+    <div class="section-num">06 / SMART FEATURE</div>
+    <h2>الميزة الذكية · مزامنة المنيو في الاتجاهين</h2>
+    <p>
+      هذه فكرة تجعل MenuLink لا يُقاوَم: <strong>صاحب المطعم يدير منيو واحد فقط — في Foodics — وكل شيء يتزامن.</strong>
+    </p>
+
+    <div class="diagram">
+      <div class="d-title">Fig 03 · Two-way menu sync</div>
+      <svg viewBox="0 0 760 280" xmlns="http://www.w3.org/2000/svg" font-family="Cairo, sans-serif">
+        <defs>
+          <marker id="arr3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#128C7E"/>
+          </marker>
+        </defs>
+
+        <!-- Foodics box -->
+        <g transform="translate(490,80)">
+          <rect width="240" height="110" rx="14" fill="#FFF0F1" stroke="#D32027" stroke-width="2"/>
+          <text x="120" y="32" text-anchor="middle" font-size="15" font-weight="900" fill="#D32027">📊 Foodics</text>
+          <text x="120" y="55" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">مصدر الحقيقة الوحيد</text>
+          <text x="120" y="73" text-anchor="middle" font-size="10" fill="#4A3B2E">صاحب المطعم يضيف صنف جديد</text>
+          <text x="120" y="88" text-anchor="middle" font-size="10" fill="#4A3B2E">يغيّر سعراً · يضيف صورة</text>
+          <text x="120" y="103" text-anchor="middle" font-size="10" fill="#4A3B2E">يعطّل صنف غير متوفر</text>
+        </g>
+
+        <!-- Arrow + webhook label -->
+        <path d="M 485,130 Q 380,80 280,130" stroke="#128C7E" stroke-width="2.5" fill="none" marker-end="url(#arr3)"/>
+        <rect x="320" y="55" width="130" height="22" rx="6" fill="#DDF0EA" stroke="#128C7E"/>
+        <text x="385" y="70" text-anchor="middle" font-size="11" font-weight="700" fill="#128C7E">Foodics Webhook</text>
+        <text x="385" y="100" text-anchor="middle" font-size="9" fill="#4A3B2E">menu.updated event</text>
+
+        <!-- MenuLink box -->
+        <g transform="translate(30,80)">
+          <rect width="240" height="110" rx="14" fill="#DDF0EA" stroke="#128C7E" stroke-width="2"/>
+          <text x="120" y="32" text-anchor="middle" font-size="15" font-weight="900" fill="#128C7E">🍔 MenuLink</text>
+          <text x="120" y="55" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">يتزامن تلقائياً</text>
+          <text x="120" y="73" text-anchor="middle" font-size="10" fill="#4A3B2E">المنيو الجديد يظهر للزبائن</text>
+          <text x="120" y="88" text-anchor="middle" font-size="10" fill="#4A3B2E">الأسعار تتحدّث في ٥ ثواني</text>
+          <text x="120" y="103" text-anchor="middle" font-size="10" fill="#4A3B2E">الصنف المعطّل يختفي</text>
+        </g>
+
+        <!-- Result box at bottom -->
+        <g transform="translate(120,210)">
+          <rect width="520" height="50" rx="12" fill="#1A1108"/>
+          <text x="260" y="22" text-anchor="middle" font-size="13" font-weight="800" fill="#FFC619">⚡ النتيجة: ٠ ازدواجية في العمل</text>
+          <text x="260" y="40" text-anchor="middle" font-size="11" fill="#FAF6EE" opacity="0.85">صاحب المطعم يحدّث المنيو في مكان واحد — Foodics — وكل شيء يحدّث نفسه</text>
+        </g>
+      </svg>
+      <div class="caption">
+        مزامنة في الاتجاهين عبر Foodics webhooks · لا داعي لمحرر منيو منفصل في MenuLink لمن عندهم Foodics
+      </div>
+    </div>
+
+    <div class="card gold">
+      <h3 style="margin-top: 0;">لماذا هذه ميزة بيعية قوية؟</h3>
+      <p style="margin: 0;">
+        المنصات المنافسة (مثل Chatfood, Foodbit) تطلب من المطعم إعادة كتابة المنيو في منصتها. هذا عمل ساعات. مع MenuLink + Foodics integration: <strong>الإعداد كله ٣ دقائق + المنيو يبقى محدّثاً تلقائياً للأبد.</strong> هذا فرق هائل في تجربة العميل.
+      </p>
+    </div>
+  </section>
+
+  <!-- =================== 07 FALLBACK =================== -->
+  <section class="chapter">
+    <div class="section-num">07 / FALLBACK</div>
+    <h2>وش لو المطعم ما عنده POS؟</h2>
+    <p>
+      نسبة كبيرة من المطاعم الصغيرة وعربات الطعام لا تستخدم أي نظام كاشير. ما نتركهم بدون حل. عندنا ٣ طبقات احتياطية:
+    </p>
+
+    <div class="card ok">
+      <h3 style="margin-top: 0;">الطبقة ١ · واتساب (الأساس · مجاني)</h3>
+      <p style="margin: 0;">
+        كما هو الحال في v6 الآن. الطلب يصل كرسالة واتساب منسّقة على جوال المطعم. الموظف يقرأها ويبدأ التحضير. هذا الحل يعمل لـ ١٠٠٪ من المطاعم بدون أي إعداد.
+      </p>
+    </div>
+
+    <div class="card azure">
+      <h3 style="margin-top: 0;">الطبقة ٢ · لوحة تحكم على iPad / كمبيوتر (مدفوع)</h3>
+      <p style="margin: 0;">
+        المطعم يفتح لوحة تحكم MenuLink على جهاز في المطبخ. الطلبات تظهر فيها مباشرة (عبر Realtime). صوت تنبيه عند كل طلب جديد. يضغط زر "طُبع" → يحفظ التاريخ. هذا حل وسط بين الواتساب والـ POS الكامل. مفيد للمطاعم اللي تستقبل ١٠+ طلبات يومياً.
+      </p>
+    </div>
+
+    <div class="card tinted">
+      <h3 style="margin-top: 0;">الطبقة ٣ · طابعة حرارية مباشرة (للمتقدمين)</h3>
+      <p style="margin: 0;">
+        المطعم يشتري طابعة حرارية بسيطة (~٢٠٠ ريال) موصولة بالشبكة المحلية. نظامنا يرسل أمر طباعة مباشر عبر بروتوكول <code>ESC/POS</code> (معيار قديم وموثوق منذ ١٩٩٠). الطلبات تطبع تلقائياً بدون POS. ميزة كاملة بنصف التكلفة.
+      </p>
+    </div>
+
+    <h3>قاعدة قرار بسيطة</h3>
+
+    <table style="width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; background: var(--paper); border-radius: 12px; overflow: hidden; border: 1px solid var(--line);">
+      <thead>
+        <tr>
+          <th style="background: var(--ink); color: var(--bg); padding: 12px; text-align: right; font-weight: 700;">حجم المطعم</th>
+          <th style="background: var(--ink); color: var(--bg); padding: 12px; text-align: right; font-weight: 700;">الحل المناسب</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="padding: 12px; border-top: 1px solid var(--line); font-weight: 700;">عربة طعام / صغير جداً</td><td style="padding: 12px; border-top: 1px solid var(--line); color: var(--ink-soft);">واتساب فقط</td></tr>
+        <tr style="background: rgba(232,221,201,0.15);"><td style="padding: 12px; border-top: 1px solid var(--line); font-weight: 700;">مطعم صغير (< ٣٠ طلب/يوم)</td><td style="padding: 12px; border-top: 1px solid var(--line); color: var(--ink-soft);">واتساب + لوحة تحكم iPad</td></tr>
+        <tr><td style="padding: 12px; border-top: 1px solid var(--line); font-weight: 700;">مطعم متوسط (٣٠-١٠٠ طلب)</td><td style="padding: 12px; border-top: 1px solid var(--line); color: var(--ink-soft);">طابعة حرارية + لوحة تحكم</td></tr>
+        <tr style="background: rgba(232,221,201,0.15);"><td style="padding: 12px; border-top: 1px solid var(--line); font-weight: 700;">سلسلة / فروع متعددة</td><td style="padding: 12px; border-top: 1px solid var(--line); color: var(--ink-soft);"><strong style="color: var(--brand);">Foodics integration ⭐</strong></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- =================== 08 PRICING IMPLICATIONS =================== -->
+  <section class="chapter">
+    <div class="section-num">08 / PRICING</div>
+    <h2>أثر هذه الميزة على التسعير</h2>
+    <p>
+      تكامل POS ميزة عالية القيمة. تستحق سعراً أعلى. هذا هيكل تسعير محدّث مع هذه الميزة:
+    </p>
+
+    <table style="width: 100%; border-collapse: collapse; margin: 18px 0; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; font-size: 14px;">
+      <thead>
+        <tr>
+          <th style="background: var(--ink); color: var(--bg); padding: 14px 12px; text-align: right; font-weight: 700;">الخطة</th>
+          <th style="background: var(--ink); color: var(--bg); padding: 14px 12px; text-align: right; font-weight: 700;">السعر/شهر</th>
+          <th style="background: var(--ink); color: var(--bg); padding: 14px 12px; text-align: right; font-weight: 700;">المميزات</th>
+          <th style="background: var(--ink); color: var(--bg); padding: 14px 12px; text-align: right; font-weight: 700;">المناسب لـ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding: 13px 12px; border-top: 1px solid var(--line); font-weight: 800;">Starter</td>
+          <td style="padding: 13px 12px; border-top: 1px solid var(--line); color: var(--brand); font-weight: 800; font-family: 'JetBrains Mono', monospace;">99 ر</td>
+          <td style="padding: 13px 12px; border-top: 1px solid var(--line); color: var(--ink-soft);">قائمة PWA + واتساب فقط</td>
+          <td style="padding: 13px 12px; border-top: 1px solid var(--line); color: var(--ink-soft);">عربات طعام، مقاهي صغيرة</td>
+        </tr>
+        <tr style="background: rgba(232,221,201,0.15);">
+          <td style="padding: 13px 12px; border-top: 1px solid var(--line); font-weight: 800;">Pro</td>
+          <td style="padding: 13px 12px; border-top: 1px solid var(--line); color: var(--brand); font-weight: 800; font-family: 'JetBrains Mono', monospace;">249 ر</td>
+          <td style="padding: 13px 12px; border-top: 1px solid var(--line); color: var(--ink-soft);">+ حسابات الزبائن + إشعارات + لوحة تحكم + طابعة حرارية</td>
+          <td style="padding: 13px 12px; border-top: 1px solid var(--line); color: var(--ink-soft);">مطاعم متوسطة</td>
+        </tr>
+        <tr>
+          <td style="padding: 13px 12px; border-top: 1px solid var(--line); font-weight: 800;">Business ⭐</td>
+          <td style="padding: 13px 12px; border-top: 1px solid var(--line); color: var(--brand); font-weight: 800; font-family: 'JetBrains Mono', monospace;">499 ر</td>
+          <td style="padding: 13px 12px; border-top: 1px solid var(--line); color: var(--ink-soft);">+ تكامل Foodics/Marn + مزامنة المنيو + دفع إلكتروني + دعم أولوية</td>
+          <td style="padding: 13px 12px; border-top: 1px solid var(--line); color: var(--ink-soft);">سلاسل ومطاعم كبيرة</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="card">
+      <p style="margin: 0;">
+        <strong>الحجة البيعية القوية:</strong> "اشترك في الخطة Business بـ ٤٩٩ ريال شهرياً، وستوفر ٢-٣ ساعات يومياً من وقت الكاشير اللي كان يدخل طلبات الويب يدوياً." في معظم المطاعم، هذا يعني <strong>الميزة تدفع تكلفتها بنفسها</strong> خلال أسبوع واحد.
+      </p>
+    </div>
+  </section>
+
+  <!-- =================== 09 IMPLEMENTATION TIMELINE =================== -->
+  <section class="chapter">
+    <div class="section-num">09 / TIMELINE</div>
+    <h2>متى نبني هذه الميزة؟</h2>
+    <p>
+      تكامل POS ليس للمرحلة ١. هذه ميزة المرحلة ٤ أو ٥. الترتيب الصحيح:
+    </p>
+
+    <ol>
+      <li><strong>المرحلة ١ (الآن):</strong> v6 PWA + واتساب. ابدأ ببيعه.</li>
+      <li><strong>المرحلة ٢:</strong> Next.js + Supabase + Auth + Order history.</li>
+      <li><strong>المرحلة ٣:</strong> لوحة تحكم المطعم + Push notifications.</li>
+      <li><strong>المرحلة ٤ ⭐:</strong> <strong>تكامل Foodics</strong> (٤-٦ أسابيع). هذا يفتح لك سوق المطاعم الكبيرة.</li>
+      <li><strong>المرحلة ٥:</strong> Marn + Loyverse + طابعة حرارية مباشرة.</li>
+    </ol>
+
+    <div class="pull-quote">
+      لا تبني التكامل قبل أن يطلبه ٣ عملاء على الأقل.
+      <span class="by">هندسياً، الإغراء كبير للبدء به مبكراً. لكن تجارياً، تحتاج أن تتحقق من قيمة الميزة من العملاء قبل استثمار ٦ أسابيع تطوير فيها.</span>
+    </div>
+  </section>
+
+  <!-- =================== CTA =================== -->
+  <div class="cta">
+    <h3>الخلاصة</h3>
+    <p>
+      نعم، ممكن تماماً. ٣ ضغطات للربط. ٢ ثانية لإرسال كل طلب. <br>
+      ابدأ بـ Foodics لأنه ٧٠٪ من السوق السعودي. أضف الباقي تدريجياً. <br>
+      <strong style="color: #FFC619;">ابن هذه الميزة عندما يكون عندك ٢٠ عميلاً على الأقل ويطلب ٣ منهم تكامل POS.</strong>
+    </p>
+  </div>
+
+</div>
+</body>
+</html>

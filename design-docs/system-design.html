@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Design · معمارية منصة MenuLink</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Tajawal:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:        #FAF6EE;
+  --paper:     #FFFFFF;
+  --ink:       #1A1108;
+  --ink-soft:  #4A3B2E;
+  --ink-mute:  #8B7B6B;
+  --line:      #E8DDC9;
+  --brand:     #D32027;
+  --brand-dk:  #A0181D;
+  --brand-tint:#FFF0F1;
+  --gold:      #FFC619;
+  --gold-dk:   #B88A00;
+  --ok:        #128C7E;
+  --ok-tint:   #DDF0EA;
+  --azure:     #2E6BC7;
+  --azure-tint:#E1ECF9;
+  --plum:      #6B3FA0;
+  --plum-tint: #EDE5F7;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: 'Cairo', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.7;
+  font-size: 16px;
+  background-image:
+    radial-gradient(ellipse 800px 600px at 20% -10%, rgba(255, 198, 25, 0.08), transparent 60%),
+    radial-gradient(ellipse 600px 400px at 100% 30%, rgba(211, 32, 39, 0.05), transparent 70%);
+  background-attachment: fixed;
+}
+.wrap { max-width: 920px; margin: 0 auto; padding: 32px 22px 80px; }
+
+/* ============== HEADER ============== */
+header.hero {
+  padding: 32px 0 24px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 40px;
+  position: relative;
+}
+header.hero .eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--brand);
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  direction: ltr;
+  text-align: right;
+}
+header.hero h1 {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 900;
+  font-size: clamp(28px, 5vw, 44px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+header.hero h1 .red { color: var(--brand); }
+header.hero .lede {
+  font-size: clamp(15px, 2vw, 18px);
+  color: var(--ink-soft);
+  font-weight: 500;
+  max-width: 580px;
+  line-height: 1.6;
+}
+header.hero .meta {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--line);
+  display: flex;
+  gap: 26px;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+header.hero .meta .item .l { color: var(--ink-mute); font-weight: 600; display: block; }
+header.hero .meta .item .v { color: var(--ink); font-weight: 800; }
+
+/* ============== SECTIONS ============== */
+section.chapter { margin: 56px 0; scroll-margin-top: 20px; }
+.section-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brand);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  direction: ltr;
+  text-align: right;
+}
+h2 {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 900;
+  font-size: clamp(22px, 3.5vw, 32px);
+  color: var(--ink);
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+h3 {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 800;
+  font-size: 19px;
+  color: var(--ink);
+  margin: 26px 0 10px;
+}
+p { color: var(--ink-soft); margin-bottom: 12px; font-size: 15.5px; }
+p strong { color: var(--ink); font-weight: 800; }
+p code, li code {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  padding: 1px 7px;
+  border-radius: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13.5px;
+  color: var(--brand);
+  direction: ltr;
+  display: inline-block;
+  vertical-align: middle;
+}
+ul { padding-right: 22px; margin-bottom: 16px; }
+li { color: var(--ink-soft); margin-bottom: 6px; font-size: 15.5px; }
+li::marker { color: var(--brand); }
+
+/* ============== CARDS ============== */
+.card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 22px 24px;
+  margin: 18px 0;
+  box-shadow: 0 1px 0 rgba(26, 17, 8, 0.02);
+}
+.card.tinted { background: var(--brand-tint); border-color: rgba(211, 32, 39, 0.2); }
+.card.ok     { background: var(--ok-tint);    border-color: rgba(18, 140, 126, 0.25); }
+.card.azure  { background: var(--azure-tint); border-color: rgba(46, 107, 199, 0.2); }
+
+.pull-quote {
+  font-family: 'Tajawal', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--ink);
+  padding: 14px 24px;
+  border-right: 4px solid var(--brand);
+  background: linear-gradient(90deg, var(--brand-tint), transparent 80%);
+  margin: 24px 0;
+  border-radius: 0 12px 12px 0;
+  line-height: 1.5;
+}
+.pull-quote .by { display: block; font-size: 12px; color: var(--ink-mute); font-weight: 600; margin-top: 6px; font-family: 'Cairo', sans-serif; }
+
+/* ============== DIAGRAM CONTAINER ============== */
+.diagram {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 24px 18px 18px;
+  margin: 28px 0;
+  overflow-x: auto;
+  position: relative;
+}
+.diagram .d-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-mute);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  direction: ltr;
+  text-align: left;
+}
+.diagram svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+.diagram .caption {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
+  font-size: 13.5px;
+  color: var(--ink-mute);
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* ============== TECH STACK GRID ============== */
+.stack-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin: 24px 0;
+}
+.tech {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.tech:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26, 17, 8, 0.08); }
+.tech .role {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ink-mute);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  direction: ltr;
+  text-align: left;
+  margin-bottom: 4px;
+}
+.tech .name {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 900;
+  font-size: 20px;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.tech .why { font-size: 13.5px; color: var(--ink-soft); line-height: 1.55; }
+.tech .badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+.tech .badge.free { background: var(--ok-tint); color: var(--ok); }
+.tech .badge.paid { background: var(--brand-tint); color: var(--brand); }
+
+/* ============== REASON LIST ============== */
+.reasons { margin: 24px 0; }
+.reason {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 16px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+.reason:last-child { border-bottom: none; }
+.reason .num {
+  width: 44px; height: 44px;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 16px;
+}
+.reason h4 {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 800;
+  font-size: 17px;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.reason p { font-size: 14.5px; margin-bottom: 0; }
+
+/* ============== COST TABLE ============== */
+.cost-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 18px 0;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  font-size: 14px;
+}
+.cost-table th {
+  background: var(--ink);
+  color: var(--bg);
+  padding: 14px 12px;
+  text-align: right;
+  font-weight: 700;
+  font-size: 13px;
+}
+.cost-table td {
+  padding: 13px 12px;
+  border-top: 1px solid var(--line);
+  color: var(--ink-soft);
+}
+.cost-table td:first-child { color: var(--ink); font-weight: 700; }
+.cost-table td.price { color: var(--brand); font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+.cost-table tr:nth-child(even) td { background: rgba(232, 221, 201, 0.15); }
+
+/* ============== NAV ============== */
+nav.toc {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 20px 22px;
+  margin-bottom: 32px;
+}
+nav.toc .toc-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--brand);
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  direction: ltr;
+  text-align: right;
+  font-weight: 600;
+}
+nav.toc ol { list-style: none; padding: 0; counter-reset: toc; }
+nav.toc li {
+  counter-increment: toc;
+  padding: 6px 0;
+  font-size: 14.5px;
+  border-bottom: 1px dotted var(--line);
+}
+nav.toc li:last-child { border-bottom: none; }
+nav.toc li::before {
+  content: counter(toc, decimal-leading-zero);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--brand);
+  margin-left: 10px;
+  font-weight: 600;
+}
+nav.toc a { color: var(--ink); font-weight: 700; text-decoration: none; transition: color 0.2s ease; }
+nav.toc a:hover { color: var(--brand); }
+
+/* ============== FOOTER CTA ============== */
+.cta {
+  margin-top: 56px;
+  padding: 32px;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 18px;
+  text-align: center;
+  background-image:
+    radial-gradient(ellipse at top right, rgba(211, 32, 39, 0.2), transparent 70%),
+    radial-gradient(ellipse at bottom left, rgba(255, 198, 25, 0.1), transparent 70%);
+}
+.cta h3 {
+  color: var(--bg);
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+.cta p { color: rgba(250, 246, 238, 0.75); margin-bottom: 18px; }
+
+/* ============== UTILITIES ============== */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line) 30%, var(--line) 70%, transparent);
+  margin: 40px 0;
+}
+
+@media (max-width: 600px) {
+  .wrap { padding: 20px 14px 60px; }
+  .card { padding: 18px; }
+  .diagram { padding: 18px 10px 14px; }
+  .reason { grid-template-columns: 40px 1fr; gap: 12px; }
+  .reason .num { width: 36px; height: 36px; font-size: 14px; }
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <!-- =================== HEADER =================== -->
+  <header class="hero">
+    <div class="eyebrow">SYSTEM DESIGN · v1.0</div>
+    <h1>كيف نبني <span class="red">MenuLink</span><br>منصة قوائم للمطاعم بكود واحد</h1>
+    <p class="lede">
+      مستند المعمارية الكاملة للمشروع. الهدف: بناء منصة SaaS بسيطة، قوية، تخدم مئات المطاعم بنفس الكود، مع أقل عدد ممكن من نقاط الفشل.
+    </p>
+    <div class="meta">
+      <div class="item"><span class="l">المرحلة الحالية</span><span class="v">PWA · v6 جاهز</span></div>
+      <div class="item"><span class="l">المرحلة التالية</span><span class="v">Next.js + Supabase</span></div>
+      <div class="item"><span class="l">نموذج العمل</span><span class="v">SaaS اشتراك شهري</span></div>
+    </div>
+  </header>
+
+  <!-- =================== TOC =================== -->
+  <nav class="toc">
+    <div class="toc-label">المحتويات</div>
+    <ol>
+      <li><a href="#principles">المبادئ الأربعة (لماذا بسيطة وقوية)</a></li>
+      <li><a href="#overview">المعمارية العامة · رسم تخطيطي</a></li>
+      <li><a href="#stack">المكدّس التقني (Tech Stack)</a></li>
+      <li><a href="#flow-order">تدفق الطلب · من السلة للمطعم</a></li>
+      <li><a href="#flow-push">تدفق إشعار العروض</a></li>
+      <li><a href="#database">قاعدة البيانات · الكيانات والعلاقات</a></li>
+      <li><a href="#multitenant">Multi-Tenant · كود واحد، مطاعم كثيرة</a></li>
+      <li><a href="#robust">٧ أسباب تجعل هذا الكود لا يخرب</a></li>
+      <li><a href="#cost">التكلفة الحقيقية والتوسع</a></li>
+    </ol>
+  </nav>
+
+  <!-- =================== 01 PRINCIPLES =================== -->
+  <section class="chapter" id="principles">
+    <div class="section-num">01 / PRINCIPLES</div>
+    <h2>قبل الكود · المبادئ الأربعة</h2>
+    <p>
+      كل قرار في هذه المعمارية يخدم أربعة مبادئ. لو حصل تعارض بين فكرة جديدة وأي مبدأ منها، المبدأ يفوز.
+    </p>
+
+    <div class="pull-quote">
+      "الكود الذي لا يُكتب لا يحتوي على أخطاء."
+      <span class="by">— مبدأ هندسي قديم. كل خدمة نختار <strong>عدم</strong> بنائها هي خدمة لا يمكن أن تنهار.</span>
+    </div>
+
+    <h3>المبدأ ١ · لا backend مخصّص</h3>
+    <p>
+      لا نكتب خادم Node.js أو Python أو أي شيء يحتاج صيانة. نستخدم <code>Supabase</code> كـ Backend-as-a-Service. كل ما نحتاجه (قاعدة بيانات، تسجيل دخول، تخزين صور، تحديث لحظي) موجود في خدمة واحدة. السبب: لا يوجد كود خادم = لا توجد أخطاء خادم.
+    </p>
+
+    <h3>المبدأ ٢ · Stateless Frontend</h3>
+    <p>
+      Next.js على Vercel يخدم HTML/CSS/JS فقط. ما يخزن شيء محلياً. لو فشل خادم Vercel، سيرفر آخر يلتقطه فوراً. Vercel يدير CDN عالمي ويوزّع الحمل على ٢٠+ دولة تلقائياً.
+    </p>
+
+    <h3>المبدأ ٣ · Data في مكان واحد</h3>
+    <p>
+      كل البيانات (المطاعم، الزبائن، الطلبات، المنيو، الصور) في Supabase. <strong>لا نسخ متعددة. لا تزامن.</strong> أي تغيير يحصل في مكان واحد ويظهر فوراً لكل من يتصفح. هذا يقضي على ٩٠٪ من بُغ الـ data sync.
+    </p>
+
+    <h3>المبدأ ٤ · افشل بأمان (Fail-Safe)</h3>
+    <p>
+      لو سقطت الإشعارات، الطلب لا يزال يصل عبر واتساب. لو سقطت الخريطة، العنوان النصي يكفي. لو سقط Supabase، PWA المُثبّت يعرض القائمة من الكاش. <strong>كل ميزة تنحط فوق الأساسية، لا تحلّ مكانها.</strong>
+    </p>
+  </section>
+
+  <!-- =================== 02 OVERVIEW DIAGRAM =================== -->
+  <section class="chapter" id="overview">
+    <div class="section-num">02 / ARCHITECTURE</div>
+    <h2>المعمارية العامة</h2>
+    <p>
+      أربع طبقات. كل طبقة لها مسؤولية واحدة. كل طبقة قابلة للاستبدال بدون لمس الطبقات الأخرى.
+    </p>
+
+    <div class="diagram">
+      <div class="d-title">Fig 01 · High-level system architecture</div>
+      <svg viewBox="0 0 760 540" xmlns="http://www.w3.org/2000/svg" font-family="Cairo, sans-serif">
+        <defs>
+          <linearGradient id="laneA" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#FFF0F1"/><stop offset="1" stop-color="#FFE0E2"/>
+          </linearGradient>
+          <linearGradient id="laneB" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#E1ECF9"/><stop offset="1" stop-color="#D0DFF2"/>
+          </linearGradient>
+          <linearGradient id="laneC" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#DDF0EA"/><stop offset="1" stop-color="#C5E5DC"/>
+          </linearGradient>
+          <linearGradient id="laneD" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#FFF6D8"/><stop offset="1" stop-color="#FFEFB8"/>
+          </linearGradient>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#1A1108"/>
+          </marker>
+        </defs>
+
+        <!-- Lane 1: User devices -->
+        <rect x="20" y="20" width="720" height="90" rx="14" fill="url(#laneA)" stroke="#D32027" stroke-opacity="0.25"/>
+        <text x="730" y="44" text-anchor="end" font-size="11" font-weight="700" fill="#D32027" letter-spacing="1.5">LAYER 1 · USER DEVICES</text>
+
+        <g transform="translate(80,60)">
+          <rect width="140" height="36" rx="8" fill="#fff" stroke="#D32027" stroke-width="1.5"/>
+          <text x="70" y="22" text-anchor="middle" font-size="13" font-weight="800" fill="#1A1108">📱 PWA على الجوال</text>
+        </g>
+        <g transform="translate(310,60)">
+          <rect width="140" height="36" rx="8" fill="#fff" stroke="#D32027" stroke-width="1.5"/>
+          <text x="70" y="22" text-anchor="middle" font-size="13" font-weight="800" fill="#1A1108">💻 المتصفح</text>
+        </g>
+        <g transform="translate(540,60)">
+          <rect width="140" height="36" rx="8" fill="#fff" stroke="#D32027" stroke-width="1.5"/>
+          <text x="70" y="22" text-anchor="middle" font-size="13" font-weight="800" fill="#1A1108">🖥️ لوحة المطعم</text>
+        </g>
+
+        <!-- arrows down -->
+        <line x1="150" y1="105" x2="150" y2="135" stroke="#1A1108" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="380" y1="105" x2="380" y2="135" stroke="#1A1108" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="610" y1="105" x2="610" y2="135" stroke="#1A1108" stroke-width="1.5" marker-end="url(#arr)"/>
+
+        <!-- Lane 2: CDN / hosting -->
+        <rect x="20" y="140" width="720" height="100" rx="14" fill="url(#laneB)" stroke="#2E6BC7" stroke-opacity="0.25"/>
+        <text x="730" y="164" text-anchor="end" font-size="11" font-weight="700" fill="#2E6BC7" letter-spacing="1.5">LAYER 2 · EDGE &amp; CDN</text>
+
+        <g transform="translate(80,184)">
+          <rect width="600" height="44" rx="10" fill="#fff" stroke="#2E6BC7" stroke-width="1.5"/>
+          <text x="300" y="20" text-anchor="middle" font-size="14" font-weight="900" fill="#1A1108">Vercel Edge Network</text>
+          <text x="300" y="36" text-anchor="middle" font-size="11" font-weight="600" fill="#4A3B2E">يخدم Next.js · CDN عالمي · HTTPS تلقائي · يستضيف PWA</text>
+        </g>
+
+        <!-- arrow down -->
+        <line x1="380" y1="235" x2="380" y2="265" stroke="#1A1108" stroke-width="1.5" marker-end="url(#arr)"/>
+
+        <!-- Lane 3: Backend services (Supabase) -->
+        <rect x="20" y="270" width="720" height="160" rx="14" fill="url(#laneC)" stroke="#128C7E" stroke-opacity="0.3"/>
+        <text x="730" y="294" text-anchor="end" font-size="11" font-weight="700" fill="#128C7E" letter-spacing="1.5">LAYER 3 · BACKEND-AS-A-SERVICE</text>
+
+        <g transform="translate(60,310)">
+          <rect width="640" height="106" rx="12" fill="#fff" stroke="#128C7E" stroke-width="1.5"/>
+          <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="900" fill="#1A1108">🟢 Supabase Platform</text>
+
+          <!-- four pillars -->
+          <g transform="translate(20,42)">
+            <rect width="140" height="48" rx="8" fill="#DDF0EA" stroke="#128C7E" stroke-opacity="0.4"/>
+            <text x="70" y="20" text-anchor="middle" font-size="12" font-weight="800" fill="#128C7E">🔐 Auth</text>
+            <text x="70" y="36" text-anchor="middle" font-size="10" fill="#4A3B2E">OTP عبر SMS</text>
+          </g>
+          <g transform="translate(170,42)">
+            <rect width="140" height="48" rx="8" fill="#DDF0EA" stroke="#128C7E" stroke-opacity="0.4"/>
+            <text x="70" y="20" text-anchor="middle" font-size="12" font-weight="800" fill="#128C7E">🗄️ PostgreSQL</text>
+            <text x="70" y="36" text-anchor="middle" font-size="10" fill="#4A3B2E">قاعدة البيانات</text>
+          </g>
+          <g transform="translate(320,42)">
+            <rect width="140" height="48" rx="8" fill="#DDF0EA" stroke="#128C7E" stroke-opacity="0.4"/>
+            <text x="70" y="20" text-anchor="middle" font-size="12" font-weight="800" fill="#128C7E">🖼️ Storage</text>
+            <text x="70" y="36" text-anchor="middle" font-size="10" fill="#4A3B2E">اللوجوات والصور</text>
+          </g>
+          <g transform="translate(470,42)">
+            <rect width="140" height="48" rx="8" fill="#DDF0EA" stroke="#128C7E" stroke-opacity="0.4"/>
+            <text x="70" y="20" text-anchor="middle" font-size="12" font-weight="800" fill="#128C7E">⚡ Realtime</text>
+            <text x="70" y="36" text-anchor="middle" font-size="10" fill="#4A3B2E">تحديث الطلبات لحظياً</text>
+          </g>
+        </g>
+
+        <!-- arrow down -->
+        <line x1="380" y1="430" x2="380" y2="460" stroke="#1A1108" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+
+        <!-- Lane 4: External services -->
+        <rect x="20" y="460" width="720" height="65" rx="14" fill="url(#laneD)" stroke="#B88A00" stroke-opacity="0.3"/>
+        <text x="730" y="484" text-anchor="end" font-size="11" font-weight="700" fill="#B88A00" letter-spacing="1.5">LAYER 4 · EXTERNAL SERVICES</text>
+
+        <g transform="translate(60,498)">
+          <rect width="130" height="20" rx="6" fill="#fff" stroke="#B88A00" stroke-opacity="0.5"/>
+          <text x="65" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">💬 WhatsApp</text>
+        </g>
+        <g transform="translate(210,498)">
+          <rect width="130" height="20" rx="6" fill="#fff" stroke="#B88A00" stroke-opacity="0.5"/>
+          <text x="65" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">🔔 OneSignal</text>
+        </g>
+        <g transform="translate(360,498)">
+          <rect width="130" height="20" rx="6" fill="#fff" stroke="#B88A00" stroke-opacity="0.5"/>
+          <text x="65" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">🗺️ OpenStreetMap</text>
+        </g>
+        <g transform="translate(510,498)">
+          <rect width="170" height="20" rx="6" fill="#fff" stroke="#B88A00" stroke-opacity="0.5"/>
+          <text x="85" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">💳 HyperPay / Moyasar</text>
+        </g>
+      </svg>
+      <div class="caption">
+        ٤ طبقات منفصلة · ٤ خدمات أساسية فقط · لا backend مخصّص · كل خدمة لها بديل لو سقطت
+      </div>
+    </div>
+
+    <div class="card">
+      <p style="margin: 0;">
+        <strong>الفكرة المهمة:</strong> أنت لا تبني الـ Backend. أنت تبني فقط الـ Frontend (Next.js) وتُهيّئ قاعدة البيانات في Supabase. كل التعقيد (الأمان، التوسع، النسخ الاحتياطية، الـ scaling) Supabase يتولاه. هذا هو السبب الأول لكون الكود "ما يخرب".
+      </p>
+    </div>
+  </section>
+
+  <!-- =================== 03 TECH STACK =================== -->
+  <section class="chapter" id="stack">
+    <div class="section-num">03 / TECH STACK</div>
+    <h2>المكدّس التقني · ولماذا</h2>
+    <p>
+      كل أداة هنا اختيرت بعد التفكير في البديل. الأخضر = خطة مجانية تكفي للبداية. الأحمر = ندفع فيها لاحقاً عند التوسع.
+    </p>
+
+    <div class="stack-grid">
+      <div class="tech">
+        <span class="badge free">FREE</span>
+        <div class="role">FRONTEND</div>
+        <div class="name">Next.js 14</div>
+        <p class="why">أسرع framework لـ React. يدعم PWA و SSR (server-side rendering) للسرعة. عشرات آلاف المطورين يستخدمونه = حل سريع لأي مشكلة.</p>
+      </div>
+
+      <div class="tech">
+        <span class="badge free">FREE</span>
+        <div class="role">HOSTING</div>
+        <div class="name">Vercel</div>
+        <p class="why">صنّاع Next.js. النشر تلقائي من Git. CDN عالمي. HTTPS مجاني. مقياس تلقائي (auto-scale) بدون أي إعداد. الخطة المجانية تكفي لـ ١٠٠ ألف زيارة شهرياً.</p>
+      </div>
+
+      <div class="tech">
+        <span class="badge free">FREE</span>
+        <div class="role">BACKEND</div>
+        <div class="name">Supabase</div>
+        <p class="why">PostgreSQL (قاعدة بيانات اخترعت ١٩٩٦ ولم تكسر) + Auth + Storage + Realtime في خدمة واحدة. مفتوحة المصدر. تقدر تنقلها لخادمك لو احتجت.</p>
+      </div>
+
+      <div class="tech">
+        <span class="badge free">FREE</span>
+        <div class="role">UI</div>
+        <div class="name">Tailwind + shadcn/ui</div>
+        <p class="why">مكتبة مكونات جاهزة (أزرار، نماذج، حوارات). تصميم احترافي بدون CSS كثير. كل المكونات ملكك بعد التثبيت – لا dependencies خارجية.</p>
+      </div>
+
+      <div class="tech">
+        <span class="badge free">FREE</span>
+        <div class="role">PUSH NOTIFICATIONS</div>
+        <div class="name">OneSignal</div>
+        <p class="why">مجاني حتى ١٠ آلاف مشترك. واجهة عربية. يدعم Android و iOS و الويب. لو تجاوزت الحد ننقل لـ Firebase Cloud Messaging (مجاني بالكامل).</p>
+      </div>
+
+      <div class="tech">
+        <span class="badge free">FREE</span>
+        <div class="role">MAPS</div>
+        <div class="name">Leaflet + OSM</div>
+        <p class="why">نفس اللي معنا في v5. مجاني تماماً. لو احتجت دقة أعلى لاحقاً، Google Maps API بـ ٢٠٠$ مجاناً شهرياً قبل أي رسوم.</p>
+      </div>
+
+      <div class="tech">
+        <span class="badge paid">PAID</span>
+        <div class="role">SMS · OTP</div>
+        <div class="name">Unifonic</div>
+        <p class="why">شركة سعودية. ~٠.٠٥ ريال لكل SMS. لـ ١٠٠ تسجيل دخول يومياً = ١٥٠ ريال شهرياً فقط. بديل: Twilio (أغلى لكن عالمي).</p>
+      </div>
+
+      <div class="tech">
+        <span class="badge paid">PAID</span>
+        <div class="role">PAYMENT GATEWAY</div>
+        <div class="name">Moyasar أو HyperPay</div>
+        <p class="why">يدعم مدى و فيزا و Apple Pay. عمولة ~٢.٥٪ لكل عملية. ندمجه في المرحلة ٥ بعد التحقق من السوق.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== 04 ORDER FLOW =================== -->
+  <section class="chapter" id="flow-order">
+    <div class="section-num">04 / FLOW · ORDER</div>
+    <h2>تدفق الطلب · من السلة إلى المطعم</h2>
+    <p>
+      هذا أهم تدفق في المنصة كلها. عشر خطوات، كل خطوة في خادم مختلف، لكن من ناحية الزبون: نقرتين فقط.
+    </p>
+
+    <div class="diagram">
+      <div class="d-title">Fig 02 · Order placement sequence</div>
+      <svg viewBox="0 0 760 480" xmlns="http://www.w3.org/2000/svg" font-family="Cairo, sans-serif">
+        <defs>
+          <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#D32027"/>
+          </marker>
+        </defs>
+
+        <!-- Actor columns (RTL: customer on right, restaurant on left) -->
+        <g>
+          <rect x="640" y="20" width="100" height="40" rx="8" fill="#D32027"/>
+          <text x="690" y="44" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">الزبون</text>
+          <line x1="690" y1="60" x2="690" y2="460" stroke="#D32027" stroke-width="1.5" stroke-dasharray="3 3"/>
+        </g>
+        <g>
+          <rect x="480" y="20" width="100" height="40" rx="8" fill="#2E6BC7"/>
+          <text x="530" y="44" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">PWA</text>
+          <line x1="530" y1="60" x2="530" y2="460" stroke="#2E6BC7" stroke-width="1.5" stroke-dasharray="3 3"/>
+        </g>
+        <g>
+          <rect x="320" y="20" width="100" height="40" rx="8" fill="#128C7E"/>
+          <text x="370" y="44" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">Supabase</text>
+          <line x1="370" y1="60" x2="370" y2="460" stroke="#128C7E" stroke-width="1.5" stroke-dasharray="3 3"/>
+        </g>
+        <g>
+          <rect x="160" y="20" width="100" height="40" rx="8" fill="#B88A00"/>
+          <text x="210" y="44" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">WhatsApp</text>
+          <line x1="210" y1="60" x2="210" y2="460" stroke="#B88A00" stroke-width="1.5" stroke-dasharray="3 3"/>
+        </g>
+        <g>
+          <rect x="20" y="20" width="100" height="40" rx="8" fill="#1A1108"/>
+          <text x="70" y="44" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">المطعم</text>
+          <line x1="70" y1="60" x2="70" y2="460" stroke="#1A1108" stroke-width="1.5" stroke-dasharray="3 3"/>
+        </g>
+
+        <!-- Step 1: Customer browses menu -->
+        <g>
+          <line x1="685" y1="85" x2="535" y2="85" stroke="#D32027" stroke-width="2" marker-end="url(#arr2)"/>
+          <rect x="540" y="72" width="140" height="22" rx="6" fill="#FFF0F1" stroke="#D32027" stroke-opacity="0.3"/>
+          <text x="610" y="87" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">1. يفتح القائمة</text>
+        </g>
+
+        <!-- Step 2: PWA → Supabase (load menu) -->
+        <g>
+          <line x1="525" y1="120" x2="375" y2="120" stroke="#D32027" stroke-width="2" marker-end="url(#arr2)"/>
+          <rect x="380" y="107" width="140" height="22" rx="6" fill="#DDF0EA" stroke="#128C7E" stroke-opacity="0.3"/>
+          <text x="450" y="122" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">2. يطلب المنيو</text>
+        </g>
+
+        <!-- Step 3: Supabase → PWA (menu data) -->
+        <g>
+          <line x1="375" y1="155" x2="525" y2="155" stroke="#128C7E" stroke-width="2" marker-end="url(#arr2)"/>
+          <rect x="380" y="142" width="140" height="22" rx="6" fill="#DDF0EA" stroke="#128C7E" stroke-opacity="0.3"/>
+          <text x="450" y="157" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">3. ⚡ المنيو + الصور</text>
+        </g>
+
+        <!-- Step 4: Customer adds items -->
+        <g>
+          <line x1="685" y1="190" x2="535" y2="190" stroke="#D32027" stroke-width="2" marker-end="url(#arr2)"/>
+          <rect x="540" y="177" width="140" height="22" rx="6" fill="#FFF0F1" stroke="#D32027" stroke-opacity="0.3"/>
+          <text x="610" y="192" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">4. يضيف للسلة</text>
+        </g>
+
+        <!-- Step 5: Customer fills info / location -->
+        <g>
+          <line x1="685" y1="225" x2="535" y2="225" stroke="#D32027" stroke-width="2" marker-end="url(#arr2)"/>
+          <rect x="540" y="212" width="140" height="22" rx="6" fill="#FFF0F1" stroke="#D32027" stroke-opacity="0.3"/>
+          <text x="610" y="227" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">5. اسم + موقع</text>
+        </g>
+
+        <!-- Step 6: PWA → Supabase (save order) -->
+        <g>
+          <line x1="525" y1="260" x2="375" y2="260" stroke="#D32027" stroke-width="2" marker-end="url(#arr2)"/>
+          <rect x="380" y="247" width="140" height="22" rx="6" fill="#DDF0EA" stroke="#128C7E" stroke-opacity="0.3"/>
+          <text x="450" y="262" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">6. حفظ الطلب</text>
+        </g>
+
+        <!-- Step 7: Supabase → PWA (order ID) -->
+        <g>
+          <line x1="375" y1="295" x2="525" y2="295" stroke="#128C7E" stroke-width="2" marker-end="url(#arr2)"/>
+          <rect x="380" y="282" width="140" height="22" rx="6" fill="#DDF0EA" stroke="#128C7E" stroke-opacity="0.3"/>
+          <text x="450" y="297" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">7. ✓ Order ID</text>
+        </g>
+
+        <!-- Step 8: PWA → WhatsApp (open with message) -->
+        <g>
+          <line x1="525" y1="335" x2="215" y2="335" stroke="#D32027" stroke-width="2" marker-end="url(#arr2)"/>
+          <rect x="220" y="322" width="300" height="22" rx="6" fill="#FFF6D8" stroke="#B88A00" stroke-opacity="0.4"/>
+          <text x="370" y="337" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">8. wa.me?text=الطلب الكامل</text>
+        </g>
+
+        <!-- Step 9: WhatsApp → Restaurant -->
+        <g>
+          <line x1="205" y1="370" x2="75" y2="370" stroke="#B88A00" stroke-width="2" marker-end="url(#arr2)"/>
+          <rect x="80" y="357" width="120" height="22" rx="6" fill="#FFF6D8" stroke="#B88A00" stroke-opacity="0.4"/>
+          <text x="140" y="372" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">9. وصول الطلب</text>
+        </g>
+
+        <!-- Step 10: Supabase Realtime → Restaurant dashboard -->
+        <g>
+          <line x1="375" y1="410" x2="75" y2="410" stroke="#128C7E" stroke-width="2" stroke-dasharray="4 2" marker-end="url(#arr2)"/>
+          <rect x="80" y="397" width="290" height="22" rx="6" fill="#DDF0EA" stroke="#128C7E" stroke-opacity="0.3"/>
+          <text x="225" y="412" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1108">10. ⚡ Realtime ping على لوحة التحكم</text>
+        </g>
+
+        <!-- Step 11: Restaurant updates status → customer sees it via Realtime -->
+        <g>
+          <line x1="75" y1="450" x2="685" y2="450" stroke="#1A1108" stroke-width="2" stroke-dasharray="2 3" marker-end="url(#arr2)"/>
+          <text x="380" y="445" text-anchor="middle" font-size="10" font-weight="600" fill="#4A3B2E">11. تحديث الحالة (قيد الإعداد ← جاهز ← خرج للتوصيل) عبر Realtime</text>
+        </g>
+      </svg>
+      <div class="caption">
+        الزبون يرى نقرتين · النظام يقوم بـ ١١ خطوة في الخلفية · لا شيء منها يحتاج خادم نكتبه نحن
+      </div>
+    </div>
+
+    <div class="card ok">
+      <h3 style="margin-top:0;">لماذا واتساب + Supabase معاً؟</h3>
+      <p style="margin: 0;">
+        Supabase يحفظ الطلب في قاعدة البيانات (للتحليلات، التاريخ، إعادة الطلب). واتساب يوصّل التنبيه الفوري للمطعم على جوال الموظف. <strong>قناتان مستقلتان</strong>: لو سقطت قاعدة البيانات، الواتساب يصل. لو سقط الواتساب، الطلب في قاعدة البيانات يظهر على لوحة المطعم. هذا هو "Fail-safe".
+      </p>
+    </div>
+  </section>
+
+  <!-- =================== 05 PUSH FLOW =================== -->
+  <section class="chapter" id="flow-push">
+    <div class="section-num">05 / FLOW · MARKETING PUSH</div>
+    <h2>تدفق إشعار العروض</h2>
+    <p>
+      المطعم يضغط زر "أرسل عرض لكل من لم يطلب من ٣٠ يوم". هذا اللي يصير:
+    </p>
+
+    <div class="diagram">
+      <div class="d-title">Fig 03 · Marketing push notification flow</div>
+      <svg viewBox="0 0 760 360" xmlns="http://www.w3.org/2000/svg" font-family="Cairo, sans-serif">
+        <defs>
+          <marker id="arr3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#6B3FA0"/>
+          </marker>
+        </defs>
+
+        <!-- Restaurant box -->
+        <g transform="translate(580,30)">
+          <rect width="160" height="60" rx="12" fill="#1A1108"/>
+          <text x="80" y="28" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">🖥️ المطعم</text>
+          <text x="80" y="46" text-anchor="middle" font-size="11" fill="#FAF6EE" opacity="0.7">لوحة التحكم</text>
+        </g>
+
+        <!-- Step 1: Compose promo -->
+        <g transform="translate(580,110)">
+          <rect width="160" height="70" rx="10" fill="#EDE5F7" stroke="#6B3FA0" stroke-opacity="0.4"/>
+          <text x="80" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#6B3FA0">1. كتابة العرض</text>
+          <text x="80" y="40" text-anchor="middle" font-size="10" fill="#4A3B2E">"خصم ٢٠٪ هذا الأسبوع"</text>
+          <text x="80" y="56" text-anchor="middle" font-size="10" fill="#4A3B2E">→ الجمهور: غير نشطين</text>
+        </g>
+
+        <line x1="660" y1="180" x2="660" y2="210" stroke="#6B3FA0" stroke-width="2" marker-end="url(#arr3)"/>
+
+        <!-- Supabase query: find inactive customers -->
+        <g transform="translate(360,210)">
+          <rect width="380" height="70" rx="10" fill="#DDF0EA" stroke="#128C7E" stroke-opacity="0.4"/>
+          <text x="190" y="22" text-anchor="middle" font-size="12" font-weight="800" fill="#128C7E">2. Supabase Query</text>
+          <text x="190" y="42" text-anchor="middle" font-size="10" fill="#4A3B2E" font-family="JetBrains Mono">SELECT * FROM customers WHERE last_order_at &lt; NOW() - 30 days</text>
+          <text x="190" y="60" text-anchor="middle" font-size="10" font-weight="600" fill="#4A3B2E">→ النتيجة: ٢٤٧ زبون</text>
+        </g>
+
+        <line x1="550" y1="280" x2="550" y2="310" stroke="#6B3FA0" stroke-width="2" marker-end="url(#arr3)"/>
+
+        <!-- OneSignal sends push -->
+        <g transform="translate(380,310)">
+          <rect width="340" height="40" rx="10" fill="#FFF6D8" stroke="#B88A00" stroke-opacity="0.4"/>
+          <text x="170" y="18" text-anchor="middle" font-size="12" font-weight="800" fill="#B88A00">3. 🔔 OneSignal API · إرسال للجوالات</text>
+          <text x="170" y="33" text-anchor="middle" font-size="10" fill="#4A3B2E">~٢ ثانية لإرسال ٢٤٧ إشعار</text>
+        </g>
+
+        <!-- Customer side -->
+        <g transform="translate(20,30)">
+          <rect width="160" height="60" rx="12" fill="#D32027"/>
+          <text x="80" y="28" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">📱 الزبائن</text>
+          <text x="80" y="46" text-anchor="middle" font-size="11" fill="#fff" opacity="0.8">PWA على جوالهم</text>
+        </g>
+
+        <!-- Push arrow from OneSignal to customer -->
+        <path d="M 380,330 Q 200,330 130,90" stroke="#6B3FA0" stroke-width="2" fill="none" marker-end="url(#arr3)"/>
+        <rect x="190" y="200" width="160" height="44" rx="8" fill="#fff" stroke="#6B3FA0" stroke-width="1.5"/>
+        <text x="270" y="220" text-anchor="middle" font-size="11" font-weight="800" fill="#1A1108">🔔 إشعار</text>
+        <text x="270" y="238" text-anchor="middle" font-size="10" fill="#4A3B2E">"خصم ٢٠٪ بانتظارك"</text>
+
+        <!-- Customer taps notification -->
+        <g transform="translate(20,110)">
+          <rect width="160" height="60" rx="10" fill="#FFF0F1" stroke="#D32027" stroke-opacity="0.4"/>
+          <text x="80" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#D32027">4. يضغط الإشعار</text>
+          <text x="80" y="40" text-anchor="middle" font-size="10" fill="#4A3B2E">PWA يفتح على القائمة</text>
+          <text x="80" y="54" text-anchor="middle" font-size="10" fill="#4A3B2E">مع الكوبون مفعّل</text>
+        </g>
+      </svg>
+      <div class="caption">
+        المطعم يكتب الرسالة مرة واحدة · النظام يستهدف فقط الزبائن غير النشطين · النتيجة: إعادة تفعيل ١٥-٢٥٪ منهم تقريباً
+      </div>
+    </div>
+
+    <div class="card tinted">
+      <p style="margin: 0; font-size: 14px;">
+        <strong>القاعدة:</strong> كل ميزة تسويقية تكون اختيارية للزبون. الزبون لازم يوافق صراحة على الإشعارات (browser permission). لو رفض، النظام يحترم رغبته. هذه ليست فقط أخلاق – هي شرط قانوني (نظام حماية البيانات السعودي PDPL).
+      </p>
+    </div>
+  </section>
+
+  <!-- =================== 06 DATABASE =================== -->
+  <section class="chapter" id="database">
+    <div class="section-num">06 / DATA MODEL</div>
+    <h2>قاعدة البيانات · الكيانات والعلاقات</h2>
+    <p>
+      ٧ جداول فقط. كل جدول مسؤولية واحدة. العلاقات بينها تشكّل كل المنطق.
+    </p>
+
+    <div class="diagram">
+      <div class="d-title">Fig 04 · Database entity-relationship diagram</div>
+      <svg viewBox="0 0 760 560" xmlns="http://www.w3.org/2000/svg" font-family="Cairo, sans-serif">
+        <defs>
+          <marker id="rel" viewBox="0 0 12 12" refX="6" refY="6" markerWidth="10" markerHeight="10" orient="auto">
+            <circle cx="6" cy="6" r="3" fill="#D32027"/>
+          </marker>
+        </defs>
+
+        <!-- restaurants table -->
+        <g transform="translate(30,30)">
+          <rect width="200" height="140" rx="10" fill="#FFF0F1" stroke="#D32027" stroke-width="1.5"/>
+          <rect width="200" height="32" rx="10" fill="#D32027"/>
+          <text x="100" y="22" text-anchor="middle" font-size="13" font-weight="800" fill="#fff" font-family="JetBrains Mono">restaurants</text>
+          <text x="190" y="50" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108"><tspan fill="#D32027">PK</tspan>  id</text>
+          <text x="190" y="65" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">slug</text>
+          <text x="190" y="80" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">name_ar</text>
+          <text x="190" y="95" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">logo_url</text>
+          <text x="190" y="110" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">theme_primary</text>
+          <text x="190" y="125" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">whatsapp</text>
+          <text x="190" y="140" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">subscription_status</text>
+          <text x="190" y="158" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#8B7B6B">...</text>
+        </g>
+
+        <!-- menu_categories -->
+        <g transform="translate(280,30)">
+          <rect width="200" height="100" rx="10" fill="#FFF6D8" stroke="#B88A00" stroke-width="1.5"/>
+          <rect width="200" height="32" rx="10" fill="#B88A00"/>
+          <text x="100" y="22" text-anchor="middle" font-size="13" font-weight="800" fill="#fff" font-family="JetBrains Mono">menu_categories</text>
+          <text x="190" y="50" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108"><tspan fill="#D32027">PK</tspan>  id</text>
+          <text x="190" y="65" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108"><tspan fill="#2E6BC7">FK</tspan>  restaurant_id</text>
+          <text x="190" y="80" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">name_ar</text>
+          <text x="190" y="95" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">emoji</text>
+          <text x="190" y="115" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">sort_order</text>
+        </g>
+
+        <!-- menu_items -->
+        <g transform="translate(530,30)">
+          <rect width="200" height="135" rx="10" fill="#FFF6D8" stroke="#B88A00" stroke-width="1.5"/>
+          <rect width="200" height="32" rx="10" fill="#B88A00"/>
+          <text x="100" y="22" text-anchor="middle" font-size="13" font-weight="800" fill="#fff" font-family="JetBrains Mono">menu_items</text>
+          <text x="190" y="50" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108"><tspan fill="#D32027">PK</tspan>  id</text>
+          <text x="190" y="65" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108"><tspan fill="#2E6BC7">FK</tspan>  category_id</text>
+          <text x="190" y="80" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">name_ar</text>
+          <text x="190" y="95" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">image_url</text>
+          <text x="190" y="110" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">prices (jsonb)</text>
+          <text x="190" y="125" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">badges (jsonb)</text>
+          <text x="190" y="140" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">is_active</text>
+        </g>
+
+        <!-- customers -->
+        <g transform="translate(30,220)">
+          <rect width="200" height="125" rx="10" fill="#E1ECF9" stroke="#2E6BC7" stroke-width="1.5"/>
+          <rect width="200" height="32" rx="10" fill="#2E6BC7"/>
+          <text x="100" y="22" text-anchor="middle" font-size="13" font-weight="800" fill="#fff" font-family="JetBrains Mono">customers</text>
+          <text x="190" y="50" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108"><tspan fill="#D32027">PK</tspan>  id</text>
+          <text x="190" y="65" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">phone (UNIQUE)</text>
+          <text x="190" y="80" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">name</text>
+          <text x="190" y="95" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">last_order_at</text>
+          <text x="190" y="110" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">total_orders</text>
+          <text x="190" y="125" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">total_spent</text>
+        </g>
+
+        <!-- customer_addresses -->
+        <g transform="translate(280,220)">
+          <rect width="200" height="125" rx="10" fill="#E1ECF9" stroke="#2E6BC7" stroke-width="1.5"/>
+          <rect width="200" height="32" rx="10" fill="#2E6BC7"/>
+          <text x="100" y="22" text-anchor="middle" font-size="13" font-weight="800" fill="#fff" font-family="JetBrains Mono">customer_addresses</text>
+          <text x="190" y="50" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108"><tspan fill="#D32027">PK</tspan>  id</text>
+          <text x="190" y="65" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108"><tspan fill="#2E6BC7">FK</tspan>  customer_id</text>
+          <text x="190" y="80" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">label (المنزل/المكتب)</text>
+          <text x="190" y="95" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">address</text>
+          <text x="190" y="110" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">lat, lng</text>
+          <text x="190" y="125" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">is_default</text>
+        </g>
+
+        <!-- orders (central) -->
+        <g transform="translate(530,220)">
+          <rect width="200" height="170" rx="10" fill="#DDF0EA" stroke="#128C7E" stroke-width="2"/>
+          <rect width="200" height="32" rx="10" fill="#128C7E"/>
+          <text x="100" y="22" text-anchor="middle" font-size="13" font-weight="800" fill="#fff" font-family="JetBrains Mono">orders ⭐</text>
+          <text x="190" y="50" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108"><tspan fill="#D32027">PK</tspan>  id</text>
+          <text x="190" y="65" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108"><tspan fill="#2E6BC7">FK</tspan>  restaurant_id</text>
+          <text x="190" y="80" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108"><tspan fill="#2E6BC7">FK</tspan>  customer_id</text>
+          <text x="190" y="95" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">items (jsonb snapshot)</text>
+          <text x="190" y="110" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">subtotal, total</text>
+          <text x="190" y="125" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">order_type</text>
+          <text x="190" y="140" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">lat, lng</text>
+          <text x="190" y="155" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">status</text>
+          <text x="190" y="170" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">created_at</text>
+        </g>
+
+        <!-- promotions -->
+        <g transform="translate(30,420)">
+          <rect width="200" height="115" rx="10" fill="#EDE5F7" stroke="#6B3FA0" stroke-width="1.5"/>
+          <rect width="200" height="32" rx="10" fill="#6B3FA0"/>
+          <text x="100" y="22" text-anchor="middle" font-size="13" font-weight="800" fill="#fff" font-family="JetBrains Mono">promotions</text>
+          <text x="190" y="50" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108"><tspan fill="#D32027">PK</tspan>  id</text>
+          <text x="190" y="65" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108"><tspan fill="#2E6BC7">FK</tspan>  restaurant_id</text>
+          <text x="190" y="80" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">title_ar, body_ar</text>
+          <text x="190" y="95" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">discount_code</text>
+          <text x="190" y="110" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">target_audience</text>
+        </g>
+
+        <!-- push_subscriptions -->
+        <g transform="translate(280,420)">
+          <rect width="200" height="115" rx="10" fill="#EDE5F7" stroke="#6B3FA0" stroke-width="1.5"/>
+          <rect width="200" height="32" rx="10" fill="#6B3FA0"/>
+          <text x="100" y="22" text-anchor="middle" font-size="13" font-weight="800" fill="#fff" font-family="JetBrains Mono">push_subscriptions</text>
+          <text x="190" y="50" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108"><tspan fill="#D32027">PK</tspan>  id</text>
+          <text x="190" y="65" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108"><tspan fill="#2E6BC7">FK</tspan>  customer_id</text>
+          <text x="190" y="80" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">endpoint</text>
+          <text x="190" y="95" text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="#1A1108">device_info</text>
+        </g>
+
+        <!-- Relationships -->
+        <!-- restaurants 1→* menu_categories -->
+        <path d="M 230,80 L 280,80" stroke="#D32027" stroke-width="2" fill="none"/>
+        <text x="255" y="74" text-anchor="middle" font-size="10" font-weight="700" fill="#D32027">1:N</text>
+
+        <!-- categories 1→* items -->
+        <path d="M 480,80 L 530,80" stroke="#D32027" stroke-width="2" fill="none"/>
+        <text x="505" y="74" text-anchor="middle" font-size="10" font-weight="700" fill="#D32027">1:N</text>
+
+        <!-- customers 1→* addresses -->
+        <path d="M 230,280 L 280,280" stroke="#D32027" stroke-width="2" fill="none"/>
+        <text x="255" y="274" text-anchor="middle" font-size="10" font-weight="700" fill="#D32027">1:N</text>
+
+        <!-- customers 1→* orders -->
+        <path d="M 230,290 Q 380,400 530,330" stroke="#D32027" stroke-width="2" fill="none" stroke-dasharray="3 3"/>
+        <text x="380" y="380" text-anchor="middle" font-size="10" font-weight="700" fill="#D32027" background="#fff">customer · 1:N</text>
+
+        <!-- restaurants 1→* orders -->
+        <path d="M 230,140 Q 400,170 530,260" stroke="#D32027" stroke-width="2" fill="none" stroke-dasharray="3 3"/>
+        <text x="400" y="170" text-anchor="middle" font-size="10" font-weight="700" fill="#D32027">restaurant · 1:N</text>
+
+        <!-- restaurants → promotions -->
+        <path d="M 130,170 L 130,420" stroke="#D32027" stroke-width="2" fill="none"/>
+        <text x="138" y="295" text-anchor="start" font-size="10" font-weight="700" fill="#D32027">1:N</text>
+
+        <!-- customers → push_subs -->
+        <path d="M 380,345 L 380,420" stroke="#D32027" stroke-width="2" fill="none"/>
+        <text x="388" y="385" text-anchor="start" font-size="10" font-weight="700" fill="#D32027">1:N</text>
+      </svg>
+      <div class="caption">
+        النجم ⭐ على جدول orders لأنه قلب النظام. كل شيء يحوم حوله: زبون يطلب من مطعم، مع منيو محفوظة كـ snapshot في حقل JSON.
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;">لماذا snapshot الطلب في jsonb؟</h3>
+      <p style="margin: 0;">
+        عندما المطعم يغيّر سعر بروستد من ٢٠ إلى ٢٥ ريال، الطلبات القديمة <strong>لازم تبقى</strong> بالسعر الأصلي. لو ربطنا orders بـ menu_items عبر FK فقط، تاريخ الفواتير ينخرب. الحل: نسخة كاملة من السلة وقت الطلب في حقل واحد (jsonb). هذا تصميم مهم وحفظه يوفّر مشاكل قانونية لاحقاً.
+      </p>
+    </div>
+  </section>
+
+  <!-- =================== 07 MULTI-TENANT =================== -->
+  <section class="chapter" id="multitenant">
+    <div class="section-num">07 / MULTI-TENANT</div>
+    <h2>Multi-Tenant · كود واحد، مطاعم كثيرة</h2>
+    <p>
+      هذا أهم سحب في المنصة. نفس الكود يقدّم تجارب مختلفة كلياً لكل عميل، عبر <strong>قراءة config المطعم وتطبيقه على الـ UI</strong>.
+    </p>
+
+    <div class="diagram">
+      <div class="d-title">Fig 05 · Multi-tenant routing &amp; theming</div>
+      <svg viewBox="0 0 760 440" xmlns="http://www.w3.org/2000/svg" font-family="Cairo, sans-serif">
+        <defs>
+          <marker id="arr4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#4A3B2E"/>
+          </marker>
+        </defs>
+
+        <!-- Three subdomains on right -->
+        <g transform="translate(550,40)">
+          <rect width="180" height="40" rx="8" fill="#D32027"/>
+          <text x="90" y="18" text-anchor="middle" font-size="12" font-weight="800" fill="#fff" font-family="JetBrains Mono">koko.menulink.app</text>
+          <text x="90" y="32" text-anchor="middle" font-size="9" fill="#fff" opacity="0.8">KO-KO Chicky Licky</text>
+        </g>
+        <g transform="translate(550,100)">
+          <rect width="180" height="40" rx="8" fill="#B88A00"/>
+          <text x="90" y="18" text-anchor="middle" font-size="12" font-weight="800" fill="#fff" font-family="JetBrains Mono">burger.menulink.app</text>
+          <text x="90" y="32" text-anchor="middle" font-size="9" fill="#fff" opacity="0.8">Burgerizzr</text>
+        </g>
+        <g transform="translate(550,160)">
+          <rect width="180" height="40" rx="8" fill="#6B3FA0"/>
+          <text x="90" y="18" text-anchor="middle" font-size="12" font-weight="800" fill="#fff" font-family="JetBrains Mono">cafe.menulink.app</text>
+          <text x="90" y="32" text-anchor="middle" font-size="9" fill="#fff" opacity="0.8">Roastery Café</text>
+        </g>
+
+        <!-- Arrows merging into one Next.js -->
+        <line x1="545" y1="60" x2="345" y2="220" stroke="#4A3B2E" stroke-width="1.5" marker-end="url(#arr4)"/>
+        <line x1="545" y1="120" x2="345" y2="220" stroke="#4A3B2E" stroke-width="1.5" marker-end="url(#arr4)"/>
+        <line x1="545" y1="180" x2="345" y2="220" stroke="#4A3B2E" stroke-width="1.5" marker-end="url(#arr4)"/>
+
+        <!-- Single Next.js app -->
+        <g transform="translate(180,220)">
+          <rect width="340" height="80" rx="12" fill="#1A1108"/>
+          <text x="170" y="32" text-anchor="middle" font-size="16" font-weight="900" fill="#fff">⚛️ Next.js App (نفس الكود)</text>
+          <text x="170" y="56" text-anchor="middle" font-size="11" fill="#FAF6EE" opacity="0.7" font-family="JetBrains Mono">app/[tenant]/page.tsx</text>
+          <text x="170" y="72" text-anchor="middle" font-size="10" fill="#FAF6EE" opacity="0.6">يستخرج slug من الـ subdomain → يحمّل config</text>
+        </g>
+
+        <line x1="350" y1="305" x2="350" y2="335" stroke="#4A3B2E" stroke-width="1.5" marker-end="url(#arr4)"/>
+
+        <!-- Supabase load config -->
+        <g transform="translate(180,335)">
+          <rect width="340" height="50" rx="10" fill="#DDF0EA" stroke="#128C7E" stroke-width="1.5"/>
+          <text x="170" y="20" text-anchor="middle" font-size="12" font-weight="800" fill="#128C7E">Supabase · يقرأ config + المنيو</text>
+          <text x="170" y="38" text-anchor="middle" font-size="10" fill="#4A3B2E" font-family="JetBrains Mono">SELECT * FROM restaurants WHERE slug = 'koko'</text>
+        </g>
+
+        <!-- Three different rendered outputs on left -->
+        <g transform="translate(30,40)">
+          <rect width="120" height="60" rx="10" fill="#FFF0F1" stroke="#D32027" stroke-width="2"/>
+          <text x="60" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#D32027">🍗 KO-KO</text>
+          <text x="60" y="36" text-anchor="middle" font-size="9" fill="#4A3B2E">أحمر · بروستد</text>
+          <text x="60" y="50" text-anchor="middle" font-size="9" fill="#4A3B2E">منيو دجاج</text>
+        </g>
+        <g transform="translate(30,110)">
+          <rect width="120" height="60" rx="10" fill="#FFF6D8" stroke="#B88A00" stroke-width="2"/>
+          <text x="60" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#B88A00">🍔 Burgerizzr</text>
+          <text x="60" y="36" text-anchor="middle" font-size="9" fill="#4A3B2E">أحمر+أبيض</text>
+          <text x="60" y="50" text-anchor="middle" font-size="9" fill="#4A3B2E">منيو برجر</text>
+        </g>
+        <g transform="translate(30,180)">
+          <rect width="120" height="60" rx="10" fill="#EDE5F7" stroke="#6B3FA0" stroke-width="2"/>
+          <text x="60" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#6B3FA0">☕ Roastery</text>
+          <text x="60" y="36" text-anchor="middle" font-size="9" fill="#4A3B2E">بني قهوة</text>
+          <text x="60" y="50" text-anchor="middle" font-size="9" fill="#4A3B2E">منيو قهوة</text>
+        </g>
+
+        <!-- Outputs arrow from Supabase to renders -->
+        <path d="M 175,360 Q 100,360 90,240" stroke="#128C7E" stroke-width="1.5" fill="none" stroke-dasharray="3 3" marker-end="url(#arr4)"/>
+      </svg>
+      <div class="caption">
+        ٣ subdomains · نفس الـ Next.js app · ٣ تجارب مختلفة كلياً. لإضافة عميل جديد: صف واحد في جدول restaurants · ٣٠ دقيقة بدل ٣٠ ساعة.
+      </div>
+    </div>
+
+    <h3>الكود الفعلي (مبسّط)</h3>
+    <div class="card" style="background: #1A1108; color: #FAF6EE; font-family: 'JetBrains Mono', monospace; font-size: 13px; direction: ltr; text-align: left; line-height: 1.6; padding: 20px;">
+<span style="color: #8B7B6B;">// app/[tenant]/page.tsx</span><br>
+<span style="color: #FFC619;">export async function</span> <span style="color: #2E6BC7;">getServerSideProps</span>({ params }) {<br>
+&nbsp;&nbsp;<span style="color: #FFC619;">const</span> tenant = <span style="color: #FFC619;">await</span> supabase<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.from(<span style="color: #DDF0EA;">'restaurants'</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.select(<span style="color: #DDF0EA;">'*, menu_categories(*, menu_items(*))'</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.eq(<span style="color: #DDF0EA;">'slug'</span>, params.tenant)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.<span style="color: #2E6BC7;">single</span>();<br>
+&nbsp;&nbsp;<span style="color: #FFC619;">return</span> { props: { tenant } };<br>
+}<br><br>
+<span style="color: #FFC619;">export default function</span> <span style="color: #2E6BC7;">MenuPage</span>({ tenant }) {<br>
+&nbsp;&nbsp;<span style="color: #FFC619;">return</span> (<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span style="color: #D32027;">ThemeProvider</span> theme={tenant.theme}&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span style="color: #D32027;">Menu</span> data={tenant.menu_categories} /&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/<span style="color: #D32027;">ThemeProvider</span>&gt;<br>
+&nbsp;&nbsp;);<br>
+}
+    </div>
+    <p style="margin-top: 10px; font-size: 13px; color: var(--ink-mute);">
+      ١٠ أسطر فقط من الكود تقدّم كل عميل في المنصة. اللوحة الجمالية والمنيو يأتيان من Supabase في كل طلب.
+    </p>
+  </section>
+
+  <!-- =================== 08 ROBUSTNESS =================== -->
+  <section class="chapter" id="robust">
+    <div class="section-num">08 / ROBUSTNESS</div>
+    <h2>٧ أسباب تجعل هذا الكود لا يخرب</h2>
+    <p>
+      "ما يخرب" ليست شعار. هي نتيجة قرارات معمارية محددة. هذه ٧ منها:
+    </p>
+
+    <div class="reasons">
+      <div class="reason">
+        <div class="num">1</div>
+        <div>
+          <h4>صفر كود خادم نكتبه</h4>
+          <p>كل المنطق في الفرونت أو في Supabase RLS (Row Level Security). لا يوجد server.js يمكن أن يقع. لو حصلت مشكلة في Supabase، فريقهم من ٢٠٠ مهندس يحلّها قبل أن نلاحظ نحن.</p>
+        </div>
+      </div>
+
+      <div class="reason">
+        <div class="num">2</div>
+        <div>
+          <h4>PostgreSQL هي قاعدة البيانات</h4>
+          <p>PostgreSQL أُطلقت ١٩٩٦. تستخدمها Instagram, Apple, Spotify, Saudi Aramco. مرّت بـ ٣٠ سنة من الاختبار في العالم الحقيقي. أي مشكلة تواجهها، شخص آخر حلّها قبلك.</p>
+        </div>
+      </div>
+
+      <div class="reason">
+        <div class="num">3</div>
+        <div>
+          <h4>كل ميزة لها بديل احتياطي</h4>
+          <p>الطلب عبر واتساب <strong>و</strong> قاعدة البيانات. الموقع عبر GPS <strong>و</strong> العنوان النصي. الإشعارات Push <strong>و</strong> SMS. لو سقطت أي قناة، الأخرى تكفي.</p>
+        </div>
+      </div>
+
+      <div class="reason">
+        <div class="num">4</div>
+        <div>
+          <h4>الكاش متعدد المستويات</h4>
+          <p>Vercel CDN يخدم الـ HTML من أقرب مدينة جغرافياً. الـ PWA يحفظ القائمة في جوال الزبون. Supabase يستخدم connection pooling. <strong>الفرونت يفتح في ٠.٥ ثانية حتى لو سقط Supabase</strong> (سيعرض النسخة المحفوظة).</p>
+        </div>
+      </div>
+
+      <div class="reason">
+        <div class="num">5</div>
+        <div>
+          <h4>Row Level Security (RLS)</h4>
+          <p>كل عميل (مطعم) يرى فقط بياناته الخاصة. هذه القاعدة مفروضة على مستوى قاعدة البيانات، ليس على مستوى الكود. حتى لو كتبنا استعلام خاطئ، PostgreSQL يرفضه. مستحيل أن يرى مطعم بيانات مطعم آخر.</p>
+        </div>
+      </div>
+
+      <div class="reason">
+        <div class="num">6</div>
+        <div>
+          <h4>النسخ الاحتياطي التلقائي</h4>
+          <p>Supabase ينسخ قاعدة البيانات تلقائياً كل يوم. الخطة المدفوعة تحتفظ بنسخ لـ ٣٠ يوم. أي خطأ نرتكبه، يمكن استرجاع الحالة قبله بـ نقرة واحدة. لا "Oops حذفنا كل البيانات" في هذه المعمارية.</p>
+        </div>
+      </div>
+
+      <div class="reason">
+        <div class="num">7</div>
+        <div>
+          <h4>التوسع التلقائي</h4>
+          <p>لو ١٠ مطاعم اشتغلت في نفس اللحظة، Vercel يضيف خوادم تلقائياً. Supabase يقاسم الحمل على instances متعددة. لا نحتاج "ساعة الذروة" للقلق. <strong>التطبيق يتعامل مع زيادة الحمل بدون أي تدخل منا.</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="pull-quote">
+      السبب الحقيقي لكون الكود "ما يخرب": <strong>أقل كود ممكن.</strong>
+      <span class="by">الكود الذي لا تكتبه لا يحتاج اختباراً، لا تصحيحاً، لا صيانة، لا قلقاً في الليل.</span>
+    </div>
+  </section>
+
+  <!-- =================== 09 COST =================== -->
+  <section class="chapter" id="cost">
+    <div class="section-num">09 / ECONOMICS</div>
+    <h2>التكلفة الحقيقية والتوسع</h2>
+    <p>
+      هذا الجدول يوضّح متى تدفع وكم. الخطوط الخضراء = الخطط المجانية تكفي.
+    </p>
+
+    <table class="cost-table">
+      <thead>
+        <tr>
+          <th>الخدمة</th>
+          <th>الخطة المجانية تكفي حتى</th>
+          <th>عند التوسع</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Vercel</td>
+          <td>~١٠٠ ألف زيارة/شهر</td>
+          <td class="price">٢٠$ شهرياً</td>
+        </tr>
+        <tr>
+          <td>Supabase</td>
+          <td>٥٠٠ ميجا بيانات + ١ غيغا تخزين</td>
+          <td class="price">٢٥$ شهرياً (٨ غيغا)</td>
+        </tr>
+        <tr>
+          <td>OneSignal</td>
+          <td>١٠ آلاف مشترك push</td>
+          <td class="price">٩$ شهرياً</td>
+        </tr>
+        <tr>
+          <td>OpenStreetMap</td>
+          <td>غير محدود</td>
+          <td class="price">٠ — تبقى مجانية</td>
+        </tr>
+        <tr>
+          <td>Unifonic SMS</td>
+          <td>—</td>
+          <td class="price">٠.٠٥ ريال × عدد OTP</td>
+        </tr>
+        <tr>
+          <td>النطاق (.com / .sa)</td>
+          <td>—</td>
+          <td class="price">٧٠ ريال سنوياً</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>سيناريوهات حقيقية</h3>
+
+    <div class="card ok">
+      <h4 style="margin-top: 0;">🌱 السيناريو ١ · ٥ مطاعم أوّليّة</h4>
+      <p style="margin: 0;">
+        ٢٠٠ زبون فعّال شهرياً، ٥٠٠ طلب شهرياً. <strong>التكلفة: ٧ ريال شهرياً</strong> (نطاق فقط). كل شيء آخر على الخطط المجانية. الإيرادات لو سعرت ١٠٠ ريال لكل مطعم: ٥٠٠ ريال شهرياً. <strong>صافي: ٤٩٣ ريال</strong>.
+      </p>
+    </div>
+
+    <div class="card azure">
+      <h4 style="margin-top: 0;">🚀 السيناريو ٢ · ٥٠ مطعم نشط</h4>
+      <p style="margin: 0;">
+        ٥٬٠٠٠ زبون، ١٥٬٠٠٠ طلب شهرياً، ٢٬٠٠٠ تسجيل دخول جديد. <strong>التكلفة: ~٥٥٠ ريال شهرياً</strong> (كل الخطط المدفوعة + SMS). الإيرادات: ٢٠٠ ريال × ٥٠ = ١٠٬٠٠٠ ريال. <strong>صافي: ٩٬٤٥٠ ريال شهرياً</strong>.
+      </p>
+    </div>
+
+    <div class="card">
+      <h4 style="margin-top: 0;">📈 السيناريو ٣ · ٢٠٠ مطعم</h4>
+      <p style="margin: 0;">
+        هذا حد لا يحتاجك صاحب شركة وحدك. عند هذا الحجم، تستأجر مطورين + خدمة عملاء + مدير علاقات. التكلفة الفنية ~٢٠٠٠ ريال شهرياً. الإيرادات: ٤٠٬٠٠٠+ ريال. الفرق يذهب للموظفين والربح.
+      </p>
+    </div>
+  </section>
+
+  <!-- =================== CTA =================== -->
+  <div class="cta">
+    <h3>الخطوة التالية</h3>
+    <p>
+      هذا التصميم جاهز للتنفيذ. الفرق بين <strong>الفهم</strong> و <strong>البناء</strong> هو القرار: <br>تبني بنفسك (٣-٦ أشهر تعلّم) أم توظّف مطوّر (٢-٣ أشهر تنفيذ، ٢٬٠٠٠-٥٬٠٠٠ ريال شهرياً)؟
+    </p>
+    <p style="color: #FFC619; font-weight: 800; margin-top: 24px; margin-bottom: 0;">
+      ابدأ بـ ٥ مطاعم على PWA الحالي. اختبر السوق. اجمع الـ feedback. ثم ابني.
+    </p>
+  </div>
+
+</div>
+</body>
+</html>
