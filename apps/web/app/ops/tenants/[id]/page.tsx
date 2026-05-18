@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { requireOps } from "@/lib/auth";
 import { createClient } from "@/lib/supabase-server";
 import TenantActions from "./tenant-actions";
+import DesignForm from "./design-form";
 
 const STATUS_LABEL: Record<string, string> = {
   pending_payment: "بانتظار الدفع",
@@ -58,6 +59,24 @@ export default async function TenantDetailPage({
           {sub?.last_payment_at ? new Date(sub.last_payment_at).toLocaleDateString("ar-SA") : "لا توجد"}
         </Card>
         <Card label="إجمالي الطلبات">{ordersTotal}</Card>
+      </section>
+
+      <section className="bg-neutral-900 border border-neutral-800 rounded-xl p-4">
+        <div className="flex items-center justify-between mb-3 gap-2">
+          <h2 className="font-semibold">التصميم البصري</h2>
+          <span className="text-[10px] text-neutral-500">ops-only · المالك لا يرى هذه الحقول</span>
+        </div>
+        <DesignForm
+          initial={{
+            id: r.id,
+            name: r.name,
+            slug: r.slug,
+            logo_url: r.logo_url,
+            cover_image_url: r.cover_image_url,
+            primary_color: r.primary_color,
+            background_color: r.background_color,
+          }}
+        />
       </section>
 
       <section className="bg-neutral-900 border border-neutral-800 rounded-xl p-4">
