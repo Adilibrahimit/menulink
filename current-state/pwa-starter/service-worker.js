@@ -8,7 +8,7 @@
  *  - WhatsApp/Maps links: pass through (always live)
  * ============================================================ */
 
-const VERSION       = 'koko-v1.1.0';
+const VERSION       = 'koko-v1.2.0';
 const CACHE_STATIC  = `koko-static-${VERSION}`;
 const CACHE_RUNTIME = `koko-runtime-${VERSION}`;
 

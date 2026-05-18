@@ -88,6 +88,14 @@ We have **two distinct customer profiles** and they must never be conflated:
 **Source:** session:2026-05-18
 **Triggers:** graphify, knowledge graph, image dedup, icons, PWA assets
 
+### LRN-2026-05-18-sw-stale-html-trap (confidence: high)
+**Context:** First post-deploy live test of the wired PWA returned no rows in Supabase. Server was serving the new HTML (verified via direct fetch), but the user's browser saw old code.
+**Learning:** PWA v6's service worker was cache-first **stale-while-revalidate** with a frozen VERSION key. On any user visit, the SW returned the previously-cached HTML and only fetched fresh in the background — so the customer always sees the previous deploy's HTML on first reload, never the latest. The cache_name is keyed off VERSION; if you never bump it, the activate handler never deletes the old cache.
+**Why:** Cache-first SWE is fine for true static assets (icons, fonts) but a deploy-blocker for the page that contains your application code. Every deploy needs explicit cache invalidation.
+**How to apply:** (1) Navigation/HTML requests should use **network-first** with cache fallback only for offline. (2) Bump VERSION on every meaningful deploy so the activate handler purges the old cache. (3) When debugging "my deploy seems to not be live" issues, always check via incognito or different browser first — eliminates the SW cache variable.
+**Source:** session:2026-05-18 (first live PWA→Supabase test produced zero rows despite correct server code)
+**Triggers:** service worker, cache-first, stale HTML, deploy not visible, PWA cache, sw VERSION
+
 ### LRN-2026-05-18-rls-conflict-with-cmd-all (confidence: high)
 **Context:** Anon insert from PWA failing with "new row violates row-level security policy" even though `anon_insert_customers` policy had `with check (true)`.
 **Learning:** When you have a PERMISSIVE policy with `cmd=ALL` scoped to `public` (all roles) AND a separate INSERT policy scoped to a specific role, the ALL policy still fires for that role's INSERT and its WITH CHECK is evaluated. Even though policies are OR'd in theory, in practice PostgREST/Supabase will refuse the insert when the ALL policy returns NULL/FALSE for an anon JWT. **Scope owner policies strictly to `to authenticated`** (never `to public` / no role clause), so they never fire for anon at all.
