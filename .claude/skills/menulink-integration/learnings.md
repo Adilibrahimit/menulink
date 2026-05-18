@@ -88,6 +88,22 @@ We have **two distinct customer profiles** and they must never be conflated:
 **Source:** session:2026-05-18
 **Triggers:** graphify, knowledge graph, image dedup, icons, PWA assets
 
+### LRN-2026-05-18-rls-conflict-with-cmd-all (confidence: high)
+**Context:** Anon insert from PWA failing with "new row violates row-level security policy" even though `anon_insert_customers` policy had `with check (true)`.
+**Learning:** When you have a PERMISSIVE policy with `cmd=ALL` scoped to `public` (all roles) AND a separate INSERT policy scoped to a specific role, the ALL policy still fires for that role's INSERT and its WITH CHECK is evaluated. Even though policies are OR'd in theory, in practice PostgREST/Supabase will refuse the insert when the ALL policy returns NULL/FALSE for an anon JWT. **Scope owner policies strictly to `to authenticated`** (never `to public` / no role clause), so they never fire for anon at all.
+**Why:** Postgres permissive-OR semantics work as documented in isolation, but cmd=ALL policies are a footgun — they apply to INSERT too. Easier to never mix `to public` ALL policies with role-specific INSERT policies.
+**How to apply:** When designing RLS for any new table: write SELECT, INSERT, UPDATE, DELETE policies as **separate, role-specific** statements. Never use `for all to public`. Make the role explicit on every policy.
+**Source:** session:2026-05-18 (debugging first live PWA order that didn't land)
+**Triggers:** RLS, row-level security, anon insert, cmd ALL, policy conflict, 42501
+
+### LRN-2026-05-18-rpc-over-direct-writes (confidence: high)
+**Context:** PWA needed to upsert customer, insert order, insert items as anon. Direct .from('table').upsert().select() pattern hit two problems: (1) RLS conflict above, (2) `.select('id').single()` requires SELECT permission on the table.
+**Learning:** For anon-facing writes, prefer a single `SECURITY DEFINER` Postgres function over multiple direct-table calls. Benefits: (a) one atomic transaction, (b) one round-trip, (c) anon role gets EXECUTE on the function but NO direct table access — defence in depth, (d) the function is the security boundary and can validate inputs (`raise exception` on bad data), (e) easier to evolve later (add fields without changing client).
+**Why:** The trade-off is that the function lives in SQL and is slightly less visible than client-side code. Worth it for the security/atomicity gains.
+**How to apply:** For any future anon-facing write (push subscription, customer feedback, etc.), reach for an RPC first. Direct-table writes are for the admin app (authenticated, with RLS-enforced tenant scoping).
+**Source:** session:2026-05-18 (live PWA order bug, fixed via submit_order RPC)
+**Triggers:** anon write, RPC, security definer, RLS workaround, direct table insert
+
 ### LRN-2026-05-18-fire-and-forget-persist (confidence: high)
 **Context:** Wiring v6 PWA to write each order to Supabase before opening WhatsApp.
 **Learning:** Do NOT `await` the Supabase insert before opening the wa.me URL. Use fire-and-forget: kick off `persistOrder(...)` (no await), then immediately `window.open(...)`. Reasons: (1) zero perceived latency for the customer, (2) WhatsApp opens even if Supabase is down, (3) the Promise keeps running in the background after window.open. The persist function has its own try/catch so unhandled rejections never bubble.

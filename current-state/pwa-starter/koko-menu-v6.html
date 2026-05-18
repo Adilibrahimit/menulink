@@ -1373,61 +1373,40 @@ function normalizePhone(raw) {
 // Map UI order-type values to the enum used in the DB (orders.order_type).
 const ORDER_TYPE_DB = { delivery: 'delivery', pickup: 'pickup', dinein: 'dine_in' };
 
-// Persist the order to Supabase. Returns silently on any failure — we never
-// block the customer's WhatsApp send because a database hiccup happened.
+// Persist the order to Supabase via a single SECURITY DEFINER RPC.
+// One atomic round-trip — upsert customer, insert order, insert items.
+// Anon role only has EXECUTE on submit_order; no direct table access.
+// Always fails open: WhatsApp must still open even if Supabase is unreachable.
 async function persistOrder({ phone, name, addr, notes }) {
   const sb = getSb();
   if (!sb) return;
   try {
-    const { data: customer, error: cErr } = await sb
-      .from('customers')
-      .upsert(
-        {
-          restaurant_id:   CONFIG.restaurantId,
-          phone,
-          name:            name || null,
-          default_address: addr || null,
-          default_lat:     userLocation ? userLocation.lat : null,
-          default_lng:     userLocation ? userLocation.lng : null,
-        },
-        { onConflict: 'restaurant_id,phone' }
-      )
-      .select('id')
-      .single();
-    if (cErr) throw cErr;
-
     const subtotal = cartTotal();
-    const { data: order, error: oErr } = await sb
-      .from('orders')
-      .insert({
-        restaurant_id: CONFIG.restaurantId,
-        customer_id:   customer.id,
-        order_type:    ORDER_TYPE_DB[orderType] || 'pickup',
-        channel:       'whatsapp',
-        subtotal,
-        delivery_fee:  0,
-        total:         subtotal,
-        address:       orderType === 'delivery' ? (addr || null) : null,
-        lat:           orderType === 'delivery' && userLocation ? userLocation.lat : null,
-        lng:           orderType === 'delivery' && userLocation ? userLocation.lng : null,
-        notes:         notes || null,
-      })
-      .select('id')
-      .single();
-    if (oErr) throw oErr;
-
-    const items = Object.values(cart).map(l => ({
-      order_id:   order.id,
-      item_name:  l.name,
-      variant:    l.variant || null,
-      qty:        l.qty,
-      unit_price: l.price,
-      line_total: l.price * l.qty,
-    }));
-    const { error: iErr } = await sb.from('order_items').insert(items);
-    if (iErr) throw iErr;
+    const isDelivery = orderType === 'delivery';
+    const payload = {
+      restaurant_id: CONFIG.restaurantId,
+      phone,
+      name:          name || null,
+      address:       isDelivery ? (addr || null) : null,
+      lat:           isDelivery && userLocation ? userLocation.lat : null,
+      lng:           isDelivery && userLocation ? userLocation.lng : null,
+      order_type:    ORDER_TYPE_DB[orderType] || 'pickup',
+      channel:       'whatsapp',
+      subtotal,
+      delivery_fee:  0,
+      total:         subtotal,
+      notes:         notes || null,
+      items: Object.values(cart).map(l => ({
+        item_name:  l.name,
+        variant:    l.variant || null,
+        qty:        l.qty,
+        unit_price: l.price,
+        line_total: l.price * l.qty,
+      })),
+    };
+    const { error } = await sb.rpc('submit_order', { p_order: payload });
+    if (error) throw error;
   } catch (err) {
-    // Fail-open: log but never throw — WhatsApp must still open.
     console.warn('[MenuLink] order persist failed:', err);
   }
 }
