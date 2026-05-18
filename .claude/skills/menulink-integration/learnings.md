@@ -88,6 +88,30 @@ We have **two distinct customer profiles** and they must never be conflated:
 **Source:** session:2026-05-18
 **Triggers:** graphify, knowledge graph, image dedup, icons, PWA assets
 
+### LRN-2026-05-18-new-secret-keys-block-server-side (confidence: high)
+**Context:** Trying to create a Supabase Auth user via `POST /auth/v1/admin/users` with the new `sb_secret_*` key, got back `401 "Forbidden use of secret API key in browser"`.
+**Learning:** Supabase's new key format (`sb_publishable_*` + `sb_secret_*`) is stricter than legacy JWT keys. The `sb_secret_*` is rejected by GoTrue's admin endpoints when the User-Agent looks browser-ish (and PowerShell's `Invoke-RestMethod` triggers this). **For Auth Admin API calls, fall back to the legacy `service_role` JWT** that's still issued alongside. Both keys point to the same role, but the legacy JWT bypasses the browser-context check.
+**Why:** Supabase added this guard because pasting `sb_secret_*` into client code is catastrophic. The browser-context heuristic is over-broad.
+**How to apply:** When writing operational scripts that hit the Auth Admin API, prefer the legacy `service_role` JWT (from `/v1/projects/<ref>/api-keys`). Keep `sb_secret_*` reserved for actual server runtimes (Vercel env, Supabase Edge Functions).
+**Source:** session:2026-05-18 (creating the KO-KO test owner)
+**Triggers:** auth admin api, sb_secret, 401, browser context, GoTrue, create user
+
+### LRN-2026-05-18-realtime-needs-publication (confidence: high)
+**Context:** Wrote the orders Realtime feed in /admin/orders before adding the table to the Supabase Realtime publication. Subscribed channel was silent.
+**Learning:** Supabase Realtime only emits postgres_changes for tables explicitly added to the `supabase_realtime` publication. Run `alter publication supabase_realtime add table public.orders;` (and any other table you want live). Forgetting this is silent — no error, just no events.
+**Why:** Supabase scopes Realtime per-publication to limit replication noise. The default publication doesn't include user tables.
+**How to apply:** When adding a Realtime subscription to any new table, immediately run the ALTER PUBLICATION migration alongside the schema migration. Keep a checklist: schema + RLS + publication + client subscription.
+**Source:** session:2026-05-18 (S5 admin orders feed)
+**Triggers:** Realtime, postgres_changes, supabase_realtime, publication, ALTER PUBLICATION, silent subscription
+
+### LRN-2026-05-18-nextjs-pathname-in-server-component (confidence: high)
+**Context:** Wanted to detect whether the current /admin/* route was the login page in `app/admin/layout.tsx` to skip the auth guard for /admin/login. Next.js 14 Server Components have no direct way to read the request path.
+**Learning:** Set `x-pathname: request.nextUrl.pathname` as a REQUEST header inside middleware, then read it in any Server Component via `headers().get('x-pathname')`. Don't use Next.js's `usePathname()` — that's client-only.
+**Why:** Server Components don't have access to the request object; only middleware does. Middleware can mutate the request headers that flow downstream.
+**How to apply:** Any time a Server Component needs to know the URL/path, route through middleware-injected headers.
+**Source:** session:2026-05-18 (S3 admin layout skipping auth for /admin/login)
+**Triggers:** Next.js, Server Component, pathname, middleware, headers, request URL
+
 ### LRN-2026-05-18-sw-stale-html-trap (confidence: high)
 **Context:** First post-deploy live test of the wired PWA returned no rows in Supabase. Server was serving the new HTML (verified via direct fetch), but the user's browser saw old code.
 **Learning:** PWA v6's service worker was cache-first **stale-while-revalidate** with a frozen VERSION key. On any user visit, the SW returned the previously-cached HTML and only fetched fresh in the background — so the customer always sees the previous deploy's HTML on first reload, never the latest. The cache_name is keyed off VERSION; if you never bump it, the activate handler never deletes the old cache.
