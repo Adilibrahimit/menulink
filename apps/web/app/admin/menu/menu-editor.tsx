@@ -112,6 +112,53 @@ export default function MenuEditor({
     else { notify("ok", "حُذف"); refresh(); }
   }
 
+  // ---- Image upload (Supabase Storage menu-images bucket) ---------------
+  async function uploadImage(itemId: string, file: File) {
+    if (file.size > 5 * 1024 * 1024) {
+      notify("err", "حجم الصورة أكبر من 5 ميغا");
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      notify("err", "الملف يجب أن يكون صورة");
+      return;
+    }
+    const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+    // Path: <restaurant_id>/<item_id>-<random>.<ext>  — random keeps caches
+    // honest when the owner replaces an image with the same filename.
+    const path = `${restaurantId}/${itemId}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const { error: upErr } = await sb.storage
+      .from("menu-images")
+      .upload(path, file, { upsert: true, contentType: file.type });
+    if (upErr) {
+      notify("err", upErr.message);
+      return;
+    }
+    const { data } = sb.storage.from("menu-images").getPublicUrl(path);
+    const { error: updateErr } = await sb
+      .from("menu_items")
+      .update({ image_url: data.publicUrl })
+      .eq("id", itemId);
+    if (updateErr) {
+      notify("err", updateErr.message);
+      return;
+    }
+    notify("ok", "صورة محدّثة");
+    refresh();
+  }
+
+  async function removeImage(itemId: string) {
+    if (!window.confirm("حذف الصورة من هذا الصنف؟")) return;
+    const { error } = await sb
+      .from("menu_items")
+      .update({ image_url: null })
+      .eq("id", itemId);
+    if (error) notify("err", error.message);
+    else {
+      notify("ok", "حُذفت");
+      refresh();
+    }
+  }
+
   // ---- Variant price update ----------------------------------------------
   async function updatePrice(variantId: string, priceStr: string) {
     const price = Number(priceStr);
@@ -184,6 +231,35 @@ export default function MenuEditor({
           <ul className="divide-y divide-neutral-100">
             {c.items.map((it) => (
               <li key={it.id} className="py-3 flex items-start justify-between gap-3 flex-wrap">
+                {/* Image thumbnail / upload */}
+                <label className="shrink-0 cursor-pointer group relative w-14 h-14 rounded-lg overflow-hidden bg-neutral-100 border border-neutral-200 hover:border-brand-primary">
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) uploadImage(it.id, f);
+                      e.target.value = "";
+                    }}
+                  />
+                  {it.image_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={it.image_url}
+                      alt={it.name_ar}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="w-full h-full flex items-center justify-center text-xl text-neutral-400">
+                      📷
+                    </span>
+                  )}
+                  <span className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center text-white text-[10px] opacity-0 group-hover:opacity-100">
+                    تغيير
+                  </span>
+                </label>
+
                 <div className="flex-1 min-w-[160px]">
                   <div className={`font-medium ${it.is_active ? "" : "text-neutral-400 line-through"}`}>
                     {it.name_ar}
@@ -212,6 +288,11 @@ export default function MenuEditor({
                   <button onClick={() => renameItem(it.id, it.name_ar)} className="px-2 py-1 rounded bg-neutral-100 hover:bg-neutral-200">
                     اسم
                   </button>
+                  {it.image_url && (
+                    <button onClick={() => removeImage(it.id)} className="px-2 py-1 rounded bg-neutral-100 hover:bg-neutral-200" title="إزالة الصورة">
+                      صورة ✕
+                    </button>
+                  )}
                   <button onClick={() => toggleItemActive(it.id, it.is_active)} className="px-2 py-1 rounded bg-neutral-100 hover:bg-neutral-200">
                     {it.is_active ? "إخفاء" : "إظهار"}
                   </button>
