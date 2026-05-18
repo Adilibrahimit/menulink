@@ -29,12 +29,23 @@ export async function getCurrentUser(): Promise<AuthedUser | null> {
 }
 
 // Guard for /admin/* routes — redirects to /admin/login if no session,
-// or unauthorized if the user is not a restaurant_owner with a tenant.
+// to /ops if the user is platform_admin (their dashboard is /ops),
+// or to login with error if missing tenant linkage.
 export async function requireOwner(): Promise<AuthedUser & { restaurant_id: string }> {
   const u = await getCurrentUser();
   if (!u) redirect("/admin/login");
+  if (u.role === "platform_admin") redirect("/ops");
   if (u.role !== "restaurant_owner" || !u.restaurant_id) {
     redirect("/admin/login?error=unauthorized");
   }
   return u as AuthedUser & { restaurant_id: string };
+}
+
+// Guard for /ops/* routes — only platform admins.
+export async function requireOps(): Promise<AuthedUser> {
+  const u = await getCurrentUser();
+  if (!u) redirect("/ops/login");
+  if (u.role === "restaurant_owner") redirect("/admin");
+  if (u.role !== "platform_admin") redirect("/ops/login?error=unauthorized");
+  return u;
 }

@@ -1,0 +1,135 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { requireOps } from "@/lib/auth";
+import { createClient } from "@/lib/supabase-server";
+import TenantActions from "./tenant-actions";
+
+const STATUS_LABEL: Record<string, string> = {
+  pending_payment: "بانتظار الدفع",
+  active: "نشط",
+  overdue: "متأخر",
+  cancelled: "ملغي",
+};
+
+export default async function TenantDetailPage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  await requireOps();
+  const sb = createClient();
+
+  const [{ data: r }, { data: sub }, { data: payments }, { data: owners }, { data: orderCount }] = await Promise.all([
+    sb.from("restaurants").select("*").eq("id", params.id).single(),
+    sb.from("subscriptions").select("*").eq("restaurant_id", params.id).maybeSingle(),
+    sb.from("payments")
+      .select("id, amount_sar, method, paid_at, reference, notes")
+      .order("paid_at", { ascending: false })
+      .limit(10),
+    sb.from("restaurant_owners")
+      .select("user_id, role, created_at")
+      .eq("restaurant_id", params.id),
+    sb.from("orders").select("id", { count: "exact", head: true }).eq("restaurant_id", params.id),
+  ]);
+
+  if (!r) notFound();
+
+  // Owners' emails come from auth.users — only readable via service role.
+  // For now we just show user IDs; in S7 we can wire an admin RPC to fetch emails.
+
+  const ordersTotal = (orderCount as unknown as { count?: number })?.count ?? 0;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div>
+          <Link href="/ops" className="text-xs text-neutral-400 hover:text-neutral-200">← المطاعم</Link>
+          <h1 className="text-xl font-bold mt-1">{r.name}</h1>
+          <p className="text-xs text-neutral-400 font-mono">{r.slug}</p>
+        </div>
+        <TenantActions tenantId={r.id} isPublished={r.is_published} isActive={r.is_active} />
+      </div>
+
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <Card label="حالة الاشتراك">
+          {sub ? STATUS_LABEL[sub.status] : "—"}
+          {sub?.plan && (
+            <div className="text-xs text-neutral-500 mt-1">
+              {sub.plan === "yearly" ? "سنوي" : "شهري"} · {sub.amount_sar} ر.س
+            </div>
+          )}
+        </Card>
+        <Card label="آخر دفعة">
+          {sub?.last_payment_at ? new Date(sub.last_payment_at).toLocaleDateString("ar-SA") : "لا توجد"}
+        </Card>
+        <Card label="إجمالي الطلبات">{ordersTotal}</Card>
+      </section>
+
+      <section className="bg-neutral-900 border border-neutral-800 rounded-xl p-4">
+        <h2 className="font-semibold mb-3">معلومات المطعم</h2>
+        <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+          <KV label="رقم واتساب" value={r.whatsapp_phone} />
+          <KV label="إيميل التواصل" value={r.contact_email ?? "—"} />
+          <KV label="المدينة" value={r.city ?? "—"} />
+          <KV label="العنوان" value={r.address_ar ?? "—"} />
+          <KV label="الشعار" value={r.tagline_ar ?? "—"} />
+          <KV label="منشور" value={r.is_published ? "نعم" : "لا"} />
+        </dl>
+      </section>
+
+      <section className="bg-neutral-900 border border-neutral-800 rounded-xl p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-semibold">المالكون</h2>
+        </div>
+        {(owners ?? []).length === 0 && (
+          <p className="text-neutral-500 text-sm">لا يوجد مالكون مرتبطون.</p>
+        )}
+        <ul className="space-y-1 text-sm">
+          {(owners ?? []).map((o: any) => (
+            <li key={o.user_id} className="flex justify-between text-neutral-300">
+              <span className="font-mono text-xs">{o.user_id}</span>
+              <span className="text-neutral-500">{o.role} · {new Date(o.created_at).toLocaleDateString("ar-SA")}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="bg-neutral-900 border border-neutral-800 rounded-xl p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-semibold">آخر الدفعات</h2>
+          <Link href={`/ops/payments?tenant=${r.id}`} className="text-xs text-neutral-400 hover:text-neutral-100">
+            + سجّل دفعة
+          </Link>
+        </div>
+        {(payments ?? []).length === 0 && (
+          <p className="text-neutral-500 text-sm">لا توجد دفعات.</p>
+        )}
+        <ul className="divide-y divide-neutral-800">
+          {(payments ?? []).map((p: any) => (
+            <li key={p.id} className="py-2 flex justify-between text-sm">
+              <span>{p.amount_sar} ر.س · {p.method}</span>
+              <span className="text-neutral-500">{new Date(p.paid_at).toLocaleDateString("ar-SA")}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
+  );
+}
+
+function Card({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-4">
+      <div className="text-xs text-neutral-400">{label}</div>
+      <div className="text-lg font-semibold text-neutral-100 mt-1">{children}</div>
+    </div>
+  );
+}
+function KV({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <>
+      <dt className="text-neutral-500">{label}</dt>
+      <dd className="text-neutral-200">{value}</dd>
+    </>
+  );
+}
