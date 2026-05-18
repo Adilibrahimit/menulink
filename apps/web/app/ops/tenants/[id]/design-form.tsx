@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-browser";
 
@@ -16,6 +16,7 @@ type DesignFields = {
 
 export default function DesignForm({ initial }: { initial: DesignFields }) {
   const router = useRouter();
+  const sb = createClient();
   const [form, setForm] = useState({
     name: initial.name,
     slug: initial.slug,
@@ -40,7 +41,6 @@ export default function DesignForm({ initial }: { initial: DesignFields }) {
     }
 
     setSaving(true);
-    const sb = createClient();
     const { error } = await sb
       .from("restaurants")
       .update({
@@ -61,8 +61,38 @@ export default function DesignForm({ initial }: { initial: DesignFields }) {
     router.refresh();
   }
 
+  async function uploadBrandAsset(kind: "logo" | "cover", file: File) {
+    if (file.size > 5 * 1024 * 1024) {
+      setMsg({ kind: "err", text: "حجم الصورة أكبر من 5 ميغا" });
+      return;
+    }
+    const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+    // Random suffix so caches don't serve the old image after a re-upload
+    const path = `${initial.id}/_brand/${kind}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const { error: upErr } = await sb.storage
+      .from("menu-images")
+      .upload(path, file, { upsert: true, contentType: file.type });
+    if (upErr) {
+      setMsg({ kind: "err", text: upErr.message });
+      return;
+    }
+    const { data: pub } = sb.storage.from("menu-images").getPublicUrl(path);
+    const column = kind === "logo" ? "logo_url" : "cover_image_url";
+    const { error: updErr } = await sb
+      .from("restaurants")
+      .update({ [column]: pub.publicUrl })
+      .eq("id", initial.id);
+    if (updErr) {
+      setMsg({ kind: "err", text: updErr.message });
+      return;
+    }
+    setForm((f) => ({ ...f, [column === "logo_url" ? "logo_url" : "cover_image_url"]: pub.publicUrl }));
+    setMsg({ kind: "ok", text: `${kind === "logo" ? "الشعار" : "صورة الغلاف"} محدّث` });
+    router.refresh();
+  }
+
   return (
-    <form onSubmit={save} className="space-y-3">
+    <form onSubmit={save} className="space-y-4">
       {msg && (
         <p
           className={`rounded-md text-sm p-3 ${
@@ -80,8 +110,21 @@ export default function DesignForm({ initial }: { initial: DesignFields }) {
         <Field label="Slug (يظهر في URL)" value={form.slug} onChange={(v) => set("slug", v)} />
       </div>
 
-      <Field label="رابط الشعار (Logo URL)" value={form.logo_url} onChange={(v) => set("logo_url", v)} placeholder="https://..." />
-      <Field label="رابط صورة الغلاف" value={form.cover_image_url} onChange={(v) => set("cover_image_url", v)} placeholder="https://..." />
+      <AssetUploader
+        label="الشعار (Logo)"
+        currentUrl={form.logo_url}
+        previewSize="w-16 h-16 rounded-xl"
+        onPick={(f) => uploadBrandAsset("logo", f)}
+        onClear={() => set("logo_url", "")}
+      />
+
+      <AssetUploader
+        label="صورة الغلاف (Cover)"
+        currentUrl={form.cover_image_url}
+        previewSize="w-full h-24 rounded-lg"
+        onPick={(f) => uploadBrandAsset("cover", f)}
+        onClear={() => set("cover_image_url", "")}
+      />
 
       <div className="grid grid-cols-2 gap-3" dir="ltr">
         <ColorField label="Primary color" value={form.primary_color} onChange={(v) => set("primary_color", v)} />
@@ -96,6 +139,73 @@ export default function DesignForm({ initial }: { initial: DesignFields }) {
         {saving ? "جاري الحفظ..." : "حفظ التصميم"}
       </button>
     </form>
+  );
+}
+
+function AssetUploader({
+  label,
+  currentUrl,
+  previewSize,
+  onPick,
+  onClear,
+}: {
+  label: string;
+  currentUrl: string;
+  previewSize: string;
+  onPick: (file: File) => void;
+  onClear: () => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  return (
+    <div className="space-y-1.5">
+      <span className="block text-xs text-neutral-400">{label}</span>
+      <div className="flex items-center gap-3">
+        {currentUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={currentUrl}
+            alt=""
+            className={`${previewSize} object-cover bg-neutral-800 border border-neutral-700 shrink-0`}
+          />
+        ) : (
+          <div
+            className={`${previewSize} bg-neutral-800 border border-dashed border-neutral-700 flex items-center justify-center text-xl text-neutral-500 shrink-0`}
+          >
+            📷
+          </div>
+        )}
+        <div className="flex flex-col gap-2 flex-1">
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) onPick(f);
+              e.target.value = "";
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            className="rounded-md bg-neutral-800 border border-neutral-700 text-neutral-100 px-3 py-1.5 text-xs hover:bg-neutral-700 w-fit"
+          >
+            {currentUrl ? "استبدال" : "رفع صورة"}
+          </button>
+          {currentUrl && (
+            <button
+              type="button"
+              onClick={onClear}
+              className="text-xs text-neutral-500 hover:text-red-400 w-fit"
+            >
+              إزالة
+            </button>
+          )}
+        </div>
+      </div>
+      <p className="text-[10px] text-neutral-600">حد أقصى 5 ميغا · jpg / png / webp</p>
+    </div>
   );
 }
 

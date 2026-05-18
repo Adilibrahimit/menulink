@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { createClient } from "@/lib/supabase-browser";
 import { SLUG_TO_IMG } from "@/lib/koko-images";
 import type {
@@ -12,6 +12,7 @@ import type {
 } from "./types";
 import CategoryTabs from "./category-tabs";
 import MenuItemCard from "./menu-item";
+import LocationPicker from "./location-picker";
 
 export default function MenuExperience({ menu }: { menu: PublicMenu }) {
   const [cart, setCart] = useState<Record<string, CartLine>>({});
@@ -62,18 +63,38 @@ export default function MenuExperience({ menu }: { menu: PublicMenu }) {
 
   return (
     <main className="bg-[var(--bg)] text-neutral-900 pb-32" style={{ fontFamily: "Cairo, system-ui, sans-serif" }}>
-      {/* Hero */}
-      <header className="px-4 pt-8 pb-5">
+      {/* Cover image (optional) — bleeds to edges, fades into bg color so the
+          hero block below sits on a soft gradient bridge. */}
+      {menu.restaurant.cover_image_url && (
+        <div className="relative w-full h-32 sm:h-44 overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={menu.restaurant.cover_image_url}
+            alt=""
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[var(--bg)] to-transparent" />
+        </div>
+      )}
+
+      {/* Hero — pulled up under the cover when present */}
+      <header
+        className={
+          menu.restaurant.cover_image_url
+            ? "px-4 -mt-8 pb-5 relative"
+            : "px-4 pt-8 pb-5"
+        }
+      >
         <div className="flex items-start gap-3">
           {menu.restaurant.logo_url && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={menu.restaurant.logo_url}
               alt={menu.restaurant.name}
-              className="w-14 h-14 rounded-xl object-cover bg-white border border-neutral-200"
+              className="w-16 h-16 rounded-2xl object-cover bg-white border-2 border-white shadow-md shrink-0"
             />
           )}
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 pt-1">
             <h1
               className="text-2xl font-extrabold text-neutral-900 leading-tight"
               style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
@@ -177,6 +198,7 @@ function CartDrawer({
   const [name, setName] = useState("");
   const [rawPhone, setRawPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -206,6 +228,8 @@ function CartDrawer({
       phone,
       name,
       address: orderType === "delivery" ? address : "",
+      lat: orderType === "delivery" ? location?.lat ?? null : null,
+      lng: orderType === "delivery" ? location?.lng ?? null : null,
       notes,
       orderType,
       lines,
@@ -220,6 +244,11 @@ function CartDrawer({
       })
       .join("\n");
 
+    const mapsLink =
+      orderType === "delivery" && location
+        ? `https://www.google.com/maps?q=${location.lat},${location.lng}`
+        : null;
+
     const msg =
       `🌟 *طلب جديد · ${restaurant.name}* 🌟\n` +
       `━━━━━━━━━━━━━━━━\n` +
@@ -227,6 +256,7 @@ function CartDrawer({
       `👤 *الاسم:* ${name || "—"}\n` +
       `📞 *الجوال:* ${rawPhone || "—"}\n` +
       (orderType === "delivery" && address ? `📍 *العنوان:* ${address}\n` : "") +
+      (mapsLink ? `🗺️ *الموقع على الخريطة:* ${mapsLink}\n` : "") +
       `━━━━━━━━━━━━━━━━\n` +
       `🛒 *الطلبات:*\n${lineList}\n` +
       `━━━━━━━━━━━━━━━━\n` +
@@ -364,13 +394,16 @@ function CartDrawer({
                   dir="ltr"
                 />
                 {orderType === "delivery" && (
-                  <input
-                    type="text"
-                    placeholder="عنوان التوصيل (الحي · الشارع · رقم المبنى)"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    className="w-full h-11 rounded-lg border border-neutral-200 px-3 outline-none focus:border-[var(--brand)] text-sm"
-                  />
+                  <>
+                    <input
+                      type="text"
+                      placeholder="عنوان التوصيل (الحي · الشارع · رقم المبنى)"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      className="w-full h-11 rounded-lg border border-neutral-200 px-3 outline-none focus:border-[var(--brand)] text-sm"
+                    />
+                    <LocationPicker initial={location} onChange={setLocation} />
+                  </>
                 )}
                 <input
                   type="text"
@@ -435,6 +468,8 @@ async function persistOrder({
   phone,
   name,
   address,
+  lat,
+  lng,
   notes,
   orderType,
   lines,
@@ -444,6 +479,8 @@ async function persistOrder({
   phone: string;
   name: string;
   address: string;
+  lat: number | null;
+  lng: number | null;
   notes: string;
   orderType: OrderType;
   lines: CartLine[];
@@ -455,8 +492,8 @@ async function persistOrder({
     phone,
     name: name || null,
     address: orderType === "delivery" ? (address || null) : null,
-    lat: null,
-    lng: null,
+    lat,
+    lng,
     order_type: orderType,
     channel: "whatsapp",
     subtotal: total,
