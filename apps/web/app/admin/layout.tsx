@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { getCurrentUser, requireOwner } from "@/lib/auth";
 import { createClient } from "@/lib/supabase-server";
 import type { Restaurant } from "@/lib/types";
+import SubscriptionBanner from "./subscription-banner";
 
 const NAV = [
   { href: "/admin",           label: "اللوحة",   icon: "🏠" },
@@ -69,7 +70,10 @@ export default async function AdminLayout({
             </Link>
           ))}
         </nav>
-        <main>{children}</main>
+        <main>
+          <SubscriptionBanner restaurantId={me.restaurant_id} />
+          {children}
+        </main>
       </div>
     </div>
   );

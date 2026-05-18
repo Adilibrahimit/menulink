@@ -26,16 +26,11 @@ export default async function TenantDetailPage({
       .select("id, amount_sar, method, paid_at, reference, notes")
       .order("paid_at", { ascending: false })
       .limit(10),
-    sb.from("restaurant_owners")
-      .select("user_id, role, created_at")
-      .eq("restaurant_id", params.id),
+    sb.rpc("get_tenant_owners", { p_restaurant_id: params.id }),
     sb.from("orders").select("id", { count: "exact", head: true }).eq("restaurant_id", params.id),
   ]);
 
   if (!r) notFound();
-
-  // Owners' emails come from auth.users — only readable via service role.
-  // For now we just show user IDs; in S7 we can wire an admin RPC to fetch emails.
 
   const ordersTotal = (orderCount as unknown as { count?: number })?.count ?? 0;
 
@@ -86,9 +81,14 @@ export default async function TenantDetailPage({
         )}
         <ul className="space-y-1 text-sm">
           {(owners ?? []).map((o: any) => (
-            <li key={o.user_id} className="flex justify-between text-neutral-300">
-              <span className="font-mono text-xs">{o.user_id}</span>
-              <span className="text-neutral-500">{o.role} · {new Date(o.created_at).toLocaleDateString("ar-SA")}</span>
+            <li key={o.user_id} className="flex justify-between text-neutral-300 gap-2 flex-wrap">
+              <span>{o.email}</span>
+              <span className="text-neutral-500 text-xs">
+                {o.role}
+                {o.last_sign_in_at && (
+                  <> · آخر دخول {new Date(o.last_sign_in_at).toLocaleDateString("ar-SA")}</>
+                )}
+              </span>
             </li>
           ))}
         </ul>

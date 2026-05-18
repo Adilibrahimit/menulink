@@ -681,7 +681,7 @@ footer .ft-tag { color: var(--brand); font-weight: 800; margin-top: 4px; }
   font-size: 13px; font-weight: 900;
 }
 
-.logo-clean .feather { fill: #D32027; }
+.logo-clean .feather { fill: var(--brand); }
 .logo-clean .dome    { fill: #1a1108; }
 .logo-clean .beak    { fill: #FFC619; }
 
@@ -1128,13 +1128,29 @@ function translateDbMenu(db) {
   }));
 }
 
-// Push restaurant-level info from DB into CONFIG + DOM (header phone link,
-// WhatsApp number, tagline). Brand colors per-tenant land in a later session.
+// Push restaurant-level info from DB into CONFIG, brand CSS variables, and
+// the browser theme-color meta. Lets a single PWA serve every tenant with
+// their own colors + WhatsApp + name without code changes.
 function applyRestaurantConfig(r) {
   if (!r) return;
   if (r.name)            CONFIG.restaurantName = r.name;
   if (r.currency)        CONFIG.currency = r.currency === 'SAR' ? 'ريال' : r.currency;
   if (r.whatsapp_phone)  CONFIG.whatsappPhone = String(r.whatsapp_phone).replace(/\D/g, '');
+
+  const root = document.documentElement;
+  if (r.primary_color)    root.style.setProperty('--brand', r.primary_color);
+  if (r.background_color) root.style.setProperty('--bg',    r.background_color);
+
+  // Update browser chrome color (Android status bar + PWA splash)
+  if (r.primary_color) {
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', r.primary_color);
+  }
+
+  // Update the document title + WhatsApp aria-link buttons in the header
+  if (r.name) {
+    document.title = `${r.name} · قائمة الطعام`;
+  }
 }
 
 // localStorage cache keys are per-slug so adding tenants later won't collide.
