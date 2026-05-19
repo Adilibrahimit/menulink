@@ -254,4 +254,9 @@ Stitch will read this as authoritative. If a generated screen violates §7, rege
 
 This file is the spec. The shipped code in `apps/web/` and `current-state/pwa-starter/` is the implementation. When they diverge, **the code is right and this file gets updated** — never the other way around. Commit DESIGN.md changes alongside the UI changes that drive them.
 
-Owner of design: MenuLink platform team (dev/ops). Tenants operate; they do not redesign.
+Owner of design: split as of 2026-05-19.
+
+- **Tenants own:** their **logo** and **cover image** (uploaded directly from `/admin/info`). These belong to the restaurant's identity and shouldn't be gated by ops availability.
+- **Ops owns:** brand **colors**, **slug**, **name**, layout, typography stack, copy patterns. These shape the platform's coherent visual language.
+
+Tenants still cannot redesign the menu — they operate it. Ops still cannot change a tenant's logo without permission — they can override when needed via `/ops/tenants/[id]`.

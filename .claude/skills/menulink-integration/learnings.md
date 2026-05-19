@@ -4,7 +4,7 @@
 >
 > **🆕 Read [`memory.md`](../../../memory.md) at project root for current state.** This file is for *transferable gotchas* — patterns that apply to any tenant, any session.
 >
-> **Last updated:** 2026-05-19 (v7 Stitch redesign + GPS map fix + legacy redirect)
+> **Last updated:** 2026-05-19 (post-RLS-rewrite: 0008 shipped, 4 tenants live, dashboard charts, owner self-service logo)
 > **Update protocol:** Append new entries under the right section. Keep each entry to 2-4 lines. Tag with confidence level.
 
 ---
@@ -23,6 +23,12 @@ We have **two distinct customer profiles** and they must never be conflated:
 ---
 
 ## ✅ What Has Worked
+
+### LRN-2026-05-19-rls-rewrite-confirmed (confidence: high)
+**Context:** Migration 0008 rewrote RLS using `auth.uid()` + lookup tables instead of JWT-claim paths, plus added missing `platform_admin` policies and `name_en` columns. User manually tested every owner + ops surface after `git push 8e5cb26` and the migration applied on 2026-05-19.  
+**Learning:** **Confirmed working in production.** Test order persisted by `submit_order` was always in the DB — it became visible the moment owner RLS started resolving. Owner can create categories + items (simple modal), upload photos to `menu-images/<restaurant_id>/<item_id>-*`, upload logo + cover to `menu-images/<restaurant_id>/_brand/*`. Ops onboarding wizard (now using service_role admin client for restaurants INSERT) created 3 new tenants successfully — all 3 paid and active in `subscriptions`. Dashboard Chart.js (`react-chartjs-2` Line + Bar over `v_revenue_daily` scoped to `restaurant_id`) renders cleanly with seed data. **No sign-out was needed** — `auth.uid()` reads `sub` which is always in the JWT.  
+**Source:** session:2026-05-19 user test report  
+**Triggers:** RLS, post-deploy verification, 0008, dashboard charts, onboarding wizard, multi-tenant test
 
 ### LRN-2026-05-18-direct-db-rzrz (confidence: high)
 **Context:** Investigating how to push MenuLink orders into RzRz POS  

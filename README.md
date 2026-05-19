@@ -53,7 +53,7 @@ menulink/
 │       ├── lib/             ← Supabase clients + auth + types
 │       ├── public/menu/koko/ ← KO-KO food photos (jpegs)
 │       └── supabase/
-│           └── migrations/  ← 7 SQL migrations applied to cloud
+│           └── migrations/  ← 8 SQL migrations applied to cloud
 │
 ├── current-state/
 │   └── pwa-starter/         ← v6 legacy PWA (still in repo, redirects to v7)

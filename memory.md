@@ -1,18 +1,18 @@
 # MenuLink · Project Memory
 
 > **Read this first** when picking up the project in a new session.
-> Last saved: **2026-05-19** at the end of the v7 launch + GPS-fix session.
-> Status line: **production. KO-KO live. v7 customer PWA + tenant admin + platform ops all shipped.**
+> Last saved: **2026-05-19** — end of post-launch hardening session.
+> Status line: **production. 4 tenants live (3 paid + KO-KO pending). RLS rewrite shipped (0008). Owner self-service logo + cover + dashboard charts.**
 
 ---
 
 ## 30-Second TL;DR
 
-MenuLink is a multi-tenant Arabic SaaS for Saudi restaurants. Three surfaces live, all on Vercel + Supabase:
+MenuLink is a multi-tenant Arabic SaaS for Saudi restaurants. Three surfaces live, all on Vercel + Supabase. **Four tenants** onboarded as of 2026-05-19 — KO-KO + three others (all three paid, KO-KO subscription still pending).
 
-- **Customer PWA** at `/m/koko` (and any tenant slug) — KO-KO's customers order food, message goes to WhatsApp, order persists to Supabase.
-- **Tenant Admin** at `/admin/*` — restaurant owners edit menu, see orders in realtime, manage customers.
-- **Platform Ops** at `/ops/*` — you (the platform operator) manage all tenants, onboard new ones, log payments.
+- **Customer PWA** at `/m/<slug>` (KO-KO is `/m/koko`) — customers order food, message goes to WhatsApp, order persists to Supabase.
+- **Tenant Admin** at `/admin/*` — restaurant owners edit menu, see realtime orders, manage customers, **upload their own logo + cover**, watch a 14-day revenue / orders chart on the dashboard.
+- **Platform Ops** at `/ops/*` — you (the platform operator) manage all tenants, onboard new ones, log payments. Logo/cover are also editable here as an override.
 
 The original v6 static HTML PWA at `menulink-eight.vercel.app` now 302-redirects to the new v7 Next.js page so all old links + QR codes still work.
 
@@ -67,7 +67,7 @@ The `sb_publishable_*` anon key is intentionally public and committed in `apps/w
 - **Owner email:** `id.menulink@gmail.com`
 - **Dashboard:** https://supabase.com/dashboard/project/dhmjrrsynfvomlzhggvu
 
-### Schema (7 migrations applied)
+### Schema (8 migrations applied)
 
 | Migration | What it does |
 |---|---|
@@ -77,16 +77,17 @@ The `sb_publishable_*` anon key is intentionally public and committed in `apps/w
 | `0004_multi_tenant_menu.sql` | menu_categories, menu_items, menu_item_variants, restaurant_owners. Expands restaurants with address/hours/colors/is_published. `get_public_menu(slug)` RPC. |
 | `0005_subscriptions_ops.sql` | subscriptions, payments, platform_admins + JWT-claim triggers that write `role` + `restaurant_id` into `raw_app_meta_data`. Payment-insert trigger advances subscription to active. Subscription-overdue trigger auto-unpublishes restaurant. |
 | `0006_ops_helpers.sql` | `get_tenant_owners(uuid)` RPC so ops can see owner emails without direct `auth.users` access. |
-| `0007_menu_images_storage.sql` | Public `menu-images` Storage bucket (5 MB cap, jpeg/png/webp). RLS: anon read, owner CRUD scoped to `<restaurant_id>/` path prefix, ops bypass. |
+| `0007_menu_images_storage.sql` | Public `menu-images` Storage bucket (5 MB cap, jpeg/png/webp). RLS scoped to `<restaurant_id>/` path. |
+| `0008_fix_rls_and_columns.sql` | **Replaces every JWT-claim-based policy** (broken since 0001 — Supabase nests `app_metadata` claims) with `auth.uid()` + lookup-table policies via `public.owns_restaurant(uuid)` and `public.is_platform_admin()` SECURITY DEFINER helpers. Adds `platform_admin` ops policies on every table (the missing INSERT on `restaurants` was blocking the onboarding wizard). Adds `menu_categories.name_en`, `menu_items.name_en`, `menu_items.description_en`. Rewrites storage RLS with the same auth.uid lookup pattern. |
 
 All migrations live in `apps/web/supabase/migrations/`. Apply locally via `npx supabase db reset` or push to cloud via `supabase db push` (we used the Management API directly in this build).
 
-### Seed
-- 1 restaurant: KO-KO Chicky Licky (slug `koko`)
-- 20 fake customers across all 5 RFM segments
-- ~80 fake orders across last 90 days
-- 7 categories, 32 menu items, 46 price variants (real KO-KO menu)
-- 1 subscription row: yearly, status `pending_payment` (no real payment logged yet)
+### Seed + production data
+- **4 restaurants** onboarded — KO-KO (`koko`) + 3 others added on 2026-05-19 via `/ops/tenants/new`
+- 20 fake customers across all 5 RFM segments (KO-KO only)
+- ~80 fake orders across last 90 days (KO-KO only)
+- 7 categories, 33 menu items (1 owner-added appetizer + 32 seed), 46+ price variants (real KO-KO menu)
+- 4 subscription rows — 3 active (the new tenants have already paid), KO-KO still `pending_payment` (no payment logged yet)
 
 ### KO-KO restaurant_id
 `11111111-1111-1111-1111-111111111111` — hardcoded in seed, referenced by v6 PWA, used in test scripts.
@@ -157,9 +158,13 @@ D:\menulink\
 │       │   │   ├── layout.tsx             ← Auth check + nav shell + subscription banner
 │       │   │   ├── login/
 │       │   │   ├── logout/
-│       │   │   ├── page.tsx               ← Dashboard (stat cards + RFM + recent orders)
-│       │   │   ├── info/                  ← Operational info (NO design fields)
+│       │   │   ├── page.tsx               ← Dashboard (stat cards + RFM + recent orders + charts)
+│       │   │   ├── dashboard-chart.tsx    ← Chart.js (Line revenue + Bar orders, 14-day)
+│       │   │   ├── info/                  ← Operational info + owner logo + cover upload
 │       │   │   ├── menu/                  ← Menu CRUD with image upload
+│       │   │   │   ├── menu-editor.tsx    ← Wraps modals; per-category & per-item controls
+│       │   │   │   ├── add-item-modal.tsx ← Simple form: Category > AR name > Price > Photo
+│       │   │   │   └── add-category-modal.tsx
 │       │   │   ├── orders/                ← Realtime feed
 │       │   │   ├── customers/             ← RFM table
 │       │   │   └── subscription-banner.tsx
@@ -191,7 +196,8 @@ D:\menulink\
 │               ├── 0004_multi_tenant_menu.sql
 │               ├── 0005_subscriptions_ops.sql
 │               ├── 0006_ops_helpers.sql
-│               └── 0007_menu_images_storage.sql
+│               ├── 0007_menu_images_storage.sql
+│               └── 0008_fix_rls_and_columns.sql
 │
 ├── current-state/
 │   └── pwa-starter/                       ← Legacy v6 static PWA (still in repo, now redirects)
@@ -236,13 +242,14 @@ D:\menulink\
 ## ✅ What's Done (by domain)
 
 ### Database & RPCs
-- 7 migrations applied to Singapore Supabase
+- 8 migrations applied to Singapore Supabase
 - 6 analytics views populated with seed data, observed live in `/admin/customers`
 - `submit_order(jsonb)` security-definer RPC (anon-callable from PWA, atomic upsert+insert)
 - `get_public_menu(slug)` RPC (anon-callable, returns full menu JSON)
 - `get_tenant_owners(uuid)` RPC (platform_admin-only, joins auth.users)
-- JWT-claim triggers that auto-set `role` + `restaurant_id` in `raw_app_meta_data`
-- Storage bucket `menu-images` with RLS scoped by `restaurant_id` folder prefix
+- **`is_platform_admin()` + `owns_restaurant(uuid)` + `owns_restaurant_text(text)`** SECURITY DEFINER helpers — every RLS policy uses these now (since 0008)
+- JWT-claim triggers that auto-set `role` + `restaurant_id` in `raw_app_meta_data` (kept for `requireOwner`/`requireOps` in Next.js — RLS no longer reads them)
+- Storage bucket `menu-images` with RLS scoped by `restaurant_id` folder prefix via `owns_restaurant_text`
 - Supabase Realtime publication includes `orders` (the /admin/orders feed subscribes)
 
 ### Customer Experience
@@ -265,11 +272,11 @@ D:\menulink\
 ### Tenant Admin
 - Email+password auth via `@supabase/ssr` cookies
 - Subscription banner on every admin page (yellow pending / red overdue / red cancelled)
-- `/admin/info` — operational fields only (name read-only, tagline + WhatsApp + email + city + address + social handles + publish toggle). **No design fields visible to tenant.**
-- `/admin/menu` — categories + items + variants CRUD. Image upload per item (camera-icon thumbnail). 5 MB cap, jpeg/png/webp.
+- `/admin/info` — operational fields (name read-only, tagline + WhatsApp + email + city + address + social handles + publish toggle) **plus owner-managed logo + cover image uploads** (added 2026-05-19). Colors stay ops-only with a "تواصل مع MenuLink" note.
+- `/admin/menu` — categories + items + variants CRUD. **Simplified add-item modal** (Category → Arabic name → Price → Photo, with English name + description tucked behind "Show advanced"). `name_en` / `description_en` columns persist for future bilingual rendering. 5 MB cap, jpeg/png/webp.
 - `/admin/orders` — last 100 orders, Realtime subscription for INSERT and UPDATE filtered by restaurant_id. Status dropdown updates write back.
 - `/admin/customers` — `v_customer_rfm` + `v_customer_ltv` joined. Phone numbers click to WhatsApp.
-- `/admin` — dashboard with today's orders count + revenue + RFM segment counts + last 5 orders
+- `/admin` — dashboard with today's orders count + revenue + RFM segment counts + last 5 orders + **Chart.js charts** (14-day revenue line + 14-day orders bar) — `react-chartjs-2 ^5.2.0` + `chart.js ^4.4.4`.
 
 ### Platform Ops
 - Separate auth flow at `/ops/login` (dark theme)
@@ -293,7 +300,7 @@ D:\menulink\
 
 These were debated and resolved during the build. Don't relitigate without strong reason.
 
-1. **Design belongs to ops, not tenants.** Restaurant owners operate (menu items, hours, WhatsApp number). The platform team (you) sets logos, cover images, brand colors. Owners see colors as read-only chips in `/admin/info` with "للتعديل تواصل مع MenuLink". The actual color/logo editors live in `/ops/tenants/[id]`.
+1. **Design ownership is split (updated 2026-05-19).** Tenants own their **logo** and **cover image** — they upload from `/admin/info` (a restaurant's identity shouldn't be gated by ops availability). Ops still owns **brand colors**, **slug**, **name**, layout, typography. Owners see colors as read-only chips in `/admin/info` with "للتعديل تواصل مع MenuLink". Ops can override logo/cover from `/ops/tenants/[id]` when needed.
 2. **Stitch typography stack:** Tajawal 700–900 for Arabic display, Cairo 400–700 for Arabic body, Plus Jakarta Sans for Latin body, Anybody for Latin display. All loaded via Google Fonts in root layout. `Inter` is banned per DESIGN.md.
 3. **2-column image-on-top cards** for the customer PWA (not v6's image-on-side compact list). Confirmed against the Stitch mockup the user provided.
 4. **Per-tenant brand colors override Stitch's `#ac0015`.** Default fallback `#ac0015` if a tenant doesn't have one set; KO-KO uses `#D32027`. Background defaults to Stitch's `#fff8f6` if not overridden.
@@ -377,10 +384,10 @@ Moyasar hosted checkout for the first 499 SAR payment. Webhook flips `subscripti
 These won't block anything but are worth knowing about:
 
 - The Vercel "GitHub user not found" warning is still showing because git commits are authored by `idxmac@gmail.com` which isn't verified on either the `Adilibrahimit` GitHub or the `id.menulink@gmail.com` Vercel account. Fix: `git config --global user.email "Adilibrahimit@users.noreply.github.com"` then push one new commit. Cosmetic — deploys aren't blocked.
-- KO-KO subscription is `pending_payment` in the DB. To activate: sign in as ops → `/ops/payments` → log a 499 SAR payment for KO-KO. Trigger sets `current_period_end` to a year out + status to `active`.
-- The 2 waiting tenants the user mentioned earlier haven't been onboarded yet. Use `/ops/tenants/new` when ready.
+- **KO-KO subscription is still `pending_payment` in the DB.** The 3 tenants onboarded on 2026-05-19 have all paid (subscriptions active). To activate KO-KO: sign in as ops → `/ops/payments` → log a 499 SAR payment for KO-KO. Trigger sets `current_period_end` to a year out + status to `active`.
 - The `restaurants.contact_email` for KO-KO is still null (we left it empty per user's instruction "right now make it empty"). Real owner email goes here when known.
-- All tokens used during the build (Vercel, Supabase access, Supabase service_role) are in chat history and should be rotated.
+- All tokens used during the build (Vercel, Supabase access, Supabase service_role, and the temporary Supabase PAT used to apply 0008 on 2026-05-19) are in chat history and should be rotated. The PAT used for 0008 was already flagged for rotation when applied — confirm it's revoked at https://supabase.com/dashboard/account/tokens.
+- `react-chartjs-2` semver moved to ^5.3.1 and `chart.js` to ^4.5.1 after `npm install` (initial package.json wrote ^5.2.0 / ^4.4.4 — npm chose newer compatible versions). Lockfile committed; nothing to do.
 
 ---
 
