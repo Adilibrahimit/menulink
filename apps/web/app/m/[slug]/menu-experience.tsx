@@ -264,9 +264,15 @@ function CartDrawer({
       alert("الرجاء إدخال رقم الجوال");
       return;
     }
-    if (orderType === "delivery" && !address.trim()) {
-      alert("الرجاء إدخال عنوان التوصيل");
-      return;
+    if (orderType === "delivery") {
+      if (!address.trim()) {
+        alert("الرجاء إدخال عنوان التوصيل");
+        return;
+      }
+      if (!location) {
+        alert("الرجاء تحديد موقع التوصيل على الخريطة (اضغط 'استخدم موقعي الحالي' أو اسحب الدبوس)");
+        return;
+      }
     }
 
     setSubmitting(true);
