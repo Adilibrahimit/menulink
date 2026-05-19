@@ -1,5 +1,15 @@
 {
-  "rewrites": [
-    { "source": "/", "destination": "/koko-menu-v6.html" }
+  "_comment": "Read by the menulink-eight.vercel.app project (static, deploys current-state/pwa-starter/). Now redirects all customer-facing URLs to the v7 Next.js page at menulink-admin-five.vercel.app/m/koko. v6 HTML stays in the repo as a fallback we can revert to by removing these redirects.",
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "https://menulink-admin-five.vercel.app/m/koko",
+      "statusCode": 302
+    },
+    {
+      "source": "/koko-menu-v6.html",
+      "destination": "https://menulink-admin-five.vercel.app/m/koko",
+      "statusCode": 302
+    }
   ]
 }
