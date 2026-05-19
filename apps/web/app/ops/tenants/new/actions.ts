@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase-server";
 import { adminClient } from "@/lib/supabase-admin";
 import { requireOps } from "@/lib/auth";
 
@@ -52,9 +51,10 @@ export async function createTenant(input: CreateTenantInput): Promise<CreateTena
   const admin = adminClient();          // service_role
   const userPassword = generatePassword();
 
-  // 1) Create the restaurant row (ops user has RLS access via 'platform_admin' role)
-  const sb = createClient();
-  const { data: restaurant, error: rErr } = await sb
+  // 1) Create the restaurant row. Use service_role (admin) so ops onboarding
+  //    never depends on RLS being correctly configured for the calling ops
+  //    user — the requireOps() gate above is the authorization boundary.
+  const { data: restaurant, error: rErr } = await admin
     .from("restaurants")
     .insert({
       slug: input.slug,

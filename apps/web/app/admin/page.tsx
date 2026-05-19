@@ -1,24 +1,34 @@
 import { requireOwner } from "@/lib/auth";
 import { createClient } from "@/lib/supabase-server";
-
-type DailyRow = { day: string; orders: number; revenue: string; unique_customers: number };
-type SegmentRow = { segment: string | null; count: number };
+import DashboardChart from "./dashboard-chart";
 
 export default async function DashboardPage() {
   const me = await requireOwner();
   const sb = createClient();
 
-  // Today's orders
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  const fourteenDaysAgo = new Date(today);
+  fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 13);
 
   const [{ count: ordersToday }, { count: ordersTotal }, { data: dailyRows }, { data: segments }, { data: recent }] =
     await Promise.all([
-      sb.from("orders").select("*", { count: "exact", head: true }).gte("created_at", today.toISOString()),
-      sb.from("orders").select("*", { count: "exact", head: true }),
-      sb.from("v_revenue_daily").select("day, orders, revenue, unique_customers").order("day", { ascending: false }).limit(14),
+      sb.from("orders").select("*", { count: "exact", head: true })
+        .eq("restaurant_id", me.restaurant_id)
+        .gte("created_at", today.toISOString()),
+      sb.from("orders").select("*", { count: "exact", head: true })
+        .eq("restaurant_id", me.restaurant_id),
+      sb.from("v_revenue_daily")
+        .select("day, orders, revenue, unique_customers")
+        .eq("restaurant_id", me.restaurant_id)
+        .gte("day", fourteenDaysAgo.toISOString().slice(0, 10))
+        .order("day", { ascending: true }),
       sb.from("v_customer_rfm").select("segment").eq("restaurant_id", me.restaurant_id),
-      sb.from("orders").select("id, order_type, total, created_at, customers(name, phone)").order("created_at", { ascending: false }).limit(5),
+      sb.from("orders")
+        .select("id, order_type, total, created_at, customers(name, phone)")
+        .eq("restaurant_id", me.restaurant_id)
+        .order("created_at", { ascending: false })
+        .limit(5),
     ]);
 
   const segmentCounts = (segments ?? []).reduce<Record<string, number>>((acc, r: any) => {
@@ -27,8 +37,23 @@ export default async function DashboardPage() {
     return acc;
   }, {});
 
+  const todayIso = today.toISOString().slice(0, 10);
   const revenueToday =
-    (dailyRows ?? []).find((r: any) => r.day === today.toISOString().slice(0, 10))?.revenue ?? "0.00";
+    (dailyRows ?? []).find((r: any) => r.day === todayIso)?.revenue ?? "0.00";
+
+  // Build a dense 14-day series so the chart shows zero-days too
+  const dense: { day: string; orders: number; revenue: number }[] = [];
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(fourteenDaysAgo);
+    d.setDate(d.getDate() + i);
+    const iso = d.toISOString().slice(0, 10);
+    const row = (dailyRows ?? []).find((r: any) => r.day === iso);
+    dense.push({
+      day: iso,
+      orders: row ? Number(row.orders) : 0,
+      revenue: row ? Number(row.revenue) : 0,
+    });
+  }
 
   return (
     <div className="space-y-6">
@@ -40,6 +65,8 @@ export default async function DashboardPage() {
         <StatCard label="إجمالي الطلبات" value={String(ordersTotal ?? 0)} />
         <StatCard label="عملاء مميزون" value={String(segmentCounts["Champion"] ?? 0)} />
       </section>
+
+      <DashboardChart data={dense} />
 
       <section className="bg-white rounded-xl border border-neutral-200 p-4">
         <h2 className="font-semibold mb-3">شرائح العملاء</h2>

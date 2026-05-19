@@ -314,6 +314,8 @@ These were debated and resolved during the build. Don't relitigate without stron
 7. **The new `sb_secret_*` Supabase key is rejected by GoTrue admin endpoints from browser-ish contexts** (including PowerShell `Invoke-RestMethod`). Use the legacy service_role JWT for Auth Admin API calls.
 8. **Vercel's `vercel.json` rejects unknown root keys** like `_comment`. Don't add comments in vercel.json — use git commit messages.
 9. **MCP Supabase / Vercel servers are bound to whichever account the MCP was set up with**, NOT the account the user references in chat. Bypass via the REST API + their access token.
+10. **Supabase JWT claims from `raw_app_meta_data` are nested under `app_metadata`, NOT top-level.** `auth.jwt() ->> 'restaurant_id'` always returns NULL — that broke every authenticated RLS check from 0001 until **0008** fixed it by switching to `auth.uid()` + `restaurant_owners` / `platform_admins` lookups via `public.owns_restaurant(uuid)` and `public.is_platform_admin()` SECURITY DEFINER helpers. **Never write RLS that reads JWT-nested claims as top-level.**
+11. **Postgres views default to `security_invoker=false`, which bypasses RLS on underlying tables.** `v_revenue_daily` was leaking cross-tenant data until 0008-era dashboard fix added explicit `.eq("restaurant_id", me.restaurant_id)`. Always scope view queries explicitly, OR add `security_invoker=true` to the view.
 
 ---
 

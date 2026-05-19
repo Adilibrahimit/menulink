@@ -4,6 +4,8 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-browser";
 import type { CategoryWithItems } from "./page";
+import AddItemModal from "./add-item-modal";
+import AddCategoryModal from "./add-category-modal";
 
 type Toast = { kind: "ok" | "err"; text: string } | null;
 
@@ -18,6 +20,8 @@ export default function MenuEditor({
   const sb = createClient();
   const [toast, setToast] = useState<Toast>(null);
   const [pending, startTransition] = useTransition();
+  const [showAddCategory, setShowAddCategory] = useState(false);
+  const [addItemFor, setAddItemFor] = useState<string | null>(null); // category id, or "*" for any
 
   function notify(kind: "ok" | "err", text: string) {
     setToast({ kind, text });
@@ -29,22 +33,6 @@ export default function MenuEditor({
   }
 
   // ---- Category mutations -------------------------------------------------
-  async function addCategory() {
-    const name = window.prompt("اسم الفئة الجديدة:");
-    if (!name) return;
-    const slug = window.prompt("معرّف الفئة (slug, إنجليزي):", `cat-${Date.now()}`);
-    if (!slug) return;
-    const sort = initial.length + 1;
-    const { error } = await sb
-      .from("menu_categories")
-      .insert({ restaurant_id: restaurantId, slug, name_ar: name, sort });
-    if (error) notify("err", error.message);
-    else {
-      notify("ok", "أضيفت الفئة");
-      refresh();
-    }
-  }
-
   async function renameCategory(catId: string, current: string) {
     const name = window.prompt("الاسم الجديد:", current);
     if (!name || name === current) return;
@@ -67,30 +55,6 @@ export default function MenuEditor({
   }
 
   // ---- Item mutations -----------------------------------------------------
-  async function addItem(catId: string) {
-    const name = window.prompt("اسم الصنف:");
-    if (!name) return;
-    const priceStr = window.prompt("السعر الواحد (ريال):", "10");
-    if (!priceStr) return;
-    const price = Number(priceStr);
-    if (!Number.isFinite(price) || price < 0) {
-      notify("err", "سعر غير صحيح");
-      return;
-    }
-    const slug = `item-${Date.now()}`;
-    const { data: it, error: e1 } = await sb
-      .from("menu_items")
-      .insert({ restaurant_id: restaurantId, category_id: catId, slug, name_ar: name, sort: 999 })
-      .select("id")
-      .single();
-    if (e1 || !it) { notify("err", e1?.message ?? "تعذّر الإضافة"); return; }
-    const { error: e2 } = await sb
-      .from("menu_item_variants")
-      .insert({ menu_item_id: it.id, variant_key: "single", variant_label_ar: "", price, sort: 1 });
-    if (e2) notify("err", e2.message);
-    else { notify("ok", "أضيف الصنف"); refresh(); }
-  }
-
   async function renameItem(itemId: string, current: string) {
     const name = window.prompt("الاسم الجديد:", current);
     if (!name || name === current) return;
@@ -184,12 +148,22 @@ export default function MenuEditor({
         </p>
       )}
 
-      <button
-        onClick={addCategory}
-        className="rounded-md bg-brand-primary text-white px-3 py-2 text-sm font-semibold hover:opacity-90"
-      >
-        + إضافة فئة
-      </button>
+      <div className="flex items-center gap-2 flex-wrap">
+        <button
+          onClick={() => setShowAddCategory(true)}
+          className="rounded-md bg-brand-primary text-white px-3 py-2 text-sm font-semibold hover:opacity-90"
+        >
+          + إضافة فئة
+        </button>
+        {initial.length > 0 && (
+          <button
+            onClick={() => setAddItemFor("*")}
+            className="rounded-md bg-neutral-900 text-white px-3 py-2 text-sm font-semibold hover:opacity-90"
+          >
+            + إضافة صنف
+          </button>
+        )}
+      </div>
 
       {initial.length === 0 && (
         <p className="text-neutral-500 text-sm">لا توجد فئات بعد. اضغط "إضافة فئة" للبدء.</p>
@@ -209,7 +183,7 @@ export default function MenuEditor({
               {!c.is_active && <span className="text-xs text-neutral-400">(مخفي)</span>}
             </div>
             <div className="flex items-center gap-2 text-xs">
-              <button onClick={() => addItem(c.id)} className="px-2 py-1 rounded bg-neutral-100 hover:bg-neutral-200">
+              <button onClick={() => setAddItemFor(c.id)} className="px-2 py-1 rounded bg-neutral-100 hover:bg-neutral-200">
                 + صنف
               </button>
               <button onClick={() => renameCategory(c.id, c.name_ar)} className="px-2 py-1 rounded bg-neutral-100 hover:bg-neutral-200">
@@ -307,6 +281,33 @@ export default function MenuEditor({
       ))}
 
       {pending && <p className="text-xs text-neutral-400">يحدّث…</p>}
+
+      {showAddCategory && (
+        <AddCategoryModal
+          restaurantId={restaurantId}
+          nextSort={initial.length + 1}
+          onClose={() => setShowAddCategory(false)}
+          onCreated={(msg) => {
+            setShowAddCategory(false);
+            notify("ok", msg);
+            refresh();
+          }}
+        />
+      )}
+
+      {addItemFor && (
+        <AddItemModal
+          restaurantId={restaurantId}
+          categories={initial.map((c) => ({ id: c.id, name_ar: c.name_ar }))}
+          defaultCategoryId={addItemFor === "*" ? undefined : addItemFor}
+          onClose={() => setAddItemFor(null)}
+          onCreated={(msg) => {
+            setAddItemFor(null);
+            notify("ok", msg);
+            refresh();
+          }}
+        />
+      )}
     </div>
   );
 }

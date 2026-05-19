@@ -254,6 +254,19 @@ We have **two distinct customer profiles** and they must never be conflated:
 **Source:** user correction on session:2026-05-18  
 **Triggers:** customer info, restaurant details, assumption check
 
+### LRN-2026-05-19-supabase-jwt-claims-nested (confidence: high) ⚠️ CRITICAL
+**Context:** Migrations 0001/0003/0004/0005/0007 wrote RLS policies using `auth.jwt() ->> 'restaurant_id'` and `auth.jwt() ->> 'role'`. After v7 launch, every authenticated query silently returned empty results: owner couldn't create categories ("RLS violation"), `/admin/info` threw "Cannot coerce to single JSON object", `/admin/orders` showed no rows. The dashboard "revenue" tile still showed numbers — *because views bypass RLS in PG15+ default `security_invoker=false`* (which is also a cross-tenant data leak by itself).  
+**Learning:** **Supabase nests `app_metadata` claims inside the JWT — they are NOT top-level.** So `auth.jwt() ->> 'restaurant_id'` always returns NULL. The correct path is `auth.jwt() -> 'app_metadata' ->> 'restaurant_id'`. **Better fix: don't read JWT claims at all** — use `auth.uid()` + a lookup against `restaurant_owners` / `platform_admins`. That's what migration 0008 does (helper functions `public.owns_restaurant(uuid)` and `public.is_platform_admin()`, both SECURITY DEFINER to avoid RLS recursion).  
+**Also:** views with default `security_invoker=false` will leak across tenants if the calling code doesn't add `.eq("restaurant_id", ...)`. The dashboard had this bug on `v_revenue_daily` until 0008.  
+**Source:** session:2026-05-19 + advisor correction  
+**Triggers:** RLS, Supabase, auth.jwt, app_metadata, restaurant_id claim, multi-tenant security
+
+### LRN-2026-05-19-ops-needs-policies-or-service-role (confidence: high)
+**Context:** Ops onboarding wizard (`/ops/tenants/new`) used the cookie client to INSERT into `restaurants`, but there was NEVER an INSERT policy for that table. RLS just dropped it silently.  
+**Learning:** Two-prong fix: (1) add explicit `platform_admin` ALL policies on every table ops touches (restaurants, menu_*, customers, orders, payments, subscriptions) using the `is_platform_admin()` helper; (2) for ops actions specifically, prefer the **service_role admin client** — `requireOps()` is the auth gate, and bypassing RLS for ops is safer and simpler than chasing per-table policies.  
+**Source:** session:2026-05-19  
+**Triggers:** ops, platform_admin, service_role, RLS INSERT, cookie client
+
 ---
 
 ## 🏷️ Customer-Specific Quirks
