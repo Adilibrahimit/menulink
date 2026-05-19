@@ -1,14 +1,29 @@
 # CLAUDE.md · MenuLink Project
 
-> ملف توجيه مختصر لـ Claude Code. اقرأ HANDOFF.md للسياق الكامل.
+> ملف توجيه مختصر لـ Claude Code.
+>
+> **🆕 ابدأ هنا:** [`memory.md`](./memory.md) — حالة المشروع الحالية، URLs، credentials،
+> ما تم بناؤه، الـ gotchas، والمسار للجلسة الجديدة. اقرأها أولاً قبل أي شي.
+>
+> ثم: `HANDOFF.md` للسياق الاستراتيجي · `DESIGN.md` لقواعد التصميم ·
+> `.claude/skills/menulink-integration/learnings.md` لذاكرة المهارة.
 
 ## ما هذا المشروع؟
 
 منصة SaaS لقوائم المطاعم + طلبات واتساب للسوق السعودي. الجمهور: مطاعم ومقاهي صغيرة-متوسطة. التسعير: **٥٩ ريال/شهر** أو **٤٩٩ ريال/سنة**.
 
-## الحالة الحالية
+## الحالة الحالية (محدّثة 2026-05-19)
 
-PWA v6 شغّال في `current-state/pwa-starter/`. جاهز للنشر. **العميل الأول الدافع:** KO-KO Chicky Licky (طلب نسختين). **مختبر تكامل RzRz:** مطعم منفصل (أخوك مدير تشغيلي فيه).
+**كل شي شغّال في الإنتاج.** ٣ surfaces نازلة على Vercel + Supabase:
+- 🍔 **Customer PWA v7** — `menulink-admin-five.vercel.app/m/koko` (Next.js، multi-tenant، Stitch design)
+- 🏪 **Tenant Admin** — `/admin/*` على نفس الدومين (menu CRUD، orders Realtime، RFM customers)
+- 🟣 **Platform Ops** — `/ops/*` على نفس الدومين (تعريف عملاء، payments، تصميم لكل tenant)
+- 🔁 **الـ URL القديم** `menulink-eight.vercel.app` يـ 302-redirect للـ v7
+
+**أول عميل دافع:** KO-KO Chicky Licky (live، sub `pending_payment` لحد ما تسجّل أول دفعة).
+**مختبر RzRz:** مطعم منفصل (أخوك مدير تشغيلي) — لسا ما بُني الـ Bridge App.
+
+تفاصيل كاملة عن كل شي، URLs، test credentials، الـ schema، والـ next steps في [`memory.md`](./memory.md).
 
 ## القرارات المحسومة (لا تعيد النقاش)
 
@@ -45,19 +60,27 @@ PWA v6 شغّال في `current-state/pwa-starter/`. جاهز للنشر. **ال
 
 | تحتاج | اقرأ |
 |------|------|
-| السياق الكامل والقرارات | `HANDOFF.md` |
-| كود PWA الشغّال | `current-state/pwa-starter/` |
-| دليل النشر | `current-state/pwa-starter/README-DEPLOY.md` |
+| 🆕 **حالة المشروع الحالية + URLs + credentials** | [`memory.md`](./memory.md) — اقرأها أول شي |
+| السياق الاستراتيجي الأصلي | `HANDOFF.md` |
+| قواعد التصميم (Stitch-ready) | `DESIGN.md` |
+| كود v7 الحالي (Next.js multi-tenant) | `apps/web/app/m/[slug]/` و `apps/web/app/admin/` و `apps/web/app/ops/` |
+| كود PWA v6 (legacy، يـ redirect) | `current-state/pwa-starter/` |
+| Schema migrations + RPCs | `apps/web/supabase/migrations/` |
 | خارطة الطريق | `design-docs/ROADMAP.md` |
-| المعمارية الكاملة | `design-docs/system-design.html` |
-| استراتيجية POS | `design-docs/pos-universal-integration.html` |
-| Multi-tenant | `design-docs/tenant-config-example.js` |
+| استراتيجية POS (RzRz/Foodics) | `design-docs/pos-universal-integration.html` |
 | **تكامل RzRz / عميل جديد / debugging** | `.claude/skills/menulink-integration/` ⭐ |
 | نسخ سابقة (مرجع فقط) | `version-history/` |
 
 ## المهمة التالية المقترحة
 
-نشر v6 على Manus.space أو Netlify لـ KO-KO (العميل التجريبي) ثم بدء بيعه لمطاعم أخرى. **لا تبدأ phase 2 (Next.js + Supabase) قبل ٣-٥ عملاء يدفعون فعلياً.**
+Phase 2 (Next.js + Supabase + multi-tenant + admin + ops + customer PWA v7) **مكتمل**.
+
+الخيارات للمرحلة القادمة (تفاصيل في `memory.md` section "What's Next"):
+- **A) POS Integration / RzRz Bridge App** — الـ moat الاستراتيجي. مطعم الأخ هو الـ testbed.
+- **B) Push + Marketing Stack** — OneSignal، broadcast لـ dormant customers من `/admin/customers`.
+- **C) Payment Gateway / Moyasar** — أتمتة جمع ٤٩٩ ريال.
+
+الـ loose ends المتبقية: تسجيل أول دفعة لـ KO-KO، إضافة الـ ٢ tenants المنتظرين، rotation للـ tokens القديمة من chat history.
 
 ## اللغة
 

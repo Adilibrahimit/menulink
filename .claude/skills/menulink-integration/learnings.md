@@ -1,8 +1,10 @@
 # Learnings · MenuLink Integration
 
 > **This file is read at the start of every session.** It accumulates knowledge across deployments so the same mistake never costs us twice.
-> 
-> **Last updated:** 2026-05-18 (foundation plan executed — Obsidian + Supabase schema + analytics views)
+>
+> **🆕 Read [`memory.md`](../../../memory.md) at project root for current state.** This file is for *transferable gotchas* — patterns that apply to any tenant, any session.
+>
+> **Last updated:** 2026-05-19 (v7 Stitch redesign + GPS map fix + legacy redirect)
 > **Update protocol:** Append new entries under the right section. Keep each entry to 2-4 lines. Tag with confidence level.
 
 ---
@@ -87,6 +89,54 @@ We have **two distinct customer profiles** and they must never be conflated:
 **How to apply:** Before running `/graphify` on any project with sized-icon variants, drop the icon list from detection. Same trick for build output folders if they leak into detection.
 **Source:** session:2026-05-18
 **Triggers:** graphify, knowledge graph, image dedup, icons, PWA assets
+
+### LRN-2026-05-19-ios-safari-geolocation-needs-gesture (confidence: high)
+**Context:** v7 cart drawer had a Leaflet map that called `navigator.geolocation.getCurrentPosition` on mount. Worked on desktop and Android, but iPhones silently never asked for permission.
+**Learning:** iOS Safari (and increasingly Chrome) requires geolocation requests to be inside a **direct user-gesture handler** (button click, tap). Auto-calling on mount doesn't even fire the permission prompt — it just fails silently with `PERMISSION_DENIED`. Always wire geolocation behind an explicit "📍 Use my location" button.
+**Why:** Apple's privacy posture; same rule applies to push-notification subscription, audio playback, etc.
+**How to apply:** Anywhere a permission-gated browser API is used, gate it behind an explicit user gesture. Provide a manual fallback (drag-pin, paste-link, etc.) that always works.
+**Source:** session:2026-05-19 (v7 map fix)
+**Triggers:** geolocation, iOS Safari, user gesture, permission denied silently, mobile
+
+### LRN-2026-05-19-leaflet-zero-size-in-drawer (confidence: high)
+**Context:** Leaflet map mounted inside a sliding-open cart drawer measured the container at 0×0 at first render → blank gray box.
+**Learning:** Leaflet (and most JS map libs) calls `getBoundingClientRect()` once on init. If the container is hidden / mid-animation / `display: none`, the size sticks at 0 until you call `map.invalidateSize()`. **Single `setTimeout` isn't enough** for animated drawers — fire it at 60ms, 280ms, 600ms, 1200ms PLUS attach a `ResizeObserver` for any later layout shift (orientation, keyboard open, drawer resize).
+**Why:** No way to know in advance when the parent will finish animating.
+**How to apply:** Every map / chart / canvas / VR-canvas component mounted inside an animated parent needs the multi-stage invalidate + ResizeObserver pattern.
+**Source:** session:2026-05-19 (v7 map fix)
+**Triggers:** Leaflet, drawer, modal, map blank, invalidateSize, ResizeObserver
+
+### LRN-2026-05-19-vercel-json-strict-schema (confidence: high)
+**Context:** Added a `_comment` key to `vercel.json` for documentation. Deploy errored: "Vercel rejected unknown keys."
+**Learning:** Vercel's `vercel.json` JSON schema is strict — unknown keys cause deployment failure, not warning. Document via git commit messages or a separate adjacent .md file. Never inline-comment vercel.json.
+**Why:** Vercel validates the schema before bundling. Strict mode catches typos but also documentation attempts.
+**How to apply:** Treat vercel.json as data-only. Comments live elsewhere.
+**Source:** session:2026-05-19 (legacy redirect setup)
+**Triggers:** vercel.json, schema error, deploy failed, unknown keys
+
+### LRN-2026-05-19-stitch-design-system-vs-claude-design-md (confidence: medium)
+**Context:** User invoked the `/stitch-skill`, generated a design system YAML for the customer PWA. Some choices conflicted with our `DESIGN.md` (Stitch picked `Inter` which is banned, picked `Hanken Grotesk` where we use Tajawal, picked `#141313` vs our `#0A0A0A`).
+**Learning:** Treat Stitch (and any AI design tool) as an **input**, not authority. Our `DESIGN.md` is the source of truth. When Stitch's output conflicts, override the conflicting parts (font choices, banned colors, banned anti-patterns) and adopt the rest (structural ideas like 32px row heights, dot-indicator status chips, image-on-top cards, sticky bottom nav).
+**Why:** Stitch is trained on generic patterns, doesn't know our Arabic-first / anti-Inter / no-purple constraints.
+**How to apply:** Run Stitch → reconcile vs DESIGN.md → adopt the structural insights, reject the typography/color violations.
+**Source:** session:2026-05-19 (v7 Stitch redesign)
+**Triggers:** Stitch, design system, generated tokens, Inter banned, font conflict, design merge
+
+### LRN-2026-05-19-image-on-side-vs-image-on-top-call (confidence: medium)
+**Context:** When porting v6 (image-on-side compact list) to v7, I initially kept image-on-side. User pushed back — Stitch's image-on-top 2-col grid was the actual intent.
+**Learning:** Image-on-top with 2-col grid (3 on tablet, 4 on desktop) creates a more "editorial" food-photography feel that matches modern Saudi restaurant ordering expectations. Image-on-side is denser but feels older/less premium. Default to image-on-top for new customer PWAs unless density is mandatory.
+**Why:** Saudi users are highly visual; food photography sells. Density beats variety here.
+**How to apply:** For any new customer-facing food/retail PWA, start with 2-col image-on-top. Only fall back to image-on-side if menu has 50+ items per category.
+**Source:** session:2026-05-19 (v7 Stitch redesign, user corrected pragmatic-list choice)
+**Triggers:** card layout, image position, food PWA, menu design
+
+### LRN-2026-05-19-design-vs-operations-split (confidence: high)
+**Context:** First version of `/admin/info` let restaurant owners edit logo, cover image, primary color, background color. User pushed back: "the dev id must do it i will take the design from the client... i'm the dev will be the designer not the tenant id or restaurants owners."
+**Learning:** **Design is ops's job, not the tenant's.** Restaurant owners are operators — they should only edit operational data (menu items, prices, hours, WhatsApp number, address). Visual identity (logo, cover image, brand colors, name, slug) belongs to the platform team. This applies to MenuLink and to most agency-style SaaS where the platform takes on the design role.
+**Why:** Owners aren't designers. Letting them pick colors leads to clashing brands and degraded platform aesthetic. The platform takes ownership of polish.
+**How to apply:** When designing any tenant admin, audit each editable field: "Is this operational (data) or design (identity)?" Lock the design fields to ops only. Document the rule explicitly in DESIGN.md.
+**Source:** session:2026-05-18 (user feedback after S7+)
+**Triggers:** tenant admin, ops vs tenant, visual identity, brand colors, logo upload
 
 ### LRN-2026-05-18-new-secret-keys-block-server-side (confidence: high)
 **Context:** Trying to create a Supabase Auth user via `POST /auth/v1/admin/users` with the new `sb_secret_*` key, got back `401 "Forbidden use of secret API key in browser"`.

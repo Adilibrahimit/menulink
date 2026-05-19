@@ -1,43 +1,74 @@
 # 🍔 MenuLink
 
-> منصة قوائم رقمية وطلبات واتساب للمطاعم والمقاهي السعودية الصغيرة-المتوسطة.
+> منصة SaaS عربية للمطاعم السعودية: قوائم رقمية، طلبات واتساب، تحليلات عملاء، ولوحة تحكم للمطعم.
 
 ## ابدأ من هنا
 
 | لو أنت... | اقرأ |
 |----------|------|
-| 🤖 **Claude Code** أو AI assistant | [`CLAUDE.md`](./CLAUDE.md) ثم [`HANDOFF.md`](./HANDOFF.md) |
-| 👤 صاحب المشروع | [`HANDOFF.md`](./HANDOFF.md) للسياق الكامل |
-| 💼 تبغى تشوف الأسعار | [`PRICING.md`](./PRICING.md) |
-| 🚀 تبغى تنشر النسخة الحالية | [`current-state/pwa-starter/README-DEPLOY.md`](./current-state/pwa-starter/README-DEPLOY.md) |
-| 🏗️ تبغى تفهم المعمارية | افتح [`design-docs/system-design.html`](./design-docs/system-design.html) في متصفح |
-| 🛣️ تبغى تشوف خارطة الطريق | [`design-docs/ROADMAP.md`](./design-docs/ROADMAP.md) |
-| 💻 تبغى تشتغل على الـ backend | [`apps/web/`](./apps/web/) (Next.js + Supabase scaffold) |
+| 🤖 **Claude Code** / AI assistant جاي يكمل في session جديدة | **[`memory.md`](./memory.md)** ← اقرأها أولاً |
+| 👤 صاحب المشروع | [`memory.md`](./memory.md) (state) ثم [`HANDOFF.md`](./HANDOFF.md) (السياق الأصلي) |
+| 🎨 تبغى تفهم قواعد التصميم | [`DESIGN.md`](./DESIGN.md) — Stitch-ready design system |
+| 💼 التسعير | [`PRICING.md`](./PRICING.md) |
+| 💻 تبغى تشتغل على الـ admin / customer PWA / ops | [`apps/web/`](./apps/web/) |
+| 🛣️ خارطة الطريق | [`design-docs/ROADMAP.md`](./design-docs/ROADMAP.md) |
+| 🍗 **تكامل POS / عميل جديد / debugging** | [`.claude/skills/menulink-integration/`](./.claude/skills/menulink-integration/) ⭐ |
 
 ## ملخص بـ ٣ نقاط
 
-1. **الفكرة:** قوائم احترافية + طلبات واتساب للمطاعم بـ ٥٩ ر/شهر
-2. **الحالة:** PWA v6 شغّال في `current-state/pwa-starter/` — جاهز للنشر اليوم
-3. **التالي:** نشر لـ ٣-٥ عملاء حقيقيين، ثم بناء phase 2 (Next.js + Supabase)
+1. **الفكرة:** قوائم احترافية + طلبات واتساب للمطاعم بـ ٥٩ ر/شهر أو ٤٩٩ ر/سنة.
+2. **الحالة:** Multi-tenant SaaS كامل — customer PWA + tenant admin + platform ops + marketing landing — كلها live على Supabase + Vercel.
+3. **التالي:** RzRz Bridge App (الـ POS moat) أو Push Marketing أو Payment Gateway. تفاصيل في `memory.md`.
+
+## URLs الحية
+
+| URL | What |
+|---|---|
+| `menulink-admin-five.vercel.app/` | Marketing landing |
+| `menulink-admin-five.vercel.app/m/koko` | **KO-KO customer PWA · v7 · canonical** |
+| `menulink-admin-five.vercel.app/m/<slug>` | Multi-tenant — أي مطعم منشور |
+| `menulink-admin-five.vercel.app/admin` | Tenant owner dashboard |
+| `menulink-admin-five.vercel.app/ops` | Platform admin (ops) |
+| `menulink-eight.vercel.app/` | Legacy — 302 → `/m/koko` |
 
 ## بنية المجلدات
 
 ```
 menulink/
-├── HANDOFF.md           ← مستند تسليم كامل
-├── CLAUDE.md            ← توجيه مختصر لـ Claude Code
-├── README.md            ← أنت هنا
-├── PRICING.md           ← التسعير
-├── current-state/       ← v6 PWA (الإنتاج الحالي · مربوط بـ Supabase)
+├── memory.md                ← 🆕 حالة المشروع الحالية · اقرأها أول شي
+├── HANDOFF.md               ← السياق الاستراتيجي الأصلي
+├── CLAUDE.md                ← توجيه Claude (auto-loaded)
+├── DESIGN.md                ← قواعد التصميم
+├── PRICING.md               ← التسعير
+├── README.md                ← أنت هنا
+├── vercel.json              ← redirects للـ legacy project
+│
 ├── apps/
-│   └── web/             ← Next.js 14 + Supabase scaffold (مستقبل: لوحة تحكم المطعم)
-├── design-docs/         ← المعمارية والـ POS strategy
-├── .graph/              ← knowledge graph من /graphify (افتحه في Obsidian)
-├── .obsidian/           ← Obsidian vault marker
-└── version-history/     ← نسخ سابقة (v1-v5)
+│   └── web/                 ← Next.js 14 — كل الـ runtime
+│       ├── app/
+│       │   ├── page.tsx     ← Marketing landing
+│       │   ├── m/[slug]/    ← Customer PWA v7 (multi-tenant)
+│       │   ├── admin/       ← Tenant owner dashboard
+│       │   └── ops/         ← Platform admin
+│       ├── lib/             ← Supabase clients + auth + types
+│       ├── public/menu/koko/ ← KO-KO food photos (jpegs)
+│       └── supabase/
+│           └── migrations/  ← 7 SQL migrations applied to cloud
+│
+├── current-state/
+│   └── pwa-starter/         ← v6 legacy PWA (still in repo, redirects to v7)
+│
+├── design-docs/             ← المعمارية والـ POS strategy
+├── .claude/skills/          ← menulink-integration skill (POS knowledge)
+├── .graph/                  ← graphify knowledge graph (Obsidian)
+└── version-history/         ← نسخ v1-v5 للأرشيف
 ```
 
 ## النشر السحابي
 
-- **Supabase:** [`dhmjrrsynfvomlzhggvu`](https://supabase.com/dashboard/project/dhmjrrsynfvomlzhggvu) (Singapore region) — جدولين أساسية + ٦ views للتحليلات.
-- **Vercel:** يستضيف v6 PWA. شوف [`current-state/pwa-starter/README-DEPLOY.md`](./current-state/pwa-starter/README-DEPLOY.md).
+- **Supabase:** [`dhmjrrsynfvomlzhggvu`](https://supabase.com/dashboard/project/dhmjrrsynfvomlzhggvu) (Singapore) — 6 جداول + 6 views + 5 RPCs + Storage bucket
+- **Vercel:** مشروعين على نفس الـ repo:
+  - `menulink-admin` → Next.js admin من `apps/web/`
+  - `menulink` → static legacy، يـ redirect للأول
+
+تفاصيل كاملة في [`memory.md`](./memory.md).

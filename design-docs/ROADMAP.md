@@ -1,25 +1,44 @@
 # 🍔 خارطة طريق المشروع · من ملف HTML إلى منصة SaaS متكاملة
 
 > هذا المستند يشرح كيف نطوّر مشروع قوائم المطاعم من ملف HTML واحد إلى **منصة حقيقية متعددة العملاء** يمكنك بيعها باشتراك شهري.
+>
+> **🆕 محدّث 2026-05-19:** الـ Phases 1، 2، و5 مكتملة كلياً. تفاصيل كاملة في [`memory.md`](../memory.md).
 
 ---
 
-## 📍 أين نحن الآن (المرحلة الصفر · v6)
+## 📍 أين نحن الآن (محدّث 2026-05-19)
 
-**ما عندنا:**
+**Multi-tenant SaaS كامل في الإنتاج:**
+- ✅ Customer PWA v7 (Next.js multi-tenant) على `menulink-admin-five.vercel.app/m/koko`
+- ✅ Tenant Admin (login، menu CRUD، orders Realtime، RFM customers)
+- ✅ Platform Ops (onboarding wizard، payments، tenant design)
+- ✅ Marketing landing
+- ✅ Supabase Cloud (Singapore) — 6 tables، 6 views، 5 RPCs، Storage bucket
+- ✅ Legacy v6 URL يـ redirect 302 للـ v7
+
+**اللي لسا:**
+- ⏳ Phase 3 — Push + Marketing (OneSignal، broadcast لـ dormant customers)
+- ⏳ Phase 4 — POS Integration (RzRz Bridge App، Foodics OAuth)
+- ⏳ Phase 6 — Payment Gateway (Moyasar أو Tap، حالياً collection يدوي)
+
+---
+
+## 📜 الحالة الأصلية للأرشيف (Phase 0 · v6 static HTML)
+
+**ما كان عندنا في البداية:**
 - ملف HTML واحد فيه قائمة كاملة بالصور والـ QR
-- يتحوّل الآن إلى **PWA** (تطبيق ويب يتثبت على الجوال)
+- PWA يتثبت على الجوال
 - يعمل بدون إنترنت (للقائمة على الأقل)
 - الطلبات تُرسل عبر **واتساب** (لا يوجد خادم/قاعدة بيانات)
 
-**ما ينقصه (وأنت طلبته):**
-- ❌ تسجيل دخول للزبون
-- ❌ قاعدة بيانات للزبائن والطلبات
-- ❌ تاريخ الطلبات + إعادة طلب
-- ❌ إشعارات (push notifications)
-- ❌ نظام تسويق وعروض
-- ❌ لوحة تحكم للمطعم
-- ❌ نظام Template يخدم عدة مطاعم بكود واحد
+**ما كان ينقصه (وكلها بُنيت في 2026-05-18 → 2026-05-19):**
+- ✅ تسجيل دخول للزبون (Supabase Auth)
+- ✅ قاعدة بيانات للزبائن والطلبات
+- ✅ تاريخ الطلبات + customer profile (via RFM views)
+- ⏳ إشعارات (push notifications) — Phase 3 لسا
+- ⏳ نظام تسويق وعروض — Phase 3 لسا
+- ✅ لوحة تحكم للمطعم
+- ✅ نظام Template يخدم عدة مطاعم بكود واحد — `/m/[slug]` route
 
 ---
 

@@ -1,6 +1,11 @@
 # 🎯 MenuLink · مستند تسليم المشروع لـ Claude Code
 
-> **لـ Claude Code:** هذا الملف هو نقطة الدخول الوحيدة. اقرأه كاملاً قبل أي شيء. كل المعلومات اللي تحتاجها لمواصلة العمل موجودة هنا أو يُشار إليها من هنا.
+> **🆕 ⚠️ مهم:** هذا الملف هو الـ **brief الاستراتيجي الأصلي** من بداية المشروع.
+> للحالة الحالية، اقرأ [`memory.md`](./memory.md) **أولاً** — فيها كل الـ URLs الحالية،
+> الـ schema المطبّق، الـ credentials، الـ gotchas المُكتشفة، والـ next steps.
+>
+> هذا الملف لسا صالح كمرجع للقرارات الاستراتيجية + التسعير + الجمهور المستهدف،
+> لكن قسم "الحالة الحالية (Phase 1 · مكتمل)" قديم — كل الـ Phases 1-5 تمت.
 
 ---
 
@@ -44,7 +49,33 @@
 
 ---
 
-## 3️⃣ الحالة الحالية (Phase 1 · مكتمل)
+## 3️⃣ الحالة الحالية (محدّثة 2026-05-19)
+
+**خمس مراحل من الستة في الـ ROADMAP الأصلي مكتملة.** نقلة كبيرة عن "PWA static" الأصلية:
+
+| Phase | Original Plan | Actual Status |
+|---|---|---|
+| 1. PWA | ✅ مكتمل | v6 PWA في `current-state/`، الآن يـ redirect لـ v7 |
+| 2. Backend | كان قادم | ✅ مكتمل — Supabase Cloud في Singapore، 6 tables + 6 views + 5 RPCs، Auth، Storage، Realtime |
+| 3. Push + Marketing | قادم | ⏳ لسا — أحد ثلاثة خيارات للمرحلة القادمة |
+| 4. POS Integration | قادم | ⏳ لسا — RzRz testbed موجود، Bridge App لم يُبن |
+| 5. Multi-Tenant | قادم | ✅ مكتمل — `/m/[slug]` لأي مطعم، `restaurant_owners` يربط الـ auth users، RLS يفرض الـ scope |
+| 6. Payment Gateway | قادم | ⏳ لسا — حالياً collection يدوي عبر `/ops/payments` |
+
+**ما تم بناؤه فعلياً:**
+- Customer PWA v7 (Next.js، multi-tenant) في `apps/web/app/m/[slug]/`
+- Tenant Admin (login، menu CRUD، orders Realtime، customers RFM) في `apps/web/app/admin/`
+- Platform Ops (tenants list، onboarding wizard، payments) في `apps/web/app/ops/`
+- Marketing landing في `apps/web/app/page.tsx`
+- 7 SQL migrations في `apps/web/supabase/migrations/`
+
+**العميل الأول الدافع:** KO-KO Chicky Licky — live على `menulink-admin-five.vercel.app/m/koko`. اشتراكه حالياً `pending_payment` — لازم تسجّل الدفعة الأولى من `/ops/payments`.
+
+تفاصيل كاملة في `memory.md`.
+
+---
+
+## 3️⃣bis الحالة الأصلية (للأرشيف · Phase 1 · مكتمل)
 
 ### ما تم بناؤه
 **PWA v6 شغّال وجاهز للنشر** في `current-state/pwa-starter/`
