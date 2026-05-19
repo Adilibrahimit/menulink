@@ -31,9 +31,12 @@ export default async function CustomerMenuPage({ params }: { params: { slug: str
 
   // Inject brand colors as CSS variables at the root of this page tree.
   // No JS needed for first paint — the server already knows the tenant.
+  // Override the default warm cream from Stitch with the tenant's chosen bg.
   const cssVars = {
     "--brand": menu.restaurant.primary_color,
-    "--bg": menu.restaurant.background_color,
+    "--bg": menu.restaurant.background_color || "#fff8f6",
+    "--ink": "#29170f",
+    "--accent-gold": "#fdc415",
   } as React.CSSProperties;
 
   return (

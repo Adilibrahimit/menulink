@@ -61,79 +61,110 @@ export default function MenuExperience({ menu }: { menu: PublicMenu }) {
     setCart({});
   }
 
+  const hasCover = !!menu.restaurant.cover_image_url;
+
   return (
-    <main className="bg-[var(--bg)] text-neutral-900 pb-32" style={{ fontFamily: "Cairo, system-ui, sans-serif" }}>
-      {/* Cover image (optional) — bleeds to edges, fades into bg color so the
-          hero block below sits on a soft gradient bridge. */}
-      {menu.restaurant.cover_image_url && (
-        <div className="relative w-full h-32 sm:h-44 overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={menu.restaurant.cover_image_url}
-            alt=""
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[var(--bg)] to-transparent" />
+    <main
+      className="bg-[var(--bg)] text-[#29170f] pb-28"
+      style={{ fontFamily: "Cairo, system-ui, sans-serif" }}
+    >
+      {/* HERO — cover image with restaurant name overlaid in big bold display */}
+      <header className="relative">
+        {hasCover ? (
+          <div className="relative w-full h-56 sm:h-72 overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={menu.restaurant.cover_image_url!}
+              alt=""
+              className="w-full h-full object-cover"
+            />
+            {/* Darker overlay so the big name reads cleanly */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/30 to-black/10" />
+
+            <div className="absolute inset-x-0 bottom-0 p-5 flex items-end gap-3">
+              {menu.restaurant.logo_url && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={menu.restaurant.logo_url}
+                  alt={menu.restaurant.name}
+                  className="w-16 h-16 rounded-2xl object-cover bg-white border-2 border-white shadow-md shrink-0"
+                />
+              )}
+              <div className="flex-1 min-w-0">
+                <h1
+                  className="text-white font-extrabold leading-[1.05] text-3xl sm:text-4xl drop-shadow-sm"
+                  style={{ fontFamily: "Tajawal, system-ui, sans-serif", letterSpacing: "-0.02em" }}
+                >
+                  {menu.restaurant.name}
+                </h1>
+                {menu.restaurant.tagline_ar && (
+                  <p className="text-white/85 text-sm mt-1 leading-snug">
+                    {menu.restaurant.tagline_ar}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="px-5 pt-8 pb-5">
+            <div className="flex items-start gap-3">
+              {menu.restaurant.logo_url && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={menu.restaurant.logo_url}
+                  alt={menu.restaurant.name}
+                  className="w-16 h-16 rounded-2xl object-cover bg-white border-2 border-white shadow-md shrink-0"
+                />
+              )}
+              <div className="flex-1 min-w-0 pt-1">
+                <h1
+                  className="text-neutral-900 font-extrabold leading-[1.05] text-3xl"
+                  style={{ fontFamily: "Tajawal, system-ui, sans-serif", letterSpacing: "-0.02em" }}
+                >
+                  {menu.restaurant.name}
+                </h1>
+                {menu.restaurant.tagline_ar && (
+                  <p className="text-neutral-600 text-sm mt-1 leading-snug">
+                    {menu.restaurant.tagline_ar}
+                  </p>
+                )}
+                {menu.restaurant.address_ar && (
+                  <p className="text-xs text-neutral-500 mt-1.5">
+                    📍 {menu.restaurant.address_ar}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </header>
+
+      {/* Address strip (if cover hides it) */}
+      {hasCover && menu.restaurant.address_ar && (
+        <div className="px-5 py-2 bg-white/60 text-xs text-neutral-700 border-b border-black/5">
+          📍 {menu.restaurant.address_ar}
         </div>
       )}
 
-      {/* Hero — pulled up under the cover when present */}
-      <header
-        className={
-          menu.restaurant.cover_image_url
-            ? "px-4 -mt-8 pb-5 relative"
-            : "px-4 pt-8 pb-5"
-        }
-      >
-        <div className="flex items-start gap-3">
-          {menu.restaurant.logo_url && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={menu.restaurant.logo_url}
-              alt={menu.restaurant.name}
-              className="w-16 h-16 rounded-2xl object-cover bg-white border-2 border-white shadow-md shrink-0"
-            />
-          )}
-          <div className="flex-1 min-w-0 pt-1">
-            <h1
-              className="text-2xl font-extrabold text-neutral-900 leading-tight"
-              style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
-            >
-              {menu.restaurant.name}
-            </h1>
-            {menu.restaurant.tagline_ar && (
-              <p className="text-sm text-neutral-600 mt-0.5">
-                {menu.restaurant.tagline_ar}
-              </p>
-            )}
-            {menu.restaurant.address_ar && (
-              <p className="text-xs text-neutral-500 mt-1.5">
-                📍 {menu.restaurant.address_ar}
-              </p>
-            )}
-          </div>
-        </div>
-      </header>
-
       <CategoryTabs categories={menu.categories} />
 
-      {/* Menu sections */}
-      <div className="px-4 mt-4 space-y-7">
+      {/* MENU SECTIONS — 2-col grid on mobile, 3 on sm, 4 on lg */}
+      <div className="px-4 mt-5 space-y-8">
         {menu.categories.map((c) => (
           <section key={c.id} id={c.id}>
-            <div className="flex items-baseline gap-2 mb-3">
+            <div className="flex items-baseline justify-between mb-3 px-1">
               <h2
-                className="text-xl font-bold text-neutral-900"
-                style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+                className="text-2xl font-extrabold text-neutral-900"
+                style={{ fontFamily: "Tajawal, system-ui, sans-serif", letterSpacing: "-0.01em" }}
               >
-                {c.emoji && <span className="ml-1.5">{c.emoji}</span>}
+                {c.emoji && <span className="ml-2">{c.emoji}</span>}
                 {c.name_ar}
               </h2>
               {c.info_ar && (
-                <span className="text-xs text-neutral-500">{c.info_ar}</span>
+                <span className="text-[11px] text-neutral-500 font-medium">{c.info_ar}</span>
               )}
             </div>
-            <div className="space-y-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
               {c.items.map((item) => (
                 <MenuItemCard
                   key={item.id}
@@ -146,23 +177,40 @@ export default function MenuExperience({ menu }: { menu: PublicMenu }) {
         ))}
       </div>
 
-      {/* Floating cart FAB */}
+      {/* STICKY BOTTOM CART BAR — only when cart has items */}
       {count > 0 && (
         <button
           onClick={() => setDrawerOpen(true)}
-          className="fixed bottom-4 inset-x-4 z-40 h-14 rounded-2xl bg-[var(--brand)] text-white shadow-lg shadow-black/10 flex items-center justify-between px-5 font-bold text-base hover:opacity-95 active:translate-y-px"
+          className="fixed bottom-3 inset-x-3 z-40 h-14 rounded-2xl bg-[var(--brand)] text-white shadow-[0_8px_24px_rgba(0,0,0,0.18)] flex items-center justify-between px-4 hover:opacity-95 active:translate-y-px"
           dir="rtl"
         >
-          <span>
-            🛒 السلة · {toArabicDigits(String(count))}
+          <span className="flex items-center gap-2">
+            <span className="relative inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15">
+              <span className="text-lg">🛒</span>
+              <span
+                className="absolute -top-1.5 -left-1.5 bg-amber-400 text-amber-950 text-[10px] font-extrabold min-w-[18px] h-[18px] rounded-full flex items-center justify-center px-1"
+                style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}
+              >
+                {toArabicDigits(String(count))}
+              </span>
+            </span>
+            <span className="font-extrabold text-base" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+              السلة
+            </span>
           </span>
-          <span>
-            {toArabicDigits(String(total))} ر.س
+          <span className="flex items-center gap-2">
+            <span
+              className="text-lg font-extrabold"
+              style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+            >
+              {toArabicDigits(String(total))} ر.س
+            </span>
+            <span className="text-xl">←</span>
           </span>
         </button>
       )}
 
-      {/* Cart drawer */}
+      {/* CART DRAWER */}
       {drawerOpen && (
         <CartDrawer
           restaurant={menu.restaurant}
@@ -177,7 +225,9 @@ export default function MenuExperience({ menu }: { menu: PublicMenu }) {
   );
 }
 
-/* ---------------- cart drawer + checkout ---------------- */
+/* ============================================================
+ * CART DRAWER + CHECKOUT (unchanged business logic)
+ * ============================================================ */
 
 function CartDrawer({
   restaurant,
@@ -222,7 +272,6 @@ function CartDrawer({
     setSubmitting(true);
     const phone = normalizePhone(rawPhone);
 
-    // Fire-and-forget persistence — open WhatsApp regardless of DB result.
     persistOrder({
       restaurantId: restaurant.id,
       phone,
@@ -236,7 +285,6 @@ function CartDrawer({
       total,
     }).catch((err) => console.warn("[MenuLink v7] persist failed:", err));
 
-    // Build WhatsApp message
     const lineList = lines
       .map((l, i) => {
         const v = l.variantLabel ? ` (${l.variantLabel})` : "";
@@ -266,10 +314,7 @@ function CartDrawer({
       `شكراً لاختياركم ${restaurant.name} 🙏`;
 
     const waNumber = String(restaurant.whatsapp_phone).replace(/\D/g, "");
-    window.open(
-      `https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`,
-      "_blank"
-    );
+    window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`, "_blank");
 
     setSubmitting(false);
     onClear();
@@ -278,13 +323,13 @@ function CartDrawer({
 
   return (
     <div className="fixed inset-0 z-50 flex" dir="rtl">
-      <div
-        onClick={onClose}
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-      />
+      <div onClick={onClose} className="absolute inset-0 bg-black/45 backdrop-blur-sm" />
       <div className="relative ml-auto h-full w-full max-w-md bg-white shadow-xl flex flex-col">
         <header className="flex items-center justify-between p-4 border-b border-neutral-200">
-          <h2 className="font-bold text-lg" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+          <h2
+            className="font-extrabold text-lg"
+            style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+          >
             السلة
           </h2>
           <button
@@ -301,29 +346,18 @@ function CartDrawer({
             <p className="text-center text-neutral-500 text-sm py-8">السلة فارغة.</p>
           )}
           {lines.map((l) => (
-            <div
-              key={l.lineId}
-              className="flex items-center gap-3 bg-neutral-50 rounded-xl p-2"
-            >
+            <div key={l.lineId} className="flex items-center gap-3 bg-neutral-50 rounded-xl p-2">
               {l.imageUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={l.imageUrl}
-                  alt={l.itemName}
-                  className="w-14 h-14 rounded-lg object-cover"
-                />
+                <img src={l.imageUrl} alt={l.itemName} className="w-14 h-14 rounded-lg object-cover" />
               ) : (
-                <div className="w-14 h-14 rounded-lg bg-neutral-200 flex items-center justify-center text-xl">
-                  🍽️
-                </div>
+                <div className="w-14 h-14 rounded-lg bg-neutral-200 flex items-center justify-center text-xl">🍽️</div>
               )}
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold truncate">
+                <div className="text-sm font-extrabold truncate" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
                   {l.itemName}
                   {l.variantLabel && (
-                    <span className="text-xs text-neutral-500 font-normal mr-1">
-                      · {l.variantLabel}
-                    </span>
+                    <span className="text-xs text-neutral-500 font-normal mr-1">· {l.variantLabel}</span>
                   )}
                 </div>
                 <div className="text-xs text-neutral-500 mt-0.5">
@@ -333,17 +367,17 @@ function CartDrawer({
               <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => onAdjust(l.lineId, -1)}
-                  className="w-7 h-7 rounded-full bg-white border border-neutral-200 text-neutral-700 hover:border-neutral-300"
+                  className="w-8 h-8 rounded-full bg-white border border-neutral-200 text-neutral-700 hover:border-neutral-300"
                   aria-label="إنقاص"
                 >
                   −
                 </button>
-                <span className="w-6 text-center font-bold text-sm">
+                <span className="w-6 text-center font-extrabold text-sm">
                   {toArabicDigits(String(l.qty))}
                 </span>
                 <button
                   onClick={() => onAdjust(l.lineId, 1)}
-                  className="w-7 h-7 rounded-full bg-[var(--brand)] text-white"
+                  className="w-8 h-8 rounded-full bg-[var(--brand)] text-white font-bold"
                   aria-label="إضافة"
                 >
                   +
@@ -356,16 +390,15 @@ function CartDrawer({
             <>
               <hr className="border-neutral-200" />
               <fieldset className="space-y-3">
-                <legend className="text-xs font-semibold text-neutral-600 mb-2">
-                  نوع الطلب
-                </legend>
+                <legend className="text-xs font-extrabold text-neutral-700 mb-2">نوع الطلب</legend>
                 <div className="grid grid-cols-3 gap-2">
                   {(["delivery", "pickup", "dine_in"] as OrderType[]).map((t) => (
                     <button
                       key={t}
+                      type="button"
                       onClick={() => setOrderType(t)}
                       className={
-                        "h-10 rounded-lg text-sm font-semibold border " +
+                        "h-11 rounded-xl text-sm font-extrabold border-2 transition-colors " +
                         (orderType === t
                           ? "bg-[var(--brand)] text-white border-[var(--brand)]"
                           : "bg-white text-neutral-700 border-neutral-200 hover:border-neutral-300")
@@ -383,14 +416,14 @@ function CartDrawer({
                   placeholder="الاسم (اختياري)"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full h-11 rounded-lg border border-neutral-200 px-3 outline-none focus:border-[var(--brand)] text-sm"
+                  className="w-full h-11 rounded-xl border border-neutral-200 px-3 outline-none focus:border-[var(--brand)] text-sm"
                 />
                 <input
                   type="tel"
                   placeholder="رقم الجوال"
                   value={rawPhone}
                   onChange={(e) => setRawPhone(e.target.value)}
-                  className="w-full h-11 rounded-lg border border-neutral-200 px-3 outline-none focus:border-[var(--brand)] text-sm"
+                  className="w-full h-11 rounded-xl border border-neutral-200 px-3 outline-none focus:border-[var(--brand)] text-sm"
                   dir="ltr"
                 />
                 {orderType === "delivery" && (
@@ -400,7 +433,7 @@ function CartDrawer({
                       placeholder="عنوان التوصيل (الحي · الشارع · رقم المبنى)"
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
-                      className="w-full h-11 rounded-lg border border-neutral-200 px-3 outline-none focus:border-[var(--brand)] text-sm"
+                      className="w-full h-11 rounded-xl border border-neutral-200 px-3 outline-none focus:border-[var(--brand)] text-sm"
                     />
                     <LocationPicker initial={location} onChange={setLocation} />
                   </>
@@ -410,7 +443,7 @@ function CartDrawer({
                   placeholder="ملاحظات (اختياري)"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="w-full h-11 rounded-lg border border-neutral-200 px-3 outline-none focus:border-[var(--brand)] text-sm"
+                  className="w-full h-11 rounded-xl border border-neutral-200 px-3 outline-none focus:border-[var(--brand)] text-sm"
                 />
               </div>
             </>
@@ -421,14 +454,18 @@ function CartDrawer({
           <footer className="p-4 border-t border-neutral-200 bg-white">
             <div className="flex items-center justify-between mb-3 text-sm">
               <span className="text-neutral-500">المجموع</span>
-              <span className="font-extrabold text-lg">
+              <span
+                className="font-extrabold text-xl"
+                style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+              >
                 {toArabicDigits(String(total))} ر.س
               </span>
             </div>
             <button
               onClick={submit}
               disabled={submitting}
-              className="w-full h-12 rounded-xl bg-[var(--brand)] text-white font-bold text-base hover:opacity-90 disabled:opacity-60 active:translate-y-px"
+              className="w-full h-12 rounded-2xl bg-[var(--brand)] text-white font-extrabold text-base hover:opacity-90 disabled:opacity-60 active:translate-y-px shadow-md"
+              style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
             >
               {submitting ? "جاري الإرسال..." : "إرسال الطلب عبر واتساب"}
             </button>
