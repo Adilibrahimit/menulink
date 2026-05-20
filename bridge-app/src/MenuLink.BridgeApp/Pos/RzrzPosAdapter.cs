@@ -55,43 +55,78 @@ public sealed class RzrzPosAdapter : IPosAdapter
         await using var conn = new SqlConnection(_opts.ConnectionString);
         await conn.OpenAsync(ct);
 
-        // 1. InsertInvoice — header + items + KitichenOrderForPrint rows
-        await using (var cmd = new SqlCommand("dbo.InsertInvoice", conn) { CommandType = CommandType.StoredProcedure })
-        {
-            cmd.Parameters.Add("@XmlInvoice", SqlDbType.NVarChar, -1).Value = xmlInvoice;
-            cmd.Parameters.Add("@XmlItems", SqlDbType.NVarChar, -1).Value = xmlItems;
-            cmd.Parameters.Add("@IsHold", SqlDbType.Bit).Value = 0;
-            cmd.Parameters.Add("@SectionID", SqlDbType.Int).Value = 0;
-            cmd.Parameters.Add("@InvoiceType", SqlDbType.Int).Value = _opts.InvoiceType;
-            cmd.Parameters.Add("@AppendInvoiceIDS", SqlDbType.NVarChar, 500).Value = "";
-            _log.LogDebug("Calling InsertInvoice for MenuLink order {OrderId} (#{No})", payload.Order.Id, menuLinkInvoiceNo);
-            await cmd.ExecuteNonQueryAsync(ct);
-        }
-
-        // 2. Look up the resulting Invoice row by our InvoiceNotes_A tag
+        // ---- Idempotency precheck -------------------------------------------------
+        // If a previous attempt already created the POS Invoice (and failed in a
+        // later step), use that row instead of inserting another duplicate.
+        // Match by OnlineCustomerID + InvoiceNotes_A tag prefix.
+        var tagPattern = $"MenuLink #{menuLinkInvoiceNo} %";
         Guid posInvoiceGuid;
         long posInvoiceNo;
         long posBillNo;
         decimal taxAmount;
-        await using (var lookup = new SqlCommand(@"
-            select top 1
-                InvoiceID,
-                InvoiceNo,
-                BillNo,
-                TaxAmount
+        bool invoiceAlreadyExisted;
+
+        await using (var precheck = new SqlCommand(@"
+            select top 1 InvoiceID, InvoiceNo, BillNo, TaxAmount
             from Invoice
-            where OnlineCustomerID = @ocid
-              and InvoiceNotes_A like @tag
+            where OnlineCustomerID = @ocid and InvoiceNotes_A like @tag
             order by CreatedDate desc;", conn))
         {
+            precheck.Parameters.Add("@ocid", SqlDbType.BigInt).Value = _opts.OnlineCustomerId;
+            precheck.Parameters.Add("@tag", SqlDbType.NVarChar, 200).Value = tagPattern;
+            await using var rdr = await precheck.ExecuteReaderAsync(ct);
+            if (await rdr.ReadAsync(ct))
+            {
+                posInvoiceGuid = rdr.GetGuid(0);
+                posInvoiceNo = rdr.GetInt64(1);
+                posBillNo = rdr.GetInt64(2);
+                taxAmount = rdr.IsDBNull(3) ? 0m : Convert.ToDecimal(rdr.GetValue(3));
+                invoiceAlreadyExisted = true;
+            }
+            else
+            {
+                posInvoiceGuid = Guid.Empty;
+                posInvoiceNo = 0;
+                posBillNo = 0;
+                taxAmount = 0;
+                invoiceAlreadyExisted = false;
+            }
+        }
+
+        if (invoiceAlreadyExisted)
+        {
+            _log.LogWarning(
+                "Idempotency: found existing Invoice {Id} for MenuLink #{MlNo} — skipping InsertInvoice, will only ensure payment rows.",
+                posInvoiceGuid, menuLinkInvoiceNo);
+        }
+        else
+        {
+            // 1. InsertInvoice — header + items + KitichenOrderForPrint rows
+            await using (var cmd = new SqlCommand("dbo.InsertInvoice", conn) { CommandType = CommandType.StoredProcedure })
+            {
+                cmd.Parameters.Add("@XmlInvoice", SqlDbType.NVarChar, -1).Value = xmlInvoice;
+                cmd.Parameters.Add("@XmlItems", SqlDbType.NVarChar, -1).Value = xmlItems;
+                cmd.Parameters.Add("@IsHold", SqlDbType.Bit).Value = 0;
+                cmd.Parameters.Add("@SectionID", SqlDbType.Int).Value = 0;
+                cmd.Parameters.Add("@InvoiceType", SqlDbType.Int).Value = _opts.InvoiceType;
+                cmd.Parameters.Add("@AppendInvoiceIDS", SqlDbType.NVarChar, 500).Value = "";
+                _log.LogDebug("Calling InsertInvoice for MenuLink #{No} (order {OrderId})", menuLinkInvoiceNo, payload.Order.Id);
+                await cmd.ExecuteNonQueryAsync(ct);
+            }
+
+            // 2. Look up the resulting Invoice row by our InvoiceNotes_A tag
+            await using var lookup = new SqlCommand(@"
+                select top 1 InvoiceID, InvoiceNo, BillNo, TaxAmount
+                from Invoice
+                where OnlineCustomerID = @ocid and InvoiceNotes_A like @tag
+                order by CreatedDate desc;", conn);
             lookup.Parameters.Add("@ocid", SqlDbType.BigInt).Value = _opts.OnlineCustomerId;
-            lookup.Parameters.Add("@tag", SqlDbType.NVarChar, 200).Value =
-                $"MenuLink #{ShortId(payload.Order.Id)}%";
+            lookup.Parameters.Add("@tag", SqlDbType.NVarChar, 200).Value = tagPattern;
 
             await using var rdr = await lookup.ExecuteReaderAsync(ct);
             if (!await rdr.ReadAsync(ct))
                 throw new InvalidOperationException(
-                    "InsertInvoice succeeded but the resulting Invoice row wasn't found by tag.");
+                    $"InsertInvoice ran but no Invoice row found with tag '{tagPattern}'. Check the proc and InvoiceNotes_A formatting.");
 
             posInvoiceGuid = rdr.GetGuid(0);
             posInvoiceNo = rdr.GetInt64(1);
@@ -101,10 +136,11 @@ public sealed class RzrzPosAdapter : IPosAdapter
 
         // 3. PaymentDetails — record this as a paid "Online" transaction so
         //    the POS doesn't leave it in finalized-but-unpaid limbo.
-        //    Mirrors the row shape the cashier UI produces when paying an
-        //    Online-section invoice (Card = total, OnlinePaymentType=1,
-        //    CardPaymentType=1 Mada). OnlineBillNo = our MenuLink sequence.
+        //    Idempotent: only inserts if no positive-amount payment row exists yet.
         await using (var payCmd = new SqlCommand(@"
+            if not exists (
+                select 1 from PaymentDetails where InvoiceID = @inv and PaidAmount > 0
+            )
             insert into PaymentDetails
               (PaymentID, InvoiceID, CounterID, PaidAmount, Discount, GivenAmount,
                ChangeAmount, Cash, Card, Remark, Remark_A, PaymentType, CreatedBy,
@@ -127,7 +163,11 @@ public sealed class RzrzPosAdapter : IPosAdapter
         }
 
         // 4. InvoicePaymentTypeDetails — single Mada-typed row for the full amount
+        //    Idempotent: only inserts if no row exists yet for this Invoice.
         await using (var ptCmd = new SqlCommand(@"
+            if not exists (
+                select 1 from InvoicePaymentTypeDetails where InvoiceID = @inv
+            )
             insert into InvoicePaymentTypeDetails
               (InvoicePaymentTypeDetailsID, InvoiceID, PaymentCardTypeID, Amount)
             values
