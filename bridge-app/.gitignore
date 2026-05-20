@@ -1,0 +1,10 @@
+bin/
+obj/
+out/
+publish/
+*.user
+.vs/
+logs/
+*.log
+appsettings.Production.json
+appsettings.Local.json
