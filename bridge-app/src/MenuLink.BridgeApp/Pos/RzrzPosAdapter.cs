@@ -19,6 +19,18 @@ public sealed class PosOptions
     public long DefaultUserId { get; set; } = 1;
     public string KitchenPrinterName { get; set; } = "KETCHIN";
     public bool PrintEnabled { get; set; } = true;
+
+    /// <summary>
+    /// If true (default), the Bridge App lands MenuLink orders in the cashier UI's
+    /// "held" list and lets staff review + tap Pay manually to finalize. We
+    /// only call InsertInvoice with IsHold=1 — no PaymentDetails, no kitchen
+    /// print (the cashier UI's own code handles those when they pay, including
+    /// printing with the native receipt format).
+    ///
+    /// If false, the Bridge App writes invoice + payment + kitchen print
+    /// directly so the order is "auto-confirmed" with zero staff interaction.
+    /// </summary>
+    public bool HoldMode { get; set; } = true;
 }
 
 /// <summary>
@@ -100,21 +112,22 @@ public sealed class RzrzPosAdapter : IPosAdapter
         if (invoiceAlreadyExisted)
         {
             _log.LogWarning(
-                "Idempotency: found existing Invoice {Id} for MenuLink #{MlNo} — skipping InsertInvoice, will only ensure payment rows.",
+                "Idempotency: found existing Invoice {Id} for MenuLink #{MlNo} — skipping InsertInvoice.",
                 posInvoiceGuid, menuLinkInvoiceNo);
         }
         else
         {
-            // 1. InsertInvoice — header + items + KitichenOrderForPrint rows
+            // 1. InsertInvoice — header + items (+ KitichenOrderForPrint rows when IsHold=0)
             await using (var cmd = new SqlCommand("dbo.InsertInvoice", conn) { CommandType = CommandType.StoredProcedure })
             {
                 cmd.Parameters.Add("@XmlInvoice", SqlDbType.NVarChar, -1).Value = xmlInvoice;
                 cmd.Parameters.Add("@XmlItems", SqlDbType.NVarChar, -1).Value = xmlItems;
-                cmd.Parameters.Add("@IsHold", SqlDbType.Bit).Value = 0;
+                cmd.Parameters.Add("@IsHold", SqlDbType.Bit).Value = _opts.HoldMode ? 1 : 0;
                 cmd.Parameters.Add("@SectionID", SqlDbType.Int).Value = 0;
                 cmd.Parameters.Add("@InvoiceType", SqlDbType.Int).Value = _opts.InvoiceType;
                 cmd.Parameters.Add("@AppendInvoiceIDS", SqlDbType.NVarChar, 500).Value = "";
-                _log.LogDebug("Calling InsertInvoice for MenuLink #{No} (order {OrderId})", menuLinkInvoiceNo, payload.Order.Id);
+                _log.LogDebug("Calling InsertInvoice for MenuLink #{No} (order {OrderId}, IsHold={IsHold})",
+                    menuLinkInvoiceNo, payload.Order.Id, _opts.HoldMode);
                 await cmd.ExecuteNonQueryAsync(ct);
             }
 
@@ -136,6 +149,19 @@ public sealed class RzrzPosAdapter : IPosAdapter
             posInvoiceNo = rdr.GetInt64(1);
             posBillNo = rdr.GetInt64(2);
             taxAmount = rdr.IsDBNull(3) ? 0m : Convert.ToDecimal(rdr.GetValue(3));
+        }
+
+        // ---------------------------------------------------------------------
+        // HoldMode: stop after the Invoice + InvoiceDetails landed. The order
+        // appears in the cashier UI's held list; staff review + tap Pay to
+        // finalize (which fires the native receipt + kitchen print).
+        // ---------------------------------------------------------------------
+        if (_opts.HoldMode)
+        {
+            _log.LogInformation(
+                "Wrote MenuLink #{No} (order {OrderId}) to RzRz as HELD: InvoiceNo={InvoiceNo}, BillNo={BillNo}, InvoiceID={InvoiceId} — cashier will review + pay",
+                menuLinkInvoiceNo, payload.Order.Id, posInvoiceNo, posBillNo, posInvoiceGuid);
+            return new PosWriteResult(posInvoiceGuid.ToString(), posInvoiceNo, posBillNo);
         }
 
         // 3. PaymentDetails — record this as a paid "Online" transaction so
