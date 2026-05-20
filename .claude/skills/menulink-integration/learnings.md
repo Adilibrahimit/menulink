@@ -24,6 +24,63 @@ We have **two distinct customer profiles** and they must never be conflated:
 
 ## ✅ What Has Worked
 
+### LRN-2026-05-20-user-is-pos-cofounder (confidence: high) ⭐ STRATEGIC
+**Context:** While starting the RzRz POS integration, the user revealed: "Samer is the programmer of this POS software and I'm his partner of this POS software." Samer Cefalu builds RzRz POS (a.k.a. Punnelifosys ResApp), the user is his business partner. Together they sell it to multiple restaurants. The brother's restaurant — branded RzRz under company "Itaqn w Jowdah" — is one of their own deployments.  
+**Learning:** **The integration is NOT cross-organization — it's intra-organization.** The user co-owns both ends of the deal. This unlocks: (1) schema changes to `Invoice` table (e.g., add `ExternalRef` for clean idempotency), (2) co-developed stored procedures, (3) co-branded "RzRz POS + MenuLink" as a bundled product to all Punnelifosys customers, not just one. The "12-month partnership-with-Punnelifosys" goal in the rzrz-restaurant.md endgame section already exists at day zero. Adjust roadmap: faster, larger scope, more leverage.  
+**Source:** session:2026-05-20  
+**Triggers:** RzRz, Punnelifosys, Samer Cefalu, POS partnership, schema change, co-branding
+
+### LRN-2026-05-20-cefalu-is-name-not-brand (confidence: high)
+**Context:** The local production DB is `samer910_Cefalu`. Easy to assume "Cefalu" is the restaurant brand.  
+**Learning:** Cefalu is **Samer's surname** (the POS programmer). The convention `samer910_<X>` is just Samer's DB-naming pattern. The brand customers see is **RzRz**, company is **Itaqn w Jowdah**. Don't display "Cefalu" anywhere user-facing. Don't rename the DB — too risky for an in-production POS — but document the disconnect clearly.  
+**Source:** session:2026-05-20  
+**Triggers:** DB naming, RzRz brand, Cefalu, samer910 prefix
+
+### LRN-2026-05-20-menulink-onlinecustomer-works-end-to-end (confidence: high) ⭐
+**Context:** First end-to-end test of MenuLink-as-OnlineCustomer on real RzRz POS. After inserting OnlineCustomerID=999 / Name="MenuLink" / CommissionPercent=0, the user opened the cashier UI, hit Online button (موقع الكتروني), saw "MenuLink" as a selectable channel alongside HungerStation/Jahez/Keeta, picked 3 items totaling 73 SAR, held the invoice, re-opened it, paid, printed — full workflow as if it were a HungerStation order. Invoice 402.  
+**Learning:** **MenuLink is now a native channel in the POS data model.** The integration is just "automate what the cashier does manually" — Invoice + InvoiceDetails + KitichenOrderForPrint rows with OnlineCustomerID=999. No POS modifications were needed for the data side; the channel name + 0% commission flow through all existing reports automatically. Restaurants will see "MenuLink: 0% commission" in the same reports where they see "HungerStation: 10%".  
+**Source:** session:2026-05-20  
+**Triggers:** OnlineCustomer 999, MenuLink as channel, cashier UI integration, channel discovery
+
+### LRN-2026-05-20-kitchen-print-name-matching (confidence: high)
+**Context:** Bridge App on server programmatically inserted KitichenOrderForPrint rows but no print fired. Cashier UI on the SAME server also failed kitchen print for invoice 406 (only office printer fired). Cashier UI on a downstairs cashier machine printed kitchen fine for invoice 404.  
+**Learning:** **Kitchen print dispatch is per-machine.** Each cashier UI client looks up the kitchen printer by NAME in the local Windows print queue (via item→ItemPrinters mapping → printer name string). The exact name is misspelled in the master config as **"KETCHIN"** (not "KITCHEN"). The server's Windows print queue had it as "KITCHEN", so the cashier UI on the server couldn't find a "KETCHIN" printer and silently failed. **Fix: rename the Windows printer on every machine that runs the cashier UI (or any future Bridge App) to exactly "KETCHIN".** Now cross-machine print fires correctly. Future Bridge App can run on the server or any cashier machine — just enforce the printer name during deploy.  
+**Source:** session:2026-05-20 — user diagnosed via test page + UI configuration  
+**Triggers:** kitchen printer, KETCHIN typo, Windows printer name, Bridge App deployment, print dispatch
+
+### LRN-2026-05-20-insertinvoice-xml-structure (confidence: high) ⭐⭐ CRITICAL
+**Context:** Reverse-engineered the actual XML the RzRz cashier UI sends to `InsertInvoice` via SQL Server Extended Events (rpc_completed, statement field). Multiple wrong-guess attempts (incl. the wrong shape suggested in `references/sql-patterns.md`) caused hours of debugging.  
+**Learning:** The CORRECT XML structure is:
+
+- **`@XmlInvoice`** = single self-closing `<Invoice .../>` root with ALL attributes (including the easy-to-miss `InvoicePartyID="00000000-..."` and `DishItemInvoiceID="00000000-..."`)
+- **`@XmlItems`** = **multiple sibling `<Items ...>` elements with NO outer wrapper**. Each item is a separate self-closing element at the document root. SQL Server's `CAST(string AS xml)` defaults to **CONTENT mode** which permits multiple top-level elements. `@xml1.nodes('Items')` then matches each one directly. This contradicts the structure in `references/sql-patterns.md` (which used a `<Items>...</Items>` outer wrapper — that wrapper makes `nodes('Items')` match the root with NULL @ItemID, causing "Cannot insert NULL into column ItemID" failures).
+- Cashier passes `TaxPercent="0"` per item; the proc's later UPDATE steps populate the real 15% rate from `GeneralSettings.Tax`.
+- `@InvoiceType` proc parameter = same value as `XmlInvoice/@InvoiceType` = **11 for Online section** (NOT 1).
+- `@AppendInvoiceIDS = N''` (empty string)
+
+**Source:** session:2026-05-20 — Extended Events ring_buffer capture in `D:\New folder (5)\Q5\10\xml.txt`. The `sql-patterns.md` docs had a wrong structure that wasted significant time; update them.
+
+**Triggers:** InsertInvoice, XmlItems, XmlInvoice, nodes('Items'), CONTENT mode, multi-item XML, RzRz schema
+
+### LRN-2026-05-20-invoicetype-11-is-online (confidence: high)
+**Context:** Comparing our test invoice (failed) to working held invoices 398/399 in the cashier "held invoices" search UI.  
+**Learning:** **`Invoice.InvoiceType = 11` means "Online section" (موقع الكتروني)**. The docs in `references/sql-patterns.md` incorrectly said InvoiceType=1 was "regular sale" — that value actually displays as "Dine In" in the search UI. Confirmed by inspecting BillNos 28164/28165 (current held HungerStation orders): both have InvoiceType=11. For MenuLink integration, send `InvoiceType="11"` in `@XmlInvoice` (the stored Invoice.InvoiceType column). The proc PARAMETER `@InvoiceType` is separate and controls in-proc routing (=9 means party/event); keep that as 1 unless you need a special flow. Both 398 and the historic BillNo 20847 (a Keeta order from earlier today) had InvoiceType=11, confirming this is the canonical Online section value.  
+**Source:** session:2026-05-20 — file `inoviceitemid3.txt`  
+**Triggers:** InvoiceType, online section, موقع الكتروني, search UI display, ZATCA classification
+
+### LRN-2026-05-20-almalaz-server-discovery (confidence: high)
+**Context:** Discovery of the Almalaz branch server (one of two RzRz branches).  
+**Learning:** Production setup confirmed:
+- Machine: `DESKTOP-8Q7DQKA` (LAN name `PUNNELIFOSYS`), LAN IP `192.168.1.113`
+- SQL: 2022 Express, instance `PUNNELIFOSYS\SQLEXPRESS`, Integrated Security
+- DBs on the local instance: `samer910_Cefalu` (ops), `samer910_accreef` (accounting+web portal), `client` (purpose unknown)
+- Kitchen printers on LAN: BBQ=192.168.1.175, **KITCHEN=192.168.1.177**, DESERT=192.168.1.179, KABULE=192.168.1.181
+- Active config (`.vshost.exe.config`) shows ResApp/ResAppServer pointed at local Cefalu via Integrated Security; ResAppAccServer still points at remote `192.250.231.22 / samer910_accreef` even though accreef ALSO exists locally — investigate which is canonical before the Bridge App writes anything accounting-related.
+- Standard home/office internet, no firewall restrictions on outbound — Supabase HTTPS calls from the Bridge App will work.
+
+**Source:** session:2026-05-20 user-provided configs + screenshots in `D:\New folder (5)`  
+**Triggers:** Almalaz, server discovery, IP, connection string, printer IPs, Bridge App deployment
+
 ### LRN-2026-05-19-rls-rewrite-confirmed (confidence: high)
 **Context:** Migration 0008 rewrote RLS using `auth.uid()` + lookup tables instead of JWT-claim paths, plus added missing `platform_admin` policies and `name_en` columns. User manually tested every owner + ops surface after `git push 8e5cb26` and the migration applied on 2026-05-19.  
 **Learning:** **Confirmed working in production.** Test order persisted by `submit_order` was always in the DB — it became visible the moment owner RLS started resolving. Owner can create categories + items (simple modal), upload photos to `menu-images/<restaurant_id>/<item_id>-*`, upload logo + cover to `menu-images/<restaurant_id>/_brand/*`. Ops onboarding wizard (now using service_role admin client for restaurants INSERT) created 3 new tenants successfully — all 3 paid and active in `subscriptions`. Dashboard Chart.js (`react-chartjs-2` Line + Bar over `v_revenue_daily` scoped to `restaurant_id`) renders cleanly with seed data. **No sign-out was needed** — `auth.uid()` reads `sub` which is always in the JWT.  

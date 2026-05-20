@@ -1,10 +1,20 @@
-# Customer · [RzRz Restaurant — Name TBD]
+# Customer · RzRz Restaurant (Itaqn w Jowdah)
 
-> **Slug:** `rzrz-restaurant` *(temporary — rename when actual name confirmed)*  
-> **Status:** **strategic partner** (not yet a paying customer)  
-> **Onboarded:** TBD  
-> **Plan:** TBD (likely free/discounted in exchange for being integration testbed)  
-> **Strategic role:** 🔧 **POS INTEGRATION R&D LAB** — where we build & validate Bridge App
+> **Slug:** `rzrz`
+> **Brand:** **RzRz** (the restaurant brand customers know)
+> **Operating company:** **Itaqn w Jowdah** (إتقان وجودة — "Mastery & Quality")
+> **POS used:** RzRz POS, a.k.a. Punnelifosys ResApp — built by **Samer Cefalu**
+> **Status:** **co-developed deep partnership** (the user is Samer's BUSINESS PARTNER in the POS software venture)
+> **Strategic role:** 🔧 **POS INTEGRATION R&D LAB** + 🤝 **co-branded product channel for ALL Punnelifosys customers**
+
+## ⚠️ Critical relationship context (added 2026-05-20)
+
+The user is **a partner in the POS software business** with Samer Cefalu. Samer is the programmer; the user is his partner. They co-own/co-sell the RzRz POS to other restaurants. This means:
+
+1. **We're not "asking Punnelifosys to integrate" — we ARE Punnelifosys.** The user has equity in both sides of the deal.
+2. **Schema changes are on the table.** We can add an `ExternalRef` column to `Invoice`, add a `MenuLink_InsertInvoice` wrapper proc, modify the dispatcher. Not begging — co-deciding.
+3. **The integration can be a co-branded feature of BOTH MenuLink AND RzRz POS** — sold to existing RzRz customers as an add-on, sold to new MenuLink customers as a POS pairing.
+4. **The "12-month partnership goal" in the original endgame section is achieved on day one.** Adjust the roadmap accordingly.
 
 ---
 
@@ -23,13 +33,17 @@ This is **not** about revenue. This restaurant is our **engineering laboratory**
 
 ## 📋 Business Profile
 
-- **Restaurant name (AR):** [TBD]
-- **Restaurant name (EN):** [TBD]
+- **Restaurant name (AR):** **رزرز بخاري** (verified 2026-05-20 from GeneralSettings)
+- **Restaurant name (EN):** **RZRZ BUKHARI**
+- **VAT Registration:** `311750526500003` (15-digit ZATCA number, stored in GeneralSettings.TaxReg)
+- **VAT rate:** 15% (Saudi standard); `TaxForAllItem = 1` so applied to every item via tax-inclusive pricing
+- **ZATCA phase:** 1 (simplified B2C invoices — POS handles compliance automatically)
+- **License expires:** 2027-02-20
 - **Owner name:** [TBD — different from operations manager]
 - **Operations manager:** **User's brother** ⭐
 - **Brother's phone:** [TBD — primary contact]
-- **City / District:** [TBD]
-- **Branch count:** [TBD]
+- **City / District:** Riyadh (inferred — both branches are Riyadh districts)
+- **Branch count:** **2** — Alazizah + Almalaz (confirmed 2026-05-20)
 - **Avg orders/day:** [TBD]
 - **Cuisine:** [TBD]
 
@@ -46,15 +60,56 @@ This is **not** about revenue. This restaurant is our **engineering laboratory**
 
 ## 🔌 POS Integration — THE MAIN EVENT
 
-- **POS system:** ✅ **RzRz (Punnelifosys ResApp)** — full version
-- **Integration tier:** **Tier 1b (Bridge App)** — local DB likely
-- **Status:** in design (POC not yet built)
-- **DB topology:** [TBD — confirm with brother]
-  - If central (`192.250.231.22`): direct integration possible
-  - If local-only (`.mdf` on cashier PC): Bridge App required
-- **Likely answer:** Local-only (this is why we need a Bridge App pattern)
-- **PunnelifosysResAppServer.exe location:** [TBD — confirm with brother]
-- **DB credentials:** in `.exe.config` on the central machine (already discovered via D:\Samer\RZRZ-CODE)
+- **POS system:** ✅ **RzRz (Punnelifosys ResApp)** — full version on .NET Framework 4.7.2
+- **Integration tier:** **Tier 1b (Bridge App)** — confirmed local DB per server machine inspection 2026-05-20
+- **Status:** Phase 1 discovery in progress
+- **DB topology (Almalaz branch — confirmed 2026-05-20):**
+  - Machine name: `DESKTOP-8Q7DQKA` (LAN hostname `PUNNELIFOSYS`)
+  - LAN IP: `192.168.1.113`
+  - SQL Server: **2022 Express** (16.0.1180), instance default (no `\SQLEXPRESS` suffix — see correction below)
+  - Auth options: Integrated Security works AND `sa` SQL auth is enabled (the user is logged in to SSMS as `sa`)
+  - **Active main DB: `client`** ← correction posted 2026-05-20: the `.exe.config` files we received earlier pointed at `samer910_Cefalu`, but that DB does not exist on this server. The DB that actually holds `InsertInvoice` (and presumably `Invoice`, `InvoiceDetails`, `Items`, `KitichenOrderForPrint`) is named `client`. The config files were stale or from a different machine.
+  - Accounting DB: `samer910_accreef` (local copy; possibly synced to central — TBD)
+  - Sync to central `192.250.231.22` confirmed at application level (drives the online dashboard the user mentioned, viewing both branches' sales)
+- **`InsertInvoice` proc signature (verified 2026-05-20 on `client` DB):**
+  - `@XmlInvoice` nvarchar(MAX)
+  - `@XmlItems` nvarchar(MAX)
+  - `@IsHold` bit
+  - `@SectionID` int
+  - `@InvoiceType` int
+  - `@AppendInvoiceIDS` nvarchar(1000)
+  Matches `references/sql-patterns.md` documentation exactly.
+
+- **Items table schema (verified 2026-05-20):**
+  Column names in this DB differ from the docs. Use these:
+  - `ItemID` (bigint, PK) — was `ItemID` ✓
+  - `ItemName_E` / `ItemName_A` (nvarchar 100) — docs called them `Item` / `Item_A` ✗
+  - `Rate` (float) — unit price ✓
+  - `Tax` (float) — **always 0 in this DB; tax is included in `Rate` (tax-inclusive pricing)**. GeneralSettings holds the canonical Saudi VAT %.
+  - `Printer` (nvarchar 200) — **empty for all items**. Kitchen routing is NOT done via this column. It lives in a separate dedicated routing table (TBD which one — investigate before Bridge App).
+  - `ItemMainCategoryID` (bigint) — FK to category table
+  - `ItemParent` (bigint) — parent item ID for variants (e.g., 1885 "الشواية" is parent of all grill variants)
+  - `ISTobacco` (bit) — tobacco VAT flag
+  - **No `IsActive` column visible in first 20 columns** (full schema list pending verification). Active/inactive likely tracked elsewhere — TBD.
+
+- **Pricing model: TAX-INCLUSIVE.** The user confirmed RzRz uses tax-inclusive pricing — the price displayed on the menu is what the customer pays. So when we build `XmlItems`, `Rate` should be the menu price (not pre-tax price), and `TaxPercent` in the XML should be whatever GeneralSettings says (likely 15) so the proc can decompose it correctly for the ZATCA invoice. **Validate this empirically: a 40 SAR item should yield Net=40 in the resulting Invoice row, not 46.**
+
+- **Sample real items (use these for the test invoice):**
+  - 1886 "حبة شواية بخاري" (Full Bukhari grill) — 40 SAR
+  - 1892 "نص شواية بخاري" (Half Bukhari grill) — 21 SAR
+  - 1898 "ربع شواية أحمر" (Quarter Red grill) — 12 SAR
+  - Restaurant style: Arabian / Saudi grilled meat (شواية)
+- **Alazizah branch:** presumed similar setup with its own LAN + own local DB. Not yet inspected.
+- **PunnelifosysResAppServer.exe location:** on this machine, alongside the `.exe.config` (user provided the config file)
+- **DB credentials:** Integrated Security on this machine — no plain-text DB password needed for local writes. Remote `accreef` connection still uses `samer910_jopaul / jopaul477` (plain text in config) — security debt for production.
+- **Kitchen printers (Almalaz LAN, TCP/IP):**
+  - `192.168.1.175` BBQ — only BBQ section items
+  - `192.168.1.177` **KETCHIN** (typo for "kitchen" — must match this name everywhere) — prints ALL items (master)
+  - `192.168.1.179` DESERT — only Dessert section items
+  - `192.168.1.181` KABULE — only Family section items
+  - Plus a USB printer on each cashier set as Default → prints CUSTOMER receipt
+  - Each item is mapped to one or more printers via `ItemPrinters` table; the cashier UI's print dispatcher reads that mapping and routes to each item's printer(s). The Bridge App **does not need to implement print routing** — writing `InvoiceDetails` + `KitichenOrderForPrint` rows triggers the existing dispatcher.
+  - **Critical:** the Windows printer name on EVERY machine that runs the cashier UI or Bridge App must be exactly "KETCHIN" (with the typo). If it's "KITCHEN", prints silently fail.
 
 ### Open RzRz Integration Questions (need brother's input)
 

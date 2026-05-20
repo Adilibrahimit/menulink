@@ -1,8 +1,8 @@
 # MenuLink · Project Memory
 
 > **Read this first** when picking up the project in a new session.
-> Last saved: **2026-05-19** — end of post-launch hardening session.
-> Status line: **production. 4 tenants live (3 paid + KO-KO pending). RLS rewrite shipped (0008). Owner self-service logo + cover + dashboard charts.**
+> Last saved: **2026-05-20** — Phase 1 of RzRz POS integration done (SQL ground truth proven).
+> Status line: **production SaaS (4 tenants live). RzRz POS integration Phase 1 complete — MenuLink as OnlineCustomer 999 with 0% commission verified end-to-end on real RzRz Bukhari Almalaz server. Phase 2 (Bridge App) in progress.**
 
 ---
 
@@ -357,6 +357,37 @@ git add <files>
 git commit -m "..."
 git push                      # Vercel auto-deploys both projects
 ```
+
+---
+
+## 🔌 RzRz POS Integration — Phase 1 Results (2026-05-20)
+
+**Restaurant:** RZRZ BUKHARI / رزرز بخاري · Company: Itaqn w Jowdah (إتقان وجودة) · 2 branches (Alazizah, Almalaz).
+
+**Strategic context:** the user is Samer Cefalu's BUSINESS PARTNER in the POS software venture (Punnelifosys ResApp / RzRz POS). Schema changes + proc modifications are on the table. Co-branded "RzRz POS + MenuLink" rollout to all Punnelifosys customers is the endgame, achievable in months not years.
+
+**Almalaz branch infra:**
+- Server: `DESKTOP-8Q7DQKA` (LAN `PUNNELIFOSYS`), LAN IP `192.168.1.113`
+- SQL Server 2022 Express, **DB name `client`** (not `samer910_Cefalu` — that was a stale config). Integrated Security + sa both available.
+- Accounting DB: `samer910_accreef` (local + synced to central `192.250.231.22`)
+- Kitchen printers (LAN): KETCHIN `192.168.1.177` (master), BBQ `192.168.1.175`, DESERT `192.168.1.179`, KABULE `192.168.1.181`. **Note typo in DB: printer name is `KETCHIN` not `KITCHEN`** — Windows printer must use the typo.
+
+**What was proven (full chain):**
+1. Inserted MenuLink as `OnlineCustomerID = 999, CommissionPercent = 0.00`
+2. The new MenuLink row shows up in the cashier UI's Online customer picker alongside HungerStation/Jahez/Keeta
+3. Cashier can manually create + pay a MenuLink order — works end to end with kitchen print
+4. Direct `EXEC InsertInvoice` from SQL produces identical DB state — same `InvoiceType=11`, same `OnlineCommission=0.00`, same `InvoiceDetails` rows, same `KitichenOrderForPrint` rows
+5. Held → Finalize transition works via re-EXEC with same InvoiceID + IsHold=0
+6. Kitchen printers fire correctly when the Windows printer name is `KETCHIN` (the typo)
+7. Print routing is fully data-driven via `ItemPrinters(ItemID, Printer, InvoiceTypeID)` — the Bridge App doesn't need to implement print routing, just write `InvoiceDetails` + `KitichenOrderForPrint`
+
+**Verified XML structure for InsertInvoice** (see `.claude/skills/menulink-integration/references/sql-patterns.md` for full reference): single self-closing `<Invoice ... />` for header, multiple sibling `<Items ... />` elements (NO outer wrapper) for line items.
+
+**Phase 2 (Bridge App) — in progress:**
+- `pos_outbox` + `pos_item_map` tables in Supabase (migration 0009, TBD)
+- .NET 10 Windows Service running on the cashier (primary) and server (monitor)
+- Realtime subscription primary + polling fallback
+- Multi-branch deployment via per-branch `appsettings.json`
 
 ---
 
