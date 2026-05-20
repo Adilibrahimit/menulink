@@ -5,16 +5,17 @@ namespace MenuLink.BridgeApp.Models;
 /// <summary>One row in public.pos_outbox, as returned by RPC pos_outbox_claim.</summary>
 public sealed class PosOutboxRow
 {
-    [JsonPropertyName("id")]                public Guid Id { get; set; }
-    [JsonPropertyName("restaurant_id")]     public Guid RestaurantId { get; set; }
-    [JsonPropertyName("order_id")]          public Guid OrderId { get; set; }
-    [JsonPropertyName("payload")]           public System.Text.Json.JsonElement Payload { get; set; }
-    [JsonPropertyName("status")]            public string Status { get; set; } = "pending";
-    [JsonPropertyName("claimed_by")]        public string? ClaimedBy { get; set; }
-    [JsonPropertyName("attempts")]          public int Attempts { get; set; }
-    [JsonPropertyName("last_error")]        public string? LastError { get; set; }
-    [JsonPropertyName("pos_invoice_id")]    public string? PosInvoiceId { get; set; }
-    [JsonPropertyName("created_at")]        public DateTime CreatedAt { get; set; }
+    [JsonPropertyName("id")]                  public Guid Id { get; set; }
+    [JsonPropertyName("restaurant_id")]       public Guid RestaurantId { get; set; }
+    [JsonPropertyName("order_id")]            public Guid OrderId { get; set; }
+    [JsonPropertyName("menulink_invoice_no")] public long? MenuLinkInvoiceNo { get; set; }
+    [JsonPropertyName("payload")]             public System.Text.Json.JsonElement Payload { get; set; }
+    [JsonPropertyName("status")]              public string Status { get; set; } = "pending";
+    [JsonPropertyName("claimed_by")]          public string? ClaimedBy { get; set; }
+    [JsonPropertyName("attempts")]            public int Attempts { get; set; }
+    [JsonPropertyName("last_error")]          public string? LastError { get; set; }
+    [JsonPropertyName("pos_invoice_id")]      public string? PosInvoiceId { get; set; }
+    [JsonPropertyName("created_at")]          public DateTime CreatedAt { get; set; }
 }
 
 /// <summary>Decoded payload of a single outbox row.</summary>

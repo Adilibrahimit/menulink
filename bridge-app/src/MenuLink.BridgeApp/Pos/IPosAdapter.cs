@@ -12,5 +12,5 @@ public interface IPosAdapter
     /// Push a MenuLink order into the POS. Returns the POS-side identifiers
     /// so the Bridge App can record them in pos_outbox.
     /// </summary>
-    Task<PosWriteResult> WriteOrderAsync(OutboxPayload payload, CancellationToken ct);
+    Task<PosWriteResult> WriteOrderAsync(OutboxPayload payload, long menuLinkInvoiceNo, CancellationToken ct);
 }

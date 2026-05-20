@@ -24,10 +24,11 @@ var options = new HostApplicationBuilderSettings
 
 var builder = Host.CreateApplicationBuilder(options);
 
-// appsettings.json + appsettings.{Environment}.json + env vars
+// appsettings.json + appsettings.{Environment}.json + appsettings.Local.json + env vars
 builder.Configuration
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables(prefix: "MENULINK_BRIDGE_");
 
 // Serilog from configuration

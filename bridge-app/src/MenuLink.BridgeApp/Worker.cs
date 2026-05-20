@@ -89,12 +89,13 @@ public sealed class Worker : BackgroundService
                 var payload = row.Payload.Deserialize<OutboxPayload>()
                     ?? throw new InvalidOperationException("Outbox payload was null after deserialize.");
 
-                var result = await _pos.WriteOrderAsync(payload, ct);
+                var menuLinkInvoiceNo = row.MenuLinkInvoiceNo ?? 0;
+                var result = await _pos.WriteOrderAsync(payload, menuLinkInvoiceNo, ct);
                 await _supabase.MarkSyncedAsync(row.Id, result, ct);
 
                 _log.LogInformation(
-                    "Synced outbox {OutboxId} -> POS InvoiceNo={InvoiceNo} BillNo={BillNo}",
-                    row.Id, result.PosInvoiceNo, result.PosBillNo);
+                    "Synced outbox {OutboxId} (MenuLink #{MlNo}) -> POS InvoiceNo={InvoiceNo} BillNo={BillNo}",
+                    row.Id, menuLinkInvoiceNo, result.PosInvoiceNo, result.PosBillNo);
             }
             catch (Exception ex)
             {
