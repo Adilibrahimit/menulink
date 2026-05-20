@@ -20,6 +20,9 @@
     <!-- SQL Server client for the POS DB -->
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
 
+    <!-- Windows printing (Bridge App is Windows-only) -->
+    <PackageReference Include="System.Drawing.Common" Version="9.0.0" />
+
     <!-- HTTP client factory for PostgREST RPC calls -->
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
 

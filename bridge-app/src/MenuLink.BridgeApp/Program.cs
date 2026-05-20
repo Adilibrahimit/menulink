@@ -45,6 +45,7 @@ builder.Services.Configure<SupabaseOptions>(builder.Configuration.GetSection("Su
 builder.Services.Configure<PosOptions>(builder.Configuration.GetSection("Pos"));
 
 // Adapter selection (single-POS for now — switch on Pos:Kind when adding others)
+builder.Services.AddSingleton<KitchenPrinter>();
 builder.Services.AddSingleton<IPosAdapter, RzrzPosAdapter>();
 
 // HttpClient factory + Supabase REST wrapper

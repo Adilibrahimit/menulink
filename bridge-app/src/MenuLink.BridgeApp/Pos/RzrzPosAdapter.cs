@@ -17,6 +17,8 @@ public sealed class PosOptions
     public long CounterId { get; set; } = 1;
     public int InvoiceType { get; set; } = 11;
     public long DefaultUserId { get; set; } = 1;
+    public string KitchenPrinterName { get; set; } = "KETCHIN";
+    public bool PrintEnabled { get; set; } = true;
 }
 
 /// <summary>
@@ -29,11 +31,13 @@ public sealed class RzrzPosAdapter : IPosAdapter
 {
     private readonly PosOptions _opts;
     private readonly ILogger<RzrzPosAdapter> _log;
+    private readonly KitchenPrinter _printer;
 
-    public RzrzPosAdapter(IOptions<PosOptions> opts, ILogger<RzrzPosAdapter> log)
+    public RzrzPosAdapter(IOptions<PosOptions> opts, ILogger<RzrzPosAdapter> log, KitchenPrinter printer)
     {
         _opts = opts.Value;
         _log = log;
+        _printer = printer;
     }
 
     public async Task<PosWriteResult> WriteOrderAsync(OutboxPayload payload, long menuLinkInvoiceNo, CancellationToken ct)
@@ -181,6 +185,26 @@ public sealed class RzrzPosAdapter : IPosAdapter
         _log.LogInformation(
             "Wrote MenuLink #{No} (order {OrderId}) to RzRz: InvoiceNo={InvoiceNo}, BillNo={BillNo}, InvoiceID={InvoiceId} -- paid+closed",
             menuLinkInvoiceNo, payload.Order.Id, posInvoiceNo, posBillNo, posInvoiceGuid);
+
+        // 5. Fire the kitchen ticket print. The cashier UI ordinarily does this
+        //    from .NET when its "Pay" button runs — when we write the data from
+        //    a service context, no UI is around to do it, so we do it here.
+        if (_opts.PrintEnabled && OperatingSystem.IsWindows())
+        {
+            try
+            {
+                await _printer.PrintAndMarkAsync(
+                    conn, posInvoiceGuid, menuLinkInvoiceNo, payload, _opts.KitchenPrinterName, ct);
+            }
+            catch (Exception ex)
+            {
+                // Don't unwind the whole order — invoice + payment already landed.
+                // Print failure should not roll back a successful sale.
+                _log.LogError(ex,
+                    "Kitchen print failed for MenuLink #{No} but the invoice + payment are committed. " +
+                    "Manual re-print from the cashier UI may be needed.", menuLinkInvoiceNo);
+            }
+        }
 
         return new PosWriteResult(posInvoiceGuid.ToString(), posInvoiceNo, posBillNo);
     }
