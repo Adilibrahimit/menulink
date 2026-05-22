@@ -286,19 +286,27 @@ public sealed class RzrzPosAdapter : IPosAdapter
         return (xmlInvoice, sb.ToString());
     }
 
+    // Kept short — thermal receipt prints this on one line, so packing
+    // address + short order id overflows onto the items header (seen in
+    // production receipt for invoice 439). The idempotency precheck only
+    // requires the "MenuLink #N " prefix.
     private static string BuildNotesArabic(OutboxPayload p, long menuLinkInvoiceNo)
     {
-        var parts = new List<string> { $"MenuLink #{menuLinkInvoiceNo}", ShortId(p.Order.Id) };
+        var parts = new List<string> { $"MenuLink #{menuLinkInvoiceNo}" };
         if (!string.IsNullOrWhiteSpace(p.Customer?.Name))
             parts.Add(p.Customer.Name!);
         if (!string.IsNullOrWhiteSpace(p.Customer?.Phone))
-            parts.Add(p.Customer.Phone);
-        if (!string.IsNullOrWhiteSpace(p.Order.Address))
-            parts.Add(p.Order.Address!);
+            parts.Add(LocalSaudiPhone(p.Customer.Phone));
         return string.Join(" · ", parts);
     }
 
-    private static string ShortId(Guid g) => g.ToString("N").Substring(0, 8);
+    // +966598292413 → 0598292413. Receipt readers expect the 05xx form.
+    private static string LocalSaudiPhone(string phone)
+    {
+        if (phone.StartsWith("+966")) return "0" + phone.Substring(4);
+        if (phone.StartsWith("966"))  return "0" + phone.Substring(3);
+        return phone;
+    }
 
     private static string EscapeAttr(string s) =>
         s.Replace("&", "&amp;")
