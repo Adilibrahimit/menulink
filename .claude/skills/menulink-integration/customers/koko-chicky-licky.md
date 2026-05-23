@@ -121,6 +121,14 @@ Quick script to use:
 ### YYYY-MM-DD · Onboarding Call (planned)
 Will document outcome of the 2-instance clarification here.
 
+### 2026-05-23 · Photo Audit + Replace
+- Reviewed all 30 photos at `apps/web/public/menu/koko/*.jpeg` (decoded from the v6 base64 dump). Found ~12 misleading: `tender_spicy` showed a single drumstick, `twister_maple` showed Caesar wraps, `sauce_cheese` showed chopped herbs, `sauce_bbq` showed tomato puree, several "tender" photos were actually Nashville-style or completely unrelated, and the sauces (KOKO, Cheddar, BBQ, Ranch, Jal) were all generic multi-sauce platter stock shots.
+- Replaced 10 photos from Pexels + Unsplash (both CC0, commercial use): tender_nashville, tender_spicy, tender_jalapeno, twister_maple, side_chicken_bites, side_chicken_fries, sauce_koko, sauce_cheese, sauce_bbq, sauce_jal.
+- Added 2 NEW dedicated files (previously fell back to unrelated sauces): `sauce_garlic.jpeg` (creamy white toum with garlic cloves) and `sauce_hummus.jpeg` (chickpea hummus with parsley). Updated `koko-images.ts` `IMG` record + `SLUG_TO_IMG` map.
+- **Did NOT touch:** primary_color `#D32027`, logo_url, cover_image_url, background_color, restaurant name, slug, menu data (categories/items/prices). Per user direction "keep KO-KO color logo cover as it is".
+- **Files NOT replaced (visually OK):** broasted_*, burger_*, all drinks, hero, tender_regular, twister_regular, twister_spicy, side_fries, side_cheese_fries, side_coleslaw, sauce_ranch, sauce_generic.
+- Discovered the v6 photo filenames were misleading in general — `broasted_regular.jpeg` shows fried chicken with a chili pepper next to it (visually "spicy") and `broasted_spicy.jpeg` shows plain fried chicken (visually "regular"). The `SLUG_TO_IMG` map was already compensating; added clarifying comments so future maintainers don't "fix" the correct mapping.
+
 ---
 
 ## 🎯 Definition of "Live"

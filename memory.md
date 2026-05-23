@@ -1,8 +1,8 @@
 # MenuLink · Project Memory
 
 > **Read this first** when picking up the project in a new session.
-> Last saved: **2026-05-20** — Phase 1 of RzRz POS integration done (SQL ground truth proven).
-> Status line: **production SaaS (4 tenants live). RzRz POS integration Phase 1 complete — MenuLink as OnlineCustomer 999 with 0% commission verified end-to-end on real RzRz Bukhari Almalaz server. Phase 2 (Bridge App) in progress.**
+> Last saved: **2026-05-23** — Bridge App v2.7 live, RzRz menu fully imported (56 variants + photos), admin Tier-2 Excel + persistent order alerts shipped.
+> Status line: **production SaaS, 5 tenants. RzRz Bukhari fully live (POS bridge + menu + photos + owner login). Admin orders page has Web-Audio doorbell + today filter + Excel export. Customers page has color-coded RFM KPI cards + search/sort + Excel export. Next: car-curbside order_type + loyalty service + Samer's .NET workflow patch.**
 
 ---
 
@@ -433,3 +433,56 @@ These won't block anything but are worth knowing about:
 - The customer PWA is mobile-first; the admin and ops dashboards are tablet+ friendly but workable on mobile
 - All Arabic body text uses Cairo, all Arabic display uses Tajawal 800-900
 - Customer prices are rendered in Arabic-Indic numerals (٢٤ ر.س). Admin tables use Latin numerals for column alignment.
+
+---
+
+## 📍 What changed on 2026-05-23 (since the last memory.md save)
+
+### Migrations applied
+- `0010_pos_outbox_deferred_trigger.sql` — committed to git (was already applied to Supabase from the prior session; now in the migration history)
+- `0012_pos_invoice_type_map.sql` — `pos_settings.invoice_type_map jsonb` column, extended `build_pos_outbox_payload` to snapshot per-order POS settings into the outbox payload
+- `0013_variant_key_extended.sql` — adds `full / half / quarter / small / medium / large / kilo / half_kilo` to `menu_item_variants.variant_key` CHECK constraint (was just `single / piece / meal`)
+
+### Bridge App shipped
+- v2.3 — HoldMode default true (orders land as held drafts, staff review + pay manually)
+- v2.4 — InvoiceNotes_A shortened to fit thermal-printer width (one line, no overflow)
+- v2.5 — reads InvoiceType / OnlineCustomerId / CounterId / SectionId from `payload.pos` snapshot (per-tenant)
+- v2.6 — Arabic order_type label in InvoiceNotes English field (later proven to be stripped by cashier UI)
+- v2.7 — order_type label moved to InvoiceNotes_A as a prefix (durable through cashier UI edits)
+- **Live config on RzRz Bukhari:** `online_customer_id=0`, `invoice_type=1` (Dine-In as neutral default — the per-type map is parked at `{}` because changing types in the cashier UI triggers a workflow popup-loop. The bridge infrastructure for per-type icons is in place; flip the map back on once Samer modifies the .NET cashier UI to skip the workflow for bridge-originated invoices.
+
+### RzRz Bukhari menu fully imported
+- **8 categories** (Grilled, Charcoal, Madghoot, Kabsa, BBQ Kebab, Rice, Mezze, Sweets)
+- **36 menu items** + **56 variants** + **56 pos_item_map** rows
+- **32 food photos** uploaded to Supabase Storage at `menu-images/ef60381c-…/menu/<filename>`
+- All pos_ids verified against live RzRz `Items` table dump (the user-prepped JSON had ~30 wrong pos_ids; cross-referenced by Arabic name)
+
+### RzRz Bukhari owner can now log in
+- Email: `rzrzbukhari@gmail.com`
+- Password: `RzRz2026Temp!` (must change after first login)
+- URL: `https://menulink-admin-five.vercel.app/admin/login`
+- Password was set via `UPDATE auth.users SET encrypted_password = crypt('…', gen_salt('bf'))` directly through the Supabase Management API SQL endpoint (the bcrypt escape hatch)
+
+### KO-KO photo audit
+- 12 menu photos replaced (sources: Pexels + Unsplash, both CC0) — old v6 base64 dump had filenames that didn't match content (drumstick photo labeled "tender_spicy", Caesar wrap labeled "twister_maple", herbs labeled "sauce_cheese", etc.)
+- 2 new dedicated sauce files added (sauce_garlic, sauce_hummus)
+- KO-KO brand untouched: color `#D32027`, logo, cover, all menu data unchanged
+
+### Customer PWA polish
+- Sticky category bar made VISIBLY sticky — was already `sticky top-0` but the background was the same color as the page, so it looked like it wasn't sticking. Now uses solid bg + soft shadow. Applies to all tenants (`/m/<any-slug>`).
+
+### Admin dashboard upgrades
+- `/admin/orders` — Web Audio doorbell (loops every 1.8s, click "Stop bell" to silence), today-only filter (default ON, Asia/Riyadh), tab title shows `(N) 🔔` when unseen orders queue, Excel export button
+- `/admin/customers` — top-line KPI cards (total customers / total revenue / avg per customer), 5 color-coded segment KPIs (⭐ Champions / 💚 Loyal / 🆕 New / ⚠ At-Risk / 🚨 Lost), search bar (name OR phone digits), 7-option sort dropdown, segment filter, Excel export button
+
+### Tier-2 Excel exports
+- Added `exceljs` dependency (TypeScript equivalent of Python+openpyxl)
+- Shared `apps/web/lib/excel-tier2.ts` — palette + KPI card pattern + branded header + data-bar helpers
+- `GET /api/admin/export/orders?from=YYYY-MM-DD&to=YYYY-MM-DD` — Dashboard (12 KPIs) + Detail (full orders with `=SUM/=COUNTIF/=AVG` formulas + data bars) + Summary (by-type / by-status pivots)
+- `GET /api/admin/export/customers` — Dashboard (segment KPIs) + Detail (RFM + LTV table with color-coded segment cells + data bars on LTV) + Segments sheet (distribution + suggested action per segment)
+- Forest-green Tier-2 palette, Aptos Narrow font, RTL Arabic sheet view, SAR currency formats, formula-first (zero hardcoded computed values)
+
+### Pinned for next session
+- **Car-curbside order_type** — schema migration 0013 plan documented in skill memory (task #2). Add `'car'` to `orders.order_type` CHECK + `car_plate` / `car_color` / `car_arrived_at` columns. Customer PWA gets 4th order-type option with license-plate + color fields. Restaurant gets a Realtime "I'm here" notification when customer arrives.
+- **Loyalty service** — full architecture brief from this session: per-tenant addon framework (`addon_catalog` + `subscription_addons` with price overrides + trial period), `loyalty_settings` + `loyalty_rewards` per tenant, hybrid tier basis (orders OR spend, whichever is higher), color-coded customer PWA badges, optional Google login that links to the existing phone-keyed customer record. Marked as ~14 hours of work across 3-4 sessions.
+- **Samer .NET workflow patch** — the only thing blocking re-enable of per-type InvoiceType. When Samer modifies the cashier UI to skip the driver/customer dispatch workflow on bridge-originated invoices, flip `pos_settings.invoice_type_map` back to `{"delivery":3,"dine_in":1,"pickup":0,"car":10}` and the printer icons differentiate by order type automatically.
