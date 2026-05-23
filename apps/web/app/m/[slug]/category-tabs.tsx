@@ -44,7 +44,11 @@ export default function CategoryTabs({ categories }: { categories: PublicCategor
   return (
     <div
       ref={tabsRef}
-      className="sticky top-0 z-30 bg-[var(--bg)]/85 backdrop-blur-md border-b border-neutral-200/60"
+      // sticky + solid bg + soft shadow so the bar visually lifts off the menu
+      // content scrolling underneath. iOS Safari only honors sticky reliably
+      // when no ancestor uses `overflow: hidden`; the page tree here is clean.
+      className="sticky top-0 z-30 bg-[var(--bg)] shadow-[0_4px_12px_-6px_rgba(0,0,0,0.18)] border-b border-neutral-200/70"
+      style={{ position: "sticky" }}
     >
       <div className="overflow-x-auto no-scrollbar">
         <div className="flex gap-2 px-4 py-2.5 min-w-max">
