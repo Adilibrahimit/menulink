@@ -27,6 +27,8 @@ export const IMG: Record<string, string> = {
   sauce_jal: '/menu/koko/sauce_jal.jpeg',
   sauce_koko: '/menu/koko/sauce_koko.jpeg',
   sauce_ranch: '/menu/koko/sauce_ranch.jpeg',
+  sauce_garlic: '/menu/koko/sauce_garlic.jpeg',
+  sauce_hummus: '/menu/koko/sauce_hummus.jpeg',
   side_cheese_fries: '/menu/koko/side_cheese_fries.jpeg',
   side_chicken_bites: '/menu/koko/side_chicken_bites.jpeg',
   side_chicken_fries: '/menu/koko/side_chicken_fries.jpeg',
@@ -41,9 +43,14 @@ export const IMG: Record<string, string> = {
   twister_spicy: '/menu/koko/twister_spicy.jpeg',
 };
 
+// NB: `broasted_regular` and `broasted_spicy` files were swapped in the v6
+// PWA's base64 dump — the file named "regular" shows a chili pepper next to
+// the chicken (spicy intent) and "spicy" shows plain-fried chicken. The maps
+// below use the FILE that visually matches the slug, not the misleading file
+// name. Same reasoning for tn-hot.
 export const SLUG_TO_IMG: Record<string, string> = {
-  'br-reg': IMG.broasted_spicy,
-  'br-hot': IMG.broasted_regular,
+  'br-reg': IMG.broasted_spicy,        // file misnamed: shows plain-fried chicken
+  'br-hot': IMG.broasted_regular,      // file misnamed: shows chicken + chili pepper
   'br-jal': IMG.broasted_jalapeno,
   'br-nash': IMG.broasted_nashville,
   'tn-reg': IMG.tender_regular,
@@ -67,8 +74,8 @@ export const SLUG_TO_IMG: Record<string, string> = {
   'sc-bbq': IMG.sauce_bbq,
   'sc-ranch': IMG.sauce_ranch,
   'sc-jal': IMG.sauce_jal,
-  'sc-garlic': IMG.sauce_ranch,
-  'sc-hummus': IMG.sauce_bbq,
+  'sc-garlic': IMG.sauce_garlic,        // new dedicated file (replaces ranch fallback)
+  'sc-hummus': IMG.sauce_hummus,        // new dedicated file (replaces BBQ fallback)
   'dr-cola-s': IMG.drink_cola,
   'dr-cola-l': IMG.drink_cola,
   'dr-oj-s': IMG.drink_oj,
