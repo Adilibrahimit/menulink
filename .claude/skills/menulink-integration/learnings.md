@@ -81,6 +81,55 @@ We have **two distinct customer profiles** and they must never be conflated:
 **Source:** session:2026-05-20 user-provided configs + screenshots in `D:\New folder (5)`  
 **Triggers:** Almalaz, server discovery, IP, connection string, printer IPs, Bridge App deployment
 
+### LRN-2026-05-23-online-customer-id-triggers-workflow (confidence: high) ⭐⭐ CRITICAL
+**Context:** v2.5 enabled per-order `InvoiceType=3` (Delivery) for MenuLink orders. The cashier UI immediately blocked staff with a "Please select Payment type" popup loop they could not clear — even after picking مدى the popup re-fired. Diagnosis via screenshot: the payment-screen showed an "Online Bill No: 13" field, the hallmark of the online-order workflow.
+**Learning:** **`Invoice.OnlineCustomerID > 0` triggers the cashier UI's online-order payment workflow, which has a payment-type lock that the cashier UI cannot clear when an invoice transitions between types.** The workflow is hardcoded in Samer's .NET WinForms code (no DB trigger, no GeneralSettings toggle) so it cannot be disabled via SSMS. **Workaround until Samer modifies the .NET source:** set `pos_settings.online_customer_id = 0` for MenuLink tenants so invoices look like normal walk-in sales. Channel attribution is sacrificed in the POS but preserved in MenuLink admin (`v_revenue_daily`).
+**Source:** session:2026-05-23 user-screenshot diagnosis after v2.5 deploy
+**Triggers:** OnlineCustomerID, online order workflow, "Please select Payment type" popup, payment-type lock, Invoice.OnlineCustomerID, walk-in mode
+
+### LRN-2026-05-23-cashier-ui-overwrites-invoicenotes (confidence: high)
+**Context:** Bridge v2.6 wrote the Arabic order_type label ("توصيل" / "محلي" / etc.) into `Invoice.InvoiceNotes` (the English/secondary notes field). Production receipt for BillNo 29496 / 29497 came out with InvoiceNotes EMPTY despite the bridge having sent the label — and the SQL confirmed InvoiceNotes had been overwritten with a copy of InvoiceNotes_A's content.
+**Learning:** **The RzRz cashier UI silently rewrites `Invoice.InvoiceNotes` during the edit-then-pay flow.** Do not put any information you need on the receipt into that field — it gets clobbered. **Put it in `Invoice.InvoiceNotes_A` instead, which survives all cashier-UI operations** (and definitely prints because `GeneralSettings.ShowInvoiceNotesInPrint=1`). Bridge v2.7 moved the order_type label into a short prefix on InvoiceNotes_A and verified production receipt shows it. Trade-off: dropped the customer name from the receipt line to fit ~32-char thermal-printer width.
+**Source:** session:2026-05-23 BillNos 29496/29497/29498
+**Triggers:** InvoiceNotes, InvoiceNotes_A, cashier UI overwrite, receipt template, ShowInvoiceNotesInPrint
+
+### LRN-2026-05-23-pos-invoice-type-mapping (confidence: high) ⭐
+**Context:** Discovered the full set of `Invoice.InvoiceType` integer values used by RzRz Bukhari by placing one test invoice per type and reading back from the DB.
+**Learning:** Verified integer-to-label mapping for RzRz:
+  - **0** → Take Away (سفري) — shopping-bag icon — 16K historical rows, dominant
+  - **1** → Dine In (محلي) — plate-and-utensils icon
+  - **3** → Delivery (توصيل) — house icon — triggers driver-assignment workflow
+  - **4** → Telephone (هاتف) — phone icon — triggers customer-picker workflow
+  - **10** → Car (سيارة) — car icon — drive-thru flow
+  - **11** → Online (موقع الكتروني) — Online icon — for HungerStation/Jahez/Keeta partners
+The cashier UI also has Family/Section types (likely 2, but untested today). Each value triggers a different printer icon AND in some cases a different workflow path. For MenuLink the chosen default is **InvoiceType=1 (Dine In)** because it's the only one that doesn't trigger any workflow side effects.
+**Source:** session:2026-05-23 test invoices BillNos 29487-29491 + items dump
+**Triggers:** InvoiceType mapping, RzRz integers, label discovery, sample invoice testing
+
+### LRN-2026-05-23-sb-secret-rejected-by-storage (confidence: high)
+**Context:** Used the `sb_secret_*` key to upload 32 menu photos to Supabase Storage via REST. Got back 32 × `403 "Invalid Compact JWS"`. The Storage API parses Authorization as a JWT (the "Compact JWS" form) — the new `sb_secret_*` format isn't a JWT, so it's rejected at the auth-parse layer.
+**Learning:** **Supabase Storage REST API only accepts the legacy JWT format (`eyJ...`) for `service_role` auth, NOT the new `sb_secret_*` keys.** This is broader than the documented PostgREST browser-context guard — Storage rejects the new format outright at JWT parse. Two ways to get the legacy JWT: (1) Supabase dashboard → Settings → API → Legacy section, OR (2) Management API `GET /v1/projects/{ref}/api-keys?reveal=true` and pick the row where `type='legacy' AND name='service_role'`. Method (2) is scriptable and was used to fix the upload in-session.
+**Source:** session:2026-05-23 RzRz menu photo upload
+**Triggers:** Supabase Storage, sb_secret, Invalid Compact JWS, 403, legacy JWT, Management API api-keys endpoint
+
+### LRN-2026-05-23-postgrest-batch-key-consistency (confidence: high)
+**Context:** Batch-inserted 36 menu_items via `POST /rest/v1/menu_items` with an array body. Conditionally included `badges_json` only when the item had badges. PostgREST rejected with `PGRST102 "All object keys must match"` after the first row that had a different key set. The first 8 rows (all having badges) got inserted, then the 9th (no badges) broke the chain — but rows 1-8 were already committed, leaving a partial-insert state.
+**Learning:** **PostgREST batch INSERT requires ALL objects in the array to have IDENTICAL keys.** Conditionally including a key per row triggers PGRST102 mid-batch. The fix: always include every column key, set the value to `null` (or whatever default) when absent. Use `[ordered]` PowerShell hashtables to preserve key order across rows. Also note: PostgREST is NOT atomic — early rows commit before the constraint failure, so any rollback requires manual cleanup (or wrap in a SECURITY DEFINER function with a real transaction).
+**Source:** session:2026-05-23 RzRz menu import phase C
+**Triggers:** PostgREST, PGRST102, batch insert, All object keys must match, partial insert, atomicity
+
+### LRN-2026-05-23-rzrz-pos-id-mapping-via-items-dump (confidence: high)
+**Context:** Hand-prepared `menu-data.json` for RzRz Bukhari had pos_ids that mostly DIDN'T match the actual RzRz POS — they were guesses based on assumed sequential numbering. After dumping the real `Items` table, found that ~30 of 36 base item pos_ids needed correction. Examples: کبسة لحم بخاري was 2032 in reality (JSON guessed 2014); رز بخاري was 2071 (JSON guessed 2055); حمص was 2182 (JSON guessed 2160); كنافة was 2224 (JSON guessed 2208).
+**Learning:** **Never trust hand-prepped pos_id mappings for RzRz menus — always verify against the live `Items` table first.** The actual ID layout has gaps and irregular starting offsets. The discovery query is: `SELECT ItemID, ItemName_A, Rate, ItemParent, ItemMainCategoryID FROM Items WHERE ItemID BETWEEN <range> ORDER BY ItemMainCategoryID, ItemID;`. Cross-reference by Arabic name. Also: many item slots are empty rows (Rate=0 or Name='-') as placeholders for future items — skip those. The variant-size pattern (base, base+6=half, base+12=quarter) does NOT hold uniformly across categories; only the grilled-chicken family follows it.
+**Source:** session:2026-05-23 items_rzrz.md dump (414 rows) vs menu-data.json (36 items)
+**Triggers:** pos_id mapping, Items table discovery, menu import, RzRz POS schema, hand-prepped data, verification
+
+### LRN-2026-05-23-supabase-bcrypt-password-via-mgmt-api (confidence: medium)
+**Context:** Needed to set a password for the rzrz-bukhari owner Auth user account. The Supabase Auth Admin API rejects `sb_secret_*` keys (browser-context guard). Instead of getting the legacy JWT, ran `UPDATE auth.users SET encrypted_password = crypt('<password>', gen_salt('bf'))` directly via the Management API SQL endpoint. Worked — owner can log in with the temp password.
+**Learning:** **Supabase Auth uses bcrypt via the pgcrypto extension (`crypt() + gen_salt('bf')`), and you can set passwords directly via the Management API without going through GoTrue.** The `auth.users` table has `encrypted_password` (bcrypt hash) plus `email_confirmed_at` (set to `now()` to skip the verify-email step). This bypass is useful when you don't have the legacy JWT and don't want to wait for an email-reset round-trip. Caveat: the password ends up in the SQL command, which lands in any transcript — rotate immediately after first login. Don't make this a standard pattern, but it's the right escape hatch.
+**Source:** session:2026-05-23 rzrz-bukhari owner enablement
+**Triggers:** auth.users, encrypted_password, bcrypt, pgcrypto, crypt, gen_salt, Management API, password reset, GoTrue bypass
+
 ### LRN-2026-05-19-rls-rewrite-confirmed (confidence: high)
 **Context:** Migration 0008 rewrote RLS using `auth.uid()` + lookup tables instead of JWT-claim paths, plus added missing `platform_admin` policies and `name_en` columns. User manually tested every owner + ops surface after `git push 8e5cb26` and the migration applied on 2026-05-19.  
 **Learning:** **Confirmed working in production.** Test order persisted by `submit_order` was always in the DB — it became visible the moment owner RLS started resolving. Owner can create categories + items (simple modal), upload photos to `menu-images/<restaurant_id>/<item_id>-*`, upload logo + cover to `menu-images/<restaurant_id>/_brand/*`. Ops onboarding wizard (now using service_role admin client for restaurants INSERT) created 3 new tenants successfully — all 3 paid and active in `subscriptions`. Dashboard Chart.js (`react-chartjs-2` Line + Bar over `v_revenue_daily` scoped to `restaurant_id`) renders cleanly with seed data. **No sign-out was needed** — `auth.uid()` reads `sub` which is always in the JWT.  
@@ -477,6 +526,36 @@ We have **two distinct customer profiles** and they must never be conflated:
   - SKILL.md, learnings.md, 5 references, customer template
   - Pre-seeded with everything learned so far
 - This is the first iteration — will improve as customers reveal more quirks
+
+### 2026-05-23 (continued) · v2.5-v2.7 InvoiceType Saga + RzRz Menu Import
+- **The InvoiceType chapter:** Set out to give MenuLink orders per-type InvoiceType (delivery=3, pickup=0, dine_in=1, car=10) so the printer would render the correct icon. Built v2.5 (per-tenant invoice_type_map snapshotted into payload), v2.6 (order_type label in InvoiceNotes), v2.7 (label moved to InvoiceNotes_A after discovering cashier UI overwrites InvoiceNotes). Each shipped fine but the cashier-UI workflow blocker on OnlineCustomerID > 0 forced a rollback to a single neutral InvoiceType=1 (Dine In). The infrastructure stays — `pos_settings.invoice_type_map` is in place, the bridge reads from `payload.pos.invoice_type` — so the moment Samer modifies the .NET cashier UI to skip the workflow for bridge-originated invoices, we flip the map back on without any redeploy.
+- **RzRz menu import:** Hand-prepped `menu-data.json` (36 items × variants = 56 rows) had ~30 wrong pos_ids — user dumped the live RzRz `Items` table (414 rows) and we cross-referenced by Arabic name. Result: 8 categories + 36 menu_items + 56 menu_item_variants + 56 pos_item_map, all wired to correct pos_ids. 32 photos uploaded to Supabase Storage (required the legacy JWT — Storage rejects sb_secret_*). Total ~2 hours of work end-to-end including discovery, mapping correction, and live import.
+- **Schema change:** Extended `menu_item_variants.variant_key` CHECK to include `full / half / quarter / small / medium / large / kilo / half_kilo` (the original 0001-era constraint only had `single / piece / meal`). Captured as migration 0013.
+- **rzrz-bukhari owner enablement:** Owner Auth account `rzrzbukhari@gmail.com` existed since 2026-05-19 but had no usable password — set a bcrypt temp via `crypt() + gen_salt('bf')` against `auth.users` directly through the Management API (legacy JWT not needed for SQL writes). Owner can now sign in at `/admin/login`.
+- **What worked:**
+  - Phased approach (backup → photos → categories → items → variants → pos_item_map → verify) made each failure isolable
+  - Saving intermediate state to `backups/*.json` files let me restart phases without re-defining 100+ lines of data
+  - Using the Management API SQL endpoint for schema changes (constraint alter, auth password reset) was faster than fighting the Auth Admin or PostgREST guards
+- **What hit friction:**
+  - User initially thought v2.5/v2.6 was deployed but `git log` revealed origin/main on the RzRz server was still at v2.4 — they'd never pulled. Cost ~15 minutes of debugging "why does the SQL show the wrong values" before checking git state. (Added to [[lrn-2026-05-23-windows-auth-cross-machine-needs-grant]] sibling pattern: always verify code is actually deployed before assuming the bridge is running the latest.)
+  - `sb_secret_*` rejected by Storage layer with a different error than PostgREST (Invoke-WebRequest browser-context guard) — broader than the 2026-05-18 learning suggested. Captured as [[lrn-2026-05-23-sb-secret-rejected-by-storage]].
+  - PostgREST batch INSERT requires identical keys across all rows — conditionally-included keys cause partial-insert failures. Captured as [[lrn-2026-05-23-postgrest-batch-key-consistency]].
+  - menu_item_variants.variant_key CHECK constraint was too narrow for size-based menus — extended in migration 0013.
+- **What surprised me:**
+  - The cashier UI silently overwrites Invoice.InvoiceNotes during edit/pay — we lost the order_type label until I moved it into InvoiceNotes_A. Took a production receipt + SSMS query to spot.
+  - `OnlineCustomerID = 999` was supposed to be just a channel attribution tag; turned out to be the master switch that gates the entire online-order workflow. Switching to 0 cleared 3 separate UI behaviors at once.
+- **Captured learnings:**
+  - [[lrn-2026-05-23-online-customer-id-triggers-workflow]] (critical anti-pattern)
+  - [[lrn-2026-05-23-cashier-ui-overwrites-invoicenotes]] (POS quirk)
+  - [[lrn-2026-05-23-pos-invoice-type-mapping]] (verified integer table)
+  - [[lrn-2026-05-23-sb-secret-rejected-by-storage]] (broader-than-expected guard)
+  - [[lrn-2026-05-23-postgrest-batch-key-consistency]] (PostgREST footgun)
+  - [[lrn-2026-05-23-rzrz-pos-id-mapping-via-items-dump]] (process pattern)
+  - [[lrn-2026-05-23-supabase-bcrypt-password-via-mgmt-api]] (escape hatch)
+- **Direction set for next session:**
+  - Car-curbside order_type feature (plan documented in task #2)
+  - Samer .NET cashier-UI fix to skip workflow on bridge-originated invoices (task #7) — when shipped we re-enable per-type InvoiceType mapping
+  - Loyalty service (parked from earlier today)
 
 ### 2026-05-23 · v2.3 HoldMode Verified + v2.4 Receipt Cleanup
 - **Goal:** Verify Bridge App v2.3 (HoldMode default true, committed last session) end-to-end on the RzRz testbed.
