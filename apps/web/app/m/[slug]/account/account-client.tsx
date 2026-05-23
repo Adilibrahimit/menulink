@@ -184,17 +184,25 @@ function SignedOutCard({ slug, tenantName }: { slug: string; tenantName: string 
           <GoogleG />
           {busy ? "..." : "متابعة بحساب Google"}
         </button>
-        <p className="text-[11px] text-neutral-500 leading-relaxed">
-          الدخول اختياري. يمكنك الطلب بدون حساب وستظل نقاطك مربوطة برقم جوالك.
+
+        <div className="flex items-center gap-3 my-1">
+          <div className="flex-1 h-px bg-neutral-200" />
+          <span className="text-[11px] text-neutral-400">أو</span>
+          <div className="flex-1 h-px bg-neutral-200" />
+        </div>
+
+        <a
+          href={`/m/${slug}`}
+          className="block w-full h-12 rounded-2xl bg-neutral-100 text-neutral-700 font-extrabold text-center leading-[3rem] hover:bg-neutral-200 active:translate-y-px"
+          style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+        >
+          متابعة كزائر
+        </a>
+
+        <p className="text-[11px] text-neutral-500 leading-relaxed mt-1">
+          ستظل نقاطك مرتبطة برقم جوالك حتى لو لم تدخل بحساب.
         </p>
       </div>
-
-      <a
-        href={`/m/${slug}`}
-        className="block text-center text-sm text-neutral-500 hover:text-neutral-900"
-      >
-        ← العودة للقائمة
-      </a>
     </div>
   );
 }
