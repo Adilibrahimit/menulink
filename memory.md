@@ -1,8 +1,8 @@
 # MenuLink · Project Memory
 
 > **Read this first** when picking up the project in a new session.
-> Last saved: **2026-05-23** — Bridge App v2.7 live, RzRz menu fully imported (56 variants + photos), admin Tier-2 Excel + persistent order alerts shipped.
-> Status line: **production SaaS, 5 tenants. RzRz Bukhari fully live (POS bridge + menu + photos + owner login). Admin orders page has Web-Audio doorbell + today filter + Excel export. Customers page has color-coded RFM KPI cards + search/sort + Excel export. Next: car-curbside order_type + loyalty service + Samer's .NET workflow patch.**
+> Last saved: **2026-05-24** — Car-curbside, table QRs, addon framework, loyalty service (4 slices), SFDA nutrition/allergen compliance, customer Google accounts, 3 operational skills.
+> Status line: **production SaaS, 4 tenants. Full feature set: car-curbside + dine-in tables + per-tenant addon framework (5 services) + loyalty program (earn/redeem/tiers/rewards/manual-adjust/points-expiry) + customer Google accounts + SFDA-compliant nutrition display (calories+allergens on 70 items). 3 skills created (menu-onboarding, tenant-deployment, nutrition-audit). Next: push marketing (OneSignal) + payment gateway (Moyasar) + Samer's .NET workflow patch.**
 
 ---
 
@@ -483,6 +483,105 @@ These won't block anything but are worth knowing about:
 - Forest-green Tier-2 palette, Aptos Narrow font, RTL Arabic sheet view, SAR currency formats, formula-first (zero hardcoded computed values)
 
 ### Pinned for next session
-- **Car-curbside order_type** — schema migration 0013 plan documented in skill memory (task #2). Add `'car'` to `orders.order_type` CHECK + `car_plate` / `car_color` / `car_arrived_at` columns. Customer PWA gets 4th order-type option with license-plate + color fields. Restaurant gets a Realtime "I'm here" notification when customer arrives.
-- **Loyalty service** — full architecture brief from this session: per-tenant addon framework (`addon_catalog` + `subscription_addons` with price overrides + trial period), `loyalty_settings` + `loyalty_rewards` per tenant, hybrid tier basis (orders OR spend, whichever is higher), color-coded customer PWA badges, optional Google login that links to the existing phone-keyed customer record. Marked as ~14 hours of work across 3-4 sessions.
+- **Push marketing (OneSignal)** — broadcast to dormant RFM segments from `/admin/customers`. Auto-push when order status changes to "ready". The addon framework (`push_marketing` catalog row, 29 ر.س, 14-day trial) is already in place; just needs the OneSignal integration + UI.
+- **Payment gateway (Moyasar)** — automate 499 ر.س collection. Webhook flips subscription to active. Receipt PDFs. Minimal ZATCA compliance.
 - **Samer .NET workflow patch** — the only thing blocking re-enable of per-type InvoiceType. When Samer modifies the cashier UI to skip the driver/customer dispatch workflow on bridge-originated invoices, flip `pos_settings.invoice_type_map` back to `{"delivery":3,"dine_in":1,"pickup":0,"car":10}` and the printer icons differentiate by order type automatically.
+- **Loyalty slice follow-ups** — order-attached redemptions, SMS OTP for phone verification (Unifonic), birthday bonus automation.
+
+---
+
+## 📍 What changed on 2026-05-24 (since the last memory.md save)
+
+### Migrations applied (0014–0024)
+
+| Migration | Summary |
+|-----------|---------|
+| `0014_car_order_type.sql` | Adds `'car'` to `orders.order_type` CHECK + `car_plate`/`car_color`/`car_arrived_at` columns. Extends `submit_order` + `build_pos_outbox_payload`. New `mark_arrived(order_id, plate)` anon-callable RPC for customer "I'm here" ping. |
+| `0015_restaurant_tables.sql` | `restaurant_tables` (free-form labels, sort_order, RLS). `orders.table_label` snapshot column. Customer scans `?table=X` → locked dine-in. |
+| `0016_addon_framework.sql` | `addon_catalog` (5 services) + `subscription_addons` (per-tenant toggles). Backfills tables_qr + excel_export for all tenants, pos_bridge only for RzRz. Rewrites `enqueue_pos_outbox` to AND-gate on pos_bridge addon. |
+| `0017_loyalty.sql` | `loyalty_settings`, `loyalty_rewards`, `loyalty_transactions`, `loyalty_redemptions` tables. 6 new customer columns (`auth_user_id`, `orders_count`, `lifetime_spend`, `loyalty_points_balance`, `loyalty_lifetime_points`, `loyalty_tier`). `compute_loyalty_tier()` hybrid helper. Separate `z_loyalty_after_insert` trigger (EXCEPTION-wrapped, can't break orders). `link_customer_account(phone)` RPC with hijack guard. |
+| `0018-0020` (hotfixes) | Changed `to anon` policies to `to public` on restaurants, subscription_addons, addon_catalog, loyalty_settings so signed-in customers (Google OAuth) get the same read access as anonymous visitors. |
+| `0021_loyalty_redemption.sql` | `redeem_reward`, `fulfill_redemption`, `cancel_redemption` RPCs. `tier_rank()` helper. Atomic: deduct points on redemption request, refund on cancel. |
+| `0022_welcome_bonus_and_adjust.sql` | `link_customer_account` v2 grants welcome bonus per tenant on first link. `adjust_customer_points(customer_id, delta, reason)` for manual +/- by owner. |
+| `0023_loyalty_expiry_and_realtime.sql` | `points_expiry_days`, `last_loyalty_earn_at`. `expire_stale_points_if_needed()` lazy expiry. `loyalty_redemptions` added to Realtime publication. |
+| `0024_nutrition_allergens.sql` | `menu_items`: +`calories_kcal`, +`sodium_mg`, +`caffeine_mg`, +`allergens_json`. `menu_item_variants`: +`calories_kcal`. `get_public_menu` rewritten to include nutrition. |
+
+### Car-curbside order type
+- 4th order-type button in cart drawer ("استلام بالسيارة")
+- Optional plate + color inputs, included in WhatsApp message when filled
+- Post-submit tracking bar at bottom: customer taps "🚗 وصلت إلى المطعم" → `mark_arrived` RPC → admin sees amber "🚗 وصل العميل" pill + bell rings
+- localStorage tracking scoped by restaurant_id, survives PWA reload
+
+### Dine-in table management
+- `/admin/tables` — add/rename/reorder/delete tables (free-form labels)
+- Per-table QR poster download via shared `menu-qr-poster.ts` canvas helper
+- Customer scan `?table=X` → amber banner "أنت تطلب من طاولة X" + dine-in locked + picker hidden
+- `orders.table_label` snapshot column (immune to rename/delete)
+- Admin orders row shows "🪑 طاولة X" pill
+
+### Per-tenant QR codes
+- `/admin/qr` — menu-wide QR with live preview + 3 downloads (poster PNG 1080x1620, raw PNG 1024px, SVG)
+- Same component embedded in `/ops/tenants/[id]`
+- Poster: brand-color band, round logo overlay, restaurant name in Tajawal, shadowed QR, "امسح للطلب" CTA
+
+### Addon framework (per-tenant services)
+- `addon_catalog`: tables_qr, excel_export, pos_bridge, loyalty, push_marketing
+- `subscription_addons`: per-tenant toggle + trial_ends_at + price_override_sar + notes
+- Ops UI: "الخدمات" section on `/ops/tenants/[id]` grouped by category (operations/growth/integrations)
+- Gates: admin sidebar NAV filtered, page guards (`notFound()`), API route 403s, customer PWA `?table=` soft-degrade
+- Onboarding wizard auto-seeds `is_default=true` addons
+- `pos_bridge` addon AND-gates the `enqueue_pos_outbox` trigger — non-bridge tenants can never accidentally enqueue
+
+### Loyalty service (4 slices shipped)
+**Slice 1 — Schema + auto-earn:**
+- Per-order trigger earns `floor(total * points_per_sar)` points + recomputes tier
+- Two-trigger isolation: `orders_touch_customer` (bookkeeping) + `z_loyalty_after_insert` (loyalty, EXCEPTION-wrapped)
+- `/admin/loyalty` settings: earn rate, redemption value, 4-tier hybrid thresholds (orders OR spend), welcome/birthday bonus, points expiry
+
+**Slice 2 — Rewards + redemption:**
+- `/admin/loyalty/rewards` — full CRUD (add, inline edit, toggle, reorder, delete)
+- `/admin/loyalty/redemptions` — pending/fulfilled/cancelled queue, Realtime subscription, fulfill/cancel RPCs (cancel refunds points via compensating ledger entry)
+- `/m/<slug>/rewards` — customer rewards list with eligibility states (not-signed-in / not-linked / tier-too-low / balance-too-low / eligible), confirmation + success modals
+- Loyalty CTA moved from menu footer INTO cart drawer (high-intent placement)
+
+**Slice 3 — Welcome bonus + manual adjust + history + stats:**
+- Welcome bonus auto-fires on first phone link per tenant
+- `/admin/loyalty/customers` — top 200 by lifetime points, search/filter by tier, "تعديل النقاط" modal (+/- with reason)
+- Customer `/m/<slug>/account` shows redemption history with status pills
+- `/admin/loyalty` stats: 6 KPI tiles (customers, earn rate, program status, redeemed lifetime, pending count, active rewards)
+
+**Slice 4 — Images + realtime + expiry:**
+- Reward images: upload to `menu-images/<restaurant_id>/rewards/`, display on customer rewards page
+- Realtime customer notifications: subscribe to `loyalty_redemptions` UPDATE → toast on fulfilled/cancelled
+- Points expiry: lazy check in trigger before each earn; zeroes balance if `last_loyalty_earn_at` older than `points_expiry_days`
+- Admin UI: expiry days field in settings form
+
+### Customer Google accounts
+- Google OAuth configured via Supabase (provider enabled, client_id + secret set via Management API)
+- `/auth/callback` route handler for OAuth code exchange
+- `/m/<slug>/account` — 3 states: signed-out (Google CTA + "متابعة كزائر" button), signed-in-not-linked (phone form + `link_customer_account` RPC with hijack guard), linked (🏆 balance + tier badge + order history + redemption history + rewards shortcut)
+- `customers.auth_user_id` column links auth.users → customer rows (cross-tenant via phone)
+- `normalizePhone` extracted to `apps/web/lib/phone.ts` (shared between cart + account)
+
+### SFDA nutrition + allergen compliance
+- `menu_items`: calories_kcal, sodium_mg, caffeine_mg, allergens_json (14 SFDA allergens)
+- `menu_item_variants`: calories_kcal (per-variant override)
+- `get_public_menu` RPC updated to include nutrition fields
+- Customer PWA: 🔥 calorie badge, 🧂 high-sodium flag, ☕ caffeine badge, ⚠️ allergen text per item
+- SFDA daily reference footer (men 2500 / women 2000 / children 1400-2000) + allergen disclaimer + full 14-allergen list
+- Admin menu editor: "🔥 سعرات" button expands per-item nutrition panel (calorie/sodium/caffeine inputs + 14-allergen checkbox grid)
+- `apps/web/lib/allergens.ts` — canonical SFDA allergen list (keys + Arabic labels + icons)
+- **Auto-populated:** KO-KO 34 items + RzRz 36 items with calorie estimates + allergen tags from standard food databases
+- **Audit results:** KO-KO 98% compliant, RzRz 96% compliant (minor recommendations only)
+
+### Skills created
+- **`menu-onboarding`** — imports menu items, photos, calorie data, allergen tags, POS mapping. Includes `references/calorie-database.md` with 60+ Saudi/Middle Eastern food calorie references.
+- **`tenant-deployment`** — 8-phase end-to-end checklist (creation → design → menu → nutrition → QR → addons → go-live → docs). Produces a copy-paste template per tenant.
+- **`nutrition-audit`** — 5-check SFDA compliance audit with weighted scoring. Runs after menu import and periodically. Can auto-fix missing data.
+
+### Learnings captured (5 entries in learnings.md)
+- `lrn-2026-05-23-rls-anon-vs-public` — `to anon` != `to public`; cost 3 hotfix migrations
+- `lrn-2026-05-23-customer-pwa-anon-reads` — every customer-facing table read needs anon/public SELECT
+- `lrn-2026-05-23-two-trigger-isolation` — risky triggers go in separate EXCEPTION-wrapped functions
+- `lrn-2026-05-23-uuid-is-real-auth` — UUID is the security boundary; phone/plate are soft sanity checks
+- `lrn-2026-05-23-addon-is-default-semantic` — is_default means auto-enable, not "cannot disable"
