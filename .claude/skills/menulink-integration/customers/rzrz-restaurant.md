@@ -1,6 +1,7 @@
 # Customer · RzRz Restaurant (Itaqn w Jowdah)
 
-> **Slug:** `rzrz`
+> **MenuLink tenant UUID:** `ef60381c-50db-4379-a9b7-97f5902aa54b`
+> **Slug:** `rzrz-bukhari` (live URL: `menulink-admin-five.vercel.app/m/rzrz-bukhari`)
 > **Brand:** **RzRz** (the restaurant brand customers know)
 > **Operating company:** **Itaqn w Jowdah** (إتقان وجودة — "Mastery & Quality")
 > **POS used:** RzRz POS, a.k.a. Punnelifosys ResApp — built by **Samer Cefalu**

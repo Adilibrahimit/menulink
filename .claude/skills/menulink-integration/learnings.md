@@ -295,6 +295,24 @@ We have **two distinct customer profiles** and they must never be conflated:
 **Source:** user correction on session:2026-05-18  
 **Triggers:** KO-KO, brother's restaurant, customer taxonomy, RzRz testbed
 
+### LRN-2026-05-23-holdmode-end-to-end (confidence: high) ⭐
+**Context:** Verified Bridge App v2.3 (commit 18ec1a0, HoldMode default true) end-to-end on the RzRz testbed: MenuLink order → pos_outbox row → Bridge claims → `dbo.InsertInvoice` with `@IsHold=1` → invoice 440 appears in the cashier UI's held-list (not paid). DB verification: `Invoice.IsHold=1`, `PaymentDetails` empty, `InvoicePaymentTypeDetails` empty. Staff tap Pay manually to finalize, which fires the native receipt + kitchen print via the cashier UI's own dispatcher.
+**Learning:** **HoldMode is the right default for MenuLink orders.** Confirmed pattern: write only the Invoice + InvoiceDetails rows with `IsHold=1`, then stop. Don't write payment, don't print kitchen ourselves — let the existing cashier UI handle finalize-time printing because (a) staff get to review the order before committing, (b) the print uses the POS's native format for free, (c) less moving parts in our code path. Switch HoldMode off only for high-volume tenants where manual review is impractical.
+**Source:** session:2026-05-23 | applies-to:rzrz-restaurant
+**Triggers:** HoldMode, IsHold=1, v2.3, held invoices, deferred payment, manual review
+
+### LRN-2026-05-23-windows-auth-cross-machine-needs-grant (confidence: high) ⭐
+**Context:** Bridge running on RzRz server as Windows user `DESKTOP-8Q7DQKA\pc` failed with SQL error 4060 "Cannot open database 'client' requested by the login. The login failed." Past v2.2 runs had worked — they used a different Windows user (Administrator) which already had db access.
+**Learning:** **Even on the SAME machine, Integrated Security only works if the specific Windows user running the bridge has been explicitly mapped as a database user.** The fix is one short SSMS block (run as `sa`): `CREATE LOGIN [HOST\user] FROM WINDOWS` at server scope, then in the target DB: `CREATE USER [HOST\user] FOR LOGIN [HOST\user]; ALTER ROLE db_owner ADD MEMBER [HOST\user];`. Idempotent with `IF NOT EXISTS` guards. For the integration testbed, `db_owner` is fine; for production tenants scope to `db_datareader + db_datawriter + GRANT EXECUTE ON SCHEMA::dbo`.
+**Source:** session:2026-05-23 | applies-to:rzrz-restaurant + every future Bridge App deploy
+**Triggers:** SQL error 4060, Login failed, Integrated Security, Windows-auth, db_owner, CREATE USER FROM LOGIN
+
+### LRN-2026-05-23-rzrz-receipt-notes-budget (confidence: high)
+**Context:** v2.3 receipt for invoice 439 / 441 overflowed: the InvoiceNotes_A field "MenuLink #N · {shortId} · {name} · +966xxxxxxxxx · {address}" (~60 chars) wrapped on top of the items-table header. The RzRz thermal receipt template prints InvoiceNotes_A on a single fixed-position line — it does NOT word-wrap, it overlays.
+**Learning:** **Keep `InvoiceNotes_A` to ~30 characters or less for the RzRz Bukhari thermal printer template.** Drop the short order id (the `MenuLink #N` is already the canonical identifier — that's also what the idempotency precheck keys off). Drop the address (kitchen doesn't need it; delivery driver gets it via the WhatsApp deep-link). Strip the `+966` prefix from phones — Saudi readers expect 05xx form. v2.4 (commit 16a732d) does exactly this: `"MenuLink #N · <name> · 05xxxxxxxx"`. If a future tenant uses a wider receipt or a different POS, raise the cap then.
+**Source:** session:2026-05-23 user screenshots `D:\New folder (5)\Q5\11`
+**Triggers:** InvoiceNotes_A, thermal printer width, receipt overflow, BuildNotesArabic, phone prefix
+
 ---
 
 ## ❌ What Has Failed (Avoid These)
@@ -316,6 +334,18 @@ We have **two distinct customer profiles** and they must never be conflated:
 **Learning:** When a user mentions a customer name and a technical detail (like POS access), **never assume they refer to the same restaurant.** Ask: "Is the POS at the same restaurant as the one ordering MenuLink, or a different one?" The cost of asking is 10 seconds; the cost of building on wrong assumption can be days.  
 **Source:** user correction on session:2026-05-18  
 **Triggers:** customer info, restaurant details, assumption check
+
+### LRN-2026-05-23-powershell-string-newline-trap (confidence: high) ⚠️
+**Context:** Pasted a multi-line code block into PowerShell with a single string spanning lines: `$env:X = \n>>   "Server=...;Integrated Security=true;..."`. Bridge then failed with `Keyword not supported: 'integrated\n  security'.` — a literal newline + leading spaces had been embedded INSIDE the quoted string. SQL connection-string parser doesn't accept embedded whitespace inside the keyword name. Burned an entire retry budget (5 attempts) before the diagnosis.
+**Learning:** **PowerShell's `>>` line continuation inside a quoted string preserves the newline as a literal character in the resulting value.** When pasting a long string into PowerShell — especially connection strings — type it as ONE line, even if the terminal wraps visually. Two safeguards: (a) prefer `Trusted_Connection=True` over `Integrated Security=True` (single token, no internal whitespace to corrupt); (b) after setting an env var that wraps in the terminal, verify with `$env:X.Length` and `$env:X -replace "\n","\n"` to catch hidden newlines before running anything that consumes it.
+**Source:** session:2026-05-23 (cost: ~5 retry attempts + a row reset)
+**Triggers:** PowerShell, multi-line string, connection string, env var, Integrated Security, line continuation, keyword not supported
+
+### LRN-2026-05-23-sb-secret-postgrest-guard-too (confidence: high) ⚠️ UPDATE
+**Context:** Originally `LRN-2026-05-18-new-secret-keys-block-server-side` documented the `sb_secret_*` browser-context guard as Auth Admin API only. Today hit the SAME guard hitting PostgREST `/rest/v1/restaurants` from `Invoke-RestMethod` / `Invoke-WebRequest` (both default to a Mozilla-flavoured UA).
+**Learning:** **The `sb_secret_*` browser guard applies to all of Supabase's HTTP surface (PostgREST, Auth Admin, etc.) — not just Auth Admin.** Anything that looks like a browser request gets a 401 "Forbidden use of secret API key in browser". For PowerShell scripts: set a non-browser `User-Agent` header (e.g., `"menulink-tooling/1.0"`) on every request. The Bridge App itself is unaffected because .NET's HttpClient sends NO User-Agent by default — verified in this session via a from-the-bridge mimic call that got 200 OK with the same key. So: PostgREST from .NET → fine. PostgREST from PowerShell → must override UA.
+**Source:** session:2026-05-23 (extends the 2026-05-18 learning)
+**Triggers:** sb_secret, PostgREST, 401, browser context, Invoke-RestMethod, Invoke-WebRequest, User-Agent
 
 ### LRN-2026-05-19-supabase-jwt-claims-nested (confidence: high) ⚠️ CRITICAL
 **Context:** Migrations 0001/0003/0004/0005/0007 wrote RLS policies using `auth.jwt() ->> 'restaurant_id'` and `auth.jwt() ->> 'role'`. After v7 launch, every authenticated query silently returned empty results: owner couldn't create categories ("RLS violation"), `/admin/info` threw "Cannot coerce to single JSON object", `/admin/orders` showed no rows. The dashboard "revenue" tile still showed numbers — *because views bypass RLS in PG15+ default `security_invoker=false`* (which is also a cross-tenant data leak by itself).  
@@ -391,6 +421,14 @@ We have **two distinct customer profiles** and they must never be conflated:
 **Question:** After the Bridge App works for the testbed, can we sell it to other RzRz customers via Punnelifosys? Would they partner with us?  
 **How to investigate:** After 30 days of clean operation at the testbed, reach out to Punnelifosys with a partnership pitch.
 
+### OPN-2026-05-23-rzrz-tenant-slug-mismatch (priority: low, doc-only)
+**Question:** `customers/rzrz-restaurant.md` documents the MenuLink slug as `rzrz`, but the actual `restaurants.slug` row in Supabase is `rzrz-bukhari` (URL `/m/rzrz-bukhari`). Tenant UUID is `ef60381c-50db-4379-a9b7-97f5902aa54b`.
+**How to investigate:** Already verified live this session. Update the customer file slug to match production. Low priority — does not affect any code path, only documentation accuracy for future onboarding sessions.
+
+### OPN-2026-05-23-loyalty-and-addon-pricing (priority: high, designing now)
+**Question:** Loyalty/rewards system is requested as a **per-tenant, opt-in, chargeable add-on** — same model as the Bridge App. Need: subscription_addons schema, /ops UI to grant/revoke per tenant, /admin/loyalty UI for the owner to configure tier basis + thresholds + point rate + redemption rules, customer-PWA points display, optional Google login with phone-as-identity merge.
+**How to investigate:** Design document to be drafted in `design-docs/loyalty-service.md` before code. Decide pricing per addon (suggested: 50 SAR/month for loyalty, parallel to Bridge App). Resolves direction set in session:2026-05-23.
+
 ---
 
 ## 📜 Reflection Log (Chronological)
@@ -439,6 +477,33 @@ We have **two distinct customer profiles** and they must never be conflated:
   - SKILL.md, learnings.md, 5 references, customer template
   - Pre-seeded with everything learned so far
 - This is the first iteration — will improve as customers reveal more quirks
+
+### 2026-05-23 · v2.3 HoldMode Verified + v2.4 Receipt Cleanup
+- **Goal:** Verify Bridge App v2.3 (HoldMode default true, committed last session) end-to-end on the RzRz testbed.
+- **What worked:**
+  - End-to-end test passed: order from `/m/rzrz-bukhari` → outbox row → Bridge claims → `InsertInvoice` with `IsHold=1` → cashier UI held list shows invoice 440. DB verification: `IsHold=1`, no PaymentDetails, no InvoicePaymentTypeDetails. Staff tap Pay manually to finalize.
+  - The HoldMode-by-default decision is validated. v2.3 stays as the standard mode going forward; HoldMode=false is only for high-volume tenants where manual review is impractical.
+  - Discovered via PostgREST query directly: tenant `restaurants.slug='rzrz-bukhari'`, id `ef60381c-50db-4379-a9b7-97f5902aa54b`, `pos_settings` + `pos_item_map` all wired and `enabled=true`.
+  - Diff-shipped v2.4 (commit 16a732d) to fix a thermal-receipt overflow caught in production: shortened `InvoiceNotes_A` to `"MenuLink #N · <name> · 05xxxxxxxx"` (~30 chars, one line).
+- **What hit friction:**
+  - Confused machine identity early: user said "I'm on the RzRz server" but the Claude Code session was actually on the dev machine `DESKTOP-KUT35C6` (192.168.1.83). RzRz server is `DESKTOP-8Q7DQKA` (192.168.1.113). SQL connection attempts failed locally because no SQL instance is installed on the dev box. Resolved by asking the user to switch to the RzRz server.
+  - PowerShell `>>` line continuation embedded a literal newline INSIDE the connection-string env var ("Integrated\n  Security"). 5 retry attempts burned before diagnosis. Captured as [[lrn-2026-05-23-powershell-string-newline-trap]]. New default guidance: use `Trusted_Connection=True` (single token, no embedded whitespace possible).
+  - Pasted connection string fixed, but new SQL error 4060 surfaced: the Windows user `DESKTOP-8Q7DQKA\pc` had no rights on the `client` DB even though Integrated Security authenticated. Past successful runs used a different (Administrator) Windows user. Fix: explicit `CREATE LOGIN + CREATE USER + ALTER ROLE db_owner` in SSMS as `sa`. Captured as [[lrn-2026-05-23-windows-auth-cross-machine-needs-grant]].
+  - The `sb_secret_*` browser-context guard turned out to be broader than the 2026-05-18 learning suggested — it fires on PostgREST too, not just Auth Admin. Fixed in scripts by setting a non-browser `User-Agent`. The Bridge App's HttpClient is unaffected (no UA by default). Captured as [[lrn-2026-05-23-sb-secret-postgrest-guard-too]].
+  - Print receipt overflow was caused by packing `InvoiceNotes_A` to ~60 chars; the RzRz thermal receipt template prints that field on a single fixed-position line with no word-wrap, so it overlaid the items-table header. Captured as [[lrn-2026-05-23-rzrz-receipt-notes-budget]].
+- **What surprised me:**
+  - The receipt overflow LOOKED like printer hardware misbehavior at first glance — it was actually a data-side budget problem we control 100%. The fix was 13 lines of C# and a redeploy.
+  - The user is genuinely co-developing both ends (POS + MenuLink) — when I suggested modifying the receipt template as "the cleanest fix", it wasn't out of bounds. Worth remembering on future architecture decisions.
+- **Direction set for next session:**
+  - Loyalty/rewards as a per-tenant chargeable add-on (parallel to Bridge App). Configurable tier basis (hybrid of orders + spend), configurable thresholds, configurable point rate and redemption rules. Customer PWA gets both a soft post-order login prompt AND a persistent header sign-in button. Google login with phone-as-identity merge.
+  - Adjustable delivery fee from `/admin/info` (number input, hidden if delivery disabled). Defer distance-based logic until later.
+- **Captured learnings:**
+  - [[lrn-2026-05-23-holdmode-end-to-end]] (positive pattern)
+  - [[lrn-2026-05-23-windows-auth-cross-machine-needs-grant]] (deploy gotcha)
+  - [[lrn-2026-05-23-rzrz-receipt-notes-budget]] (POS-specific quirk)
+  - [[lrn-2026-05-23-powershell-string-newline-trap]] (anti-pattern)
+  - [[lrn-2026-05-23-sb-secret-postgrest-guard-too]] (existing learning extended)
+- **Opened:** [[opn-2026-05-23-loyalty-and-addon-pricing]], [[opn-2026-05-23-rzrz-tenant-slug-mismatch]]
 
 ---
 
