@@ -17,6 +17,7 @@ type OrderRow = {
   car_plate: string | null;
   car_color: string | null;
   car_arrived_at: string | null;
+  table_label: string | null;
   created_at: string;
   customers: CustomerInfo | CustomerInfo[] | null;
 };
@@ -304,6 +305,11 @@ export default function OrdersLive({
                       {cust?.name ?? "—"}{" "}
                       <span className="text-neutral-400 font-normal">· {cust?.phone ?? "—"}</span>
                     </span>
+                    {o.table_label && (
+                      <span className="inline-flex items-center gap-1 text-xs font-extrabold bg-amber-100 text-amber-900 border border-amber-300 rounded-full px-2 py-0.5">
+                        🪑 طاولة {o.table_label}
+                      </span>
+                    )}
                     {waitingAtCurb && (
                       <span className="inline-flex items-center gap-1 text-xs font-extrabold bg-amber-500 text-amber-950 rounded-full px-2 py-0.5">
                         🚗 وصل العميل

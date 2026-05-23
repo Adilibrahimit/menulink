@@ -25,7 +25,13 @@ function trackingKey(restaurantId: string) {
   return `menulink:tracking:${restaurantId}`;
 }
 
-export default function MenuExperience({ menu }: { menu: PublicMenu }) {
+export default function MenuExperience({
+  menu,
+  tableLabel,
+}: {
+  menu: PublicMenu;
+  tableLabel: string | null;
+}) {
   const [cart, setCart] = useState<Record<string, CartLine>>({});
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [tracking, setTracking] = useState<TrackingState | null>(null);
@@ -116,6 +122,16 @@ export default function MenuExperience({ menu }: { menu: PublicMenu }) {
       className="bg-[var(--bg)] text-[#29170f] pb-28"
       style={{ fontFamily: "Cairo, system-ui, sans-serif" }}
     >
+      {/* TABLE BANNER — only when the customer arrived via a table QR */}
+      {tableLabel && (
+        <div
+          className="bg-amber-400 text-amber-950 text-sm font-extrabold py-2 px-4 text-center"
+          style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+        >
+          🪑 أنت تطلب من طاولة {tableLabel}
+        </div>
+      )}
+
       {/* HERO — cover image with restaurant name overlaid in big bold display */}
       <header className="relative">
         {hasCover ? (
@@ -282,6 +298,7 @@ export default function MenuExperience({ menu }: { menu: PublicMenu }) {
           restaurant={menu.restaurant}
           lines={lines}
           total={total}
+          tableLabel={tableLabel}
           onClose={() => setDrawerOpen(false)}
           onAdjust={adjustQty}
           onClear={clearCart}
@@ -311,6 +328,7 @@ function CartDrawer({
   restaurant,
   lines,
   total,
+  tableLabel,
   onClose,
   onAdjust,
   onClear,
@@ -319,12 +337,16 @@ function CartDrawer({
   restaurant: PublicMenu["restaurant"];
   lines: CartLine[];
   total: number;
+  tableLabel: string | null;
   onClose: () => void;
   onAdjust: (lineId: string, delta: number) => void;
   onClear: () => void;
   onCarOrderPlaced: (t: TrackingState) => void;
 }) {
-  const [orderType, setOrderType] = useState<OrderType>("delivery");
+  // When a customer scans a table QR (?table=...) the order type is locked
+  // to dine-in. The picker is hidden, the delivery/car branches are skipped.
+  const lockedToTable = !!tableLabel;
+  const [orderType, setOrderType] = useState<OrderType>(lockedToTable ? "dine_in" : "delivery");
   const [name, setName] = useState("");
   const [rawPhone, setRawPhone] = useState("");
   const [address, setAddress] = useState("");
@@ -373,6 +395,7 @@ function CartDrawer({
       orderType,
       carPlate: orderType === "car" ? plate : "",
       carColor: orderType === "car" ? color : "",
+      tableLabel: lockedToTable ? (tableLabel ?? "") : "",
       lines,
       total,
     };
@@ -410,6 +433,7 @@ function CartDrawer({
     const msg =
       `🌟 *طلب جديد · ${restaurant.name}* 🌟\n` +
       `━━━━━━━━━━━━━━━━\n` +
+      (lockedToTable ? `🪑 *الطاولة:* ${tableLabel}\n` : "") +
       `📦 *نوع الطلب:* ${orderTypeLabel[orderType]}\n` +
       `👤 *الاسم:* ${name || "—"}\n` +
       `📞 *الجوال:* ${rawPhone || "—"}\n` +
@@ -505,26 +529,38 @@ function CartDrawer({
           {lines.length > 0 && (
             <>
               <hr className="border-neutral-200" />
-              <fieldset className="space-y-3">
-                <legend className="text-xs font-extrabold text-neutral-700 mb-2">نوع الطلب</legend>
-                <div className="grid grid-cols-2 gap-2">
-                  {(["delivery", "pickup", "dine_in", "car"] as OrderType[]).map((t) => (
-                    <button
-                      key={t}
-                      type="button"
-                      onClick={() => setOrderType(t)}
-                      className={
-                        "h-11 rounded-xl text-sm font-extrabold border-2 transition-colors " +
-                        (orderType === t
-                          ? "bg-[var(--brand)] text-white border-[var(--brand)]"
-                          : "bg-white text-neutral-700 border-neutral-200 hover:border-neutral-300")
-                      }
-                    >
-                      {orderTypeLabel[t]}
-                    </button>
-                  ))}
+              {lockedToTable ? (
+                <div className="rounded-2xl bg-amber-50 border border-amber-200 px-3 py-3 flex items-center gap-2">
+                  <span className="text-2xl">🪑</span>
+                  <div className="flex-1 min-w-0 text-sm leading-snug">
+                    <div className="font-extrabold text-amber-900" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+                      طاولة {tableLabel}
+                    </div>
+                    <div className="text-xs text-amber-800/80">سيُسلَّم طلبك على هذه الطاولة</div>
+                  </div>
                 </div>
-              </fieldset>
+              ) : (
+                <fieldset className="space-y-3">
+                  <legend className="text-xs font-extrabold text-neutral-700 mb-2">نوع الطلب</legend>
+                  <div className="grid grid-cols-2 gap-2">
+                    {(["delivery", "pickup", "dine_in", "car"] as OrderType[]).map((t) => (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => setOrderType(t)}
+                        className={
+                          "h-11 rounded-xl text-sm font-extrabold border-2 transition-colors " +
+                          (orderType === t
+                            ? "bg-[var(--brand)] text-white border-[var(--brand)]"
+                            : "bg-white text-neutral-700 border-neutral-200 hover:border-neutral-300")
+                        }
+                      >
+                        {orderTypeLabel[t]}
+                      </button>
+                    ))}
+                  </div>
+                </fieldset>
+              )}
 
               <div className="space-y-3 pt-1">
                 <input
@@ -648,6 +684,7 @@ async function persistOrder({
   orderType,
   carPlate,
   carColor,
+  tableLabel,
   lines,
   total,
 }: {
@@ -661,6 +698,7 @@ async function persistOrder({
   orderType: OrderType;
   carPlate: string;
   carColor: string;
+  tableLabel: string;
   lines: CartLine[];
   total: number;
 }): Promise<{ orderId: string | null }> {
@@ -680,6 +718,7 @@ async function persistOrder({
     notes: notes || null,
     car_plate: orderType === "car" ? (carPlate || null) : null,
     car_color: orderType === "car" ? (carColor || null) : null,
+    table_label: tableLabel || null,
     items: lines.map((l) => ({
       item_name: l.itemName,
       variant: l.variantLabel,

@@ -23,15 +23,23 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function CustomerMenuPage({ params }: { params: { slug: string } }) {
+export default async function CustomerMenuPage({
+  params,
+  searchParams,
+}: {
+  params: { slug: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
   const sb = createClient();
   const { data, error } = await sb.rpc("get_public_menu", { p_slug: params.slug });
   if (error || !data) notFound();
   const menu = data as PublicMenu;
 
-  // Inject brand colors as CSS variables at the root of this page tree.
-  // No JS needed for first paint — the server already knows the tenant.
-  // Override the default warm cream from Stitch with the tenant's chosen bg.
+  // `?table=5` from the table-QR scan. Take the first value if an array
+  // sneaks through (`?table=5&table=6` → "5"). Trim whitespace.
+  const raw = searchParams.table;
+  const tableLabel = (Array.isArray(raw) ? raw[0] : raw)?.trim() || null;
+
   const cssVars = {
     "--brand": menu.restaurant.primary_color,
     "--bg": menu.restaurant.background_color || "#fff8f6",
@@ -45,7 +53,7 @@ export default async function CustomerMenuPage({ params }: { params: { slug: str
       style={cssVars}
       className="min-h-[100dvh]"
     >
-      <MenuExperience menu={menu} />
+      <MenuExperience menu={menu} tableLabel={tableLabel} />
       <PwaBootstrap />
     </div>
   );
