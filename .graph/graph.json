@@ -1,0 +1,3802 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "middleware.ts",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\middleware.ts",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_middleware_ts",
+      "community": 27
+    },
+    {
+      "label": "middleware()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\middleware.ts",
+      "source_location": "L8",
+      "id": "middleware_middleware",
+      "community": 27
+    },
+    {
+      "label": "next-env.d.ts",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\next-env.d.ts",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_next_env_d_ts",
+      "community": 52
+    },
+    {
+      "label": "next.config.js",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\next.config.js",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_next_config_js",
+      "community": 53
+    },
+    {
+      "label": "postcss.config.js",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\postcss.config.js",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_postcss_config_js",
+      "community": 54
+    },
+    {
+      "label": "tailwind.config.ts",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\tailwind.config.ts",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_tailwind_config_ts",
+      "community": 55
+    },
+    {
+      "label": "layout.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\layout.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_layout_tsx",
+      "community": 28
+    },
+    {
+      "label": "RootLayout()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\layout.tsx",
+      "source_location": "L9",
+      "id": "layout_rootlayout",
+      "community": 28
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\page.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_page_tsx",
+      "community": 29
+    },
+    {
+      "label": "Home()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\page.tsx",
+      "source_location": "L29",
+      "id": "page_home",
+      "community": 29
+    },
+    {
+      "label": "dashboard-chart.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\dashboard-chart.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_dashboard_chart_tsx",
+      "community": 30
+    },
+    {
+      "label": "DashboardChart()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\dashboard-chart.tsx",
+      "source_location": "L31",
+      "id": "dashboard_chart_dashboardchart",
+      "community": 30
+    },
+    {
+      "label": "layout.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\layout.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_layout_tsx",
+      "community": 56
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\page.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_page_tsx",
+      "community": 57
+    },
+    {
+      "label": "subscription-banner.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\subscription-banner.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_subscription_banner_tsx",
+      "community": 58
+    },
+    {
+      "label": "customers-table.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\customers\\customers-table.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_customers_customers_table_tsx",
+      "community": 31
+    },
+    {
+      "label": "digitsOnly()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\customers\\customers-table.tsx",
+      "source_location": "L40",
+      "id": "customers_table_digitsonly",
+      "community": 31
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\customers\\page.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_customers_page_tsx",
+      "community": 32
+    },
+    {
+      "label": "fmt()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\customers\\page.tsx",
+      "source_location": "L94",
+      "id": "page_fmt",
+      "community": 32
+    },
+    {
+      "label": "info-form.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\info\\info-form.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_info_info_form_tsx",
+      "community": 9
+    },
+    {
+      "label": "onChange()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\info\\info-form.tsx",
+      "source_location": "L38",
+      "id": "info_form_onchange",
+      "community": 9
+    },
+    {
+      "label": "save()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\info\\info-form.tsx",
+      "source_location": "L47",
+      "id": "info_form_save",
+      "community": 9
+    },
+    {
+      "label": "uploadBrandAsset()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\info\\info-form.tsx",
+      "source_location": "L62",
+      "id": "info_form_uploadbrandasset",
+      "community": 9
+    },
+    {
+      "label": "clearBrandAsset()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\info\\info-form.tsx",
+      "source_location": "L101",
+      "id": "info_form_clearbrandasset",
+      "community": 9
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\info\\page.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_info_page_tsx",
+      "community": 33
+    },
+    {
+      "label": "InfoPage()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\info\\page.tsx",
+      "source_location": "L6",
+      "id": "page_infopage",
+      "community": 33
+    },
+    {
+      "label": "login-form.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\login\\login-form.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_login_login_form_tsx",
+      "community": 17
+    },
+    {
+      "label": "onSubmit()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\login\\login-form.tsx",
+      "source_location": "L14",
+      "id": "login_form_onsubmit",
+      "community": 17
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\login\\page.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_login_page_tsx",
+      "community": 59
+    },
+    {
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\logout\\route.ts",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_logout_route_ts",
+      "community": 18
+    },
+    {
+      "label": "POST()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\logout\\route.ts",
+      "source_location": "L4",
+      "id": "route_post",
+      "community": 18
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\page.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_loyalty_page_tsx",
+      "community": 60
+    },
+    {
+      "label": "settings-form.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\settings-form.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_loyalty_settings_form_tsx",
+      "community": 12
+    },
+    {
+      "label": "normalizeTiers()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\settings-form.tsx",
+      "source_location": "L35",
+      "id": "settings_form_normalizetiers",
+      "community": 12
+    },
+    {
+      "label": "patchTier()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\settings-form.tsx",
+      "source_location": "L69",
+      "id": "settings_form_patchtier",
+      "community": 12
+    },
+    {
+      "label": "save()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\settings-form.tsx",
+      "source_location": "L75",
+      "id": "settings_form_save",
+      "community": 12
+    },
+    {
+      "label": "loyalty-customers-table.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\customers\\loyalty-customers-table.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_loyalty_customers_loyalty_customers_table_tsx",
+      "community": 34
+    },
+    {
+      "label": "patchRow()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\customers\\loyalty-customers-table.tsx",
+      "source_location": "L53",
+      "id": "loyalty_customers_table_patchrow",
+      "community": 34
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\customers\\page.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_loyalty_customers_page_tsx",
+      "community": 61
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\redemptions\\page.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_loyalty_redemptions_page_tsx",
+      "community": 35
+    },
+    {
+      "label": "AdminLoyaltyRedemptionsPage()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\redemptions\\page.tsx",
+      "source_location": "L8",
+      "id": "page_adminloyaltyredemptionspage",
+      "community": 35
+    },
+    {
+      "label": "redemptions-list.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\redemptions\\redemptions-list.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_loyalty_redemptions_redemptions_list_tsx",
+      "community": 13
+    },
+    {
+      "label": "first()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\redemptions\\redemptions-list.tsx",
+      "source_location": "L35",
+      "id": "redemptions_list_first",
+      "community": 13
+    },
+    {
+      "label": "fulfill()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\redemptions\\redemptions-list.tsx",
+      "source_location": "L87",
+      "id": "redemptions_list_fulfill",
+      "community": 13
+    },
+    {
+      "label": "cancel()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\redemptions\\redemptions-list.tsx",
+      "source_location": "L101",
+      "id": "redemptions_list_cancel",
+      "community": 13
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\rewards\\page.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_loyalty_rewards_page_tsx",
+      "community": 36
+    },
+    {
+      "label": "AdminLoyaltyRewardsPage()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\rewards\\page.tsx",
+      "source_location": "L8",
+      "id": "page_adminloyaltyrewardspage",
+      "community": 36
+    },
+    {
+      "label": "rewards-editor.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\rewards\\rewards-editor.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_loyalty_rewards_rewards_editor_tsx",
+      "community": 2
+    },
+    {
+      "label": "add()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\rewards\\rewards-editor.tsx",
+      "source_location": "L61",
+      "id": "rewards_editor_add",
+      "community": 2
+    },
+    {
+      "label": "uploadImage()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\rewards\\rewards-editor.tsx",
+      "source_location": "L88",
+      "id": "rewards_editor_uploadimage",
+      "community": 2
+    },
+    {
+      "label": "removeImage()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\rewards\\rewards-editor.tsx",
+      "source_location": "L127",
+      "id": "rewards_editor_removeimage",
+      "community": 2
+    },
+    {
+      "label": "deleteReward()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\rewards\\rewards-editor.tsx",
+      "source_location": "L146",
+      "id": "rewards_editor_deletereward",
+      "community": 2
+    },
+    {
+      "label": "toggleActive()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\rewards\\rewards-editor.tsx",
+      "source_location": "L154",
+      "id": "rewards_editor_toggleactive",
+      "community": 2
+    },
+    {
+      "label": "swap()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\rewards\\rewards-editor.tsx",
+      "source_location": "L165",
+      "id": "rewards_editor_swap",
+      "community": 2
+    },
+    {
+      "label": "startEdit()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\rewards\\rewards-editor.tsx",
+      "source_location": "L181",
+      "id": "rewards_editor_startedit",
+      "community": 2
+    },
+    {
+      "label": "saveEdit()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\rewards\\rewards-editor.tsx",
+      "source_location": "L193",
+      "id": "rewards_editor_saveedit",
+      "community": 2
+    },
+    {
+      "label": "add-category-modal.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\add-category-modal.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_menu_add_category_modal_tsx",
+      "community": 37
+    },
+    {
+      "label": "submit()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\add-category-modal.tsx",
+      "source_location": "L26",
+      "id": "add_category_modal_submit",
+      "community": 37
+    },
+    {
+      "label": "add-item-modal.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\add-item-modal.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_menu_add_item_modal_tsx",
+      "community": 19
+    },
+    {
+      "label": "pickImage()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\add-item-modal.tsx",
+      "source_location": "L35",
+      "id": "add_item_modal_pickimage",
+      "community": 19
+    },
+    {
+      "label": "submit()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\add-item-modal.tsx",
+      "source_location": "L54",
+      "id": "add_item_modal_submit",
+      "community": 19
+    },
+    {
+      "label": "menu-editor.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "community": 0
+    },
+    {
+      "label": "notify()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L28",
+      "id": "menu_editor_notify",
+      "community": 0
+    },
+    {
+      "label": "refresh()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L33",
+      "id": "menu_editor_refresh",
+      "community": 0
+    },
+    {
+      "label": "renameCategory()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L38",
+      "id": "menu_editor_renamecategory",
+      "community": 0
+    },
+    {
+      "label": "toggleCategoryActive()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L46",
+      "id": "menu_editor_togglecategoryactive",
+      "community": 0
+    },
+    {
+      "label": "deleteCategory()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L52",
+      "id": "menu_editor_deletecategory",
+      "community": 0
+    },
+    {
+      "label": "renameItem()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L60",
+      "id": "menu_editor_renameitem",
+      "community": 0
+    },
+    {
+      "label": "toggleItemActive()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L68",
+      "id": "menu_editor_toggleitemactive",
+      "community": 0
+    },
+    {
+      "label": "deleteItem()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L74",
+      "id": "menu_editor_deleteitem",
+      "community": 0
+    },
+    {
+      "label": "uploadImage()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L82",
+      "id": "menu_editor_uploadimage",
+      "community": 0
+    },
+    {
+      "label": "removeImage()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L115",
+      "id": "menu_editor_removeimage",
+      "community": 0
+    },
+    {
+      "label": "updateNutrition()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L129",
+      "id": "menu_editor_updatenutrition",
+      "community": 0
+    },
+    {
+      "label": "toggleAllergen()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L135",
+      "id": "menu_editor_toggleallergen",
+      "community": 0
+    },
+    {
+      "label": "updatePrice()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L143",
+      "id": "menu_editor_updateprice",
+      "community": 0
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\page.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_menu_page_tsx",
+      "community": 38
+    },
+    {
+      "label": "MenuPage()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\page.tsx",
+      "source_location": "L10",
+      "id": "page_menupage",
+      "community": 38
+    },
+    {
+      "label": "orders-live.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\orders\\orders-live.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_orders_orders_live_tsx",
+      "community": 4
+    },
+    {
+      "label": "getCustomer()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\orders\\orders-live.tsx",
+      "source_location": "L41",
+      "id": "orders_live_getcustomer",
+      "community": 4
+    },
+    {
+      "label": "todayRiyadhISO()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\orders\\orders-live.tsx",
+      "source_location": "L47",
+      "id": "orders_live_todayriyadhiso",
+      "community": 4
+    },
+    {
+      "label": "isToday()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\orders\\orders-live.tsx",
+      "source_location": "L50",
+      "id": "orders_live_istoday",
+      "community": 4
+    },
+    {
+      "label": "useAlertSound()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\orders\\orders-live.tsx",
+      "source_location": "L57",
+      "id": "orders_live_usealertsound",
+      "community": 4
+    },
+    {
+      "label": "setStatus()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\orders\\orders-live.tsx",
+      "source_location": "L201",
+      "id": "orders_live_setstatus",
+      "community": 4
+    },
+    {
+      "label": "acknowledge()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\orders\\orders-live.tsx",
+      "source_location": "L207",
+      "id": "orders_live_acknowledge",
+      "community": 4
+    },
+    {
+      "label": "enableSound()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\orders\\orders-live.tsx",
+      "source_location": "L212",
+      "id": "orders_live_enablesound",
+      "community": 4
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\orders\\page.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_orders_page_tsx",
+      "community": 62
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\qr\\page.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_qr_page_tsx",
+      "community": 39
+    },
+    {
+      "label": "AdminQrPage()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\qr\\page.tsx",
+      "source_location": "L5",
+      "id": "page_adminqrpage",
+      "community": 39
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\tables\\page.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_tables_page_tsx",
+      "community": 40
+    },
+    {
+      "label": "AdminTablesPage()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\tables\\page.tsx",
+      "source_location": "L7",
+      "id": "page_admintablespage",
+      "community": 40
+    },
+    {
+      "label": "tables-editor.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\tables\\tables-editor.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_admin_tables_tables_editor_tsx",
+      "community": 5
+    },
+    {
+      "label": "addTable()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\tables\\tables-editor.tsx",
+      "source_location": "L41",
+      "id": "tables_editor_addtable",
+      "community": 5
+    },
+    {
+      "label": "deleteTable()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\tables\\tables-editor.tsx",
+      "source_location": "L67",
+      "id": "tables_editor_deletetable",
+      "community": 5
+    },
+    {
+      "label": "swap()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\tables\\tables-editor.tsx",
+      "source_location": "L78",
+      "id": "tables_editor_swap",
+      "community": 5
+    },
+    {
+      "label": "startEdit()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\tables\\tables-editor.tsx",
+      "source_location": "L96",
+      "id": "tables_editor_startedit",
+      "community": 5
+    },
+    {
+      "label": "cancelEdit()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\tables\\tables-editor.tsx",
+      "source_location": "L102",
+      "id": "tables_editor_canceledit",
+      "community": 5
+    },
+    {
+      "label": "saveEdit()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\tables\\tables-editor.tsx",
+      "source_location": "L108",
+      "id": "tables_editor_saveedit",
+      "community": 5
+    },
+    {
+      "label": "downloadPoster()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\tables\\tables-editor.tsx",
+      "source_location": "L139",
+      "id": "tables_editor_downloadposter",
+      "community": 5
+    },
+    {
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\api\\admin\\export\\customers\\route.ts",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_api_admin_export_customers_route_ts",
+      "community": 6
+    },
+    {
+      "label": "GET()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\manifest.webmanifest\\route.ts",
+      "source_location": "L7",
+      "id": "route_get",
+      "community": 6
+    },
+    {
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\api\\admin\\export\\orders\\route.ts",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_api_admin_export_orders_route_ts",
+      "community": 6
+    },
+    {
+      "label": "todayRiyadhISO()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\api\\admin\\export\\orders\\route.ts",
+      "source_location": "L21",
+      "id": "route_todayriyadhiso",
+      "community": 6
+    },
+    {
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\auth\\callback\\route.ts",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_auth_callback_route_ts",
+      "community": 6
+    },
+    {
+      "label": "category-tabs.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\category-tabs.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_m_slug_category_tabs_tsx",
+      "community": 41
+    },
+    {
+      "label": "scrollTo()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\category-tabs.tsx",
+      "source_location": "L37",
+      "id": "category_tabs_scrollto",
+      "community": 41
+    },
+    {
+      "label": "loading.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\loading.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_m_slug_loading_tsx",
+      "community": 63
+    },
+    {
+      "label": "location-picker.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\location-picker.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_m_slug_location_picker_tsx",
+      "community": 20
+    },
+    {
+      "label": "init()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\location-picker.tsx",
+      "source_location": "L37",
+      "id": "location_picker_init",
+      "community": 20
+    },
+    {
+      "label": "requestLocation()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\location-picker.tsx",
+      "source_location": "L112",
+      "id": "location_picker_requestlocation",
+      "community": 20
+    },
+    {
+      "label": "menu-experience.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\menu-experience.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_m_slug_menu_experience_tsx",
+      "community": 1
+    },
+    {
+      "label": "trackingKey()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\menu-experience.tsx",
+      "source_location": "L25",
+      "id": "menu_experience_trackingkey",
+      "community": 1
+    },
+    {
+      "label": "startTracking()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\menu-experience.tsx",
+      "source_location": "L52",
+      "id": "menu_experience_starttracking",
+      "community": 1
+    },
+    {
+      "label": "updateTracking()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\menu-experience.tsx",
+      "source_location": "L59",
+      "id": "menu_experience_updatetracking",
+      "community": 1
+    },
+    {
+      "label": "clearTracking()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\menu-experience.tsx",
+      "source_location": "L70",
+      "id": "menu_experience_cleartracking",
+      "community": 1
+    },
+    {
+      "label": "addToCart()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\menu-experience.tsx",
+      "source_location": "L82",
+      "id": "menu_experience_addtocart",
+      "community": 1
+    },
+    {
+      "label": "adjustQty()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\menu-experience.tsx",
+      "source_location": "L104",
+      "id": "menu_experience_adjustqty",
+      "community": 1
+    },
+    {
+      "label": "clearCart()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\menu-experience.tsx",
+      "source_location": "L117",
+      "id": "menu_experience_clearcart",
+      "community": 1
+    },
+    {
+      "label": "submit()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\menu-experience.tsx",
+      "source_location": "L408",
+      "id": "menu_experience_submit",
+      "community": 1
+    },
+    {
+      "label": "fireArrived()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\menu-experience.tsx",
+      "source_location": "L815",
+      "id": "menu_experience_firearrived",
+      "community": 1
+    },
+    {
+      "label": "menu-item.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\menu-item.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_m_slug_menu_item_tsx",
+      "community": 64
+    },
+    {
+      "label": "not-found.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\not-found.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_m_slug_not_found_tsx",
+      "community": 42
+    },
+    {
+      "label": "NotFound()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\not-found.tsx",
+      "source_location": "L6",
+      "id": "not_found_notfound",
+      "community": 42
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\page.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_m_slug_page_tsx",
+      "community": 21
+    },
+    {
+      "label": "generateMetadata()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\page.tsx",
+      "source_location": "L9",
+      "id": "page_generatemetadata",
+      "community": 21
+    },
+    {
+      "label": "CustomerMenuPage()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\page.tsx",
+      "source_location": "L27",
+      "id": "page_customermenupage",
+      "community": 21
+    },
+    {
+      "label": "pwa-bootstrap.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\pwa-bootstrap.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_m_slug_pwa_bootstrap_tsx",
+      "community": 43
+    },
+    {
+      "label": "PwaBootstrap()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\pwa-bootstrap.tsx",
+      "source_location": "L18",
+      "id": "pwa_bootstrap_pwabootstrap",
+      "community": 43
+    },
+    {
+      "label": "types.ts",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\types.ts",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_m_slug_types_ts",
+      "community": 65
+    },
+    {
+      "label": "account-client.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\account\\account-client.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_m_slug_account_account_client_tsx",
+      "community": 7
+    },
+    {
+      "label": "toArabicDigits()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\account\\account-client.tsx",
+      "source_location": "L41",
+      "id": "account_client_toarabicdigits",
+      "community": 7
+    },
+    {
+      "label": "AccountClient()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\account\\account-client.tsx",
+      "source_location": "L61",
+      "id": "account_client_accountclient",
+      "community": 7
+    },
+    {
+      "label": "signInWithGoogle()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\account\\account-client.tsx",
+      "source_location": "L280",
+      "id": "account_client_signinwithgoogle",
+      "community": 7
+    },
+    {
+      "label": "attemptLink()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\account\\account-client.tsx",
+      "source_location": "L348",
+      "id": "account_client_attemptlink",
+      "community": 7
+    },
+    {
+      "label": "signOut()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\account\\account-client.tsx",
+      "source_location": "L456",
+      "id": "account_client_signout",
+      "community": 7
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\account\\page.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_m_slug_account_page_tsx",
+      "community": 44
+    },
+    {
+      "label": "CustomerAccountPage()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\account\\page.tsx",
+      "source_location": "L13",
+      "id": "page_customeraccountpage",
+      "community": 44
+    },
+    {
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\manifest.webmanifest\\route.ts",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_m_slug_manifest_webmanifest_route_ts",
+      "community": 6
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\rewards\\page.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_m_slug_rewards_page_tsx",
+      "community": 45
+    },
+    {
+      "label": "CustomerRewardsPage()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\rewards\\page.tsx",
+      "source_location": "L12",
+      "id": "page_customerrewardspage",
+      "community": 45
+    },
+    {
+      "label": "rewards-client.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\rewards\\rewards-client.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_m_slug_rewards_rewards_client_tsx",
+      "community": 22
+    },
+    {
+      "label": "toArabicDigits()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\rewards\\rewards-client.tsx",
+      "source_location": "L33",
+      "id": "rewards_client_toarabicdigits",
+      "community": 22
+    },
+    {
+      "label": "confirmRedeem()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\rewards\\rewards-client.tsx",
+      "source_location": "L91",
+      "id": "rewards_client_confirmredeem",
+      "community": 22
+    },
+    {
+      "label": "layout.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\layout.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_ops_layout_tsx",
+      "community": 66
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\page.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_ops_page_tsx",
+      "community": 67
+    },
+    {
+      "label": "login-form.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\login\\login-form.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_ops_login_login_form_tsx",
+      "community": 17
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\login\\page.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_ops_login_page_tsx",
+      "community": 68
+    },
+    {
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\logout\\route.ts",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_ops_logout_route_ts",
+      "community": 18
+    },
+    {
+      "label": "new-payment-form.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\payments\\new-payment-form.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_ops_payments_new_payment_form_tsx",
+      "community": 23
+    },
+    {
+      "label": "onTenantChange()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\payments\\new-payment-form.tsx",
+      "source_location": "L34",
+      "id": "new_payment_form_ontenantchange",
+      "community": 23
+    },
+    {
+      "label": "save()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\payments\\new-payment-form.tsx",
+      "source_location": "L40",
+      "id": "new_payment_form_save",
+      "community": 23
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\payments\\page.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_ops_payments_page_tsx",
+      "community": 69
+    },
+    {
+      "label": "actions.ts",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\new\\actions.ts",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_ops_tenants_new_actions_ts",
+      "community": 24
+    },
+    {
+      "label": "generatePassword()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\new\\actions.ts",
+      "source_location": "L26",
+      "id": "actions_generatepassword",
+      "community": 24
+    },
+    {
+      "label": "createTenant()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\new\\actions.ts",
+      "source_location": "L33",
+      "id": "actions_createtenant",
+      "community": 24
+    },
+    {
+      "label": "new-tenant-form.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\new\\new-tenant-form.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_ops_tenants_new_new_tenant_form_tsx",
+      "community": 8
+    },
+    {
+      "label": "set()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\new\\new-tenant-form.tsx",
+      "source_location": "L25",
+      "id": "new_tenant_form_set",
+      "community": 8
+    },
+    {
+      "label": "setPlan()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\new\\new-tenant-form.tsx",
+      "source_location": "L29",
+      "id": "new_tenant_form_setplan",
+      "community": 8
+    },
+    {
+      "label": "submit()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\new\\new-tenant-form.tsx",
+      "source_location": "L33",
+      "id": "new_tenant_form_submit",
+      "community": 8
+    },
+    {
+      "label": "copyRow()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\new\\new-tenant-form.tsx",
+      "source_location": "L201",
+      "id": "new_tenant_form_copyrow",
+      "community": 8
+    },
+    {
+      "label": "copyAll()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\new\\new-tenant-form.tsx",
+      "source_location": "L207",
+      "id": "new_tenant_form_copyall",
+      "community": 8
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\new\\page.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_ops_tenants_new_page_tsx",
+      "community": 46
+    },
+    {
+      "label": "NewTenantPage()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\new\\page.tsx",
+      "source_location": "L4",
+      "id": "page_newtenantpage",
+      "community": 46
+    },
+    {
+      "label": "addon-manager.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\[id]\\addon-manager.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_ops_tenants_id_addon_manager_tsx",
+      "community": 10
+    },
+    {
+      "label": "rowStateFrom()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\[id]\\addon-manager.tsx",
+      "source_location": "L43",
+      "id": "addon_manager_rowstatefrom",
+      "community": 10
+    },
+    {
+      "label": "patch()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\[id]\\addon-manager.tsx",
+      "source_location": "L76",
+      "id": "addon_manager_patch",
+      "community": 10
+    },
+    {
+      "label": "setTrialPreset()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\[id]\\addon-manager.tsx",
+      "source_location": "L80",
+      "id": "addon_manager_settrialpreset",
+      "community": 10
+    },
+    {
+      "label": "save()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\[id]\\addon-manager.tsx",
+      "source_location": "L86",
+      "id": "addon_manager_save",
+      "community": 10
+    },
+    {
+      "label": "design-form.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\[id]\\design-form.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_ops_tenants_id_design_form_tsx",
+      "community": 14
+    },
+    {
+      "label": "set()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\[id]\\design-form.tsx",
+      "source_location": "L31",
+      "id": "design_form_set",
+      "community": 14
+    },
+    {
+      "label": "save()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\[id]\\design-form.tsx",
+      "source_location": "L35",
+      "id": "design_form_save",
+      "community": 14
+    },
+    {
+      "label": "uploadBrandAsset()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\[id]\\design-form.tsx",
+      "source_location": "L64",
+      "id": "design_form_uploadbrandasset",
+      "community": 14
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\[id]\\page.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_ops_tenants_id_page_tsx",
+      "community": 70
+    },
+    {
+      "label": "tenant-actions.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\[id]\\tenant-actions.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_app_ops_tenants_id_tenant_actions_tsx",
+      "community": 47
+    },
+    {
+      "label": "TenantActions()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\[id]\\tenant-actions.tsx",
+      "source_location": "L7",
+      "id": "tenant_actions_tenantactions",
+      "community": 47
+    },
+    {
+      "label": "menu-qr.tsx",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\components\\menu-qr.tsx",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_components_menu_qr_tsx",
+      "community": 15
+    },
+    {
+      "label": "downloadPNG()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\components\\menu-qr.tsx",
+      "source_location": "L50",
+      "id": "menu_qr_downloadpng",
+      "community": 15
+    },
+    {
+      "label": "downloadSVG()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\components\\menu-qr.tsx",
+      "source_location": "L66",
+      "id": "menu_qr_downloadsvg",
+      "community": 15
+    },
+    {
+      "label": "downloadCard()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\components\\menu-qr.tsx",
+      "source_location": "L85",
+      "id": "menu_qr_downloadcard",
+      "community": 15
+    },
+    {
+      "label": "addons.ts",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\addons.ts",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_lib_addons_ts",
+      "community": 25
+    },
+    {
+      "label": "getEnabledAddons()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\addons.ts",
+      "source_location": "L20",
+      "id": "addons_getenabledaddons",
+      "community": 25
+    },
+    {
+      "label": "hasAddon()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\addons.ts",
+      "source_location": "L39",
+      "id": "addons_hasaddon",
+      "community": 25
+    },
+    {
+      "label": "allergens.ts",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\allergens.ts",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_lib_allergens_ts",
+      "community": 71
+    },
+    {
+      "label": "auth.ts",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\auth.ts",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_lib_auth_ts",
+      "community": 16
+    },
+    {
+      "label": "getCurrentUser()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\auth.ts",
+      "source_location": "L12",
+      "id": "auth_getcurrentuser",
+      "community": 16
+    },
+    {
+      "label": "requireOwner()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\auth.ts",
+      "source_location": "L34",
+      "id": "auth_requireowner",
+      "community": 16
+    },
+    {
+      "label": "requireOps()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\auth.ts",
+      "source_location": "L45",
+      "id": "auth_requireops",
+      "community": 16
+    },
+    {
+      "label": "excel-tier2.ts",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\excel-tier2.ts",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_lib_excel_tier2_ts",
+      "community": 3
+    },
+    {
+      "label": "newWorkbook()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\excel-tier2.ts",
+      "source_location": "L65",
+      "id": "excel_tier2_newworkbook",
+      "community": 3
+    },
+    {
+      "label": "setupSheet()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\excel-tier2.ts",
+      "source_location": "L74",
+      "id": "excel_tier2_setupsheet",
+      "community": 3
+    },
+    {
+      "label": "placeKpiCard()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\excel-tier2.ts",
+      "source_location": "L93",
+      "id": "excel_tier2_placekpicard",
+      "community": 3
+    },
+    {
+      "label": "placeBrandedHeader()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\excel-tier2.ts",
+      "source_location": "L153",
+      "id": "excel_tier2_placebrandedheader",
+      "community": 3
+    },
+    {
+      "label": "placeTableHeader()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\excel-tier2.ts",
+      "source_location": "L182",
+      "id": "excel_tier2_placetableheader",
+      "community": 3
+    },
+    {
+      "label": "addDataBar()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\excel-tier2.ts",
+      "source_location": "L204",
+      "id": "excel_tier2_adddatabar",
+      "community": 3
+    },
+    {
+      "label": "stripeRows()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\excel-tier2.ts",
+      "source_location": "L224",
+      "id": "excel_tier2_striperows",
+      "community": 3
+    },
+    {
+      "label": "workbookResponse()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\excel-tier2.ts",
+      "source_location": "L243",
+      "id": "excel_tier2_workbookresponse",
+      "community": 3
+    },
+    {
+      "label": "koko-images.ts",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\koko-images.ts",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_lib_koko_images_ts",
+      "community": 72
+    },
+    {
+      "label": "menu-qr-poster.ts",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\menu-qr-poster.ts",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_lib_menu_qr_poster_ts",
+      "community": 11
+    },
+    {
+      "label": "generatePosterDataUrl()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\menu-qr-poster.ts",
+      "source_location": "L19",
+      "id": "menu_qr_poster_generateposterdataurl",
+      "community": 11
+    },
+    {
+      "label": "triggerDownload()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\menu-qr-poster.ts",
+      "source_location": "L131",
+      "id": "menu_qr_poster_triggerdownload",
+      "community": 11
+    },
+    {
+      "label": "loadImage()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\menu-qr-poster.ts",
+      "source_location": "L140",
+      "id": "menu_qr_poster_loadimage",
+      "community": 11
+    },
+    {
+      "label": "roundRect()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\menu-qr-poster.ts",
+      "source_location": "L150",
+      "id": "menu_qr_poster_roundrect",
+      "community": 11
+    },
+    {
+      "label": "phone.ts",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\phone.ts",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_lib_phone_ts",
+      "community": 48
+    },
+    {
+      "label": "normalizePhone()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\phone.ts",
+      "source_location": "L14",
+      "id": "phone_normalizephone",
+      "community": 48
+    },
+    {
+      "label": "supabase-admin.ts",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\supabase-admin.ts",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_lib_supabase_admin_ts",
+      "community": 49
+    },
+    {
+      "label": "adminClient()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\supabase-admin.ts",
+      "source_location": "L8",
+      "id": "supabase_admin_adminclient",
+      "community": 49
+    },
+    {
+      "label": "supabase-browser.ts",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\supabase-browser.ts",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_lib_supabase_browser_ts",
+      "community": 50
+    },
+    {
+      "label": "createClient()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\supabase-browser.ts",
+      "source_location": "L7",
+      "id": "supabase_browser_createclient",
+      "community": 50
+    },
+    {
+      "label": "supabase-server.ts",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\supabase-server.ts",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_lib_supabase_server_ts",
+      "community": 51
+    },
+    {
+      "label": "createClient()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\supabase-server.ts",
+      "source_location": "L6",
+      "id": "supabase_server_createclient",
+      "community": 51
+    },
+    {
+      "label": "types.ts",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\types.ts",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_lib_types_ts",
+      "community": 73
+    },
+    {
+      "label": "sw.js",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\public\\sw.js",
+      "source_location": "L1",
+      "id": "d_menulink_apps_web_public_sw_js",
+      "community": 26
+    },
+    {
+      "label": "networkFirstHtml()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\public\\sw.js",
+      "source_location": "L73",
+      "id": "sw_networkfirsthtml",
+      "community": 26
+    },
+    {
+      "label": "cacheFirstAsset()",
+      "file_type": "code",
+      "source_file": "D:\\menulink\\apps\\web\\public\\sw.js",
+      "source_location": "L92",
+      "id": "sw_cachefirstasset",
+      "community": 26
+    },
+    {
+      "label": "MenuLink Web App",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_menulink_web",
+      "community": 74
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\middleware.ts",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_middleware_ts",
+      "_tgt": "middleware_middleware",
+      "source": "d_menulink_apps_web_middleware_ts",
+      "target": "middleware_middleware",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\layout.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_layout_tsx",
+      "_tgt": "layout_rootlayout",
+      "source": "d_menulink_apps_web_app_layout_tsx",
+      "target": "layout_rootlayout",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\page.tsx",
+      "source_location": "L29",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_page_tsx",
+      "_tgt": "page_home",
+      "source": "d_menulink_apps_web_app_page_tsx",
+      "target": "page_home",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\dashboard-chart.tsx",
+      "source_location": "L31",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_dashboard_chart_tsx",
+      "_tgt": "dashboard_chart_dashboardchart",
+      "source": "d_menulink_apps_web_app_admin_dashboard_chart_tsx",
+      "target": "dashboard_chart_dashboardchart",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\customers\\customers-table.tsx",
+      "source_location": "L40",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_customers_customers_table_tsx",
+      "_tgt": "customers_table_digitsonly",
+      "source": "d_menulink_apps_web_app_admin_customers_customers_table_tsx",
+      "target": "customers_table_digitsonly",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\customers\\page.tsx",
+      "source_location": "L94",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_customers_page_tsx",
+      "_tgt": "page_fmt",
+      "source": "d_menulink_apps_web_app_admin_customers_page_tsx",
+      "target": "page_fmt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\info\\info-form.tsx",
+      "source_location": "L38",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_info_info_form_tsx",
+      "_tgt": "info_form_onchange",
+      "source": "d_menulink_apps_web_app_admin_info_info_form_tsx",
+      "target": "info_form_onchange",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\info\\info-form.tsx",
+      "source_location": "L47",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_info_info_form_tsx",
+      "_tgt": "info_form_save",
+      "source": "d_menulink_apps_web_app_admin_info_info_form_tsx",
+      "target": "info_form_save",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\info\\info-form.tsx",
+      "source_location": "L62",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_info_info_form_tsx",
+      "_tgt": "info_form_uploadbrandasset",
+      "source": "d_menulink_apps_web_app_admin_info_info_form_tsx",
+      "target": "info_form_uploadbrandasset",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\info\\info-form.tsx",
+      "source_location": "L101",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_info_info_form_tsx",
+      "_tgt": "info_form_clearbrandasset",
+      "source": "d_menulink_apps_web_app_admin_info_info_form_tsx",
+      "target": "info_form_clearbrandasset",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\info\\page.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_info_page_tsx",
+      "_tgt": "page_infopage",
+      "source": "d_menulink_apps_web_app_admin_info_page_tsx",
+      "target": "page_infopage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\login\\login-form.tsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_login_login_form_tsx",
+      "_tgt": "login_form_onsubmit",
+      "source": "d_menulink_apps_web_app_admin_login_login_form_tsx",
+      "target": "login_form_onsubmit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\login\\login-form.tsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_ops_login_login_form_tsx",
+      "_tgt": "login_form_onsubmit",
+      "source": "login_form_onsubmit",
+      "target": "d_menulink_apps_web_app_ops_login_login_form_tsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\logout\\route.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_logout_route_ts",
+      "_tgt": "route_post",
+      "source": "d_menulink_apps_web_app_admin_logout_route_ts",
+      "target": "route_post",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\logout\\route.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_ops_logout_route_ts",
+      "_tgt": "route_post",
+      "source": "route_post",
+      "target": "d_menulink_apps_web_app_ops_logout_route_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\settings-form.tsx",
+      "source_location": "L35",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_loyalty_settings_form_tsx",
+      "_tgt": "settings_form_normalizetiers",
+      "source": "d_menulink_apps_web_app_admin_loyalty_settings_form_tsx",
+      "target": "settings_form_normalizetiers",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\settings-form.tsx",
+      "source_location": "L69",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_loyalty_settings_form_tsx",
+      "_tgt": "settings_form_patchtier",
+      "source": "d_menulink_apps_web_app_admin_loyalty_settings_form_tsx",
+      "target": "settings_form_patchtier",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\settings-form.tsx",
+      "source_location": "L75",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_loyalty_settings_form_tsx",
+      "_tgt": "settings_form_save",
+      "source": "d_menulink_apps_web_app_admin_loyalty_settings_form_tsx",
+      "target": "settings_form_save",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\customers\\loyalty-customers-table.tsx",
+      "source_location": "L53",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_loyalty_customers_loyalty_customers_table_tsx",
+      "_tgt": "loyalty_customers_table_patchrow",
+      "source": "d_menulink_apps_web_app_admin_loyalty_customers_loyalty_customers_table_tsx",
+      "target": "loyalty_customers_table_patchrow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\redemptions\\page.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_loyalty_redemptions_page_tsx",
+      "_tgt": "page_adminloyaltyredemptionspage",
+      "source": "d_menulink_apps_web_app_admin_loyalty_redemptions_page_tsx",
+      "target": "page_adminloyaltyredemptionspage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\redemptions\\redemptions-list.tsx",
+      "source_location": "L35",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_loyalty_redemptions_redemptions_list_tsx",
+      "_tgt": "redemptions_list_first",
+      "source": "d_menulink_apps_web_app_admin_loyalty_redemptions_redemptions_list_tsx",
+      "target": "redemptions_list_first",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\redemptions\\redemptions-list.tsx",
+      "source_location": "L87",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_loyalty_redemptions_redemptions_list_tsx",
+      "_tgt": "redemptions_list_fulfill",
+      "source": "d_menulink_apps_web_app_admin_loyalty_redemptions_redemptions_list_tsx",
+      "target": "redemptions_list_fulfill",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\redemptions\\redemptions-list.tsx",
+      "source_location": "L101",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_loyalty_redemptions_redemptions_list_tsx",
+      "_tgt": "redemptions_list_cancel",
+      "source": "d_menulink_apps_web_app_admin_loyalty_redemptions_redemptions_list_tsx",
+      "target": "redemptions_list_cancel",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\rewards\\page.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_loyalty_rewards_page_tsx",
+      "_tgt": "page_adminloyaltyrewardspage",
+      "source": "d_menulink_apps_web_app_admin_loyalty_rewards_page_tsx",
+      "target": "page_adminloyaltyrewardspage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\rewards\\rewards-editor.tsx",
+      "source_location": "L61",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_loyalty_rewards_rewards_editor_tsx",
+      "_tgt": "rewards_editor_add",
+      "source": "d_menulink_apps_web_app_admin_loyalty_rewards_rewards_editor_tsx",
+      "target": "rewards_editor_add",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\rewards\\rewards-editor.tsx",
+      "source_location": "L88",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_loyalty_rewards_rewards_editor_tsx",
+      "_tgt": "rewards_editor_uploadimage",
+      "source": "d_menulink_apps_web_app_admin_loyalty_rewards_rewards_editor_tsx",
+      "target": "rewards_editor_uploadimage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\rewards\\rewards-editor.tsx",
+      "source_location": "L127",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_loyalty_rewards_rewards_editor_tsx",
+      "_tgt": "rewards_editor_removeimage",
+      "source": "d_menulink_apps_web_app_admin_loyalty_rewards_rewards_editor_tsx",
+      "target": "rewards_editor_removeimage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\rewards\\rewards-editor.tsx",
+      "source_location": "L146",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_loyalty_rewards_rewards_editor_tsx",
+      "_tgt": "rewards_editor_deletereward",
+      "source": "d_menulink_apps_web_app_admin_loyalty_rewards_rewards_editor_tsx",
+      "target": "rewards_editor_deletereward",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\rewards\\rewards-editor.tsx",
+      "source_location": "L154",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_loyalty_rewards_rewards_editor_tsx",
+      "_tgt": "rewards_editor_toggleactive",
+      "source": "d_menulink_apps_web_app_admin_loyalty_rewards_rewards_editor_tsx",
+      "target": "rewards_editor_toggleactive",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\rewards\\rewards-editor.tsx",
+      "source_location": "L165",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_loyalty_rewards_rewards_editor_tsx",
+      "_tgt": "rewards_editor_swap",
+      "source": "d_menulink_apps_web_app_admin_loyalty_rewards_rewards_editor_tsx",
+      "target": "rewards_editor_swap",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\rewards\\rewards-editor.tsx",
+      "source_location": "L181",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_loyalty_rewards_rewards_editor_tsx",
+      "_tgt": "rewards_editor_startedit",
+      "source": "d_menulink_apps_web_app_admin_loyalty_rewards_rewards_editor_tsx",
+      "target": "rewards_editor_startedit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\loyalty\\rewards\\rewards-editor.tsx",
+      "source_location": "L193",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_loyalty_rewards_rewards_editor_tsx",
+      "_tgt": "rewards_editor_saveedit",
+      "source": "d_menulink_apps_web_app_admin_loyalty_rewards_rewards_editor_tsx",
+      "target": "rewards_editor_saveedit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\add-category-modal.tsx",
+      "source_location": "L26",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_menu_add_category_modal_tsx",
+      "_tgt": "add_category_modal_submit",
+      "source": "d_menulink_apps_web_app_admin_menu_add_category_modal_tsx",
+      "target": "add_category_modal_submit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\add-item-modal.tsx",
+      "source_location": "L35",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_menu_add_item_modal_tsx",
+      "_tgt": "add_item_modal_pickimage",
+      "source": "d_menulink_apps_web_app_admin_menu_add_item_modal_tsx",
+      "target": "add_item_modal_pickimage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\add-item-modal.tsx",
+      "source_location": "L54",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_menu_add_item_modal_tsx",
+      "_tgt": "add_item_modal_submit",
+      "source": "d_menulink_apps_web_app_admin_menu_add_item_modal_tsx",
+      "target": "add_item_modal_submit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L28",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "_tgt": "menu_editor_notify",
+      "source": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "target": "menu_editor_notify",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L33",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "_tgt": "menu_editor_refresh",
+      "source": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "target": "menu_editor_refresh",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L38",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "_tgt": "menu_editor_renamecategory",
+      "source": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "target": "menu_editor_renamecategory",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L46",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "_tgt": "menu_editor_togglecategoryactive",
+      "source": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "target": "menu_editor_togglecategoryactive",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L52",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "_tgt": "menu_editor_deletecategory",
+      "source": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "target": "menu_editor_deletecategory",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L60",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "_tgt": "menu_editor_renameitem",
+      "source": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "target": "menu_editor_renameitem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L68",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "_tgt": "menu_editor_toggleitemactive",
+      "source": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "target": "menu_editor_toggleitemactive",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L74",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "_tgt": "menu_editor_deleteitem",
+      "source": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "target": "menu_editor_deleteitem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L82",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "_tgt": "menu_editor_uploadimage",
+      "source": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "target": "menu_editor_uploadimage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L115",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "_tgt": "menu_editor_removeimage",
+      "source": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "target": "menu_editor_removeimage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L129",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "_tgt": "menu_editor_updatenutrition",
+      "source": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "target": "menu_editor_updatenutrition",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L135",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "_tgt": "menu_editor_toggleallergen",
+      "source": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "target": "menu_editor_toggleallergen",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L143",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "_tgt": "menu_editor_updateprice",
+      "source": "d_menulink_apps_web_app_admin_menu_menu_editor_tsx",
+      "target": "menu_editor_updateprice",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "_src": "menu_editor_renamecategory",
+      "_tgt": "menu_editor_notify",
+      "source": "menu_editor_notify",
+      "target": "menu_editor_renamecategory",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L48",
+      "weight": 1.0,
+      "_src": "menu_editor_togglecategoryactive",
+      "_tgt": "menu_editor_notify",
+      "source": "menu_editor_notify",
+      "target": "menu_editor_togglecategoryactive",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L55",
+      "weight": 1.0,
+      "_src": "menu_editor_deletecategory",
+      "_tgt": "menu_editor_notify",
+      "source": "menu_editor_notify",
+      "target": "menu_editor_deletecategory",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L64",
+      "weight": 1.0,
+      "_src": "menu_editor_renameitem",
+      "_tgt": "menu_editor_notify",
+      "source": "menu_editor_notify",
+      "target": "menu_editor_renameitem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L70",
+      "weight": 1.0,
+      "_src": "menu_editor_toggleitemactive",
+      "_tgt": "menu_editor_notify",
+      "source": "menu_editor_notify",
+      "target": "menu_editor_toggleitemactive",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L77",
+      "weight": 1.0,
+      "_src": "menu_editor_deleteitem",
+      "_tgt": "menu_editor_notify",
+      "source": "menu_editor_notify",
+      "target": "menu_editor_deleteitem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L84",
+      "weight": 1.0,
+      "_src": "menu_editor_uploadimage",
+      "_tgt": "menu_editor_notify",
+      "source": "menu_editor_notify",
+      "target": "menu_editor_uploadimage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L121",
+      "weight": 1.0,
+      "_src": "menu_editor_removeimage",
+      "_tgt": "menu_editor_notify",
+      "source": "menu_editor_notify",
+      "target": "menu_editor_removeimage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L131",
+      "weight": 1.0,
+      "_src": "menu_editor_updatenutrition",
+      "_tgt": "menu_editor_notify",
+      "source": "menu_editor_notify",
+      "target": "menu_editor_updatenutrition",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L146",
+      "weight": 1.0,
+      "_src": "menu_editor_updateprice",
+      "_tgt": "menu_editor_notify",
+      "source": "menu_editor_notify",
+      "target": "menu_editor_updateprice",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L43",
+      "weight": 1.0,
+      "_src": "menu_editor_renamecategory",
+      "_tgt": "menu_editor_refresh",
+      "source": "menu_editor_refresh",
+      "target": "menu_editor_renamecategory",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L49",
+      "weight": 1.0,
+      "_src": "menu_editor_togglecategoryactive",
+      "_tgt": "menu_editor_refresh",
+      "source": "menu_editor_refresh",
+      "target": "menu_editor_togglecategoryactive",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L56",
+      "weight": 1.0,
+      "_src": "menu_editor_deletecategory",
+      "_tgt": "menu_editor_refresh",
+      "source": "menu_editor_refresh",
+      "target": "menu_editor_deletecategory",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L65",
+      "weight": 1.0,
+      "_src": "menu_editor_renameitem",
+      "_tgt": "menu_editor_refresh",
+      "source": "menu_editor_refresh",
+      "target": "menu_editor_renameitem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L71",
+      "weight": 1.0,
+      "_src": "menu_editor_toggleitemactive",
+      "_tgt": "menu_editor_refresh",
+      "source": "menu_editor_refresh",
+      "target": "menu_editor_toggleitemactive",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L78",
+      "weight": 1.0,
+      "_src": "menu_editor_deleteitem",
+      "_tgt": "menu_editor_refresh",
+      "source": "menu_editor_refresh",
+      "target": "menu_editor_deleteitem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L112",
+      "weight": 1.0,
+      "_src": "menu_editor_uploadimage",
+      "_tgt": "menu_editor_refresh",
+      "source": "menu_editor_refresh",
+      "target": "menu_editor_uploadimage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L124",
+      "weight": 1.0,
+      "_src": "menu_editor_removeimage",
+      "_tgt": "menu_editor_refresh",
+      "source": "menu_editor_refresh",
+      "target": "menu_editor_removeimage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L139",
+      "weight": 1.0,
+      "_src": "menu_editor_toggleallergen",
+      "_tgt": "menu_editor_refresh",
+      "source": "menu_editor_refresh",
+      "target": "menu_editor_toggleallergen",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L147",
+      "weight": 1.0,
+      "_src": "menu_editor_updateprice",
+      "_tgt": "menu_editor_refresh",
+      "source": "menu_editor_refresh",
+      "target": "menu_editor_updateprice",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\menu-editor.tsx",
+      "source_location": "L138",
+      "weight": 1.0,
+      "_src": "menu_editor_toggleallergen",
+      "_tgt": "menu_editor_updatenutrition",
+      "source": "menu_editor_updatenutrition",
+      "target": "menu_editor_toggleallergen",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\menu\\page.tsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_menu_page_tsx",
+      "_tgt": "page_menupage",
+      "source": "d_menulink_apps_web_app_admin_menu_page_tsx",
+      "target": "page_menupage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\orders\\orders-live.tsx",
+      "source_location": "L41",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_orders_orders_live_tsx",
+      "_tgt": "orders_live_getcustomer",
+      "source": "d_menulink_apps_web_app_admin_orders_orders_live_tsx",
+      "target": "orders_live_getcustomer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\orders\\orders-live.tsx",
+      "source_location": "L47",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_orders_orders_live_tsx",
+      "_tgt": "orders_live_todayriyadhiso",
+      "source": "d_menulink_apps_web_app_admin_orders_orders_live_tsx",
+      "target": "orders_live_todayriyadhiso",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\orders\\orders-live.tsx",
+      "source_location": "L50",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_orders_orders_live_tsx",
+      "_tgt": "orders_live_istoday",
+      "source": "d_menulink_apps_web_app_admin_orders_orders_live_tsx",
+      "target": "orders_live_istoday",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\orders\\orders-live.tsx",
+      "source_location": "L57",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_orders_orders_live_tsx",
+      "_tgt": "orders_live_usealertsound",
+      "source": "d_menulink_apps_web_app_admin_orders_orders_live_tsx",
+      "target": "orders_live_usealertsound",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\orders\\orders-live.tsx",
+      "source_location": "L201",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_orders_orders_live_tsx",
+      "_tgt": "orders_live_setstatus",
+      "source": "d_menulink_apps_web_app_admin_orders_orders_live_tsx",
+      "target": "orders_live_setstatus",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\orders\\orders-live.tsx",
+      "source_location": "L207",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_orders_orders_live_tsx",
+      "_tgt": "orders_live_acknowledge",
+      "source": "d_menulink_apps_web_app_admin_orders_orders_live_tsx",
+      "target": "orders_live_acknowledge",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\orders\\orders-live.tsx",
+      "source_location": "L212",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_orders_orders_live_tsx",
+      "_tgt": "orders_live_enablesound",
+      "source": "d_menulink_apps_web_app_admin_orders_orders_live_tsx",
+      "target": "orders_live_enablesound",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\orders\\orders-live.tsx",
+      "source_location": "L52",
+      "weight": 1.0,
+      "_src": "orders_live_istoday",
+      "_tgt": "orders_live_todayriyadhiso",
+      "source": "orders_live_todayriyadhiso",
+      "target": "orders_live_istoday",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\qr\\page.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_qr_page_tsx",
+      "_tgt": "page_adminqrpage",
+      "source": "d_menulink_apps_web_app_admin_qr_page_tsx",
+      "target": "page_adminqrpage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\tables\\page.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_tables_page_tsx",
+      "_tgt": "page_admintablespage",
+      "source": "d_menulink_apps_web_app_admin_tables_page_tsx",
+      "target": "page_admintablespage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\tables\\tables-editor.tsx",
+      "source_location": "L41",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_tables_tables_editor_tsx",
+      "_tgt": "tables_editor_addtable",
+      "source": "d_menulink_apps_web_app_admin_tables_tables_editor_tsx",
+      "target": "tables_editor_addtable",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\tables\\tables-editor.tsx",
+      "source_location": "L67",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_tables_tables_editor_tsx",
+      "_tgt": "tables_editor_deletetable",
+      "source": "d_menulink_apps_web_app_admin_tables_tables_editor_tsx",
+      "target": "tables_editor_deletetable",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\tables\\tables-editor.tsx",
+      "source_location": "L78",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_tables_tables_editor_tsx",
+      "_tgt": "tables_editor_swap",
+      "source": "d_menulink_apps_web_app_admin_tables_tables_editor_tsx",
+      "target": "tables_editor_swap",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\tables\\tables-editor.tsx",
+      "source_location": "L96",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_tables_tables_editor_tsx",
+      "_tgt": "tables_editor_startedit",
+      "source": "d_menulink_apps_web_app_admin_tables_tables_editor_tsx",
+      "target": "tables_editor_startedit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\tables\\tables-editor.tsx",
+      "source_location": "L102",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_tables_tables_editor_tsx",
+      "_tgt": "tables_editor_canceledit",
+      "source": "d_menulink_apps_web_app_admin_tables_tables_editor_tsx",
+      "target": "tables_editor_canceledit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\tables\\tables-editor.tsx",
+      "source_location": "L108",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_tables_tables_editor_tsx",
+      "_tgt": "tables_editor_saveedit",
+      "source": "d_menulink_apps_web_app_admin_tables_tables_editor_tsx",
+      "target": "tables_editor_saveedit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\tables\\tables-editor.tsx",
+      "source_location": "L139",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_admin_tables_tables_editor_tsx",
+      "_tgt": "tables_editor_downloadposter",
+      "source": "d_menulink_apps_web_app_admin_tables_tables_editor_tsx",
+      "target": "tables_editor_downloadposter",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\tables\\tables-editor.tsx",
+      "source_location": "L116",
+      "weight": 1.0,
+      "_src": "tables_editor_saveedit",
+      "_tgt": "tables_editor_canceledit",
+      "source": "tables_editor_canceledit",
+      "target": "tables_editor_saveedit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\api\\admin\\export\\customers\\route.ts",
+      "source_location": "L29",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_api_admin_export_customers_route_ts",
+      "_tgt": "route_get",
+      "source": "d_menulink_apps_web_app_api_admin_export_customers_route_ts",
+      "target": "route_get",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\api\\admin\\export\\orders\\route.ts",
+      "source_location": "L41",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_api_admin_export_orders_route_ts",
+      "_tgt": "route_get",
+      "source": "route_get",
+      "target": "d_menulink_apps_web_app_api_admin_export_orders_route_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\api\\admin\\export\\orders\\route.ts",
+      "source_location": "L49",
+      "weight": 1.0,
+      "_src": "route_get",
+      "_tgt": "route_todayriyadhiso",
+      "source": "route_get",
+      "target": "route_todayriyadhiso",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\auth\\callback\\route.ts",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_auth_callback_route_ts",
+      "_tgt": "route_get",
+      "source": "route_get",
+      "target": "d_menulink_apps_web_app_auth_callback_route_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\manifest.webmanifest\\route.ts",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_manifest_webmanifest_route_ts",
+      "_tgt": "route_get",
+      "source": "route_get",
+      "target": "d_menulink_apps_web_app_m_slug_manifest_webmanifest_route_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\api\\admin\\export\\orders\\route.ts",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_api_admin_export_orders_route_ts",
+      "_tgt": "route_todayriyadhiso",
+      "source": "d_menulink_apps_web_app_api_admin_export_orders_route_ts",
+      "target": "route_todayriyadhiso",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\category-tabs.tsx",
+      "source_location": "L37",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_category_tabs_tsx",
+      "_tgt": "category_tabs_scrollto",
+      "source": "d_menulink_apps_web_app_m_slug_category_tabs_tsx",
+      "target": "category_tabs_scrollto",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\location-picker.tsx",
+      "source_location": "L37",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_location_picker_tsx",
+      "_tgt": "location_picker_init",
+      "source": "d_menulink_apps_web_app_m_slug_location_picker_tsx",
+      "target": "location_picker_init",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\location-picker.tsx",
+      "source_location": "L112",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_location_picker_tsx",
+      "_tgt": "location_picker_requestlocation",
+      "source": "d_menulink_apps_web_app_m_slug_location_picker_tsx",
+      "target": "location_picker_requestlocation",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\menu-experience.tsx",
+      "source_location": "L25",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_menu_experience_tsx",
+      "_tgt": "menu_experience_trackingkey",
+      "source": "d_menulink_apps_web_app_m_slug_menu_experience_tsx",
+      "target": "menu_experience_trackingkey",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\menu-experience.tsx",
+      "source_location": "L52",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_menu_experience_tsx",
+      "_tgt": "menu_experience_starttracking",
+      "source": "d_menulink_apps_web_app_m_slug_menu_experience_tsx",
+      "target": "menu_experience_starttracking",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\menu-experience.tsx",
+      "source_location": "L59",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_menu_experience_tsx",
+      "_tgt": "menu_experience_updatetracking",
+      "source": "d_menulink_apps_web_app_m_slug_menu_experience_tsx",
+      "target": "menu_experience_updatetracking",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\menu-experience.tsx",
+      "source_location": "L70",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_menu_experience_tsx",
+      "_tgt": "menu_experience_cleartracking",
+      "source": "d_menulink_apps_web_app_m_slug_menu_experience_tsx",
+      "target": "menu_experience_cleartracking",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\menu-experience.tsx",
+      "source_location": "L82",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_menu_experience_tsx",
+      "_tgt": "menu_experience_addtocart",
+      "source": "d_menulink_apps_web_app_m_slug_menu_experience_tsx",
+      "target": "menu_experience_addtocart",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\menu-experience.tsx",
+      "source_location": "L104",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_menu_experience_tsx",
+      "_tgt": "menu_experience_adjustqty",
+      "source": "d_menulink_apps_web_app_m_slug_menu_experience_tsx",
+      "target": "menu_experience_adjustqty",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\menu-experience.tsx",
+      "source_location": "L117",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_menu_experience_tsx",
+      "_tgt": "menu_experience_clearcart",
+      "source": "d_menulink_apps_web_app_m_slug_menu_experience_tsx",
+      "target": "menu_experience_clearcart",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\menu-experience.tsx",
+      "source_location": "L408",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_menu_experience_tsx",
+      "_tgt": "menu_experience_submit",
+      "source": "d_menulink_apps_web_app_m_slug_menu_experience_tsx",
+      "target": "menu_experience_submit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\menu-experience.tsx",
+      "source_location": "L815",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_menu_experience_tsx",
+      "_tgt": "menu_experience_firearrived",
+      "source": "d_menulink_apps_web_app_m_slug_menu_experience_tsx",
+      "target": "menu_experience_firearrived",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\menu-experience.tsx",
+      "source_location": "L55",
+      "weight": 1.0,
+      "_src": "menu_experience_starttracking",
+      "_tgt": "menu_experience_trackingkey",
+      "source": "menu_experience_trackingkey",
+      "target": "menu_experience_starttracking",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\menu-experience.tsx",
+      "source_location": "L74",
+      "weight": 1.0,
+      "_src": "menu_experience_cleartracking",
+      "_tgt": "menu_experience_trackingkey",
+      "source": "menu_experience_trackingkey",
+      "target": "menu_experience_cleartracking",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\not-found.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_not_found_tsx",
+      "_tgt": "not_found_notfound",
+      "source": "d_menulink_apps_web_app_m_slug_not_found_tsx",
+      "target": "not_found_notfound",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\page.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_page_tsx",
+      "_tgt": "page_generatemetadata",
+      "source": "d_menulink_apps_web_app_m_slug_page_tsx",
+      "target": "page_generatemetadata",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\page.tsx",
+      "source_location": "L27",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_page_tsx",
+      "_tgt": "page_customermenupage",
+      "source": "d_menulink_apps_web_app_m_slug_page_tsx",
+      "target": "page_customermenupage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\pwa-bootstrap.tsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_pwa_bootstrap_tsx",
+      "_tgt": "pwa_bootstrap_pwabootstrap",
+      "source": "d_menulink_apps_web_app_m_slug_pwa_bootstrap_tsx",
+      "target": "pwa_bootstrap_pwabootstrap",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\account\\account-client.tsx",
+      "source_location": "L41",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_account_account_client_tsx",
+      "_tgt": "account_client_toarabicdigits",
+      "source": "d_menulink_apps_web_app_m_slug_account_account_client_tsx",
+      "target": "account_client_toarabicdigits",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\account\\account-client.tsx",
+      "source_location": "L61",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_account_account_client_tsx",
+      "_tgt": "account_client_accountclient",
+      "source": "d_menulink_apps_web_app_m_slug_account_account_client_tsx",
+      "target": "account_client_accountclient",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\account\\account-client.tsx",
+      "source_location": "L280",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_account_account_client_tsx",
+      "_tgt": "account_client_signinwithgoogle",
+      "source": "d_menulink_apps_web_app_m_slug_account_account_client_tsx",
+      "target": "account_client_signinwithgoogle",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\account\\account-client.tsx",
+      "source_location": "L348",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_account_account_client_tsx",
+      "_tgt": "account_client_attemptlink",
+      "source": "d_menulink_apps_web_app_m_slug_account_account_client_tsx",
+      "target": "account_client_attemptlink",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\account\\account-client.tsx",
+      "source_location": "L456",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_account_account_client_tsx",
+      "_tgt": "account_client_signout",
+      "source": "d_menulink_apps_web_app_m_slug_account_account_client_tsx",
+      "target": "account_client_signout",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\account\\page.tsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_account_page_tsx",
+      "_tgt": "page_customeraccountpage",
+      "source": "d_menulink_apps_web_app_m_slug_account_page_tsx",
+      "target": "page_customeraccountpage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\rewards\\page.tsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_rewards_page_tsx",
+      "_tgt": "page_customerrewardspage",
+      "source": "d_menulink_apps_web_app_m_slug_rewards_page_tsx",
+      "target": "page_customerrewardspage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\rewards\\rewards-client.tsx",
+      "source_location": "L33",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_rewards_rewards_client_tsx",
+      "_tgt": "rewards_client_toarabicdigits",
+      "source": "d_menulink_apps_web_app_m_slug_rewards_rewards_client_tsx",
+      "target": "rewards_client_toarabicdigits",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\rewards\\rewards-client.tsx",
+      "source_location": "L91",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_m_slug_rewards_rewards_client_tsx",
+      "_tgt": "rewards_client_confirmredeem",
+      "source": "d_menulink_apps_web_app_m_slug_rewards_rewards_client_tsx",
+      "target": "rewards_client_confirmredeem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\rewards\\rewards-client.tsx",
+      "source_location": "L104",
+      "weight": 1.0,
+      "_src": "rewards_client_confirmredeem",
+      "_tgt": "rewards_client_toarabicdigits",
+      "source": "rewards_client_toarabicdigits",
+      "target": "rewards_client_confirmredeem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\payments\\new-payment-form.tsx",
+      "source_location": "L34",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_ops_payments_new_payment_form_tsx",
+      "_tgt": "new_payment_form_ontenantchange",
+      "source": "d_menulink_apps_web_app_ops_payments_new_payment_form_tsx",
+      "target": "new_payment_form_ontenantchange",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\payments\\new-payment-form.tsx",
+      "source_location": "L40",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_ops_payments_new_payment_form_tsx",
+      "_tgt": "new_payment_form_save",
+      "source": "d_menulink_apps_web_app_ops_payments_new_payment_form_tsx",
+      "target": "new_payment_form_save",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\new\\actions.ts",
+      "source_location": "L26",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_ops_tenants_new_actions_ts",
+      "_tgt": "actions_generatepassword",
+      "source": "d_menulink_apps_web_app_ops_tenants_new_actions_ts",
+      "target": "actions_generatepassword",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\new\\actions.ts",
+      "source_location": "L33",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_ops_tenants_new_actions_ts",
+      "_tgt": "actions_createtenant",
+      "source": "d_menulink_apps_web_app_ops_tenants_new_actions_ts",
+      "target": "actions_createtenant",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\new\\actions.ts",
+      "source_location": "L52",
+      "weight": 1.0,
+      "_src": "actions_createtenant",
+      "_tgt": "actions_generatepassword",
+      "source": "actions_generatepassword",
+      "target": "actions_createtenant",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\new\\new-tenant-form.tsx",
+      "source_location": "L25",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_ops_tenants_new_new_tenant_form_tsx",
+      "_tgt": "new_tenant_form_set",
+      "source": "d_menulink_apps_web_app_ops_tenants_new_new_tenant_form_tsx",
+      "target": "new_tenant_form_set",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\new\\new-tenant-form.tsx",
+      "source_location": "L29",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_ops_tenants_new_new_tenant_form_tsx",
+      "_tgt": "new_tenant_form_setplan",
+      "source": "d_menulink_apps_web_app_ops_tenants_new_new_tenant_form_tsx",
+      "target": "new_tenant_form_setplan",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\new\\new-tenant-form.tsx",
+      "source_location": "L33",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_ops_tenants_new_new_tenant_form_tsx",
+      "_tgt": "new_tenant_form_submit",
+      "source": "d_menulink_apps_web_app_ops_tenants_new_new_tenant_form_tsx",
+      "target": "new_tenant_form_submit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\new\\new-tenant-form.tsx",
+      "source_location": "L201",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_ops_tenants_new_new_tenant_form_tsx",
+      "_tgt": "new_tenant_form_copyrow",
+      "source": "d_menulink_apps_web_app_ops_tenants_new_new_tenant_form_tsx",
+      "target": "new_tenant_form_copyrow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\new\\new-tenant-form.tsx",
+      "source_location": "L207",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_ops_tenants_new_new_tenant_form_tsx",
+      "_tgt": "new_tenant_form_copyall",
+      "source": "d_menulink_apps_web_app_ops_tenants_new_new_tenant_form_tsx",
+      "target": "new_tenant_form_copyall",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\new\\page.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_ops_tenants_new_page_tsx",
+      "_tgt": "page_newtenantpage",
+      "source": "d_menulink_apps_web_app_ops_tenants_new_page_tsx",
+      "target": "page_newtenantpage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\[id]\\addon-manager.tsx",
+      "source_location": "L43",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_ops_tenants_id_addon_manager_tsx",
+      "_tgt": "addon_manager_rowstatefrom",
+      "source": "d_menulink_apps_web_app_ops_tenants_id_addon_manager_tsx",
+      "target": "addon_manager_rowstatefrom",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\[id]\\addon-manager.tsx",
+      "source_location": "L76",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_ops_tenants_id_addon_manager_tsx",
+      "_tgt": "addon_manager_patch",
+      "source": "d_menulink_apps_web_app_ops_tenants_id_addon_manager_tsx",
+      "target": "addon_manager_patch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\[id]\\addon-manager.tsx",
+      "source_location": "L80",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_ops_tenants_id_addon_manager_tsx",
+      "_tgt": "addon_manager_settrialpreset",
+      "source": "d_menulink_apps_web_app_ops_tenants_id_addon_manager_tsx",
+      "target": "addon_manager_settrialpreset",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\[id]\\addon-manager.tsx",
+      "source_location": "L86",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_ops_tenants_id_addon_manager_tsx",
+      "_tgt": "addon_manager_save",
+      "source": "d_menulink_apps_web_app_ops_tenants_id_addon_manager_tsx",
+      "target": "addon_manager_save",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\[id]\\addon-manager.tsx",
+      "source_location": "L83",
+      "weight": 1.0,
+      "_src": "addon_manager_settrialpreset",
+      "_tgt": "addon_manager_patch",
+      "source": "addon_manager_patch",
+      "target": "addon_manager_settrialpreset",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\[id]\\design-form.tsx",
+      "source_location": "L31",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_ops_tenants_id_design_form_tsx",
+      "_tgt": "design_form_set",
+      "source": "d_menulink_apps_web_app_ops_tenants_id_design_form_tsx",
+      "target": "design_form_set",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\[id]\\design-form.tsx",
+      "source_location": "L35",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_ops_tenants_id_design_form_tsx",
+      "_tgt": "design_form_save",
+      "source": "d_menulink_apps_web_app_ops_tenants_id_design_form_tsx",
+      "target": "design_form_save",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\[id]\\design-form.tsx",
+      "source_location": "L64",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_ops_tenants_id_design_form_tsx",
+      "_tgt": "design_form_uploadbrandasset",
+      "source": "d_menulink_apps_web_app_ops_tenants_id_design_form_tsx",
+      "target": "design_form_uploadbrandasset",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\tenants\\[id]\\tenant-actions.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_app_ops_tenants_id_tenant_actions_tsx",
+      "_tgt": "tenant_actions_tenantactions",
+      "source": "d_menulink_apps_web_app_ops_tenants_id_tenant_actions_tsx",
+      "target": "tenant_actions_tenantactions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\components\\menu-qr.tsx",
+      "source_location": "L50",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_components_menu_qr_tsx",
+      "_tgt": "menu_qr_downloadpng",
+      "source": "d_menulink_apps_web_components_menu_qr_tsx",
+      "target": "menu_qr_downloadpng",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\components\\menu-qr.tsx",
+      "source_location": "L66",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_components_menu_qr_tsx",
+      "_tgt": "menu_qr_downloadsvg",
+      "source": "d_menulink_apps_web_components_menu_qr_tsx",
+      "target": "menu_qr_downloadsvg",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\components\\menu-qr.tsx",
+      "source_location": "L85",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_components_menu_qr_tsx",
+      "_tgt": "menu_qr_downloadcard",
+      "source": "d_menulink_apps_web_components_menu_qr_tsx",
+      "target": "menu_qr_downloadcard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\addons.ts",
+      "source_location": "L20",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_lib_addons_ts",
+      "_tgt": "addons_getenabledaddons",
+      "source": "d_menulink_apps_web_lib_addons_ts",
+      "target": "addons_getenabledaddons",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\addons.ts",
+      "source_location": "L39",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_lib_addons_ts",
+      "_tgt": "addons_hasaddon",
+      "source": "d_menulink_apps_web_lib_addons_ts",
+      "target": "addons_hasaddon",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\addons.ts",
+      "source_location": "L40",
+      "weight": 1.0,
+      "_src": "addons_hasaddon",
+      "_tgt": "addons_getenabledaddons",
+      "source": "addons_getenabledaddons",
+      "target": "addons_hasaddon",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\auth.ts",
+      "source_location": "L12",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_lib_auth_ts",
+      "_tgt": "auth_getcurrentuser",
+      "source": "d_menulink_apps_web_lib_auth_ts",
+      "target": "auth_getcurrentuser",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\auth.ts",
+      "source_location": "L34",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_lib_auth_ts",
+      "_tgt": "auth_requireowner",
+      "source": "d_menulink_apps_web_lib_auth_ts",
+      "target": "auth_requireowner",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\auth.ts",
+      "source_location": "L45",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_lib_auth_ts",
+      "_tgt": "auth_requireops",
+      "source": "d_menulink_apps_web_lib_auth_ts",
+      "target": "auth_requireops",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\auth.ts",
+      "source_location": "L35",
+      "weight": 1.0,
+      "_src": "auth_requireowner",
+      "_tgt": "auth_getcurrentuser",
+      "source": "auth_getcurrentuser",
+      "target": "auth_requireowner",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\auth.ts",
+      "source_location": "L46",
+      "weight": 1.0,
+      "_src": "auth_requireops",
+      "_tgt": "auth_getcurrentuser",
+      "source": "auth_getcurrentuser",
+      "target": "auth_requireops",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\excel-tier2.ts",
+      "source_location": "L65",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_lib_excel_tier2_ts",
+      "_tgt": "excel_tier2_newworkbook",
+      "source": "d_menulink_apps_web_lib_excel_tier2_ts",
+      "target": "excel_tier2_newworkbook",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\excel-tier2.ts",
+      "source_location": "L74",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_lib_excel_tier2_ts",
+      "_tgt": "excel_tier2_setupsheet",
+      "source": "d_menulink_apps_web_lib_excel_tier2_ts",
+      "target": "excel_tier2_setupsheet",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\excel-tier2.ts",
+      "source_location": "L93",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_lib_excel_tier2_ts",
+      "_tgt": "excel_tier2_placekpicard",
+      "source": "d_menulink_apps_web_lib_excel_tier2_ts",
+      "target": "excel_tier2_placekpicard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\excel-tier2.ts",
+      "source_location": "L153",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_lib_excel_tier2_ts",
+      "_tgt": "excel_tier2_placebrandedheader",
+      "source": "d_menulink_apps_web_lib_excel_tier2_ts",
+      "target": "excel_tier2_placebrandedheader",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\excel-tier2.ts",
+      "source_location": "L182",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_lib_excel_tier2_ts",
+      "_tgt": "excel_tier2_placetableheader",
+      "source": "d_menulink_apps_web_lib_excel_tier2_ts",
+      "target": "excel_tier2_placetableheader",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\excel-tier2.ts",
+      "source_location": "L204",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_lib_excel_tier2_ts",
+      "_tgt": "excel_tier2_adddatabar",
+      "source": "d_menulink_apps_web_lib_excel_tier2_ts",
+      "target": "excel_tier2_adddatabar",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\excel-tier2.ts",
+      "source_location": "L224",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_lib_excel_tier2_ts",
+      "_tgt": "excel_tier2_striperows",
+      "source": "d_menulink_apps_web_lib_excel_tier2_ts",
+      "target": "excel_tier2_striperows",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\excel-tier2.ts",
+      "source_location": "L243",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_lib_excel_tier2_ts",
+      "_tgt": "excel_tier2_workbookresponse",
+      "source": "d_menulink_apps_web_lib_excel_tier2_ts",
+      "target": "excel_tier2_workbookresponse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\menu-qr-poster.ts",
+      "source_location": "L19",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_lib_menu_qr_poster_ts",
+      "_tgt": "menu_qr_poster_generateposterdataurl",
+      "source": "d_menulink_apps_web_lib_menu_qr_poster_ts",
+      "target": "menu_qr_poster_generateposterdataurl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\menu-qr-poster.ts",
+      "source_location": "L131",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_lib_menu_qr_poster_ts",
+      "_tgt": "menu_qr_poster_triggerdownload",
+      "source": "d_menulink_apps_web_lib_menu_qr_poster_ts",
+      "target": "menu_qr_poster_triggerdownload",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\menu-qr-poster.ts",
+      "source_location": "L140",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_lib_menu_qr_poster_ts",
+      "_tgt": "menu_qr_poster_loadimage",
+      "source": "d_menulink_apps_web_lib_menu_qr_poster_ts",
+      "target": "menu_qr_poster_loadimage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\menu-qr-poster.ts",
+      "source_location": "L150",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_lib_menu_qr_poster_ts",
+      "_tgt": "menu_qr_poster_roundrect",
+      "source": "d_menulink_apps_web_lib_menu_qr_poster_ts",
+      "target": "menu_qr_poster_roundrect",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\menu-qr-poster.ts",
+      "source_location": "L53",
+      "weight": 1.0,
+      "_src": "menu_qr_poster_generateposterdataurl",
+      "_tgt": "menu_qr_poster_loadimage",
+      "source": "menu_qr_poster_generateposterdataurl",
+      "target": "menu_qr_poster_loadimage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\menu-qr-poster.ts",
+      "source_location": "L58",
+      "weight": 1.0,
+      "_src": "menu_qr_poster_generateposterdataurl",
+      "_tgt": "menu_qr_poster_roundrect",
+      "source": "menu_qr_poster_generateposterdataurl",
+      "target": "menu_qr_poster_roundrect",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\phone.ts",
+      "source_location": "L14",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_lib_phone_ts",
+      "_tgt": "phone_normalizephone",
+      "source": "d_menulink_apps_web_lib_phone_ts",
+      "target": "phone_normalizephone",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\supabase-admin.ts",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_lib_supabase_admin_ts",
+      "_tgt": "supabase_admin_adminclient",
+      "source": "d_menulink_apps_web_lib_supabase_admin_ts",
+      "target": "supabase_admin_adminclient",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\supabase-browser.ts",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_lib_supabase_browser_ts",
+      "_tgt": "supabase_browser_createclient",
+      "source": "d_menulink_apps_web_lib_supabase_browser_ts",
+      "target": "supabase_browser_createclient",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\lib\\supabase-server.ts",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_lib_supabase_server_ts",
+      "_tgt": "supabase_server_createclient",
+      "source": "d_menulink_apps_web_lib_supabase_server_ts",
+      "target": "supabase_server_createclient",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\public\\sw.js",
+      "source_location": "L73",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_public_sw_js",
+      "_tgt": "sw_networkfirsthtml",
+      "source": "d_menulink_apps_web_public_sw_js",
+      "target": "sw_networkfirsthtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "D:\\menulink\\apps\\web\\public\\sw.js",
+      "source_location": "L92",
+      "weight": 1.0,
+      "_src": "d_menulink_apps_web_public_sw_js",
+      "_tgt": "sw_cachefirstasset",
+      "source": "d_menulink_apps_web_public_sw_js",
+      "target": "sw_cachefirstasset",
+      "confidence_score": 1.0
+    }
+  ],
+  "hyperedges": []
+}
