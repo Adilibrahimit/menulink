@@ -21,6 +21,14 @@ type OrderView = {
   status: string;
 };
 
+type RedemptionView = {
+  id: string;
+  points_cost: number;
+  status: "pending" | "fulfilled" | "cancelled";
+  redeemed_at: string;
+  reward_name: string | null;
+};
+
 const STATUS_AR: Record<string, string> = {
   submitted: "جديد",
   confirmed: "مؤكد",
@@ -38,6 +46,18 @@ function toArabicDigits(s: string): string {
   return s.replace(/[0-9]/g, (d) => m[d] ?? d);
 }
 
+const REDEMPTION_STATUS_LABEL: Record<RedemptionView["status"], string> = {
+  pending:   "بانتظار التسليم",
+  fulfilled: "تم التسليم",
+  cancelled: "ملغي (تم استرجاع النقاط)",
+};
+
+const REDEMPTION_STATUS_TONE: Record<RedemptionView["status"], string> = {
+  pending:   "bg-amber-100 text-amber-900",
+  fulfilled: "bg-green-100 text-green-900",
+  cancelled: "bg-neutral-100 text-neutral-700",
+};
+
 export default function AccountClient({
   slug,
   tenantName,
@@ -46,6 +66,7 @@ export default function AccountClient({
   userName,
   customer,
   recentOrders,
+  recentRedemptions,
   tierLabel,
 }: {
   slug: string;
@@ -55,6 +76,7 @@ export default function AccountClient({
   userName: string | null;
   customer: CustomerView | null;
   recentOrders: OrderView[];
+  recentRedemptions: RedemptionView[];
   tierLabel: string | null;
 }) {
   /* ---------------- signed-out ---------------- */
@@ -145,6 +167,33 @@ export default function AccountClient({
           </ul>
         )}
       </div>
+
+      {/* Redemption history */}
+      {recentRedemptions.length > 0 && (
+        <div className="bg-white border border-neutral-200 rounded-2xl p-4">
+          <h2 className="font-extrabold mb-3" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+            آخر الاستبدالات
+          </h2>
+          <ul className="divide-y divide-neutral-100">
+            {recentRedemptions.map((r) => (
+              <li key={r.id} className="py-2.5 flex items-center justify-between gap-2 flex-wrap">
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm font-semibold text-neutral-900 truncate">
+                    🎁 {r.reward_name ?? "—"}
+                  </div>
+                  <div className="text-[11px] text-neutral-500 mt-0.5">
+                    {new Date(r.redeemed_at).toLocaleDateString("ar-SA", { timeZone: "Asia/Riyadh" })} ·{" "}
+                    {toArabicDigits(String(r.points_cost))} نقطة
+                  </div>
+                </div>
+                <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${REDEMPTION_STATUS_TONE[r.status]}`}>
+                  {REDEMPTION_STATUS_LABEL[r.status]}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <a
         href={`/m/${slug}`}

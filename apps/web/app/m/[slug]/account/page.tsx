@@ -48,6 +48,13 @@ export default async function CustomerAccountPage({
     orders_count: number;
   } | null = null;
   let recentOrders: Array<{ id: string; total: number; created_at: string; status: string }> = [];
+  let recentRedemptions: Array<{
+    id: string;
+    points_cost: number;
+    status: "pending" | "fulfilled" | "cancelled";
+    redeemed_at: string;
+    reward_name: string | null;
+  }> = [];
 
   if (user) {
     const { data: c } = await sb
@@ -69,19 +76,39 @@ export default async function CustomerAccountPage({
       : null;
 
     if (customer) {
-      const { data: orders } = await sb
-        .from("orders")
-        .select("id, total, created_at, status")
-        .eq("customer_id", customer.id)
-        .eq("restaurant_id", restaurant.id)
-        .order("created_at", { ascending: false })
-        .limit(20);
+      const [{ data: orders }, { data: redemptions }] = await Promise.all([
+        sb
+          .from("orders")
+          .select("id, total, created_at, status")
+          .eq("customer_id", customer.id)
+          .eq("restaurant_id", restaurant.id)
+          .order("created_at", { ascending: false })
+          .limit(20),
+        sb
+          .from("loyalty_redemptions")
+          .select("id, points_cost, status, redeemed_at, loyalty_rewards(name_ar)")
+          .eq("customer_id", customer.id)
+          .eq("restaurant_id", restaurant.id)
+          .order("redeemed_at", { ascending: false })
+          .limit(10),
+      ]);
       recentOrders = (orders ?? []).map((o) => ({
         id: o.id as string,
         total: Number(o.total ?? 0),
         created_at: o.created_at as string,
         status: o.status as string,
       }));
+      recentRedemptions = (redemptions ?? []).map((r) => {
+        const rw = r.loyalty_rewards as { name_ar?: string } | { name_ar?: string }[] | null;
+        const reward = Array.isArray(rw) ? rw[0] : rw;
+        return {
+          id: r.id as string,
+          points_cost: Number(r.points_cost ?? 0),
+          status: r.status as "pending" | "fulfilled" | "cancelled",
+          redeemed_at: r.redeemed_at as string,
+          reward_name: reward?.name_ar ?? null,
+        };
+      });
     }
   }
 
@@ -108,6 +135,7 @@ export default async function CustomerAccountPage({
           userName={(user?.user_metadata as { full_name?: string } | undefined)?.full_name ?? null}
           customer={customer}
           recentOrders={recentOrders}
+          recentRedemptions={recentRedemptions}
           tierLabel={customer ? TIER_LABEL[customer.loyalty_tier] ?? customer.loyalty_tier : null}
         />
       </main>

@@ -30,14 +30,40 @@ export default async function AdminLoyaltyPage() {
     settings = created;
   }
 
-  // Headline counter: how many active loyalty customers. Point totals are
-  // surfaced on a future stats page (slice 2) — keeping this page focused
-  // on settings so the owner isn't overwhelmed on the addon's first day.
-  const { count: customerCount } = await sb
-    .from("customers")
-    .select("id", { count: "exact", head: true })
-    .eq("restaurant_id", me.restaurant_id)
-    .gt("loyalty_lifetime_points", 0);
+  // Headline counters in parallel
+  const [
+    { count: customerCount },
+    { data: redeemRows },
+    { count: pendingCount },
+    { count: activeRewardsCount },
+  ] = await Promise.all([
+    sb
+      .from("customers")
+      .select("id", { count: "exact", head: true })
+      .eq("restaurant_id", me.restaurant_id)
+      .gt("loyalty_lifetime_points", 0),
+    sb
+      .from("loyalty_transactions")
+      .select("points")
+      .eq("restaurant_id", me.restaurant_id)
+      .eq("kind", "redeem"),
+    sb
+      .from("loyalty_redemptions")
+      .select("id", { count: "exact", head: true })
+      .eq("restaurant_id", me.restaurant_id)
+      .eq("status", "pending"),
+    sb
+      .from("loyalty_rewards")
+      .select("id", { count: "exact", head: true })
+      .eq("restaurant_id", me.restaurant_id)
+      .eq("active", true),
+  ]);
+
+  // redeem transactions store points as negative; flip sign for display
+  const totalRedeemed = (redeemRows ?? []).reduce(
+    (acc, r) => acc + Math.abs(Number((r as { points?: number }).points ?? 0)),
+    0,
+  );
 
   return (
     <div className="space-y-4">
@@ -50,14 +76,21 @@ export default async function AdminLoyaltyPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <KpiCard label="عملاء جمعوا نقاطاً" value={String(customerCount ?? 0)} />
+        <KpiCard label="معدّل الكسب" value={`${settings?.points_per_sar ?? 1} نقطة / ر.س`} />
         <KpiCard label="حالة البرنامج" value={settings?.enabled ? "مفعّل" : "موقوف"} />
-        <KpiCard label="معدّل الكسب الحالي" value={`${settings?.points_per_sar ?? 1} نقطة / ر.س`} />
+        <KpiCard label="نقاط مستبدَلة (إجمالي)" value={String(totalRedeemed)} />
+        <KpiCard
+          label="استبدالات بانتظار التسليم"
+          value={String(pendingCount ?? 0)}
+          tone={(pendingCount ?? 0) > 0 ? "bg-amber-50 border-amber-300 text-amber-900" : undefined}
+        />
+        <KpiCard label="مكافآت نشطة" value={String(activeRewardsCount ?? 0)} />
       </div>
 
       {/* Quick links to sub-pages */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <Link
           href="/admin/loyalty/rewards"
           className="bg-white border border-neutral-200 rounded-xl px-4 py-3 flex items-center gap-3 hover:border-neutral-300 active:translate-y-px"
@@ -88,6 +121,21 @@ export default async function AdminLoyaltyPage() {
           </span>
           <span className="text-neutral-400">←</span>
         </Link>
+        <Link
+          href="/admin/loyalty/customers"
+          className="bg-white border border-neutral-200 rounded-xl px-4 py-3 flex items-center gap-3 hover:border-neutral-300 active:translate-y-px"
+        >
+          <span className="text-3xl">👥</span>
+          <span className="flex-1 min-w-0">
+            <span className="block text-sm font-extrabold text-neutral-900" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+              عملاء الولاء
+            </span>
+            <span className="block text-[11px] text-neutral-500 mt-0.5">
+              ترتيب حسب النقاط · تعديل يدوي
+            </span>
+          </span>
+          <span className="text-neutral-400">←</span>
+        </Link>
       </div>
 
       <LoyaltySettingsForm
@@ -98,11 +146,11 @@ export default async function AdminLoyaltyPage() {
   );
 }
 
-function KpiCard({ label, value }: { label: string; value: string }) {
+function KpiCard({ label, value, tone }: { label: string; value: string; tone?: string }) {
   return (
-    <div className="bg-white border border-neutral-200 rounded-xl px-4 py-3">
-      <div className="text-xs text-neutral-500">{label}</div>
-      <div className="text-2xl font-extrabold mt-1 text-neutral-900">{value}</div>
+    <div className={`rounded-xl border px-4 py-3 ${tone ?? "bg-white border-neutral-200"}`}>
+      <div className="text-xs opacity-80">{label}</div>
+      <div className="text-2xl font-extrabold mt-1">{value}</div>
     </div>
   );
 }
