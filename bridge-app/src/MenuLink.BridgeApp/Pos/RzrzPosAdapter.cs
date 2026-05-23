@@ -83,8 +83,10 @@ public sealed class RzrzPosAdapter : IPosAdapter
         // ---- Idempotency precheck -------------------------------------------------
         // If a previous attempt already created the POS Invoice (and failed in a
         // later step), use that row instead of inserting another duplicate.
-        // Match by OnlineCustomerID + InvoiceNotes_A tag prefix.
-        var tagPattern = $"MenuLink #{menuLinkInvoiceNo} %";
+        // Match by OnlineCustomerID + InvoiceNotes_A "MenuLink #N " substring.
+        // The leading "%" allows for v2.7's order-type-label prefix (توصيل / محلي /
+        // سفري / سيارة), and the trailing space ensures we don't false-match #141 on #14.
+        var tagPattern = $"%MenuLink #{menuLinkInvoiceNo} %";
         Guid posInvoiceGuid;
         long posInvoiceNo;
         long posBillNo;
@@ -305,15 +307,24 @@ public sealed class RzrzPosAdapter : IPosAdapter
         return (xmlInvoice, sb.ToString());
     }
 
-    // Kept short — thermal receipt prints this on one line, so packing
-    // address + short order id overflows onto the items header (seen in
-    // production receipt for invoice 439). The idempotency precheck only
-    // requires the "MenuLink #N " prefix.
+    // Kept short — thermal receipt prints this on one line, so packing too much
+    // overflows onto the items header (seen in production receipt for invoice 439).
+    //
+    // Lead with the Arabic order_type label (توصيل / محلي / سفري / سيارة) so kitchen
+    // staff see the type at a glance. The cashier UI overwrites Invoice.InvoiceNotes
+    // (English field) during edit/pay, so we put the label HERE instead — InvoiceNotes_A
+    // survives. Customer name is dropped to fit; driver gets name+address via the
+    // WhatsApp deep-link in the MenuLink customer PWA, which is how it always worked.
+    //
+    // The idempotency precheck keys off the "MenuLink #N " substring, which still
+    // appears verbatim in the middle of the line.
     private static string BuildNotesArabic(OutboxPayload p, long menuLinkInvoiceNo)
     {
-        var parts = new List<string> { $"MenuLink #{menuLinkInvoiceNo}" };
-        if (!string.IsNullOrWhiteSpace(p.Customer?.Name))
-            parts.Add(p.Customer.Name!);
+        var parts = new List<string>();
+        var label = OrderTypeArabicLabel(p.Order.OrderType);
+        if (!string.IsNullOrWhiteSpace(label))
+            parts.Add(label);
+        parts.Add($"MenuLink #{menuLinkInvoiceNo}");
         if (!string.IsNullOrWhiteSpace(p.Customer?.Phone))
             parts.Add(LocalSaudiPhone(p.Customer.Phone));
         return string.Join(" · ", parts);
