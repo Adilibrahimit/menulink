@@ -24,11 +24,17 @@ export type PublicRestaurant = {
 };
 
 export type PublicVariant = {
-  key: "piece" | "meal" | "single";
+  key: string;
   label: string;
   price: number;
   sort: number;
+  calories_kcal: number | null;
 };
+
+export type AllergenKey =
+  | "gluten" | "dairy" | "eggs" | "fish" | "shellfish"
+  | "peanuts" | "tree_nuts" | "soy" | "sesame" | "celery"
+  | "mustard" | "sulfites" | "lupin" | "mollusks";
 
 export type PublicMenuItem = {
   id: string;
@@ -39,6 +45,10 @@ export type PublicMenuItem = {
   sort: number;
   is_chicken: boolean;
   badges: Array<{ type: string; label: string; emoji?: string }> | null;
+  calories_kcal: number | null;
+  sodium_mg: number | null;
+  caffeine_mg: number | null;
+  allergens: AllergenKey[] | null;
   variants: PublicVariant[];
 };
 

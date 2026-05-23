@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-browser";
+import { ALLERGENS } from "@/lib/allergens";
 import type { CategoryWithItems } from "./page";
 import AddItemModal from "./add-item-modal";
 import AddCategoryModal from "./add-category-modal";
@@ -21,7 +22,8 @@ export default function MenuEditor({
   const [toast, setToast] = useState<Toast>(null);
   const [pending, startTransition] = useTransition();
   const [showAddCategory, setShowAddCategory] = useState(false);
-  const [addItemFor, setAddItemFor] = useState<string | null>(null); // category id, or "*" for any
+  const [addItemFor, setAddItemFor] = useState<string | null>(null);
+  const [nutritionOpen, setNutritionOpen] = useState<string | null>(null);
 
   function notify(kind: "ok" | "err", text: string) {
     setToast({ kind, text });
@@ -121,6 +123,20 @@ export default function MenuEditor({
       notify("ok", "حُذفت");
       refresh();
     }
+  }
+
+  // ---- Nutrition fields ---------------------------------------------------
+  async function updateNutrition(itemId: string, field: string, value: unknown) {
+    const { error } = await sb.from("menu_items").update({ [field]: value }).eq("id", itemId);
+    if (error) notify("err", error.message);
+    else notify("ok", "محدّث");
+  }
+
+  async function toggleAllergen(itemId: string, current: string[] | null, key: string) {
+    const arr = current ?? [];
+    const next = arr.includes(key) ? arr.filter((a) => a !== key) : [...arr, key];
+    await updateNutrition(itemId, "allergens_json", next.length > 0 ? next : null);
+    refresh();
   }
 
   // ---- Variant price update ----------------------------------------------
@@ -267,6 +283,17 @@ export default function MenuEditor({
                       صورة ✕
                     </button>
                   )}
+                  <button
+                    onClick={() => setNutritionOpen(nutritionOpen === it.id ? null : it.id)}
+                    className={
+                      "px-2 py-1 rounded " +
+                      (nutritionOpen === it.id
+                        ? "bg-amber-100 text-amber-800"
+                        : "bg-neutral-100 hover:bg-neutral-200")
+                    }
+                  >
+                    🔥 سعرات
+                  </button>
                   <button onClick={() => toggleItemActive(it.id, it.is_active)} className="px-2 py-1 rounded bg-neutral-100 hover:bg-neutral-200">
                     {it.is_active ? "إخفاء" : "إظهار"}
                   </button>
@@ -274,6 +301,69 @@ export default function MenuEditor({
                     حذف
                   </button>
                 </div>
+
+                {/* Nutrition panel (expanded) */}
+                {nutritionOpen === it.id && (
+                  <div className="w-full mt-2 bg-amber-50 border border-amber-200 rounded-xl p-3 space-y-3">
+                    <div className="grid grid-cols-3 gap-2">
+                      <div>
+                        <label className="block text-[10px] text-amber-800 mb-0.5">سعرات (kcal)</label>
+                        <input
+                          type="number" min="0"
+                          defaultValue={it.calories_kcal ?? ""}
+                          onBlur={(e) => updateNutrition(it.id, "calories_kcal", e.target.value ? Number(e.target.value) : null)}
+                          className="w-full h-8 rounded-lg border border-amber-300 bg-white px-2 text-sm outline-none focus:border-brand-primary"
+                          placeholder="مثال: 350"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] text-amber-800 mb-0.5">صوديوم (ملجم)</label>
+                        <input
+                          type="number" min="0"
+                          defaultValue={it.sodium_mg ?? ""}
+                          onBlur={(e) => updateNutrition(it.id, "sodium_mg", e.target.value ? Number(e.target.value) : null)}
+                          className="w-full h-8 rounded-lg border border-amber-300 bg-white px-2 text-sm outline-none focus:border-brand-primary"
+                          placeholder="مثال: 1500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] text-amber-800 mb-0.5">كافيين (ملجم)</label>
+                        <input
+                          type="number" min="0"
+                          defaultValue={it.caffeine_mg ?? ""}
+                          onBlur={(e) => updateNutrition(it.id, "caffeine_mg", e.target.value ? Number(e.target.value) : null)}
+                          className="w-full h-8 rounded-lg border border-amber-300 bg-white px-2 text-sm outline-none focus:border-brand-primary"
+                          placeholder="للمشروبات"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] text-amber-800 mb-1.5">مسببات الحساسية (SFDA 14)</label>
+                      <div className="flex flex-wrap gap-1.5">
+                        {ALLERGENS.map((a) => {
+                          const active = (it.allergens_json ?? []).includes(a.key);
+                          return (
+                            <button
+                              key={a.key}
+                              type="button"
+                              onClick={() => toggleAllergen(it.id, it.allergens_json, a.key)}
+                              className={
+                                "inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full border transition-colors " +
+                                (active
+                                  ? "bg-rose-100 text-rose-800 border-rose-300"
+                                  : "bg-white text-neutral-600 border-neutral-200 hover:border-neutral-300")
+                              }
+                            >
+                              <span>{a.icon}</span>
+                              <span>{a.label_ar}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </li>
             ))}
           </ul>

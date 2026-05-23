@@ -51,6 +51,10 @@ export type MenuItem = {
   is_active: boolean;
   is_chicken: boolean;
   badges_json: Array<{ type: string; label: string; emoji?: string }> | null;
+  calories_kcal: number | null;
+  sodium_mg: number | null;
+  caffeine_mg: number | null;
+  allergens_json: string[] | null;
 };
 
 export type Variant = {

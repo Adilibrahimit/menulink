@@ -1,6 +1,7 @@
 "use client";
 
 import { SLUG_TO_IMG } from "@/lib/koko-images";
+import { ALLERGEN_MAP } from "@/lib/allergens";
 import type { PublicMenuItem, PublicVariant } from "./types";
 
 // Stitch "Vibrant Poultry" card. Image fills the top of the card, square
@@ -62,7 +63,7 @@ export default function MenuItemCard({
         )}
       </div>
 
-      {/* CONTENT — name + variants */}
+      {/* CONTENT — name + nutrition + variants */}
       <div className="p-3 flex flex-col gap-2 flex-1">
         <h3
           className="font-extrabold text-neutral-900 leading-tight text-[15px]"
@@ -73,6 +74,34 @@ export default function MenuItemCard({
         {item.description_ar && (
           <p className="text-[11px] text-neutral-500 leading-snug -mt-1 line-clamp-2">
             {item.description_ar}
+          </p>
+        )}
+
+        {/* SFDA nutrition line: calories + sodium flag + caffeine */}
+        {(item.calories_kcal || item.sodium_mg || item.caffeine_mg) && (
+          <div className="flex flex-wrap items-center gap-1.5 -mt-0.5">
+            {item.calories_kcal != null && item.calories_kcal > 0 && (
+              <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200 rounded-full px-1.5 py-0.5 leading-none">
+                🔥 {toArabicDigits(String(item.calories_kcal))} سعرة
+              </span>
+            )}
+            {item.sodium_mg != null && item.sodium_mg > 2000 && (
+              <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-rose-800 bg-rose-50 border border-rose-200 rounded-full px-1.5 py-0.5 leading-none" title="عالي الملح (أكثر من 2000 ملجم صوديوم)">
+                🧂 عالي الملح
+              </span>
+            )}
+            {item.caffeine_mg != null && item.caffeine_mg > 0 && (
+              <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-neutral-700 bg-neutral-50 border border-neutral-200 rounded-full px-1.5 py-0.5 leading-none">
+                ☕ {toArabicDigits(String(item.caffeine_mg))} ملجم
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* SFDA allergen disclosure */}
+        {item.allergens && item.allergens.length > 0 && (
+          <p className="text-[9px] text-neutral-500 leading-snug -mt-0.5" title="مسببات الحساسية">
+            ⚠️ {item.allergens.map((k) => ALLERGEN_MAP.get(k)?.label_ar ?? k).join(" · ")}
           </p>
         )}
 

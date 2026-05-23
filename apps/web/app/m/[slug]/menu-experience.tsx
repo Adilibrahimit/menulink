@@ -244,6 +244,42 @@ export default function MenuExperience({
         ))}
       </div>
 
+      {/* SFDA NUTRITION FOOTER — daily reference + allergen disclaimer */}
+      <footer className="mt-10 mb-4 mx-4 space-y-3">
+        <div className="bg-white border border-neutral-200 rounded-2xl p-4 text-center space-y-2">
+          <h3
+            className="text-sm font-extrabold text-neutral-700"
+            style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+          >
+            📊 الاحتياج اليومي المقدّر من السعرات الحرارية
+          </h3>
+          <div className="flex items-center justify-center gap-4 flex-wrap text-xs text-neutral-600">
+            <span className="font-bold">👨 رجل: ~٢٥٠٠</span>
+            <span className="font-bold">👩 امرأة: ~٢٠٠٠</span>
+            <span className="font-bold">👦 طفل: ~١٤٠٠-٢٠٠٠</span>
+          </div>
+          <p className="text-[10px] text-neutral-400 leading-snug">
+            القيم تقديرية وتختلف حسب العمر والنشاط البدني. المصدر: الهيئة العامة للغذاء والدواء (SFDA).
+          </p>
+        </div>
+
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 space-y-1.5">
+          <h3
+            className="text-sm font-extrabold text-amber-900"
+            style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+          >
+            ⚠️ تنبيه حساسية الطعام
+          </h3>
+          <p className="text-[11px] text-amber-800 leading-relaxed">
+            يرجى إعلام الموظف بأي حساسية غذائية لديك <b>قبل الطلب</b>.
+            قد تتواجد مسببات الحساسية في بيئة المطبخ حتى في الأصناف التي لا تحتوي عليها مباشرة.
+          </p>
+          <p className="text-[10px] text-amber-700 leading-snug">
+            المسببات الـ١٤ الأساسية: جلوتين · حليب · بيض · أسماك · قشريات · فول سوداني · مكسرات · صويا · سمسم · كرفس · خردل · كبريتات · ترمس · رخويات.
+          </p>
+        </div>
+      </footer>
+
       {/* STICKY BOTTOM CART BAR — only when cart has items */}
       {count > 0 && (
         <button
