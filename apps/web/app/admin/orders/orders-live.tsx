@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase-browser";
 
 type CustomerInfo = { name: string | null; phone: string };
@@ -31,6 +31,7 @@ const ORDER_TYPE_LABEL: Record<string, string> = {
   delivery: "توصيل",
   pickup: "استلام",
   dine_in: "في المطعم",
+  car: "سيارة",
 };
 
 function getCustomer(o: OrderRow): CustomerInfo | null {
@@ -38,21 +39,113 @@ function getCustomer(o: OrderRow): CustomerInfo | null {
   return Array.isArray(o.customers) ? o.customers[0] ?? null : o.customers;
 }
 
+// "Today" in Riyadh as a YYYY-MM-DD string — used both for filtering and the export URL.
+function todayRiyadhISO(): string {
+  return new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Riyadh" });
+}
+function isToday(iso: string): boolean {
+  const d = new Date(iso).toLocaleDateString("en-CA", { timeZone: "Asia/Riyadh" });
+  return d === todayRiyadhISO();
+}
+
+/* ---------------- Persistent sound alert ---------------- */
+/** Web Audio bell-tone generator. Loops until stop() is called. No mp3 file needed. */
+function useAlertSound() {
+  const ctxRef = useRef<AudioContext | null>(null);
+  const intervalRef = useRef<number | null>(null);
+  const unlockedRef = useRef(false);
+  const [playing, setPlaying] = useState(false);
+
+  // Must be called inside a user gesture (button click) at least once to allow autoplay.
+  function unlock() {
+    if (unlockedRef.current) return;
+    const ctor = (window as any).AudioContext || (window as any).webkitAudioContext;
+    if (!ctor) return;
+    ctxRef.current = new ctor();
+    // Some browsers create the context suspended — resume on this gesture.
+    ctxRef.current?.resume().catch(() => {});
+    unlockedRef.current = true;
+  }
+
+  function beep() {
+    const ctx = ctxRef.current;
+    if (!ctx) return;
+    // Two-note "doorbell" chime: G5 then E5.
+    const notes = [
+      { freq: 784, start: 0,    dur: 0.18 },
+      { freq: 659, start: 0.22, dur: 0.28 },
+    ];
+    notes.forEach((n) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = n.freq;
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      const t = ctx.currentTime + n.start;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.35, t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + n.dur);
+      osc.start(t);
+      osc.stop(t + n.dur);
+    });
+  }
+
+  function start() {
+    if (!unlockedRef.current || playing) return;
+    setPlaying(true);
+    beep(); // immediate first ring
+    intervalRef.current = window.setInterval(beep, 1800);
+  }
+
+  function stop() {
+    if (intervalRef.current != null) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    setPlaying(false);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current != null) clearInterval(intervalRef.current);
+      ctxRef.current?.close().catch(() => {});
+    };
+  }, []);
+
+  return { unlock, start, stop, playing, unlocked: () => unlockedRef.current };
+}
+
 export default function OrdersLive({
   restaurantId,
   initial,
+  restaurantSlug,
 }: {
   restaurantId: string;
   initial: OrderRow[];
+  restaurantSlug: string;
 }) {
   const [rows, setRows] = useState<OrderRow[]>(initial);
+  const [todayOnly, setTodayOnly] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(false);
+  const [unseenCount, setUnseenCount] = useState(0);
+  const alert = useAlertSound();
 
+  // Filter shown rows
+  const visibleRows = useMemo(() => {
+    if (!todayOnly) return rows;
+    return rows.filter((r) => isToday(r.created_at));
+  }, [rows, todayOnly]);
+
+  // Tab title reflects unseen new-order count so backgrounded tabs still surface the alert
+  useEffect(() => {
+    const base = "الطلبات · MenuLink";
+    document.title = unseenCount > 0 ? `(${unseenCount}) 🔔 ${base}` : base;
+  }, [unseenCount]);
+
+  // Realtime subscription
   useEffect(() => {
     const sb = createClient();
-
-    // Realtime: insert events bring new orders to the top of the list.
-    // When a new order arrives, fetch its joined customer row (the realtime
-    // payload doesn't include the join).
     const channel = sb
       .channel(`orders:${restaurantId}`)
       .on(
@@ -65,7 +158,9 @@ export default function OrdersLive({
             .select("name, phone")
             .eq("id", (fresh as any).customer_id)
             .single();
-          setRows((r) => [{ ...fresh, customers: cust as any }, ...r].slice(0, 100));
+          setRows((r) => [{ ...fresh, customers: cust as any }, ...r].slice(0, 200));
+          setUnseenCount((n) => n + 1);
+          if (soundEnabled) alert.start();
         }
       )
       .on(
@@ -77,56 +172,134 @@ export default function OrdersLive({
         }
       )
       .subscribe();
-
     return () => {
       sb.removeChannel(channel);
     };
-  }, [restaurantId]);
+    // soundEnabled in deps so the handler captures the current setting; alert is stable.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [restaurantId, soundEnabled]);
 
   async function setStatus(id: string, status: string) {
     const sb = createClient();
     await sb.from("orders").update({ status }).eq("id", id);
-    // Optimistic local update; the Realtime UPDATE event will mirror it.
     setRows((r) => r.map((o) => (o.id === id ? { ...o, status } : o)));
   }
 
-  if (rows.length === 0) {
-    return <p className="text-neutral-500 text-sm">لا توجد طلبات بعد.</p>;
+  function acknowledge() {
+    alert.stop();
+    setUnseenCount(0);
   }
 
+  function enableSound() {
+    alert.unlock();         // must run inside this click handler
+    setSoundEnabled(true);
+  }
+
+  const today = todayRiyadhISO();
+  const exportUrl = todayOnly
+    ? `/api/admin/export/orders?from=${today}&to=${today}`
+    : `/api/admin/export/orders`;
+
   return (
-    <ul className="space-y-2">
-      {rows.map((o) => {
-        const cust = getCustomer(o);
-        return (
-          <li key={o.id} className="bg-white border border-neutral-200 rounded-xl p-3 flex items-start justify-between gap-3 flex-wrap">
-            <div className="flex-1 min-w-[200px]">
-              <div className="font-semibold">
-                {cust?.name ?? "—"} <span className="text-neutral-400 font-normal">· {cust?.phone ?? "—"}</span>
-              </div>
-              <div className="text-xs text-neutral-500 mt-0.5">
-                {new Date(o.created_at).toLocaleString("ar-SA")} · {ORDER_TYPE_LABEL[o.order_type] ?? o.order_type}
-              </div>
-              {o.address && <div className="text-xs text-neutral-600 mt-1">📍 {o.address}</div>}
-              {o.notes && <div className="text-xs text-amber-700 mt-1">📝 {o.notes}</div>}
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-bold text-brand-primary">{o.total} ر.س</span>
-              <select
-                value={o.status}
-                onChange={(e) => setStatus(o.id, e.target.value)}
-                className="text-xs border border-neutral-300 rounded px-2 py-1 outline-none focus:border-brand-primary"
-              >
-                {STATUSES.map((s) => (
-                  <option key={s} value={s}>
-                    {STATUS_LABEL_AR[s]}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </li>
-        );
-      })}
-    </ul>
+    <div className="space-y-3">
+      {/* Toolbar */}
+      <div className="bg-white border border-neutral-200 rounded-xl p-3 flex flex-wrap items-center gap-3">
+        <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={todayOnly}
+            onChange={(e) => setTodayOnly(e.target.checked)}
+            className="w-4 h-4 accent-brand-primary"
+          />
+          <span className="text-sm font-semibold">طلبات اليوم فقط</span>
+        </label>
+        <span className="text-xs text-neutral-500">
+          {visibleRows.length} من {rows.length}
+        </span>
+
+        <div className="flex-1" />
+
+        {!soundEnabled ? (
+          <button
+            onClick={enableSound}
+            className="px-3 h-9 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 text-sm font-semibold hover:bg-amber-100"
+            title="فعّل الإشعار الصوتي ليرن عند وصول طلب جديد"
+          >
+            🔔 فعّل الصوت
+          </button>
+        ) : alert.playing ? (
+          <button
+            onClick={acknowledge}
+            className="px-3 h-9 rounded-lg bg-rose-600 text-white text-sm font-semibold hover:bg-rose-700 animate-pulse"
+          >
+            🛎️ إيقاف الجرس ({unseenCount} طلب جديد)
+          </button>
+        ) : (
+          <span className="px-3 h-9 inline-flex items-center rounded-lg bg-green-50 text-green-800 border border-green-200 text-xs">
+            🔔 الصوت مفعّل
+          </span>
+        )}
+
+        <a
+          href={exportUrl}
+          className="px-3 h-9 inline-flex items-center rounded-lg bg-[#1B4332] text-white text-sm font-semibold hover:opacity-90"
+        >
+          📊 تنزيل Excel
+        </a>
+      </div>
+
+      {/* Live banner (when bell is ringing) */}
+      {alert.playing && (
+        <button
+          onClick={acknowledge}
+          className="w-full bg-rose-600 text-white py-3 rounded-xl font-bold text-base shadow-lg hover:bg-rose-700 active:translate-y-px"
+        >
+          🚨 طلب جديد! اضغط لإيقاف الجرس
+        </button>
+      )}
+
+      {/* Orders list */}
+      {visibleRows.length === 0 ? (
+        <p className="text-neutral-500 text-sm bg-white border border-neutral-200 rounded-xl p-6 text-center">
+          {todayOnly ? "لا توجد طلبات اليوم بعد." : "لا توجد طلبات بعد."}
+        </p>
+      ) : (
+        <ul className="space-y-2">
+          {visibleRows.map((o) => {
+            const cust = getCustomer(o);
+            return (
+              <li key={o.id} className="bg-white border border-neutral-200 rounded-xl p-3 flex items-start justify-between gap-3 flex-wrap">
+                <div className="flex-1 min-w-[200px]">
+                  <div className="font-semibold">
+                    {cust?.name ?? "—"}{" "}
+                    <span className="text-neutral-400 font-normal">· {cust?.phone ?? "—"}</span>
+                  </div>
+                  <div className="text-xs text-neutral-500 mt-0.5">
+                    {new Date(o.created_at).toLocaleString("ar-SA", { timeZone: "Asia/Riyadh" })} ·{" "}
+                    {ORDER_TYPE_LABEL[o.order_type] ?? o.order_type}
+                  </div>
+                  {o.address && <div className="text-xs text-neutral-600 mt-1">📍 {o.address}</div>}
+                  {o.notes && <div className="text-xs text-amber-700 mt-1">📝 {o.notes}</div>}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg font-bold text-brand-primary">{o.total} ر.س</span>
+                  <select
+                    value={o.status}
+                    onChange={(e) => setStatus(o.id, e.target.value)}
+                    className="text-xs border border-neutral-300 rounded px-2 py-1 outline-none focus:border-brand-primary"
+                  >
+                    {STATUSES.map((s) => (
+                      <option key={s} value={s}>
+                        {STATUS_LABEL_AR[s]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
   );
 }
