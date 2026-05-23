@@ -357,17 +357,6 @@ function CartDrawer({
         return;
       }
     }
-    if (orderType === "car") {
-      if (!carPlate.trim()) {
-        alert("الرجاء إدخال رقم لوحة السيارة");
-        return;
-      }
-      if (!carColor.trim()) {
-        alert("الرجاء إدخال لون السيارة");
-        return;
-      }
-    }
-
     setSubmitting(true);
     const phone = normalizePhone(rawPhone);
     const plate = carPlate.trim();
@@ -426,8 +415,8 @@ function CartDrawer({
       `📞 *الجوال:* ${rawPhone || "—"}\n` +
       (orderType === "delivery" && address ? `📍 *العنوان:* ${address}\n` : "") +
       (mapsLink ? `🗺️ *الموقع على الخريطة:* ${mapsLink}\n` : "") +
-      (orderType === "car" ? `🚗 *رقم اللوحة:* ${plate}\n` : "") +
-      (orderType === "car" ? `🎨 *لون السيارة:* ${color}\n` : "") +
+      (orderType === "car" && plate ? `🚗 *رقم اللوحة:* ${plate}\n` : "") +
+      (orderType === "car" && color ? `🎨 *لون السيارة:* ${color}\n` : "") +
       `━━━━━━━━━━━━━━━━\n` +
       `🛒 *الطلبات:*\n${lineList}\n` +
       `━━━━━━━━━━━━━━━━\n` +
@@ -569,14 +558,14 @@ function CartDrawer({
                   <>
                     <input
                       type="text"
-                      placeholder="رقم لوحة السيارة"
+                      placeholder="رقم لوحة السيارة (اختياري)"
                       value={carPlate}
                       onChange={(e) => setCarPlate(e.target.value)}
                       className="w-full h-11 rounded-xl border border-neutral-200 px-3 outline-none focus:border-[var(--brand)] text-sm"
                     />
                     <input
                       type="text"
-                      placeholder="لون السيارة"
+                      placeholder="لون السيارة (اختياري)"
                       value={carColor}
                       onChange={(e) => setCarColor(e.target.value)}
                       className="w-full h-11 rounded-xl border border-neutral-200 px-3 outline-none focus:border-[var(--brand)] text-sm"
@@ -784,16 +773,22 @@ function TrackingSheet({
           </button>
         </div>
 
-        <div className="rounded-2xl bg-neutral-50 border border-neutral-200 p-3 space-y-1.5 text-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-neutral-500">رقم اللوحة</span>
-            <span className="font-bold" dir="ltr">{tracking.plate}</span>
+        {(tracking.plate || tracking.color) && (
+          <div className="rounded-2xl bg-neutral-50 border border-neutral-200 p-3 space-y-1.5 text-sm">
+            {tracking.plate && (
+              <div className="flex items-center justify-between">
+                <span className="text-neutral-500">رقم اللوحة</span>
+                <span className="font-bold" dir="ltr">{tracking.plate}</span>
+              </div>
+            )}
+            {tracking.color && (
+              <div className="flex items-center justify-between">
+                <span className="text-neutral-500">لون السيارة</span>
+                <span className="font-bold">{tracking.color}</span>
+              </div>
+            )}
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-neutral-500">لون السيارة</span>
-            <span className="font-bold">{tracking.color}</span>
-          </div>
-        </div>
+        )}
 
         {arrived ? (
           <>
