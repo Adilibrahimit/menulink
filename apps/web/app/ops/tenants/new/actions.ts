@@ -113,6 +113,26 @@ export async function createTenant(input: CreateTenantInput): Promise<CreateTena
     return { ok: false, error: `المطعم والحساب أُنشئا، لكن فشل الاشتراك: ${subErr.message}` };
   }
 
+  // 5) Seed default addons (is_default=true in addon_catalog → auto-enabled).
+  // pos_bridge intentionally not seeded — opt-in per tenant via ops UI later.
+  const { data: defaults } = await admin
+    .from("addon_catalog")
+    .select("key")
+    .eq("is_default", true);
+  if (defaults && defaults.length > 0) {
+    await admin
+      .from("subscription_addons")
+      .upsert(
+        defaults.map((d) => ({
+          restaurant_id: restaurant.id,
+          addon_key: d.key,
+          enabled: true,
+          notes: "seeded by onboarding wizard",
+        })),
+        { onConflict: "restaurant_id,addon_key" },
+      );
+  }
+
   revalidatePath("/ops");
   return {
     ok: true,

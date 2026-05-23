@@ -41,7 +41,7 @@ function digitsOnly(s: string): string {
   return s.replace(/[^\d]/g, "");
 }
 
-export default function CustomersTable({ rows }: { rows: Row[] }) {
+export default function CustomersTable({ rows, excelEnabled }: { rows: Row[]; excelEnabled: boolean }) {
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortKey>("monetary_desc");
   const [segFilter, setSegFilter] = useState<string>("");
@@ -107,12 +107,14 @@ export default function CustomersTable({ rows }: { rows: Row[] }) {
           {visible.length} من {rows.length}
         </span>
         <div className="flex-1" />
-        <a
-          href="/api/admin/export/customers"
-          className="px-3 h-9 inline-flex items-center rounded-lg bg-[#1B4332] text-white text-sm font-semibold hover:opacity-90"
-        >
-          📊 تنزيل Excel
-        </a>
+        {excelEnabled && (
+          <a
+            href="/api/admin/export/customers"
+            className="px-3 h-9 inline-flex items-center rounded-lg bg-[#1B4332] text-white text-sm font-semibold hover:opacity-90"
+          >
+            📊 تنزيل Excel
+          </a>
+        )}
       </div>
 
       {/* Table */}

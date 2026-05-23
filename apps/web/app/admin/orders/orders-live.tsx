@@ -124,10 +124,12 @@ export default function OrdersLive({
   restaurantId,
   initial,
   restaurantSlug,
+  excelEnabled,
 }: {
   restaurantId: string;
   initial: OrderRow[];
   restaurantSlug: string;
+  excelEnabled: boolean;
 }) {
   const [rows, setRows] = useState<OrderRow[]>(initial);
   const [todayOnly, setTodayOnly] = useState(true);
@@ -257,12 +259,14 @@ export default function OrdersLive({
           </span>
         )}
 
-        <a
-          href={exportUrl}
-          className="px-3 h-9 inline-flex items-center rounded-lg bg-[#1B4332] text-white text-sm font-semibold hover:opacity-90"
-        >
-          📊 تنزيل Excel
-        </a>
+        {excelEnabled && (
+          <a
+            href={exportUrl}
+            className="px-3 h-9 inline-flex items-center rounded-lg bg-[#1B4332] text-white text-sm font-semibold hover:opacity-90"
+          >
+            📊 تنزيل Excel
+          </a>
+        )}
       </div>
 
       {/* Live banner (when bell is ringing) */}

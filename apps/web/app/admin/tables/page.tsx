@@ -1,9 +1,13 @@
+import { notFound } from "next/navigation";
 import { requireOwner } from "@/lib/auth";
 import { createClient } from "@/lib/supabase-server";
+import { hasAddon } from "@/lib/addons";
 import TablesEditor from "./tables-editor";
 
 export default async function AdminTablesPage() {
   const me = await requireOwner();
+  // Hard gate — direct URL navigation must also respect the addon flag.
+  if (!(await hasAddon(me.restaurant_id, "tables_qr"))) notFound();
   const sb = createClient();
 
   const [{ data: r }, { data: tables }] = await Promise.all([

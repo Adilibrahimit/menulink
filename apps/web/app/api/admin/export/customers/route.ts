@@ -9,6 +9,7 @@
  */
 import { requireOwner } from "@/lib/auth";
 import { createClient } from "@/lib/supabase-server";
+import { hasAddon } from "@/lib/addons";
 import {
   newWorkbook, setupSheet, placeBrandedHeader, placeKpiCard, placeTableHeader,
   addDataBar, stripeRows, workbookResponse, PALETTE, FMT, FONTS, BORDERS,
@@ -27,6 +28,9 @@ const SEGMENT_COLOR: Record<string, string> = {
 
 export async function GET() {
   const me = await requireOwner();
+  if (!(await hasAddon(me.restaurant_id, "excel_export"))) {
+    return new Response("excel_export addon disabled for this tenant", { status: 403 });
+  }
   const sb = createClient();
 
   const { data: rest } = await sb

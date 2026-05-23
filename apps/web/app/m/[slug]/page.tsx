@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase-server";
+import { hasAddon } from "@/lib/addons";
 import MenuExperience from "./menu-experience";
 import PwaBootstrap from "./pwa-bootstrap";
 import type { PublicMenu } from "./types";
@@ -38,7 +39,15 @@ export default async function CustomerMenuPage({
   // `?table=5` from the table-QR scan. Take the first value if an array
   // sneaks through (`?table=5&table=6` → "5"). Trim whitespace.
   const raw = searchParams.table;
-  const tableLabel = (Array.isArray(raw) ? raw[0] : raw)?.trim() || null;
+  const rawTableLabel = (Array.isArray(raw) ? raw[0] : raw)?.trim() || null;
+
+  // Soft-degrade: if the restaurant doesn't have the tables_qr addon enabled,
+  // ignore the ?table= param. Old printed QRs keep scanning to a working
+  // menu — they just no longer lock dine-in. This avoids stranding tenants
+  // who deactivate the service but still have physical stickers out.
+  const tableLabel = rawTableLabel && (await hasAddon(menu.restaurant.id, "tables_qr"))
+    ? rawTableLabel
+    : null;
 
   const cssVars = {
     "--brand": menu.restaurant.primary_color,

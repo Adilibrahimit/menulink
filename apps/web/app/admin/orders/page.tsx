@@ -1,5 +1,6 @@
 import { requireOwner } from "@/lib/auth";
 import { createClient } from "@/lib/supabase-server";
+import { hasAddon } from "@/lib/addons";
 import OrdersLive from "./orders-live";
 
 export default async function OrdersPage() {
@@ -8,7 +9,7 @@ export default async function OrdersPage() {
 
   // Pull last 200 to cover several days of today-filter switching without re-fetching.
   // The OrdersLive client component then filters in-memory based on the toggle state.
-  const [{ data: orders }, { data: rest }] = await Promise.all([
+  const [{ data: orders }, { data: rest }, excelEnabled] = await Promise.all([
     sb
       .from("orders")
       .select("id, order_type, channel, status, subtotal, delivery_fee, total, address, notes, car_plate, car_color, car_arrived_at, table_label, created_at, customers(name, phone)")
@@ -20,6 +21,7 @@ export default async function OrdersPage() {
       .select("slug")
       .eq("id", me.restaurant_id)
       .single(),
+    hasAddon(me.restaurant_id, "excel_export"),
   ]);
 
   return (
@@ -32,6 +34,7 @@ export default async function OrdersPage() {
         restaurantId={me.restaurant_id}
         restaurantSlug={rest?.slug ?? "report"}
         initial={orders ?? []}
+        excelEnabled={excelEnabled}
       />
     </div>
   );

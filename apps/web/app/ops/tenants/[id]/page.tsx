@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase-server";
 import TenantActions from "./tenant-actions";
 import DesignForm from "./design-form";
 import MenuQR from "@/components/menu-qr";
+import AddonManager from "./addon-manager";
 
 const STATUS_LABEL: Record<string, string> = {
   pending_payment: "بانتظار الدفع",
@@ -21,7 +22,15 @@ export default async function TenantDetailPage({
   await requireOps();
   const sb = createClient();
 
-  const [{ data: r }, { data: sub }, { data: payments }, { data: owners }, { data: orderCount }] = await Promise.all([
+  const [
+    { data: r },
+    { data: sub },
+    { data: payments },
+    { data: owners },
+    { data: orderCount },
+    { data: catalog },
+    { data: addons },
+  ] = await Promise.all([
     sb.from("restaurants").select("*").eq("id", params.id).single(),
     sb.from("subscriptions").select("*").eq("restaurant_id", params.id).maybeSingle(),
     sb.from("payments")
@@ -30,6 +39,12 @@ export default async function TenantDetailPage({
       .limit(10),
     sb.rpc("get_tenant_owners", { p_restaurant_id: params.id }),
     sb.from("orders").select("id", { count: "exact", head: true }).eq("restaurant_id", params.id),
+    sb.from("addon_catalog")
+      .select("key, name_ar, description_ar, category, default_price_sar, trial_days, is_default, sort_order")
+      .order("sort_order", { ascending: true }),
+    sb.from("subscription_addons")
+      .select("addon_key, enabled, trial_ends_at, price_override_sar, notes")
+      .eq("restaurant_id", params.id),
   ]);
 
   if (!r) notFound();
@@ -77,6 +92,18 @@ export default async function TenantDetailPage({
             primary_color: r.primary_color,
             background_color: r.background_color,
           }}
+        />
+      </section>
+
+      <section className="bg-neutral-900 border border-neutral-800 rounded-xl p-4">
+        <div className="flex items-center justify-between mb-3 gap-2">
+          <h2 className="font-semibold">الخدمات (Addons)</h2>
+          <span className="text-[10px] text-neutral-500">المالك يرى فقط الخدمات المفعّلة</span>
+        </div>
+        <AddonManager
+          restaurantId={r.id}
+          catalog={catalog ?? []}
+          initial={addons ?? []}
         />
       </section>
 

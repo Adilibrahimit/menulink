@@ -2,17 +2,25 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { getCurrentUser, requireOwner } from "@/lib/auth";
 import { createClient } from "@/lib/supabase-server";
+import { getEnabledAddons, type AddonKey } from "@/lib/addons";
 import type { Restaurant } from "@/lib/types";
 import SubscriptionBanner from "./subscription-banner";
 
-const NAV = [
-  { href: "/admin",           label: "اللوحة",   icon: "🏠" },
-  { href: "/admin/orders",    label: "الطلبات",  icon: "🛒" },
-  { href: "/admin/menu",      label: "القائمة",  icon: "🍽️" },
-  { href: "/admin/customers", label: "العملاء",  icon: "👤" },
-  { href: "/admin/qr",        label: "رمز QR",   icon: "🔳" },
-  { href: "/admin/tables",    label: "الطاولات", icon: "🪑" },
-  { href: "/admin/info",      label: "المعلومات", icon: "⚙️" },
+type NavItem = {
+  href: string;
+  label: string;
+  icon: string;
+  addon: AddonKey | null;   // null = always visible (base feature)
+};
+
+const NAV: NavItem[] = [
+  { href: "/admin",           label: "اللوحة",   icon: "🏠", addon: null },
+  { href: "/admin/orders",    label: "الطلبات",  icon: "🛒", addon: null },
+  { href: "/admin/menu",      label: "القائمة",  icon: "🍽️", addon: null },
+  { href: "/admin/customers", label: "العملاء",  icon: "👤", addon: null },
+  { href: "/admin/qr",        label: "رمز QR",   icon: "🔳", addon: null },
+  { href: "/admin/tables",    label: "الطاولات", icon: "🪑", addon: "tables_qr" },
+  { href: "/admin/info",      label: "المعلومات", icon: "⚙️", addon: null },
 ];
 
 export default async function AdminLayout({
@@ -31,11 +39,12 @@ export default async function AdminLayout({
 
   // Pull the restaurant the owner manages
   const sb = createClient();
-  const { data: restaurant } = await sb
-    .from("restaurants")
-    .select("*")
-    .eq("id", me.restaurant_id)
-    .single();
+  const [{ data: restaurant }, enabledAddons] = await Promise.all([
+    sb.from("restaurants").select("*").eq("id", me.restaurant_id).single(),
+    getEnabledAddons(me.restaurant_id),
+  ]);
+
+  const visibleNav = NAV.filter((n) => !n.addon || enabledAddons.has(n.addon));
 
   return (
     <div className="min-h-screen bg-brand-bg" dir="rtl">
@@ -61,7 +70,7 @@ export default async function AdminLayout({
 
       <div className="max-w-6xl mx-auto px-4 py-6 grid grid-cols-1 md:grid-cols-[200px,1fr] gap-6">
         <nav className="space-y-1">
-          {NAV.map((n) => (
+          {visibleNav.map((n) => (
             <Link
               key={n.href}
               href={n.href}
