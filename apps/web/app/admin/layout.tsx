@@ -10,6 +10,7 @@ const NAV = [
   { href: "/admin/orders",    label: "الطلبات",  icon: "🛒" },
   { href: "/admin/menu",      label: "القائمة",  icon: "🍽️" },
   { href: "/admin/customers", label: "العملاء",  icon: "👤" },
+  { href: "/admin/qr",        label: "رمز QR",   icon: "🔳" },
   { href: "/admin/info",      label: "المعلومات", icon: "⚙️" },
 ];
 

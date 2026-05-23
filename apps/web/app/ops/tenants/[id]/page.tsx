@@ -4,6 +4,7 @@ import { requireOps } from "@/lib/auth";
 import { createClient } from "@/lib/supabase-server";
 import TenantActions from "./tenant-actions";
 import DesignForm from "./design-form";
+import MenuQR from "@/components/menu-qr";
 
 const STATUS_LABEL: Record<string, string> = {
   pending_payment: "بانتظار الدفع",
@@ -76,6 +77,20 @@ export default async function TenantDetailPage({
             primary_color: r.primary_color,
             background_color: r.background_color,
           }}
+        />
+      </section>
+
+      <section className="bg-neutral-900 border border-neutral-800 rounded-xl p-4">
+        <div className="flex items-center justify-between mb-3 gap-2">
+          <h2 className="font-semibold">رمز QR للقائمة</h2>
+          <span className="text-[10px] text-neutral-500">يصل المالك إليه أيضاً من /admin/qr</span>
+        </div>
+        <MenuQR
+          slug={r.slug}
+          restaurantName={r.name}
+          logoUrl={r.logo_url ?? null}
+          taglineAr={r.tagline_ar ?? null}
+          primaryColor={r.primary_color ?? "#D32027"}
         />
       </section>
 
