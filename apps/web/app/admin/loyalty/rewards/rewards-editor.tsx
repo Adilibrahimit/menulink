@@ -12,6 +12,7 @@ type RewardRow = {
   points_cost: number;
   min_tier: TierKey;
   max_per_customer: number | null;
+  image_url: string | null;
   active: boolean;
   sort_order: number;
   created_at: string;
@@ -77,11 +78,69 @@ export default function RewardsEditor({
         active:           true,
         sort_order:       nextSort,
       })
-      .select("id, name_ar, description_ar, points_cost, min_tier, max_per_customer, active, sort_order, created_at")
+      .select("id, name_ar, description_ar, points_cost, min_tier, max_per_customer, image_url, active, sort_order, created_at")
       .single();
     if (err) { setError(err.message); return; }
     setRewards((r) => [...r, data as RewardRow]);
     setDraft(EMPTY_DRAFT);
+  }
+
+  async function uploadImage(rewardId: string, file: File) {
+    if (file.size > 5 * 1024 * 1024) {
+      setError("حجم الصورة أكبر من 5 ميغا");
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      setError("الملف يجب أن يكون صورة");
+      return;
+    }
+    setError(null);
+    setBusyId(rewardId);
+    try {
+      const sb = createClient();
+      const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+      // Path: <restaurant_id>/rewards/<reward_id>-<random>.<ext>
+      // — random keeps CDN caches honest when the owner replaces an image.
+      const path = `${restaurantId}/rewards/${rewardId}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error: upErr } = await sb.storage
+        .from("menu-images")
+        .upload(path, file, { upsert: true, contentType: file.type });
+      if (upErr) {
+        setError(upErr.message);
+        return;
+      }
+      const { data } = sb.storage.from("menu-images").getPublicUrl(path);
+      const { error: updErr } = await sb
+        .from("loyalty_rewards")
+        .update({ image_url: data.publicUrl })
+        .eq("id", rewardId);
+      if (updErr) {
+        setError(updErr.message);
+        return;
+      }
+      setRewards((arr) => arr.map((x) => (x.id === rewardId ? { ...x, image_url: data.publicUrl } : x)));
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function removeImage(rewardId: string) {
+    if (!confirm("حذف الصورة من هذه المكافأة؟")) return;
+    setBusyId(rewardId);
+    try {
+      const sb = createClient();
+      const { error: err } = await sb
+        .from("loyalty_rewards")
+        .update({ image_url: null })
+        .eq("id", rewardId);
+      if (err) {
+        setError(err.message);
+        return;
+      }
+      setRewards((arr) => arr.map((x) => (x.id === rewardId ? { ...x, image_url: null } : x)));
+    } finally {
+      setBusyId(null);
+    }
   }
 
   async function deleteReward(id: string) {
@@ -306,9 +365,37 @@ export default function RewardsEditor({
                   </div>
                 ) : (
                   <div className="flex items-start gap-3 flex-wrap">
-                    <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-2xl shrink-0">
-                      🎁
-                    </div>
+                    <label
+                      className="shrink-0 cursor-pointer group relative w-14 h-14 rounded-xl overflow-hidden bg-amber-50 border border-amber-200 hover:border-amber-400"
+                      title="اضغط لرفع صورة"
+                    >
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        className="hidden"
+                        onChange={(e) => {
+                          const f = e.target.files?.[0];
+                          if (f) uploadImage(r.id, f);
+                          e.target.value = "";
+                        }}
+                      />
+                      {r.image_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={r.image_url} alt={r.name_ar} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="w-full h-full flex items-center justify-center text-2xl">🎁</span>
+                      )}
+                      {r.image_url && (
+                        <button
+                          type="button"
+                          onClick={(e) => { e.preventDefault(); removeImage(r.id); }}
+                          className="absolute top-0 left-0 w-5 h-5 rounded-br-md bg-rose-600 text-white text-xs leading-none flex items-center justify-center opacity-0 group-hover:opacity-100"
+                          title="حذف الصورة"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </label>
                     <div className="flex-1 min-w-[160px]">
                       <div className="font-extrabold text-neutral-900" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
                         {r.name_ar}

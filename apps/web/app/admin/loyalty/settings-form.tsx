@@ -59,6 +59,7 @@ export default function LoyaltySettingsForm({
   const [redemptionValueSar, setRedemptionValueSar] = useState(String(initial.redemption_value_sar));
   const [welcomeBonus,       setWelcomeBonus]       = useState(String(initial.welcome_bonus_points));
   const [birthdayBonus,      setBirthdayBonus]      = useState(String(initial.birthday_bonus_points));
+  const [expiryDays,         setExpiryDays]         = useState(String((initial as unknown as { points_expiry_days?: number | null }).points_expiry_days ?? ""));
   const [tiers, setTiers] = useState<TierMap>(() => normalizeTiers(initial.tier_thresholds_json));
 
   const [saving, setSaving] = useState(false);
@@ -82,6 +83,7 @@ export default function LoyaltySettingsForm({
       welcome_bonus_points:  Number(welcomeBonus)        || 0,
       birthday_bonus_points: Number(birthdayBonus)       || 0,
       tier_thresholds_json:  tiers,
+      points_expiry_days:    expiryDays.trim() ? Number(expiryDays) : null,
     };
     const { error: err } = await sb
       .from("loyalty_settings")
@@ -183,11 +185,11 @@ export default function LoyaltySettingsForm({
         </div>
       </div>
 
-      {/* Welcome + birthday bonuses */}
-      <div className="bg-white border border-neutral-200 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {/* Welcome + birthday bonuses + expiry */}
+      <div className="bg-white border border-neutral-200 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
         <Field
           label="مكافأة الترحيب (نقاط)"
-          hint="تُمنح عند ربط العميل لحسابه أول مرة. (تفعّل في المرحلة القادمة)"
+          hint="تُمنح عند ربط العميل لحسابه أول مرة."
         >
           <input
             type="number" min="0"
@@ -198,12 +200,24 @@ export default function LoyaltySettingsForm({
         </Field>
         <Field
           label="مكافأة عيد الميلاد (نقاط)"
-          hint="تُمنح سنوياً في يوم ميلاد العميل. (تفعّل في المرحلة القادمة)"
+          hint="تُمنح سنوياً في يوم ميلاد العميل. (تفعّل لاحقاً)"
         >
           <input
             type="number" min="0"
             value={birthdayBonus}
             onChange={(e) => setBirthdayBonus(e.target.value)}
+            className="w-full h-10 rounded-lg border border-neutral-200 px-3 outline-none focus:border-brand-primary text-sm"
+          />
+        </Field>
+        <Field
+          label="انتهاء صلاحية النقاط (أيام)"
+          hint="بعد X يوم من آخر طلب يكسب فيه العميل نقاطاً، تنتهي نقاطه. فارغ = لا تنتهي أبداً. يُطبّق عند الطلب التالي (lazy)."
+        >
+          <input
+            type="number" min="0"
+            value={expiryDays}
+            onChange={(e) => setExpiryDays(e.target.value)}
+            placeholder="فارغ = لا تنتهي"
             className="w-full h-10 rounded-lg border border-neutral-200 px-3 outline-none focus:border-brand-primary text-sm"
           />
         </Field>

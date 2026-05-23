@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase-browser";
 
 type TierKey = "bronze" | "silver" | "gold" | "platinum";
@@ -12,6 +12,7 @@ type Reward = {
   points_cost: number;
   min_tier: TierKey;
   max_per_customer: number | null;
+  image_url: string | null;
 };
 
 type Customer = {
@@ -49,6 +50,43 @@ export default function RewardsClient({
   const [success, setSuccess] = useState<{ rewardName: string; newBalance: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [toast, setToast] = useState<{ kind: "success" | "info"; message: string } | null>(null);
+
+  // Realtime: notify customer when one of their redemptions changes status
+  // (owner marked fulfilled or cancelled it). Same subscription pattern as
+  // the account page — kept here too so customers browsing rewards see the
+  // ping without navigating away.
+  useEffect(() => {
+    if (!customer) return;
+    const sb = createClient();
+    const channel = sb
+      .channel(`customer-rewards:${customer.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "loyalty_redemptions",
+          filter: `customer_id=eq.${customer.id}`,
+        },
+        (payload) => {
+          const fresh = payload.new as { status: "pending" | "fulfilled" | "cancelled" };
+          if (fresh.status === "fulfilled") {
+            setToast({ kind: "success", message: "✅ مكافأتك جاهزة! المطعم سلّمها." });
+          } else if (fresh.status === "cancelled") {
+            setToast({ kind: "info", message: "ℹ️ تم إلغاء الاستبدال وإعادة نقاطك." });
+          }
+        },
+      )
+      .subscribe();
+    return () => { sb.removeChannel(channel); };
+  }, [customer]);
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = window.setTimeout(() => setToast(null), 5000);
+    return () => window.clearTimeout(t);
+  }, [toast]);
 
   async function confirmRedeem(r: Reward) {
     setBusy(true);
@@ -125,6 +163,20 @@ export default function RewardsClient({
 
   return (
     <div className="space-y-3">
+      {toast && (
+        <div
+          className={
+            "rounded-2xl px-4 py-3 text-sm font-bold leading-snug shadow-md " +
+            (toast.kind === "success"
+              ? "bg-green-50 border-2 border-green-300 text-green-900"
+              : "bg-neutral-50 border-2 border-neutral-300 text-neutral-800")
+          }
+          style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+        >
+          {toast.message}
+        </div>
+      )}
+
       {HeaderCard}
 
       {error && (
@@ -139,9 +191,18 @@ export default function RewardsClient({
           const shortBy = customer ? Math.max(0, r.points_cost - customer.loyalty_points_balance) : 0;
           return (
             <li key={r.id} className="bg-white border border-neutral-200 rounded-2xl p-3 flex items-center gap-3 flex-wrap">
-              <div className="w-14 h-14 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-3xl shrink-0">
-                🎁
-              </div>
+              {r.image_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={r.image_url}
+                  alt={r.name_ar}
+                  className="w-16 h-16 rounded-xl object-cover shrink-0 border border-amber-200"
+                />
+              ) : (
+                <div className="w-14 h-14 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-3xl shrink-0">
+                  🎁
+                </div>
+              )}
               <div className="flex-1 min-w-[160px]">
                 <div className="font-extrabold text-neutral-900" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
                   {r.name_ar}

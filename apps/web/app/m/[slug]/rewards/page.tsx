@@ -29,7 +29,7 @@ export default async function CustomerRewardsPage({ params }: { params: { slug: 
   // Active rewards for this tenant (anon read allowed by RLS).
   const { data: rewards } = await sb
     .from("loyalty_rewards")
-    .select("id, name_ar, description_ar, points_cost, min_tier, max_per_customer, sort_order, created_at")
+    .select("id, name_ar, description_ar, points_cost, min_tier, max_per_customer, image_url, sort_order, created_at")
     .eq("restaurant_id", restaurant.id)
     .eq("active", true)
     .order("sort_order", { ascending: true })

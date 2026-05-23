@@ -392,6 +392,30 @@ The cashier UI also has Family/Section types (likely 2, but untested today). Eac
 **Source:** session:2026-05-23 user screenshots `D:\New folder (5)\Q5\11`
 **Triggers:** InvoiceNotes_A, thermal printer width, receipt overflow, BuildNotesArabic, phone prefix
 
+### LRN-2026-05-23-customer-pwa-anon-reads (confidence: high) ⭐
+**Context:** Built the loyalty feature with `/m/<slug>/account` page that does direct `.from("restaurants").select(...)` and `hasAddon()` calls. Original anon policies on the menu side worked only because they routed through `get_public_menu()` SECURITY DEFINER RPC, which hid the fact that the underlying tables had NO anon SELECT policies. The new account page hit those gaps and 404'd.
+**Learning:** **Every table the customer PWA reads from MUST have anon SELECT explicitly, OR be wrapped in a SECURITY DEFINER RPC.** Tables that fall into this: `restaurants` (gated by is_active+is_published), `subscription_addons`, `loyalty_settings`, `loyalty_rewards` (active only), `customers` (auth_user_id = self only). When adding any new customer-facing table read, grep for `to anon` in migrations and confirm there's a matching policy — or use an RPC.
+**Source:** session:2026-05-23 loyalty rollout (cost: 3 hotfix migrations)
+**Triggers:** anon RLS, customer PWA, get_public_menu hides gaps, 404 after page load, restaurants table
+
+### LRN-2026-05-23-two-trigger-isolation (confidence: high) ⭐
+**Context:** Adding the loyalty earn logic on order INSERT was tempting to bolt onto the existing `touch_customer_last_seen` trigger. Advisor pushed back: if loyalty bookkeeping fails (bad jsonb, missing settings row, divide-by-zero), the WHOLE order insert fails → customer can't checkout → tenant loses revenue.
+**Learning:** **When adding a risky new trigger alongside an existing critical one, keep them as TWO separate trigger functions on the same table.** The risky one wraps its body in `BEGIN ... EXCEPTION WHEN OTHERS THEN RAISE WARNING ... END` so a bug NEVER breaks the core insert. Trigger fire order matters — PostgreSQL fires AFTER INSERT triggers alphabetically by name; use a `z_` prefix on the new one if it must run after an existing trigger (e.g., `z_loyalty_after_insert` runs after `orders_touch_customer`).
+**Source:** session:2026-05-23 loyalty migration 0017
+**Triggers:** trigger blast radius, EXCEPTION WHEN OTHERS, trigger fire order, z_ prefix, additive trigger
+
+### LRN-2026-05-23-uuid-is-real-auth (confidence: high)
+**Context:** Built `mark_arrived(order_id, plate)` and `link_customer_account(phone)` as anon-callable RPCs. Plate and phone serve as "is this the right person" checks, but neither is real auth.
+**Learning:** **For anon-callable RPCs where the identifier is an unguessable UUID, the UUID IS the security boundary; secondary fields (plate, phone) are just soft sanity checks.** Acceptable when stakes are low (mark-arrived ping, balance-only loyalty). When stakes rise (redemption against real inventory, money), the soft check needs to become a real OTP. Document the residual risk so future-you knows when to upgrade. Don't over-engineer the verification before the stakes justify it.
+**Source:** session:2026-05-23 car-curbside + loyalty link
+**Triggers:** anon RPC, security boundary, UUID, phone verification, OTP, hijack guard
+
+### LRN-2026-05-23-addon-is-default-semantic (confidence: medium)
+**Context:** Designed the addon framework with `addon_catalog.is_default boolean`. The semantic was ambiguous: does `is_default = true` mean "always on / can't be disabled" or "auto-enabled on new tenant creation"?
+**Learning:** **In the MenuLink addon framework, `is_default = true` means "auto-enable for new tenants on onboarding + backfill existing tenants on launch". It is NOT a permission gate — ops can still toggle `is_default = true` addons OFF for problem cases.** Keeps flexibility for "tenant abused excel_export → temporarily disable" scenarios. Don't confuse with a future "required addon, cannot disable" flag (which we don't have yet and probably won't need until enterprise tier).
+**Source:** session:2026-05-23 addon framework rollout
+**Triggers:** addon catalog, is_default, default vs required, addon semantics, onboarding wizard
+
 ---
 
 ## ❌ What Has Failed (Avoid These)
@@ -459,6 +483,13 @@ The cashier UI also has Family/Section types (likely 2, but untested today). Eac
 - Real production load — can't break for long
 - **No pricing pressure** — free or discounted in exchange for R&D access
 - See `customers/rzrz-restaurant.md` for full details
+
+### LRN-2026-05-23-rls-anon-vs-public (confidence: high) ⚠️ CRITICAL
+**Context:** Loyalty rollout shipped three RLS policies as `to anon` (subscription_addons, addon_catalog, loyalty_settings) to gate the customer PWA's addon checks. They worked for anonymous visitors. But the moment a customer signed in with Google, their session role became `authenticated` — and the `to anon` policies STOPPED applying. Result: signed-in customers got 404 on `/m/<slug>/account` because `hasAddon()` returned false. Same root cause hit again on the `restaurants` table read. Cost three hotfix migrations (0018, 0019, 0020) over an iterative debugging loop.
+**Learning:** **PostgreSQL RLS treats `anon` and `authenticated` as ENTIRELY separate roles for policy matching.** A policy scoped `to anon` is invisible to a signed-in user, even if the user is "less privileged" than an owner. For customer-facing read tables where ANY visitor (anon OR a signed-in customer who isn't owner/ops) must read, use **`to public`** which matches both roles. Reserve `to anon` only for cases where you genuinely want to exclude signed-in users (rare; can't think of a real case).
+**Why I missed it:** Thought `to anon` was a strict superset ("anon is the minimum, authenticated can do everything anon can"). It's not — they're peers.
+**Source:** session:2026-05-23 loyalty rollout (3 hotfix migrations to get right)
+**Triggers:** RLS, to anon, to public, to authenticated, customer signed in 404, role-scoped policies, Postgres roles
 
 ---
 
@@ -640,6 +671,33 @@ The cashier UI also has Family/Section types (likely 2, but untested today). Eac
   - [[lrn-2026-05-23-powershell-string-newline-trap]] (anti-pattern)
   - [[lrn-2026-05-23-sb-secret-postgrest-guard-too]] (existing learning extended)
 - **Opened:** [[opn-2026-05-23-loyalty-and-addon-pricing]], [[opn-2026-05-23-rzrz-tenant-slug-mismatch]]
+
+### 2026-05-23 (late) — addon framework + loyalty service (slices 1-3)
+- **Scope shipped:** Per-tenant addon framework (migration 0016, 5 catalog rows). Loyalty service phases 1+2+3: schema (0017), auto-earn trigger, customer accounts via Google OAuth, rewards CRUD, redemption flow with fulfill/cancel RPCs (0021), welcome bonus auto-fire, manual point adjustments, customer-side redemption history, loyalty stats dashboard (0022). All gated by the `loyalty` addon. KO-KO Chicky Licky was the test tenant.
+- **What worked:**
+  - The two-trigger pattern (kept `touch_customer_last_seen` intact, added a separate `z_loyalty_after_insert` with EXCEPTION-wrapped body). Loyalty bugs can't break the order insert path. Trigger fire order managed alphabetically via `z_` prefix. [[lrn-2026-05-23-two-trigger-isolation]]
+  - Customer account flow: Google OAuth → phone-link form → cross-tenant `customers.auth_user_id` binding via `link_customer_account` RPC. Hijack guard refuses link if phone is already bound to a different user. uuid order_id is the real security boundary; phone is a soft sanity check. [[lrn-2026-05-23-uuid-is-real-auth]]
+  - Snapshot principle held through: redemptions carry `points_cost` as a snapshot so renaming a reward later doesn't rewrite history. Lifetime points only ever go UP — even on cancel-redemption refunds, lifetime stays put so tier never regresses.
+  - Addon framework `is_default = true` was the right semantic: auto-enabled for existing + new tenants on the launch migration; ops can still toggle off for problem cases. [[lrn-2026-05-23-addon-is-default-semantic]]
+  - Customer account page kept Realtime-free; reload-on-action is simpler and works for low-frequency loyalty state changes. (Adding Realtime in slice 4.)
+- **What failed (and cost time):**
+  - Three back-to-back hotfix migrations (0018, 0019, 0020) chased the same root cause: `to anon` policies don't apply to authenticated customers. Should have caught this in one pass instead of three. The lesson is now [[lrn-2026-05-23-rls-anon-vs-public]] under "What Has Failed".
+  - I tucked the "continue as guest" fallback into a small text link; user pushed back to make it a full-width button. UX intuition wasn't matched. Captured implicitly as a Q&A pattern: "soft fallback != small link, it's a co-equal button next to the primary CTA."
+  - The user wanted the loyalty CTA in the cart drawer (high-intent moment) not at the bottom of the menu (low-intent browse). I had to move it. Captured as a UX principle: monetization prompts go where intent is highest, not where they happen to fit.
+- **What surprised me:**
+  - The user is taking the "platform" framing seriously. Wants every chargeable feature in the addon model from day one, including ones that already shipped (tables_qr, excel_export, pos_bridge). They're thinking ahead to enterprise tier and price-per-tenant control.
+  - The Google OAuth setup was smoother than expected — Supabase Management API can patch the auth config + Google provider creds without going through the dashboard. Cuts the setup loop in half.
+- **Direction set for next session (slice 4):**
+  - Rewards images via Supabase Storage (reuse menu-images bucket, `<restaurant_id>/rewards/` path).
+  - Realtime customer notification when redemption status changes (subscribe `loyalty_redemptions` UPDATE for current customer).
+  - Points expiry with lazy in-trigger check (no cron required).
+  - Still deferred: order-attached redemptions, SMS OTP for phone verification, real push notifications (OneSignal).
+- **Captured learnings:**
+  - [[lrn-2026-05-23-customer-pwa-anon-reads]] (positive principle)
+  - [[lrn-2026-05-23-two-trigger-isolation]] (positive pattern)
+  - [[lrn-2026-05-23-uuid-is-real-auth]] (positive pattern)
+  - [[lrn-2026-05-23-addon-is-default-semantic]] (semantic clarification)
+  - [[lrn-2026-05-23-rls-anon-vs-public]] (anti-pattern, cost three migrations)
 
 ---
 

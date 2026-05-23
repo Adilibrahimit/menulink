@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase-browser";
 import { normalizePhone } from "@/lib/phone";
 
@@ -79,6 +79,56 @@ export default function AccountClient({
   recentRedemptions: RedemptionView[];
   tierLabel: string | null;
 }) {
+  // Hooks must be called unconditionally before any early returns.
+  const [redemptions, setRedemptions] = useState<RedemptionView[]>(recentRedemptions);
+  const [toast, setToast] = useState<{ kind: "success" | "info"; message: string } | null>(null);
+
+  // Realtime: subscribe to status changes on this customer's redemptions.
+  // Toast on pending→fulfilled (success) and pending→cancelled (info).
+  // Also updates the local redemption list so the status pill changes live.
+  useEffect(() => {
+    if (!customer) return;
+    const sb = createClient();
+    const channel = sb
+      .channel(`customer-redemptions:${customer.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "loyalty_redemptions",
+          filter: `customer_id=eq.${customer.id}`,
+        },
+        (payload) => {
+          const fresh = payload.new as {
+            id: string;
+            status: "pending" | "fulfilled" | "cancelled";
+            points_cost: number;
+            redeemed_at: string;
+          };
+          setRedemptions((arr) =>
+            arr.map((r) =>
+              r.id === fresh.id ? { ...r, status: fresh.status } : r,
+            ),
+          );
+          if (fresh.status === "fulfilled") {
+            setToast({ kind: "success", message: "✅ مكافأتك جاهزة! المطعم سلّمها." });
+          } else if (fresh.status === "cancelled") {
+            setToast({ kind: "info", message: "ℹ️ تم إلغاء الاستبدال وإعادة نقاطك." });
+          }
+        },
+      )
+      .subscribe();
+    return () => { sb.removeChannel(channel); };
+  }, [customer]);
+
+  // Auto-dismiss toast after 5 seconds.
+  useEffect(() => {
+    if (!toast) return;
+    const t = window.setTimeout(() => setToast(null), 5000);
+    return () => window.clearTimeout(t);
+  }, [toast]);
+
   /* ---------------- signed-out ---------------- */
   if (!signedIn) return <SignedOutCard slug={slug} tenantName={tenantName} />;
 
@@ -88,6 +138,21 @@ export default function AccountClient({
   /* ---------------- signed in + linked ---------------- */
   return (
     <div className="space-y-4">
+      {/* Toast: realtime redemption status notifications */}
+      {toast && (
+        <div
+          className={
+            "rounded-2xl px-4 py-3 text-sm font-bold leading-snug shadow-md " +
+            (toast.kind === "success"
+              ? "bg-green-50 border-2 border-green-300 text-green-900"
+              : "bg-neutral-50 border-2 border-neutral-300 text-neutral-800")
+          }
+          style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+        >
+          {toast.message}
+        </div>
+      )}
+
       {/* Identity */}
       <div className="bg-white border border-neutral-200 rounded-2xl p-4 flex items-center gap-3">
         <div className="w-12 h-12 rounded-full bg-[var(--brand)] text-white flex items-center justify-center text-2xl font-bold shrink-0">
@@ -169,13 +234,13 @@ export default function AccountClient({
       </div>
 
       {/* Redemption history */}
-      {recentRedemptions.length > 0 && (
+      {redemptions.length > 0 && (
         <div className="bg-white border border-neutral-200 rounded-2xl p-4">
           <h2 className="font-extrabold mb-3" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
             آخر الاستبدالات
           </h2>
           <ul className="divide-y divide-neutral-100">
-            {recentRedemptions.map((r) => (
+            {redemptions.map((r) => (
               <li key={r.id} className="py-2.5 flex items-center justify-between gap-2 flex-wrap">
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-semibold text-neutral-900 truncate">

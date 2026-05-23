@@ -12,7 +12,7 @@ export default async function AdminLoyaltyRewardsPage() {
   const sb = createClient();
   const { data: rewards } = await sb
     .from("loyalty_rewards")
-    .select("id, name_ar, description_ar, points_cost, min_tier, max_per_customer, active, sort_order, created_at")
+    .select("id, name_ar, description_ar, points_cost, min_tier, max_per_customer, image_url, active, sort_order, created_at")
     .eq("restaurant_id", me.restaurant_id)
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: true });
