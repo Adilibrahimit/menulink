@@ -1,8 +1,8 @@
 # MenuLink · Project Memory
 
 > **Read this first** when picking up the project in a new session.
-> Last saved: **2026-05-24** — Car-curbside, table QRs, addon framework, loyalty service (4 slices), SFDA nutrition/allergen compliance, customer Google accounts, 3 operational skills.
-> Status line: **production SaaS, 4 tenants. Full feature set: car-curbside + dine-in tables + per-tenant addon framework (5 services) + loyalty program (earn/redeem/tiers/rewards/manual-adjust/points-expiry) + customer Google accounts + SFDA-compliant nutrition display (calories+allergens on 70 items). 3 skills created (menu-onboarding, tenant-deployment, nutrition-audit). Next: push marketing (OneSignal) + payment gateway (Moyasar) + Samer's .NET workflow patch.**
+> Last saved: **2026-05-24 (end of session)** — Biggest session ever: 11 migrations (0014-0024), car-curbside, dine-in tables, addon framework, loyalty (4 slices), SFDA nutrition, customer Google accounts, 3 skills, graphify knowledge graph.
+> Status line: **production SaaS, 4 tenants. Full feature set: 4 order types (delivery/pickup/dine_in/car) + dine-in tables with QR + per-tenant addon framework (5 services) + full loyalty program (earn/redeem/tiers/rewards/manual-adjust/welcome-bonus/points-expiry/realtime-notifications) + customer Google accounts with phone linking + SFDA-compliant nutrition display (calories+allergens on 70 items, 98%/96% audit scores) + per-tenant QR posters. 3 skills (menu-onboarding, tenant-deployment, nutrition-audit). Graphify knowledge graph: 214 nodes, 173 edges, 27 communities, 468x token reduction. Next: push marketing (OneSignal) + payment gateway (Moyasar) + Samer's .NET workflow patch + trace all 27 graphify communities.**
 
 ---
 
