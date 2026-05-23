@@ -49,6 +49,20 @@ export default async function CustomerMenuPage({
     ? rawTableLabel
     : null;
 
+  // Loyalty preview: when the loyalty addon is on for this tenant AND
+  // loyalty_settings.enabled is true, the cart drawer renders an "earn X
+  // points" preview once the customer types a phone. Lookup happens here
+  // (server) so the client doesn't round-trip on every render.
+  let loyaltyPointsPerSar: number | null = null;
+  if (await hasAddon(menu.restaurant.id, "loyalty")) {
+    const { data: ls } = await sb
+      .from("loyalty_settings")
+      .select("enabled, points_per_sar")
+      .eq("restaurant_id", menu.restaurant.id)
+      .maybeSingle();
+    if (ls?.enabled) loyaltyPointsPerSar = Number(ls.points_per_sar);
+  }
+
   const cssVars = {
     "--brand": menu.restaurant.primary_color,
     "--bg": menu.restaurant.background_color || "#fff8f6",
@@ -62,7 +76,11 @@ export default async function CustomerMenuPage({
       style={cssVars}
       className="min-h-[100dvh]"
     >
-      <MenuExperience menu={menu} tableLabel={tableLabel} />
+      <MenuExperience
+        menu={menu}
+        tableLabel={tableLabel}
+        loyaltyPointsPerSar={loyaltyPointsPerSar}
+      />
       <PwaBootstrap />
     </div>
   );

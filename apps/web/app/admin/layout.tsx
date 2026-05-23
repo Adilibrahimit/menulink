@@ -20,6 +20,7 @@ const NAV: NavItem[] = [
   { href: "/admin/customers", label: "العملاء",  icon: "👤", addon: null },
   { href: "/admin/qr",        label: "رمز QR",   icon: "🔳", addon: null },
   { href: "/admin/tables",    label: "الطاولات", icon: "🪑", addon: "tables_qr" },
+  { href: "/admin/loyalty",   label: "الولاء",   icon: "🏆", addon: "loyalty" },
   { href: "/admin/info",      label: "المعلومات", icon: "⚙️", addon: null },
 ];
 

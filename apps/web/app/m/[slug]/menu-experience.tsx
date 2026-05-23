@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase-browser";
 import { SLUG_TO_IMG } from "@/lib/koko-images";
+import { normalizePhone } from "@/lib/phone";
 import type {
   PublicMenu,
   PublicMenuItem,
@@ -28,9 +29,11 @@ function trackingKey(restaurantId: string) {
 export default function MenuExperience({
   menu,
   tableLabel,
+  loyaltyPointsPerSar,
 }: {
   menu: PublicMenu;
   tableLabel: string | null;
+  loyaltyPointsPerSar: number | null;
 }) {
   const [cart, setCart] = useState<Record<string, CartLine>>({});
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -241,6 +244,29 @@ export default function MenuExperience({
         ))}
       </div>
 
+      {/* SOFT ACCOUNT CTA — only when loyalty is enabled. Sits below the menu
+          sections so it doesn't compete with browsing. Never blocks the
+          guest-checkout flow; just an invite to "save your points". */}
+      {loyaltyPointsPerSar != null && loyaltyPointsPerSar > 0 && (
+        <div className="mt-8 px-4">
+          <a
+            href={`/m/${menu.restaurant.slug}/account`}
+            className="block bg-white border-2 border-amber-200 rounded-2xl px-4 py-3 flex items-center gap-3 hover:border-amber-300 active:translate-y-px"
+          >
+            <span className="text-3xl shrink-0">🏆</span>
+            <span className="flex-1 min-w-0">
+              <span className="block font-extrabold text-neutral-900 text-sm" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+                احفظ نقاطك وطلباتك
+              </span>
+              <span className="block text-[11px] text-neutral-500 mt-0.5 leading-snug">
+                ادخل بـ Google · اختياري ولا يأخذ أكثر من ثانية
+              </span>
+            </span>
+            <span className="text-xl text-neutral-400 shrink-0">←</span>
+          </a>
+        </div>
+      )}
+
       {/* STICKY BOTTOM CART BAR — only when cart has items */}
       {count > 0 && (
         <button
@@ -299,6 +325,7 @@ export default function MenuExperience({
           lines={lines}
           total={total}
           tableLabel={tableLabel}
+          loyaltyPointsPerSar={loyaltyPointsPerSar}
           onClose={() => setDrawerOpen(false)}
           onAdjust={adjustQty}
           onClear={clearCart}
@@ -329,6 +356,7 @@ function CartDrawer({
   lines,
   total,
   tableLabel,
+  loyaltyPointsPerSar,
   onClose,
   onAdjust,
   onClear,
@@ -338,6 +366,7 @@ function CartDrawer({
   lines: CartLine[];
   total: number;
   tableLabel: string | null;
+  loyaltyPointsPerSar: number | null;
   onClose: () => void;
   onAdjust: (lineId: string, delta: number) => void;
   onClear: () => void;
@@ -634,6 +663,18 @@ function CartDrawer({
                 {toArabicDigits(String(total))} ر.س
               </span>
             </div>
+            {loyaltyPointsPerSar != null && loyaltyPointsPerSar > 0 && rawPhone.trim() && (() => {
+              const earn = Math.floor(total * loyaltyPointsPerSar);
+              if (earn <= 0) return null;
+              return (
+                <div className="mb-3 rounded-xl bg-amber-50 border border-amber-200 px-3 py-2 flex items-center gap-2">
+                  <span className="text-xl">🏆</span>
+                  <span className="text-xs font-extrabold text-amber-900 leading-snug" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+                    ستربح {toArabicDigits(String(earn))} نقطة من هذا الطلب
+                  </span>
+                </div>
+              );
+            })()}
             <button
               onClick={submit}
               disabled={submitting}
@@ -657,20 +698,6 @@ function toArabicDigits(s: string): string {
     "5": "٥", "6": "٦", "7": "٧", "8": "٨", "9": "٩",
   };
   return s.replace(/[0-9]/g, (d) => map[d] ?? d);
-}
-
-function normalizePhone(raw: string): string {
-  const arabicMap: Record<string, string> = {
-    "٠": "0", "١": "1", "٢": "2", "٣": "3", "٤": "4",
-    "٥": "5", "٦": "6", "٧": "7", "٨": "8", "٩": "9",
-  };
-  let s = String(raw || "")
-    .replace(/[٠-٩]/g, (d) => arabicMap[d] ?? d)
-    .replace(/\D/g, "");
-  if (s.startsWith("00966")) s = s.slice(5);
-  else if (s.startsWith("966")) s = s.slice(3);
-  if (s.startsWith("0")) s = s.slice(1);
-  return s ? "+966" + s : "";
 }
 
 async function persistOrder({
