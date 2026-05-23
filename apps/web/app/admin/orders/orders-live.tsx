@@ -14,6 +14,9 @@ type OrderRow = {
   total: string;
   address: string | null;
   notes: string | null;
+  car_plate: string | null;
+  car_color: string | null;
+  car_arrived_at: string | null;
   created_at: string;
   customers: CustomerInfo | CustomerInfo[] | null;
 };
@@ -168,7 +171,20 @@ export default function OrdersLive({
         { event: "UPDATE", schema: "public", table: "orders", filter: `restaurant_id=eq.${restaurantId}` },
         (payload) => {
           const fresh = payload.new as OrderRow;
-          setRows((r) => r.map((o) => (o.id === fresh.id ? { ...o, ...fresh } : o)));
+          let justArrived = false;
+          setRows((r) => {
+            const prev = r.find((o) => o.id === fresh.id);
+            // REPLICA IDENTITY isn't FULL here, so payload.old doesn't include
+            // prior values — diff against the current in-memory row instead.
+            if (prev && !prev.car_arrived_at && fresh.car_arrived_at) {
+              justArrived = true;
+            }
+            return r.map((o) => (o.id === fresh.id ? { ...o, ...fresh } : o));
+          });
+          if (justArrived) {
+            setUnseenCount((n) => n + 1);
+            if (soundEnabled) alert.start();
+          }
         }
       )
       .subscribe();
@@ -267,18 +283,44 @@ export default function OrdersLive({
         <ul className="space-y-2">
           {visibleRows.map((o) => {
             const cust = getCustomer(o);
+            const waitingAtCurb =
+              o.order_type === "car" &&
+              !!o.car_arrived_at &&
+              o.status !== "delivered" &&
+              o.status !== "cancelled";
             return (
-              <li key={o.id} className="bg-white border border-neutral-200 rounded-xl p-3 flex items-start justify-between gap-3 flex-wrap">
+              <li
+                key={o.id}
+                className={
+                  "rounded-xl p-3 flex items-start justify-between gap-3 flex-wrap border " +
+                  (waitingAtCurb
+                    ? "bg-amber-50 border-amber-300 ring-2 ring-amber-300/50"
+                    : "bg-white border-neutral-200")
+                }
+              >
                 <div className="flex-1 min-w-[200px]">
-                  <div className="font-semibold">
-                    {cust?.name ?? "—"}{" "}
-                    <span className="text-neutral-400 font-normal">· {cust?.phone ?? "—"}</span>
+                  <div className="font-semibold flex flex-wrap items-center gap-2">
+                    <span>
+                      {cust?.name ?? "—"}{" "}
+                      <span className="text-neutral-400 font-normal">· {cust?.phone ?? "—"}</span>
+                    </span>
+                    {waitingAtCurb && (
+                      <span className="inline-flex items-center gap-1 text-xs font-extrabold bg-amber-500 text-amber-950 rounded-full px-2 py-0.5">
+                        🚗 وصل العميل
+                      </span>
+                    )}
                   </div>
                   <div className="text-xs text-neutral-500 mt-0.5">
                     {new Date(o.created_at).toLocaleString("ar-SA", { timeZone: "Asia/Riyadh" })} ·{" "}
                     {ORDER_TYPE_LABEL[o.order_type] ?? o.order_type}
                   </div>
                   {o.address && <div className="text-xs text-neutral-600 mt-1">📍 {o.address}</div>}
+                  {o.order_type === "car" && (o.car_plate || o.car_color) && (
+                    <div className="text-xs text-neutral-700 mt-1">
+                      🚗 <span dir="ltr">{o.car_plate ?? "—"}</span>
+                      {o.car_color && <span> · {o.car_color}</span>}
+                    </div>
+                  )}
                   {o.notes && <div className="text-xs text-amber-700 mt-1">📝 {o.notes}</div>}
                 </div>
                 <div className="flex items-center gap-2">

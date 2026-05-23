@@ -68,4 +68,4 @@ export type CartLine = {
   imageUrl: string | null;
 };
 
-export type OrderType = "delivery" | "pickup" | "dine_in";
+export type OrderType = "delivery" | "pickup" | "dine_in" | "car";

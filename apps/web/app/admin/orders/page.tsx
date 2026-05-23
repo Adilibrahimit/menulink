@@ -11,7 +11,7 @@ export default async function OrdersPage() {
   const [{ data: orders }, { data: rest }] = await Promise.all([
     sb
       .from("orders")
-      .select("id, order_type, channel, status, subtotal, delivery_fee, total, address, notes, created_at, customers(name, phone)")
+      .select("id, order_type, channel, status, subtotal, delivery_fee, total, address, notes, car_plate, car_color, car_arrived_at, created_at, customers(name, phone)")
       .eq("restaurant_id", me.restaurant_id)
       .order("created_at", { ascending: false })
       .limit(200),

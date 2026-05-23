@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase-browser";
 import { SLUG_TO_IMG } from "@/lib/koko-images";
 import type {
@@ -14,9 +14,57 @@ import CategoryTabs from "./category-tabs";
 import MenuItemCard from "./menu-item";
 import LocationPicker from "./location-picker";
 
+type TrackingState = {
+  orderId: string;
+  plate: string;
+  color: string;
+  arrived: boolean;
+};
+
+function trackingKey(restaurantId: string) {
+  return `menulink:tracking:${restaurantId}`;
+}
+
 export default function MenuExperience({ menu }: { menu: PublicMenu }) {
   const [cart, setCart] = useState<Record<string, CartLine>>({});
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [tracking, setTracking] = useState<TrackingState | null>(null);
+  const [trackingSheetOpen, setTrackingSheetOpen] = useState(false);
+
+  // Hydrate active car-order tracking from localStorage on mount.
+  // Runs in useEffect (not render) to avoid SSR/CSR mismatch.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(trackingKey(menu.restaurant.id));
+      if (raw) setTracking(JSON.parse(raw) as TrackingState);
+    } catch {}
+  }, [menu.restaurant.id]);
+
+  function startTracking(t: TrackingState) {
+    setTracking(t);
+    try {
+      localStorage.setItem(trackingKey(menu.restaurant.id), JSON.stringify(t));
+    } catch {}
+  }
+
+  function updateTracking(patch: Partial<TrackingState>) {
+    setTracking((cur) => {
+      if (!cur) return cur;
+      const next = { ...cur, ...patch };
+      try {
+        localStorage.setItem(trackingKey(menu.restaurant.id), JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  }
+
+  function clearTracking() {
+    setTracking(null);
+    setTrackingSheetOpen(false);
+    try {
+      localStorage.removeItem(trackingKey(menu.restaurant.id));
+    } catch {}
+  }
 
   const lines = Object.values(cart);
   const count = lines.reduce((s, l) => s + l.qty, 0);
@@ -210,6 +258,24 @@ export default function MenuExperience({ menu }: { menu: PublicMenu }) {
         </button>
       )}
 
+      {/* TRACKING BAR — shown when a car-curbside order is in flight and cart is empty.
+          Cart bar takes priority if both are active. */}
+      {count === 0 && tracking && (
+        <button
+          onClick={() => setTrackingSheetOpen(true)}
+          className="fixed bottom-3 inset-x-3 z-40 h-14 rounded-2xl bg-amber-500 text-amber-950 shadow-[0_8px_24px_rgba(0,0,0,0.18)] flex items-center justify-between px-4 hover:opacity-95 active:translate-y-px"
+          dir="rtl"
+        >
+          <span className="flex items-center gap-2">
+            <span className="text-2xl">🚗</span>
+            <span className="font-extrabold text-base" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+              {tracking.arrived ? "تم إبلاغ المطعم بوصولك" : "اضغط لإبلاغ المطعم بوصولك"}
+            </span>
+          </span>
+          <span className="text-xl">←</span>
+        </button>
+      )}
+
       {/* CART DRAWER */}
       {drawerOpen && (
         <CartDrawer
@@ -219,6 +285,18 @@ export default function MenuExperience({ menu }: { menu: PublicMenu }) {
           onClose={() => setDrawerOpen(false)}
           onAdjust={adjustQty}
           onClear={clearCart}
+          onCarOrderPlaced={startTracking}
+        />
+      )}
+
+      {/* TRACKING SHEET — the "I've arrived" flow for active car orders */}
+      {trackingSheetOpen && tracking && (
+        <TrackingSheet
+          tracking={tracking}
+          restaurantName={menu.restaurant.name}
+          onClose={() => setTrackingSheetOpen(false)}
+          onArrived={() => updateTracking({ arrived: true })}
+          onClear={clearTracking}
         />
       )}
     </main>
@@ -236,6 +314,7 @@ function CartDrawer({
   onClose,
   onAdjust,
   onClear,
+  onCarOrderPlaced,
 }: {
   restaurant: PublicMenu["restaurant"];
   lines: CartLine[];
@@ -243,12 +322,15 @@ function CartDrawer({
   onClose: () => void;
   onAdjust: (lineId: string, delta: number) => void;
   onClear: () => void;
+  onCarOrderPlaced: (t: TrackingState) => void;
 }) {
   const [orderType, setOrderType] = useState<OrderType>("delivery");
   const [name, setName] = useState("");
   const [rawPhone, setRawPhone] = useState("");
   const [address, setAddress] = useState("");
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [carPlate, setCarPlate] = useState("");
+  const [carColor, setCarColor] = useState("");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -256,6 +338,7 @@ function CartDrawer({
     delivery: "توصيل",
     pickup: "استلام",
     dine_in: "في المطعم",
+    car: "استلام بالسيارة",
   };
 
   async function submit() {
@@ -274,11 +357,23 @@ function CartDrawer({
         return;
       }
     }
+    if (orderType === "car") {
+      if (!carPlate.trim()) {
+        alert("الرجاء إدخال رقم لوحة السيارة");
+        return;
+      }
+      if (!carColor.trim()) {
+        alert("الرجاء إدخال لون السيارة");
+        return;
+      }
+    }
 
     setSubmitting(true);
     const phone = normalizePhone(rawPhone);
+    const plate = carPlate.trim();
+    const color = carColor.trim();
 
-    persistOrder({
+    const persistArgs = {
       restaurantId: restaurant.id,
       phone,
       name,
@@ -287,9 +382,29 @@ function CartDrawer({
       lng: orderType === "delivery" ? location?.lng ?? null : null,
       notes,
       orderType,
+      carPlate: orderType === "car" ? plate : "",
+      carColor: orderType === "car" ? color : "",
       lines,
       total,
-    }).catch((err) => console.warn("[MenuLink v7] persist failed:", err));
+    };
+
+    // For car orders we need the order_id from the RPC so the customer
+    // can tap "I've arrived" later — await persist so we capture it.
+    // Other order types stay fire-and-forget (WhatsApp opens even if
+    // Supabase is unreachable; nothing depends on the id).
+    let carOrderId: string | null = null;
+    if (orderType === "car") {
+      try {
+        const result = await persistOrder(persistArgs);
+        carOrderId = result.orderId;
+      } catch (err) {
+        console.warn("[MenuLink v7] persist failed:", err);
+      }
+    } else {
+      persistOrder(persistArgs).catch((err) =>
+        console.warn("[MenuLink v7] persist failed:", err),
+      );
+    }
 
     const lineList = lines
       .map((l, i) => {
@@ -311,6 +426,8 @@ function CartDrawer({
       `📞 *الجوال:* ${rawPhone || "—"}\n` +
       (orderType === "delivery" && address ? `📍 *العنوان:* ${address}\n` : "") +
       (mapsLink ? `🗺️ *الموقع على الخريطة:* ${mapsLink}\n` : "") +
+      (orderType === "car" ? `🚗 *رقم اللوحة:* ${plate}\n` : "") +
+      (orderType === "car" ? `🎨 *لون السيارة:* ${color}\n` : "") +
       `━━━━━━━━━━━━━━━━\n` +
       `🛒 *الطلبات:*\n${lineList}\n` +
       `━━━━━━━━━━━━━━━━\n` +
@@ -321,6 +438,10 @@ function CartDrawer({
 
     const waNumber = String(restaurant.whatsapp_phone).replace(/\D/g, "");
     window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`, "_blank");
+
+    if (orderType === "car" && carOrderId) {
+      onCarOrderPlaced({ orderId: carOrderId, plate, color, arrived: false });
+    }
 
     setSubmitting(false);
     onClear();
@@ -397,8 +518,8 @@ function CartDrawer({
               <hr className="border-neutral-200" />
               <fieldset className="space-y-3">
                 <legend className="text-xs font-extrabold text-neutral-700 mb-2">نوع الطلب</legend>
-                <div className="grid grid-cols-3 gap-2">
-                  {(["delivery", "pickup", "dine_in"] as OrderType[]).map((t) => (
+                <div className="grid grid-cols-2 gap-2">
+                  {(["delivery", "pickup", "dine_in", "car"] as OrderType[]).map((t) => (
                     <button
                       key={t}
                       type="button"
@@ -442,6 +563,27 @@ function CartDrawer({
                       className="w-full h-11 rounded-xl border border-neutral-200 px-3 outline-none focus:border-[var(--brand)] text-sm"
                     />
                     <LocationPicker initial={location} onChange={setLocation} />
+                  </>
+                )}
+                {orderType === "car" && (
+                  <>
+                    <input
+                      type="text"
+                      placeholder="رقم لوحة السيارة"
+                      value={carPlate}
+                      onChange={(e) => setCarPlate(e.target.value)}
+                      className="w-full h-11 rounded-xl border border-neutral-200 px-3 outline-none focus:border-[var(--brand)] text-sm"
+                    />
+                    <input
+                      type="text"
+                      placeholder="لون السيارة"
+                      value={carColor}
+                      onChange={(e) => setCarColor(e.target.value)}
+                      className="w-full h-11 rounded-xl border border-neutral-200 px-3 outline-none focus:border-[var(--brand)] text-sm"
+                    />
+                    <p className="text-[11px] text-neutral-500 leading-relaxed">
+                      عند وصولك إلى المطعم اضغط زر "وصلت" في الأسفل ليصلهم إشعار فوري.
+                    </p>
                   </>
                 )}
                 <input
@@ -515,6 +657,8 @@ async function persistOrder({
   lng,
   notes,
   orderType,
+  carPlate,
+  carColor,
   lines,
   total,
 }: {
@@ -526,9 +670,11 @@ async function persistOrder({
   lng: number | null;
   notes: string;
   orderType: OrderType;
+  carPlate: string;
+  carColor: string;
   lines: CartLine[];
   total: number;
-}) {
+}): Promise<{ orderId: string | null }> {
   const sb = createClient();
   const payload = {
     restaurant_id: restaurantId,
@@ -543,6 +689,8 @@ async function persistOrder({
     delivery_fee: 0,
     total,
     notes: notes || null,
+    car_plate: orderType === "car" ? (carPlate || null) : null,
+    car_color: orderType === "car" ? (carColor || null) : null,
     items: lines.map((l) => ({
       item_name: l.itemName,
       variant: l.variantLabel,
@@ -551,6 +699,147 @@ async function persistOrder({
       line_total: l.price * l.qty,
     })),
   };
-  const { error } = await sb.rpc("submit_order", { p_order: payload });
+  const { data, error } = await sb.rpc("submit_order", { p_order: payload });
   if (error) throw error;
+  const orderId = (data as { order_id?: string } | null)?.order_id ?? null;
+  return { orderId };
+}
+
+/* ============================================================
+ * TRACKING SHEET — the "I've arrived" flow for active car orders.
+ * Opens when the customer taps the amber tracking bar at the bottom
+ * of the menu (visible after a car order is placed). Calls the
+ * mark_arrived RPC; flips the order's car_arrived_at so the admin
+ * orders page can ping staff via Realtime.
+ * ============================================================ */
+
+function TrackingSheet({
+  tracking,
+  restaurantName,
+  onClose,
+  onArrived,
+  onClear,
+}: {
+  tracking: TrackingState;
+  restaurantName: string;
+  onClose: () => void;
+  onArrived: () => void;
+  onClear: () => void;
+}) {
+  const [busy, setBusy] = useState(false);
+  const [arrived, setArrived] = useState(tracking.arrived);
+  const [error, setError] = useState<string | null>(null);
+
+  async function fireArrived() {
+    setBusy(true);
+    setError(null);
+    try {
+      const sb = createClient();
+      const { data, error: err } = await sb.rpc("mark_arrived", {
+        p_order_id: tracking.orderId,
+        p_plate: tracking.plate,
+      });
+      if (err) throw err;
+      const result = data as { ok: boolean; reason: string | null } | null;
+      if (result?.ok) {
+        setArrived(true);
+        onArrived();
+      } else {
+        setError(
+          result?.reason === "plate_mismatch"
+            ? "تعذر التحقق من اللوحة. تواصل مع المطعم عبر واتساب."
+            : result?.reason === "not_found"
+              ? "الطلب غير موجود."
+              : "تعذر إرسال الإشعار. أعد المحاولة.",
+        );
+      }
+    } catch {
+      setError("تعذر الاتصال. تحقق من الإنترنت وأعد المحاولة.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center" dir="rtl">
+      <div onClick={onClose} className="absolute inset-0 bg-black/55 backdrop-blur-sm" />
+      <div className="relative w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-3xl shadow-xl p-6 space-y-4">
+        <div className="flex items-center gap-3">
+          <span className="text-4xl">🚗</span>
+          <div className="flex-1 min-w-0">
+            <h2
+              className="font-extrabold text-lg leading-tight"
+              style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+            >
+              طلب استلام بالسيارة
+            </h2>
+            <p className="text-xs text-neutral-500 mt-0.5">{restaurantName}</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-9 h-9 rounded-full hover:bg-neutral-100 flex items-center justify-center text-neutral-600"
+            aria-label="إغلاق"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className="rounded-2xl bg-neutral-50 border border-neutral-200 p-3 space-y-1.5 text-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-neutral-500">رقم اللوحة</span>
+            <span className="font-bold" dir="ltr">{tracking.plate}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-neutral-500">لون السيارة</span>
+            <span className="font-bold">{tracking.color}</span>
+          </div>
+        </div>
+
+        {arrived ? (
+          <>
+            <div className="rounded-2xl bg-green-50 border border-green-200 p-4 text-center">
+              <div className="text-3xl mb-1">✅</div>
+              <p
+                className="font-extrabold text-green-800 text-base"
+                style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+              >
+                أبلغنا المطعم بوصولك
+              </p>
+              <p className="text-xs text-green-700 mt-1 leading-relaxed">
+                سيخرج إليك الموظف بطلبك خلال دقائق.
+              </p>
+            </div>
+            <button
+              onClick={onClear}
+              className="w-full h-11 rounded-2xl bg-neutral-100 text-neutral-700 font-bold text-sm hover:bg-neutral-200"
+            >
+              إنهاء
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              onClick={fireArrived}
+              disabled={busy}
+              className="w-full h-14 rounded-2xl bg-[var(--brand)] text-white font-extrabold text-base hover:opacity-90 disabled:opacity-60 active:translate-y-px shadow-md"
+              style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+            >
+              {busy ? "جاري الإرسال..." : "🚗 وصلت إلى المطعم"}
+            </button>
+            {error && (
+              <p className="text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-xl px-3 py-2">
+                {error}
+              </p>
+            )}
+            <button
+              onClick={onClear}
+              className="w-full h-10 rounded-xl text-neutral-500 text-xs hover:bg-neutral-50"
+            >
+              إلغاء التتبع
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
 }
