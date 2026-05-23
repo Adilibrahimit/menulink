@@ -256,7 +256,10 @@ public sealed class RzrzPosAdapter : IPosAdapter
         var c = p.Customer;
         var ci = CultureInfo.InvariantCulture;
 
-        var notesAr = BuildNotesArabic(p, menuLinkInvoiceNo);
+        var notesAr  = BuildNotesArabic(p, menuLinkInvoiceNo);
+        var notesEng = OrderTypeArabicLabel(inv.OrderType);  // populates the (otherwise-empty) InvoiceNotes field
+                                                              // so the cashier can read the order type on the held invoice
+                                                              // even before deciding which POS InvoiceType to apply.
 
         var xmlInvoice = string.Format(ci,
             "<Invoice " +
@@ -264,7 +267,7 @@ public sealed class RzrzPosAdapter : IPosAdapter
                 "InvoiceAmount=\"{0}\" " +
                 "InvoiceType=\"{1}\" " +
                 "TableID=\"0\" " +
-                "InvoiceNotes=\"\" " +
+                "InvoiceNotes=\"{6}\" " +
                 "InvoiceNotes_A=\"{2}\" " +
                 "DiscountAmount=\"0.00\" " +
                 "CreatedBy=\"{3}\" " +
@@ -280,7 +283,8 @@ public sealed class RzrzPosAdapter : IPosAdapter
             EscapeAttr(notesAr),
             _opts.DefaultUserId,
             counterId,
-            onlineCustomerId);
+            onlineCustomerId,
+            EscapeAttr(notesEng));
 
         var sb = new StringBuilder(p.Items.Count * 200);
         for (var i = 0; i < p.Items.Count; i++)
@@ -314,6 +318,18 @@ public sealed class RzrzPosAdapter : IPosAdapter
             parts.Add(LocalSaudiPhone(p.Customer.Phone));
         return string.Join(" · ", parts);
     }
+
+    // MenuLink order_type → human Arabic label written into Invoice.InvoiceNotes.
+    // Lets the cashier read what the customer chose ("توصيل" / "محلي" / "سفري" / "سيارة")
+    // directly off the held invoice, without depending on the InvoiceType integer alone.
+    private static string OrderTypeArabicLabel(string orderType) => orderType switch
+    {
+        "delivery" => "توصيل",
+        "dine_in"  => "محلي",
+        "pickup"   => "سفري",
+        "car"      => "سيارة",
+        _          => orderType ?? ""
+    };
 
     // +966598292413 → 0598292413. Receipt readers expect the 05xx form.
     private static string LocalSaudiPhone(string phone)
