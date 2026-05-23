@@ -28,8 +28,7 @@ next-env.d.ts
 **/supabase/.env
 
 # --- Graphify outputs (regenerable) ---
-graphify-out/cache/
-graphify-out/.graphify_*
+**/graphify-out/
 .graphify_*
 
 # --- Obsidian workspace (per-user UI state, not project content) ---

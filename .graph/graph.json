@@ -222,7 +222,7 @@
     {
       "label": "onSubmit()",
       "file_type": "code",
-      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\login\\login-form.tsx",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\login\\login-form.tsx",
       "source_location": "L14",
       "id": "login_form_onsubmit",
       "community": 17
@@ -246,7 +246,7 @@
     {
       "label": "POST()",
       "file_type": "code",
-      "source_file": "D:\\menulink\\apps\\web\\app\\ops\\logout\\route.ts",
+      "source_file": "D:\\menulink\\apps\\web\\app\\admin\\logout\\route.ts",
       "source_location": "L4",
       "id": "route_post",
       "community": 18
@@ -798,8 +798,8 @@
     {
       "label": "GET()",
       "file_type": "code",
-      "source_file": "D:\\menulink\\apps\\web\\app\\m\\[slug]\\manifest.webmanifest\\route.ts",
-      "source_location": "L7",
+      "source_file": "D:\\menulink\\apps\\web\\app\\api\\admin\\export\\customers\\route.ts",
+      "source_location": "L29",
       "id": "route_get",
       "community": 6
     },
@@ -1706,18 +1706,6 @@
       "source_location": "L92",
       "id": "sw_cachefirstasset",
       "community": 26
-    },
-    {
-      "label": "MenuLink Web App",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "readme_menulink_web",
-      "community": 74
     }
   ],
   "links": [
