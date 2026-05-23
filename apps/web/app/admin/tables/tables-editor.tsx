@@ -34,6 +34,9 @@ export default function TablesEditor({
   const [newLabel, setNewLabel] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingValue, setEditingValue] = useState("");
+  const [editError, setEditError] = useState<string | null>(null);
 
   async function addTable() {
     const label = newLabel.trim();
@@ -88,6 +91,49 @@ export default function TablesEditor({
       sb.from("restaurant_tables").update({ sort_order: b.sort_order }).eq("id", a.id),
       sb.from("restaurant_tables").update({ sort_order: a.sort_order }).eq("id", b.id),
     ]);
+  }
+
+  function startEdit(t: TableRow) {
+    setEditingId(t.id);
+    setEditingValue(t.label);
+    setEditError(null);
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setEditingValue("");
+    setEditError(null);
+  }
+
+  async function saveEdit(t: TableRow) {
+    const label = editingValue.trim();
+    if (!label) {
+      setEditError("اكتب رقم أو اسم الطاولة.");
+      return;
+    }
+    // No change → just close
+    if (label === t.label) {
+      cancelEdit();
+      return;
+    }
+    // Unique among the OTHER rows (case-insensitive)
+    if (tables.some((x) => x.id !== t.id && x.label.toLowerCase() === label.toLowerCase())) {
+      setEditError("هذه الطاولة موجودة مسبقاً.");
+      return;
+    }
+    setEditError(null);
+    const sb = createClient();
+    const { error: err } = await sb
+      .from("restaurant_tables")
+      .update({ label })
+      .eq("id", t.id);
+    if (err) {
+      // Most common cause: unique-constraint race. Surface it inline.
+      setEditError(err.message);
+      return;
+    }
+    setTables((arr) => arr.map((x) => (x.id === t.id ? { ...x, label } : x)));
+    cancelEdit();
   }
 
   async function downloadPoster(t: TableRow) {
@@ -148,60 +194,117 @@ export default function TablesEditor({
         </div>
       ) : (
         <ul className="space-y-2">
-          {tables.map((t, i) => (
-            <li
-              key={t.id}
-              className="bg-white border border-neutral-200 rounded-xl p-3 flex items-center gap-3 flex-wrap"
-            >
-              <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-xl shrink-0">
-                🪑
-              </div>
-              <div className="flex-1 min-w-[120px]">
-                <div className="font-extrabold text-neutral-900" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
-                  طاولة {t.label}
+          {tables.map((t, i) => {
+            const isEditing = editingId === t.id;
+            return (
+              <li
+                key={t.id}
+                className="bg-white border border-neutral-200 rounded-xl p-3 flex items-center gap-3 flex-wrap"
+              >
+                <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-xl shrink-0">
+                  🪑
                 </div>
-                <div className="text-[11px] text-neutral-500 font-mono break-all" dir="ltr">
-                  /m/{slug}?table={encodeURIComponent(t.label)}
+                <div className="flex-1 min-w-[160px]">
+                  {isEditing ? (
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="text-sm font-extrabold text-neutral-700 shrink-0"
+                          style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+                        >
+                          طاولة
+                        </span>
+                        <input
+                          type="text"
+                          autoFocus
+                          value={editingValue}
+                          onChange={(e) => setEditingValue(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") saveEdit(t);
+                            else if (e.key === "Escape") cancelEdit();
+                          }}
+                          className="flex-1 min-w-0 h-9 rounded-lg border border-neutral-200 px-2 outline-none focus:border-brand-primary text-sm"
+                        />
+                        <button
+                          onClick={() => saveEdit(t)}
+                          className="w-9 h-9 rounded-lg bg-green-600 text-white font-bold hover:opacity-90"
+                          aria-label="حفظ"
+                          title="حفظ"
+                        >
+                          ✓
+                        </button>
+                        <button
+                          onClick={cancelEdit}
+                          className="w-9 h-9 rounded-lg bg-neutral-100 text-neutral-700 hover:bg-neutral-200"
+                          aria-label="إلغاء"
+                          title="إلغاء"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                      {editError && (
+                        <p className="text-[11px] text-rose-700 bg-rose-50 border border-rose-200 rounded px-2 py-1">
+                          {editError}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => startEdit(t)}
+                        className="text-right font-extrabold text-neutral-900 hover:text-brand-primary transition-colors"
+                        style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+                        title="اضغط للتعديل"
+                      >
+                        طاولة {t.label} <span className="text-neutral-300 text-sm">✏️</span>
+                      </button>
+                      <div className="text-[11px] text-neutral-500 font-mono break-all" dir="ltr">
+                        /m/{slug}?table={encodeURIComponent(t.label)}
+                      </div>
+                    </>
+                  )}
                 </div>
-              </div>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => swap(i, -1)}
-                  disabled={i === 0}
-                  className="w-9 h-9 rounded-lg bg-neutral-100 text-neutral-700 hover:bg-neutral-200 disabled:opacity-40"
-                  aria-label="رفع"
-                  title="رفع"
-                >
-                  ↑
-                </button>
-                <button
-                  onClick={() => swap(i, 1)}
-                  disabled={i === tables.length - 1}
-                  className="w-9 h-9 rounded-lg bg-neutral-100 text-neutral-700 hover:bg-neutral-200 disabled:opacity-40"
-                  aria-label="إنزال"
-                  title="إنزال"
-                >
-                  ↓
-                </button>
-                <button
-                  onClick={() => downloadPoster(t)}
-                  disabled={busyId === t.id}
-                  className="h-9 px-3 rounded-lg bg-brand-primary text-white text-xs font-extrabold hover:opacity-90 disabled:opacity-60"
-                  style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
-                >
-                  {busyId === t.id ? "..." : "⬇ بطاقة QR"}
-                </button>
-                <button
-                  onClick={() => deleteTable(t.id)}
-                  className="w-9 h-9 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200"
-                  aria-label="حذف"
-                  title="حذف"
-                >
-                  ✕
-                </button>
-              </div>
-            </li>
-          ))}
+                {!isEditing && (
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => swap(i, -1)}
+                      disabled={i === 0}
+                      className="w-9 h-9 rounded-lg bg-neutral-100 text-neutral-700 hover:bg-neutral-200 disabled:opacity-40"
+                      aria-label="رفع"
+                      title="رفع"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      onClick={() => swap(i, 1)}
+                      disabled={i === tables.length - 1}
+                      className="w-9 h-9 rounded-lg bg-neutral-100 text-neutral-700 hover:bg-neutral-200 disabled:opacity-40"
+                      aria-label="إنزال"
+                      title="إنزال"
+                    >
+                      ↓
+                    </button>
+                    <button
+                      onClick={() => downloadPoster(t)}
+                      disabled={busyId === t.id}
+                      className="h-9 px-3 rounded-lg bg-brand-primary text-white text-xs font-extrabold hover:opacity-90 disabled:opacity-60"
+                      style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+                    >
+                      {busyId === t.id ? "..." : "⬇ بطاقة QR"}
+                    </button>
+                    <button
+                      onClick={() => deleteTable(t.id)}
+                      className="w-9 h-9 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200"
+                      aria-label="حذف"
+                      title="حذف"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>
