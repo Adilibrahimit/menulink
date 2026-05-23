@@ -66,7 +66,16 @@ public sealed class RzrzPosAdapter : IPosAdapter
                 $"Add rows to public.pos_item_map for restaurant {payload.Order.RestaurantId} first.");
         }
 
-        var (xmlInvoice, xmlItems) = BuildXml(payload, menuLinkInvoiceNo);
+        // Per-order POS values come from the outbox payload (snapshotted at
+        // enqueue time by build_pos_outbox_payload in migration 0012). For
+        // outbox rows enqueued before 0012, payload.Pos is null and we fall
+        // back to the PosOptions defaults.
+        var invoiceType     = payload.Pos?.InvoiceType    ?? _opts.InvoiceType;
+        var onlineCustomer  = payload.Pos?.OnlineCustomerId ?? _opts.OnlineCustomerId;
+        var counterId       = payload.Pos?.CounterId      ?? _opts.CounterId;
+        var sectionId       = payload.Pos?.SectionId      ?? 0;
+
+        var (xmlInvoice, xmlItems) = BuildXml(payload, menuLinkInvoiceNo, invoiceType, onlineCustomer, counterId);
 
         await using var conn = new SqlConnection(_opts.ConnectionString);
         await conn.OpenAsync(ct);
@@ -88,7 +97,7 @@ public sealed class RzrzPosAdapter : IPosAdapter
             where OnlineCustomerID = @ocid and InvoiceNotes_A like @tag
             order by CreatedDate desc;", conn))
         {
-            precheck.Parameters.Add("@ocid", SqlDbType.BigInt).Value = _opts.OnlineCustomerId;
+            precheck.Parameters.Add("@ocid", SqlDbType.BigInt).Value = onlineCustomer;
             precheck.Parameters.Add("@tag", SqlDbType.NVarChar, 200).Value = tagPattern;
             await using var rdr = await precheck.ExecuteReaderAsync(ct);
             if (await rdr.ReadAsync(ct))
@@ -123,11 +132,12 @@ public sealed class RzrzPosAdapter : IPosAdapter
                 cmd.Parameters.Add("@XmlInvoice", SqlDbType.NVarChar, -1).Value = xmlInvoice;
                 cmd.Parameters.Add("@XmlItems", SqlDbType.NVarChar, -1).Value = xmlItems;
                 cmd.Parameters.Add("@IsHold", SqlDbType.Bit).Value = _opts.HoldMode ? 1 : 0;
-                cmd.Parameters.Add("@SectionID", SqlDbType.Int).Value = 0;
-                cmd.Parameters.Add("@InvoiceType", SqlDbType.Int).Value = _opts.InvoiceType;
+                cmd.Parameters.Add("@SectionID", SqlDbType.Int).Value = sectionId;
+                cmd.Parameters.Add("@InvoiceType", SqlDbType.Int).Value = invoiceType;
                 cmd.Parameters.Add("@AppendInvoiceIDS", SqlDbType.NVarChar, 500).Value = "";
-                _log.LogDebug("Calling InsertInvoice for MenuLink #{No} (order {OrderId}, IsHold={IsHold})",
-                    menuLinkInvoiceNo, payload.Order.Id, _opts.HoldMode);
+                _log.LogDebug(
+                    "Calling InsertInvoice for MenuLink #{No} (order {OrderId}, OrderType={OrderType}, InvoiceType={InvoiceType}, IsHold={IsHold})",
+                    menuLinkInvoiceNo, payload.Order.Id, payload.Order.OrderType, invoiceType, _opts.HoldMode);
                 await cmd.ExecuteNonQueryAsync(ct);
             }
 
@@ -137,7 +147,7 @@ public sealed class RzrzPosAdapter : IPosAdapter
                 from Invoice
                 where OnlineCustomerID = @ocid and InvoiceNotes_A like @tag
                 order by CreatedDate desc;", conn);
-            lookup.Parameters.Add("@ocid", SqlDbType.BigInt).Value = _opts.OnlineCustomerId;
+            lookup.Parameters.Add("@ocid", SqlDbType.BigInt).Value = onlineCustomer;
             lookup.Parameters.Add("@tag", SqlDbType.NVarChar, 200).Value = tagPattern;
 
             await using var rdr = await lookup.ExecuteReaderAsync(ct);
@@ -183,7 +193,7 @@ public sealed class RzrzPosAdapter : IPosAdapter
                1, 0, 0, 0, @billNo, 0);", conn))
         {
             payCmd.Parameters.Add("@inv",       SqlDbType.UniqueIdentifier).Value = posInvoiceGuid;
-            payCmd.Parameters.Add("@counter",   SqlDbType.BigInt).Value = _opts.CounterId;
+            payCmd.Parameters.Add("@counter",   SqlDbType.BigInt).Value = counterId;
             payCmd.Parameters.Add("@paid",      SqlDbType.Decimal).Value = payload.Order.Total;
             payCmd.Parameters.Add("@createdBy", SqlDbType.BigInt).Value = _opts.DefaultUserId;
             payCmd.Parameters.Add("@tax",       SqlDbType.Decimal).Value = taxAmount;
@@ -235,7 +245,12 @@ public sealed class RzrzPosAdapter : IPosAdapter
         return new PosWriteResult(posInvoiceGuid.ToString(), posInvoiceNo, posBillNo);
     }
 
-    private (string XmlInvoice, string XmlItems) BuildXml(OutboxPayload p, long menuLinkInvoiceNo)
+    private (string XmlInvoice, string XmlItems) BuildXml(
+        OutboxPayload p,
+        long menuLinkInvoiceNo,
+        int invoiceType,
+        long onlineCustomerId,
+        long counterId)
     {
         var inv = p.Order;
         var c = p.Customer;
@@ -261,11 +276,11 @@ public sealed class RzrzPosAdapter : IPosAdapter
                 "InvoiceDiscountPercentage=\"0\" " +
                 "DishItemInvoiceID=\"00000000-0000-0000-0000-000000000000\" />",
             inv.Total.ToString("0.00", ci),
-            _opts.InvoiceType,
+            invoiceType,
             EscapeAttr(notesAr),
             _opts.DefaultUserId,
-            _opts.CounterId,
-            _opts.OnlineCustomerId);
+            counterId,
+            onlineCustomerId);
 
         var sb = new StringBuilder(p.Items.Count * 200);
         for (var i = 0; i < p.Items.Count; i++)

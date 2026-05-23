@@ -22,7 +22,18 @@ public sealed class PosOutboxRow
 public sealed record OutboxPayload(
     [property: JsonPropertyName("order")]    OrderPayload Order,
     [property: JsonPropertyName("customer")] CustomerPayload? Customer,
-    [property: JsonPropertyName("items")]    List<ItemPayload> Items);
+    [property: JsonPropertyName("items")]    List<ItemPayload> Items,
+    [property: JsonPropertyName("pos")]      PosPayload? Pos = null);
+
+/// <summary>POS-specific settings snapshotted at enqueue time. Lets the bridge
+/// pick the right InvoiceType / OnlineCustomerID per order without re-reading
+/// pos_settings at run time. Nullable on the whole field for back-compat with
+/// outbox rows enqueued before migration 0012.</summary>
+public sealed record PosPayload(
+    [property: JsonPropertyName("invoice_type")]       int? InvoiceType,
+    [property: JsonPropertyName("online_customer_id")] long? OnlineCustomerId,
+    [property: JsonPropertyName("counter_id")]         long? CounterId,
+    [property: JsonPropertyName("section_id")]         int? SectionId);
 
 public sealed record OrderPayload(
     [property: JsonPropertyName("id")]            Guid Id,
