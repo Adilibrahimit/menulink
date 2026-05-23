@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { requireOwner } from "@/lib/auth";
 import { createClient } from "@/lib/supabase-server";
 import { hasAddon } from "@/lib/addons";
@@ -53,6 +54,40 @@ export default async function AdminLoyaltyPage() {
         <KpiCard label="عملاء جمعوا نقاطاً" value={String(customerCount ?? 0)} />
         <KpiCard label="حالة البرنامج" value={settings?.enabled ? "مفعّل" : "موقوف"} />
         <KpiCard label="معدّل الكسب الحالي" value={`${settings?.points_per_sar ?? 1} نقطة / ر.س`} />
+      </div>
+
+      {/* Quick links to sub-pages */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <Link
+          href="/admin/loyalty/rewards"
+          className="bg-white border border-neutral-200 rounded-xl px-4 py-3 flex items-center gap-3 hover:border-neutral-300 active:translate-y-px"
+        >
+          <span className="text-3xl">🎁</span>
+          <span className="flex-1 min-w-0">
+            <span className="block text-sm font-extrabold text-neutral-900" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+              المكافآت
+            </span>
+            <span className="block text-[11px] text-neutral-500 mt-0.5">
+              ما يستطيع العميل استبداله بنقاطه
+            </span>
+          </span>
+          <span className="text-neutral-400">←</span>
+        </Link>
+        <Link
+          href="/admin/loyalty/redemptions"
+          className="bg-white border border-neutral-200 rounded-xl px-4 py-3 flex items-center gap-3 hover:border-neutral-300 active:translate-y-px"
+        >
+          <span className="text-3xl">🛎️</span>
+          <span className="flex-1 min-w-0">
+            <span className="block text-sm font-extrabold text-neutral-900" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+              طلبات الاستبدال
+            </span>
+            <span className="block text-[11px] text-neutral-500 mt-0.5">
+              العملاء طلبوا مكافأة وانتظروا التسليم
+            </span>
+          </span>
+          <span className="text-neutral-400">←</span>
+        </Link>
       </div>
 
       <LoyaltySettingsForm

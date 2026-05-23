@@ -244,29 +244,6 @@ export default function MenuExperience({
         ))}
       </div>
 
-      {/* SOFT ACCOUNT CTA — only when loyalty is enabled. Sits below the menu
-          sections so it doesn't compete with browsing. Never blocks the
-          guest-checkout flow; just an invite to "save your points". */}
-      {loyaltyPointsPerSar != null && loyaltyPointsPerSar > 0 && (
-        <div className="mt-8 px-4">
-          <a
-            href={`/m/${menu.restaurant.slug}/account`}
-            className="block bg-white border-2 border-amber-200 rounded-2xl px-4 py-3 flex items-center gap-3 hover:border-amber-300 active:translate-y-px"
-          >
-            <span className="text-3xl shrink-0">🏆</span>
-            <span className="flex-1 min-w-0">
-              <span className="block font-extrabold text-neutral-900 text-sm" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
-                احفظ نقاطك وطلباتك
-              </span>
-              <span className="block text-[11px] text-neutral-500 mt-0.5 leading-snug">
-                ادخل بـ Google · اختياري ولا يأخذ أكثر من ثانية
-              </span>
-            </span>
-            <span className="text-xl text-neutral-400 shrink-0">←</span>
-          </a>
-        </div>
-      )}
-
       {/* STICKY BOTTOM CART BAR — only when cart has items */}
       {count > 0 && (
         <button
@@ -675,6 +652,20 @@ function CartDrawer({
                 </div>
               );
             })()}
+            {loyaltyPointsPerSar != null && loyaltyPointsPerSar > 0 && (
+              <a
+                href={`/m/${restaurant.slug}/account`}
+                className="mb-3 flex items-center justify-between gap-2 rounded-xl border-2 border-dashed border-neutral-200 px-3 py-2 hover:border-neutral-300 active:translate-y-px"
+              >
+                <span className="flex items-center gap-2 min-w-0">
+                  <span className="text-lg">🔗</span>
+                  <span className="text-xs font-bold text-neutral-700 leading-snug" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+                    احفظ نقاطك مع حساب Google
+                  </span>
+                </span>
+                <span className="text-neutral-400 text-sm">←</span>
+              </a>
+            )}
             <button
               onClick={submit}
               disabled={submitting}

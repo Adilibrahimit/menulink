@@ -103,6 +103,21 @@ export default function AccountClient({
         </div>
       </div>
 
+      {/* Rewards shortcut */}
+      <a
+        href={`/m/${slug}/rewards`}
+        className="block bg-white border-2 border-amber-200 rounded-2xl px-4 py-3 flex items-center gap-3 hover:border-amber-300 active:translate-y-px"
+      >
+        <span className="text-3xl shrink-0">🎁</span>
+        <span className="flex-1 min-w-0">
+          <span className="block font-extrabold text-neutral-900 text-sm" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+            استبدل نقاطك بمكافآت
+          </span>
+          <span className="block text-[11px] text-neutral-500 mt-0.5">شاهد المكافآت المتاحة لك</span>
+        </span>
+        <span className="text-neutral-400 shrink-0">←</span>
+      </a>
+
       {/* Order history */}
       <div className="bg-white border border-neutral-200 rounded-2xl p-4">
         <h2 className="font-extrabold mb-3" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
