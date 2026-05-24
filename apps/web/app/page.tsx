@@ -47,7 +47,13 @@ export default function Home() {
             rel="noreferrer"
             className="inline-block rounded-md bg-brand-primary text-white px-6 py-3 font-semibold hover:opacity-90"
           >
-            💬 تواصل مع فريق MenuLink
+            💬 تواصل واتساب
+          </a>
+          <a
+            href="mailto:id.menulink@gmail.com?subject=استفسار عن MenuLink"
+            className="inline-block rounded-md bg-white border border-neutral-300 text-neutral-700 px-6 py-3 font-semibold hover:bg-neutral-50"
+          >
+            📧 راسلنا بالإيميل
           </a>
           <Link
             href="/admin/login"
@@ -99,7 +105,7 @@ export default function Home() {
           <div className="text-5xl">💬</div>
           <h3 className="text-xl font-extrabold text-neutral-900">تواصل معنا للتسعير</h3>
           <p className="text-sm text-neutral-600">
-            راسلنا على واتساب وبنوصلك بالباقة اللي تناسب مطعمك — بدون التزام.
+            راسلنا وبنوصلك بالباقة اللي تناسب مطعمك — بدون التزام.
           </p>
           <a
             href="https://wa.me/966504744517?text=أهلاً%20MenuLink،%20أبغى%20أعرف%20الأسعار"
@@ -107,7 +113,13 @@ export default function Home() {
             rel="noreferrer"
             className="inline-block w-full rounded-xl bg-brand-primary text-white px-6 py-3 font-bold hover:opacity-90"
           >
-            💬 اسأل عن الأسعار
+            💬 واتساب
+          </a>
+          <a
+            href="mailto:id.menulink@gmail.com?subject=استفسار عن أسعار MenuLink"
+            className="inline-block w-full rounded-xl bg-white border-2 border-neutral-300 text-neutral-700 px-6 py-3 font-bold hover:bg-neutral-50"
+          >
+            📧 id.menulink@gmail.com
           </a>
         </div>
       </section>
@@ -116,16 +128,24 @@ export default function Home() {
       <section className="px-6 py-16 max-w-3xl mx-auto text-center">
         <h2 className="text-2xl font-bold mb-3">جاهز تبدأ؟</h2>
         <p className="text-neutral-600 mb-6">
-          راسلنا على واتساب وخل MenuLink ينطلق لمطعمك في أقل من ٢٤ ساعة.
+          راسلنا وخل MenuLink ينطلق لمطعمك في أقل من ٢٤ ساعة.
         </p>
-        <a
-          href="https://wa.me/966504744517?text=أهلاً%20MenuLink،%20أبغى%20أبدأ"
-          target="_blank"
-          rel="noreferrer"
-          className="inline-block rounded-md bg-brand-primary text-white px-8 py-4 font-bold hover:opacity-90"
-        >
-          💬 ابدأ على واتساب
-        </a>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <a
+            href="https://wa.me/966504744517?text=أهلاً%20MenuLink،%20أبغى%20أبدأ"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-block rounded-md bg-brand-primary text-white px-8 py-4 font-bold hover:opacity-90"
+          >
+            💬 ابدأ على واتساب
+          </a>
+          <a
+            href="mailto:id.menulink@gmail.com?subject=أبغى أبدأ مع MenuLink"
+            className="inline-block rounded-md bg-white border border-neutral-300 text-neutral-700 px-8 py-4 font-bold hover:bg-neutral-50"
+          >
+            📧 راسلنا بالإيميل
+          </a>
+        </div>
       </section>
 
       <footer className="px-6 py-8 text-center text-xs text-neutral-500 border-t border-neutral-200">
