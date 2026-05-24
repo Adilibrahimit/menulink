@@ -398,6 +398,22 @@ export default function MenuExperience({
  * CART DRAWER + CHECKOUT (unchanged business logic)
  * ============================================================ */
 
+type SavedAddress = {
+  id: string;
+  label: string;
+  address: string;
+  lat: number | null;
+  lng: number | null;
+  details: string | null;
+  is_default: boolean;
+};
+
+const LABEL_AR: Record<string, string> = {
+  home: "المنزل",
+  office: "المكتب",
+  custom: "مخصص",
+};
+
 function CartDrawer({
   restaurant,
   lines,
@@ -419,8 +435,6 @@ function CartDrawer({
   onClear: () => void;
   onCarOrderPlaced: (t: TrackingState) => void;
 }) {
-  // When a customer scans a table QR (?table=...) the order type is locked
-  // to dine-in. The picker is hidden, the delivery/car branches are skipped.
   const lockedToTable = !!tableLabel;
   const [orderType, setOrderType] = useState<OrderType>(lockedToTable ? "dine_in" : "delivery");
   const [name, setName] = useState("");
@@ -431,6 +445,60 @@ function CartDrawer({
   const [carColor, setCarColor] = useState("");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+  const [prefilled, setPrefilled] = useState(false);
+
+  // Auto-fill from customer record + load saved addresses
+  useEffect(() => {
+    if (prefilled) return;
+    const sb = createClient();
+    sb.auth.getSession().then(async ({ data: { session } }) => {
+      if (!session?.user) {
+        // Guest mode: try localStorage
+        try {
+          const g = JSON.parse(localStorage.getItem("menulink:guest") || "{}");
+          if (g.phone) setRawPhone(g.phone);
+          if (g.name) setName(g.name);
+        } catch {}
+        setPrefilled(true);
+        return;
+      }
+      // Signed-in: fetch customer + addresses
+      const { data: c } = await sb
+        .from("customers")
+        .select("id, name, phone")
+        .eq("auth_user_id", session.user.id)
+        .eq("restaurant_id", restaurant.id)
+        .maybeSingle();
+      if (c) {
+        if (c.name) setName(c.name as string);
+        if (c.phone) setRawPhone(c.phone as string);
+        const { data: addrs } = await sb
+          .from("customer_addresses")
+          .select("id, label, address, lat, lng, details, is_default")
+          .eq("customer_id", c.id)
+          .order("is_default", { ascending: false });
+        if (addrs && addrs.length > 0) {
+          const mapped = addrs.map((a) => ({
+            id: a.id as string,
+            label: a.label as string,
+            address: a.address as string,
+            lat: a.lat as number | null,
+            lng: a.lng as number | null,
+            details: (a.details as string | null) ?? null,
+            is_default: a.is_default as boolean,
+          }));
+          setSavedAddresses(mapped);
+          const def = mapped.find((a) => a.is_default) || mapped[0];
+          setSelectedAddressId(def.id);
+          setAddress(def.address + (def.details ? ` · ${def.details}` : ""));
+          if (def.lat && def.lng) setLocation({ lat: def.lat, lng: def.lng });
+        }
+      }
+      setPrefilled(true);
+    });
+  }, [restaurant.id, prefilled]);
 
   const orderTypeLabel: Record<OrderType, string> = {
     delivery: "توصيل",
@@ -656,14 +724,76 @@ function CartDrawer({
                 />
                 {orderType === "delivery" && (
                   <>
-                    <input
-                      type="text"
-                      placeholder="عنوان التوصيل (الحي · الشارع · رقم المبنى)"
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
-                      className="w-full h-11 rounded-xl border border-neutral-200 px-3 outline-none focus:border-[var(--brand)] text-sm"
-                    />
-                    <LocationPicker initial={location} onChange={setLocation} />
+                    {savedAddresses.length > 0 ? (
+                      <div className="space-y-2">
+                        <label className="text-xs font-extrabold text-neutral-700">عنوان التوصيل</label>
+                        <div className="space-y-2">
+                          {savedAddresses.map((a) => (
+                            <button
+                              key={a.id}
+                              type="button"
+                              onClick={() => {
+                                setSelectedAddressId(a.id);
+                                setAddress(a.address + (a.details ? ` · ${a.details}` : ""));
+                                if (a.lat && a.lng) setLocation({ lat: a.lat, lng: a.lng });
+                                else setLocation(null);
+                              }}
+                              className={
+                                "w-full text-right rounded-xl border-2 px-3 py-2.5 transition-colors " +
+                                (selectedAddressId === a.id
+                                  ? "border-[var(--brand)] bg-[var(--brand)]/5"
+                                  : "border-neutral-200 bg-white hover:border-neutral-300")
+                              }
+                            >
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm">
+                                  {a.label === "home" ? "🏠" : a.label === "office" ? "🏢" : "📍"}
+                                </span>
+                                <span className="text-sm font-bold text-neutral-800" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+                                  {LABEL_AR[a.label] ?? a.label}
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-neutral-500 mt-0.5 mr-6 truncate">{a.address}</p>
+                            </button>
+                          ))}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedAddressId(null);
+                            setAddress("");
+                            setLocation(null);
+                          }}
+                          className="text-xs text-[var(--brand)] font-bold hover:underline"
+                          style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+                        >
+                          + عنوان جديد
+                        </button>
+                        {!selectedAddressId && (
+                          <>
+                            <input
+                              type="text"
+                              placeholder="عنوان التوصيل (الحي · الشارع · رقم المبنى)"
+                              value={address}
+                              onChange={(e) => setAddress(e.target.value)}
+                              className="w-full h-11 rounded-xl border border-neutral-200 px-3 outline-none focus:border-[var(--brand)] text-sm"
+                            />
+                            <LocationPicker initial={location} onChange={setLocation} />
+                          </>
+                        )}
+                      </div>
+                    ) : (
+                      <>
+                        <input
+                          type="text"
+                          placeholder="عنوان التوصيل (الحي · الشارع · رقم المبنى)"
+                          value={address}
+                          onChange={(e) => setAddress(e.target.value)}
+                          className="w-full h-11 rounded-xl border border-neutral-200 px-3 outline-none focus:border-[var(--brand)] text-sm"
+                        />
+                        <LocationPicker initial={location} onChange={setLocation} />
+                      </>
+                    )}
                   </>
                 )}
                 {orderType === "car" && (
