@@ -7,6 +7,7 @@ import { ALLERGENS } from "@/lib/allergens";
 import type { CategoryWithItems } from "./page";
 import AddItemModal from "./add-item-modal";
 import AddCategoryModal from "./add-category-modal";
+import ModifiersPanel from "./modifiers-panel";
 
 type Toast = { kind: "ok" | "err"; text: string } | null;
 
@@ -24,6 +25,7 @@ export default function MenuEditor({
   const [showAddCategory, setShowAddCategory] = useState(false);
   const [addItemFor, setAddItemFor] = useState<string | null>(null);
   const [nutritionOpen, setNutritionOpen] = useState<string | null>(null);
+  const [modifiersOpen, setModifiersOpen] = useState<string | null>(null);
 
   function notify(kind: "ok" | "err", text: string) {
     setToast({ kind, text });
@@ -284,6 +286,19 @@ export default function MenuEditor({
                     </button>
                   )}
                   <button
+                    onClick={() => setModifiersOpen(modifiersOpen === it.id ? null : it.id)}
+                    className={
+                      "px-2 py-1 rounded " +
+                      (modifiersOpen === it.id
+                        ? "bg-indigo-100 text-indigo-800"
+                        : it.modifiers_json
+                          ? "bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
+                          : "bg-neutral-100 hover:bg-neutral-200")
+                    }
+                  >
+                    🧩 إضافات
+                  </button>
+                  <button
                     onClick={() => setNutritionOpen(nutritionOpen === it.id ? null : it.id)}
                     className={
                       "px-2 py-1 rounded " +
@@ -301,6 +316,16 @@ export default function MenuEditor({
                     حذف
                   </button>
                 </div>
+
+                {/* Modifiers panel (expanded) */}
+                {modifiersOpen === it.id && (
+                  <ModifiersPanel
+                    itemId={it.id}
+                    initial={it.modifiers_json}
+                    onSaved={() => { notify("ok", "إضافات محدّثة"); refresh(); }}
+                    onError={(msg) => notify("err", msg)}
+                  />
+                )}
 
                 {/* Nutrition panel (expanded) */}
                 {nutritionOpen === it.id && (

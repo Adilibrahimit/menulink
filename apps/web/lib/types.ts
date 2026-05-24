@@ -55,6 +55,24 @@ export type MenuItem = {
   sodium_mg: number | null;
   caffeine_mg: number | null;
   allergens_json: string[] | null;
+  modifiers_json: ModifierConfig | null;
+};
+
+export type ModifierOption = { label: string; priceDelta: number };
+export type ModifierGroup = {
+  key: string;
+  label: string;
+  type: "single" | "multi";
+  required: boolean;
+  max: number;
+  defaultOption?: string;
+  options: ModifierOption[];
+};
+export type ModifierConfig = {
+  groups: ModifierGroup[];
+  notesEnabled: boolean;
+  notesMaxLength: number;
+  notesPlaceholder: string;
 };
 
 export type Variant = {

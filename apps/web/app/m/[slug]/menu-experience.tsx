@@ -14,6 +14,7 @@ import type {
   CartLineModifier,
 } from "./types";
 import { getItemModifiers } from "@/lib/menu-modifiers";
+import type { PublicModifierConfig } from "./types";
 import CategoryTabs from "./category-tabs";
 import MenuItemCard from "./menu-item";
 import ItemCustomizerSheet from "./item-customizer-sheet";
@@ -495,10 +496,13 @@ export default function MenuExperience({
         <ItemCustomizerSheet
           item={customizerState.item}
           initialVariant={customizerState.variant}
-          modifierConfig={getItemModifiers(
-            customizerState.category.name_ar,
-            customizerState.item.name_ar,
-          )}
+          modifierConfig={
+            (customizerState.item.modifiers as PublicModifierConfig | null) ??
+            getItemModifiers(
+              customizerState.category.name_ar,
+              customizerState.item.name_ar,
+            )
+          }
           onAddToCart={addToCartCustomized}
           onClose={() => setCustomizerState(null)}
         />

@@ -36,6 +36,28 @@ export type AllergenKey =
   | "peanuts" | "tree_nuts" | "soy" | "sesame" | "celery"
   | "mustard" | "sulfites" | "lupin" | "mollusks";
 
+export type PublicModifierOption = {
+  label: string;
+  priceDelta: number;
+};
+
+export type PublicModifierGroup = {
+  key: string;
+  label: string;
+  type: "single" | "multi";
+  required: boolean;
+  max: number;
+  defaultOption?: string;
+  options: PublicModifierOption[];
+};
+
+export type PublicModifierConfig = {
+  groups: PublicModifierGroup[];
+  notesEnabled: boolean;
+  notesMaxLength: number;
+  notesPlaceholder: string;
+};
+
 export type PublicMenuItem = {
   id: string;
   slug: string;
@@ -49,6 +71,7 @@ export type PublicMenuItem = {
   sodium_mg: number | null;
   caffeine_mg: number | null;
   allergens: AllergenKey[] | null;
+  modifiers: PublicModifierConfig | null;
   variants: PublicVariant[];
 };
 
