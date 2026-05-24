@@ -4,6 +4,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase-browser";
 
 type CustomerInfo = { name: string | null; phone: string };
+type OrderItem = {
+  id: string;
+  item_name: string;
+  variant: string | null;
+  qty: number;
+  unit_price: number;
+  line_total: number;
+};
 type OrderRow = {
   id: string;
   customer_id: string;
@@ -21,6 +29,7 @@ type OrderRow = {
   table_label: string | null;
   created_at: string;
   customers: CustomerInfo | CustomerInfo[] | null;
+  order_items: OrderItem[] | null;
 };
 
 const STATUSES = ["submitted", "confirmed", "preparing", "ready", "delivered", "cancelled"] as const;
@@ -138,7 +147,17 @@ export default function OrdersLive({
   const [todayOnly, setTodayOnly] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [unseenCount, setUnseenCount] = useState(0);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const alert = useAlertSound();
+
+  function toggleExpand(id: string) {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
 
   // Filter shown rows
   const visibleRows = useMemo(() => {
@@ -162,12 +181,12 @@ export default function OrdersLive({
         { event: "INSERT", schema: "public", table: "orders", filter: `restaurant_id=eq.${restaurantId}` },
         async (payload) => {
           const fresh = payload.new as OrderRow;
-          const { data: cust } = await sb
-            .from("customers")
-            .select("name, phone")
-            .eq("id", (fresh as any).customer_id)
-            .single();
-          setRows((r) => [{ ...fresh, customers: cust as any }, ...r].slice(0, 200));
+          const [{ data: cust }, { data: items }] = await Promise.all([
+            sb.from("customers").select("name, phone").eq("id", (fresh as any).customer_id).single(),
+            sb.from("order_items").select("id, item_name, variant, qty, unit_price, line_total").eq("order_id", fresh.id),
+          ]);
+          setRows((r) => [{ ...fresh, customers: cust as any, order_items: items as any }, ...r].slice(0, 200));
+          setExpanded((prev) => new Set(prev).add(fresh.id));
           setUnseenCount((n) => n + 1);
           if (soundEnabled) alert.start();
         }
@@ -317,44 +336,57 @@ export default function OrdersLive({
               <li
                 key={o.id}
                 className={
-                  "rounded-xl p-3 flex items-start justify-between gap-3 flex-wrap border " +
+                  "rounded-xl overflow-hidden border " +
                   (waitingAtCurb
                     ? "bg-amber-50 border-amber-300 ring-2 ring-amber-300/50"
                     : "bg-white border-neutral-200")
                 }
               >
-                <div className="flex-1 min-w-[200px]">
-                  <div className="font-semibold flex flex-wrap items-center gap-2">
-                    <span>
-                      {cust?.name ?? "—"}{" "}
-                      <span className="text-neutral-400 font-normal">· {cust?.phone ?? "—"}</span>
-                    </span>
-                    {o.table_label && (
-                      <span className="inline-flex items-center gap-1 text-xs font-extrabold bg-amber-100 text-amber-900 border border-amber-300 rounded-full px-2 py-0.5">
-                        🪑 طاولة {o.table_label}
+                <button
+                  onClick={() => toggleExpand(o.id)}
+                  className="w-full p-3 flex items-start justify-between gap-3 flex-wrap text-right"
+                >
+                  <div className="flex-1 min-w-[200px]">
+                    <div className="font-semibold flex flex-wrap items-center gap-2">
+                      <span className="text-[10px] text-neutral-400 font-mono">#{o.id.slice(0, 6)}</span>
+                      <span>
+                        {cust?.name ?? "—"}{" "}
+                        <span className="text-neutral-400 font-normal">· {cust?.phone ?? "—"}</span>
                       </span>
-                    )}
-                    {waitingAtCurb && (
-                      <span className="inline-flex items-center gap-1 text-xs font-extrabold bg-amber-500 text-amber-950 rounded-full px-2 py-0.5">
-                        🚗 وصل العميل
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-xs text-neutral-500 mt-0.5">
-                    {new Date(o.created_at).toLocaleString("ar-SA", { timeZone: "Asia/Riyadh" })} ·{" "}
-                    {ORDER_TYPE_LABEL[o.order_type] ?? o.order_type}
-                  </div>
-                  {o.address && <div className="text-xs text-neutral-600 mt-1">📍 {o.address}</div>}
-                  {o.order_type === "car" && (o.car_plate || o.car_color) && (
-                    <div className="text-xs text-neutral-700 mt-1">
-                      🚗 <span dir="ltr">{o.car_plate ?? "—"}</span>
-                      {o.car_color && <span> · {o.car_color}</span>}
+                      {o.table_label && (
+                        <span className="inline-flex items-center gap-1 text-xs font-extrabold bg-amber-100 text-amber-900 border border-amber-300 rounded-full px-2 py-0.5">
+                          🪑 طاولة {o.table_label}
+                        </span>
+                      )}
+                      {waitingAtCurb && (
+                        <span className="inline-flex items-center gap-1 text-xs font-extrabold bg-amber-500 text-amber-950 rounded-full px-2 py-0.5">
+                          🚗 وصل العميل
+                        </span>
+                      )}
                     </div>
-                  )}
-                  {o.notes && <div className="text-xs text-amber-700 mt-1">📝 {o.notes}</div>}
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-lg font-bold text-brand-primary">{o.total} ر.س</span>
+                    <div className="text-xs text-neutral-500 mt-0.5">
+                      {new Date(o.created_at).toLocaleString("ar-SA", { timeZone: "Asia/Riyadh" })} ·{" "}
+                      {ORDER_TYPE_LABEL[o.order_type] ?? o.order_type} ·{" "}
+                      <span className="text-neutral-400">{o.order_items?.length ?? 0} أصناف</span>
+                    </div>
+                    {o.address && <div className="text-xs text-neutral-600 mt-1">📍 {o.address}</div>}
+                    {o.order_type === "car" && (o.car_plate || o.car_color) && (
+                      <div className="text-xs text-neutral-700 mt-1">
+                        🚗 <span dir="ltr">{o.car_plate ?? "—"}</span>
+                        {o.car_color && <span> · {o.car_color}</span>}
+                      </div>
+                    )}
+                    {o.notes && <div className="text-xs text-amber-700 mt-1">📝 {o.notes}</div>}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg font-bold text-brand-primary">{o.total} ر.س</span>
+                    <span className="text-neutral-400 text-xs">{expanded.has(o.id) ? "▲" : "▼"}</span>
+                  </div>
+                </button>
+
+                {/* Status dropdown — always visible */}
+                <div className="px-3 pb-2 flex items-center gap-2">
+                  <span className="text-[10px] text-neutral-400">الحالة:</span>
                   <select
                     value={o.status}
                     onChange={(e) => setStatus(o.id, e.target.value)}
@@ -367,6 +399,37 @@ export default function OrdersLive({
                     ))}
                   </select>
                 </div>
+
+                {/* Expanded: order items */}
+                {expanded.has(o.id) && o.order_items && o.order_items.length > 0 && (
+                  <div className="border-t border-neutral-100 px-3 py-2 bg-neutral-50">
+                    <table className="w-full text-xs">
+                      <thead>
+                        <tr className="text-neutral-400">
+                          <th className="text-right pb-1 font-medium">الصنف</th>
+                          <th className="text-center pb-1 font-medium w-12">الكمية</th>
+                          <th className="text-left pb-1 font-medium w-16">السعر</th>
+                          <th className="text-left pb-1 font-medium w-16">المجموع</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {o.order_items.map((item) => (
+                          <tr key={item.id} className="border-b border-neutral-100 last:border-0">
+                            <td className="py-1.5 text-right">
+                              <span className="font-medium">{item.item_name}</span>
+                              {item.variant && (
+                                <span className="text-neutral-500 mr-1 text-[10px]">({item.variant})</span>
+                              )}
+                            </td>
+                            <td className="py-1.5 text-center">{item.qty}</td>
+                            <td className="py-1.5 text-left">{item.unit_price} ر.س</td>
+                            <td className="py-1.5 text-left font-semibold">{item.line_total} ر.س</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </li>
             );
           })}

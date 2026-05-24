@@ -205,21 +205,24 @@ export default function CartDrawer({
       );
     }
 
+    const orderNum = Date.now().toString(36).toUpperCase().slice(-6);
+
     const lineList = lines
       .map((l, i) => {
         const v = l.variantLabel ? ` (${l.variantLabel})` : "";
-        let line = `${toArabicDigits(String(i + 1))}. ${l.itemName}${v}  ×${toArabicDigits(String(l.qty))}  =  ${toArabicDigits(String(l.price * l.qty))} ر.س`;
+        let line = `🍽️ ${toArabicDigits(String(i + 1))}. *${l.itemName}*${v}`;
+        line += `\n   📊 الكمية: ${toArabicDigits(String(l.qty))} × ${toArabicDigits(String(l.price))} = *${toArabicDigits(String(l.price * l.qty))} ر.س*`;
         if (l.modifiers && l.modifiers.length > 0) {
           for (const m of l.modifiers) {
-            line += `\n   ${m.groupLabel}: ${m.selected.join("، ")}`;
+            line += `\n   ➕ ${m.groupLabel}: ${m.selected.join("، ")}`;
           }
         }
         if (l.itemNote) {
-          line += `\n   ملاحظة: ${l.itemNote}`;
+          line += `\n   📝 ملاحظة: _${l.itemNote}_`;
         }
         return line;
       })
-      .join("\n");
+      .join("\n\n");
 
     const mapsLink =
       orderType === "delivery" && location
@@ -228,22 +231,23 @@ export default function CartDrawer({
 
     const msg =
       `🌟 *طلب جديد · ${restaurant.name}* 🌟\n` +
+      `🔖 *رقم الطلب:* #${orderNum}\n` +
       `━━━━━━━━━━━━━━━━\n` +
       (lockedToTable ? `🪑 *الطاولة:* ${tableLabel}\n` : "") +
       `📦 *نوع الطلب:* ${orderTypeLabel[orderType]}\n` +
       `👤 *الاسم:* ${name || "—"}\n` +
       `📞 *الجوال:* ${rawPhone || "—"}\n` +
       (orderType === "delivery" && address ? `📍 *العنوان:* ${address}\n` : "") +
-      (mapsLink ? `🗺️ *الموقع على الخريطة:* ${mapsLink}\n` : "") +
+      (mapsLink ? `🗺️ *الموقع:* ${mapsLink}\n` : "") +
       (orderType === "car" && plate ? `🚗 *رقم اللوحة:* ${plate}\n` : "") +
       (orderType === "car" && color ? `🎨 *لون السيارة:* ${color}\n` : "") +
       `━━━━━━━━━━━━━━━━\n` +
-      `🛒 *الطلبات:*\n${lineList}\n` +
+      `🛒 *تفاصيل الطلب (${toArabicDigits(String(lines.length))} أصناف):*\n\n${lineList}\n\n` +
       `━━━━━━━━━━━━━━━━\n` +
       `💰 *المجموع: ${toArabicDigits(String(total))} ر.س*\n` +
-      (notes ? `📝 *ملاحظات:* ${notes}\n` : "") +
+      (notes ? `📝 *ملاحظات عامة:* ${notes}\n` : "") +
       `━━━━━━━━━━━━━━━━\n` +
-      `شكراً لاختياركم ${restaurant.name} 🙏`;
+      `✅ شكراً لاختياركم *${restaurant.name}* 🙏`;
 
     const waNumber = String(restaurant.whatsapp_phone).replace(/\D/g, "");
     window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`, "_blank");
