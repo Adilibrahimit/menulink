@@ -160,6 +160,7 @@ export default async function CustomerAccountPage({
           recentRedemptions={recentRedemptions}
           tierLabel={customer ? TIER_LABEL[customer.loyalty_tier] ?? customer.loyalty_tier : null}
           loyaltyEnabled={loyaltyEnabled}
+          googleFirstFlow={theme.loginFlow === "google-first"}
         />
 
         {/* Profile nav links — like Burgerizer */}
