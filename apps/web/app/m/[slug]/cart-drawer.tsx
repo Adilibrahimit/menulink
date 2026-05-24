@@ -32,20 +32,24 @@ export default function CartDrawer({
   total,
   tableLabel,
   loyaltyPointsPerSar,
+  sessionId,
   onClose,
   onAdjust,
   onClear,
   onCarOrderPlaced,
+  onTableOrderPlaced,
 }: {
   restaurant: PublicMenu["restaurant"];
   lines: CartLine[];
   total: number;
   tableLabel: string | null;
   loyaltyPointsPerSar: number | null;
+  sessionId: string | null;
   onClose: () => void;
   onAdjust: (lineId: string, delta: number) => void;
   onClear: () => void;
   onCarOrderPlaced: (t: TrackingState) => void;
+  onTableOrderPlaced: (sessionId: string) => void;
 }) {
   const preselected = usePreselectedOrderType();
   const lockedToTable = !!tableLabel;
@@ -143,6 +147,23 @@ export default function CartDrawer({
     const plate = carPlate.trim();
     const color = carColor.trim();
 
+    // For table orders: open or reuse a session
+    let activeSessionId = sessionId;
+    if (lockedToTable) {
+      try {
+        const sb = createClient();
+        const { data } = await sb.rpc("open_table_session", {
+          p_restaurant_id: restaurant.id,
+          p_table_label: tableLabel ?? "",
+          p_customer_name: name || null,
+          p_customer_phone: phone || null,
+        });
+        if (data) activeSessionId = data as string;
+      } catch (err) {
+        console.warn("[MenuLink v7] session open failed:", err);
+      }
+    }
+
     const persistArgs = {
       restaurantId: restaurant.id,
       phone,
@@ -155,19 +176,26 @@ export default function CartDrawer({
       carPlate: orderType === "car" ? plate : "",
       carColor: orderType === "car" ? color : "",
       tableLabel: lockedToTable ? (tableLabel ?? "") : "",
+      sessionId: activeSessionId,
       lines,
       total,
     };
 
     // For car orders we need the order_id from the RPC so the customer
     // can tap "I've arrived" later — await persist so we capture it.
-    // Other order types stay fire-and-forget (WhatsApp opens even if
-    // Supabase is unreachable; nothing depends on the id).
+    // For table orders we also await to confirm session link.
+    // Other order types stay fire-and-forget.
     let carOrderId: string | null = null;
     if (orderType === "car") {
       try {
         const result = await persistOrder(persistArgs);
         carOrderId = result.orderId;
+      } catch (err) {
+        console.warn("[MenuLink v7] persist failed:", err);
+      }
+    } else if (lockedToTable) {
+      try {
+        await persistOrder(persistArgs);
       } catch (err) {
         console.warn("[MenuLink v7] persist failed:", err);
       }
@@ -222,6 +250,10 @@ export default function CartDrawer({
 
     if (orderType === "car" && carOrderId) {
       onCarOrderPlaced({ orderId: carOrderId, plate, color, arrived: false });
+    }
+
+    if (lockedToTable && activeSessionId) {
+      onTableOrderPlaced(activeSessionId);
     }
 
     setSubmitting(false);
@@ -553,6 +585,7 @@ async function persistOrder({
   carPlate,
   carColor,
   tableLabel,
+  sessionId,
   lines,
   total,
 }: {
@@ -567,6 +600,7 @@ async function persistOrder({
   carPlate: string;
   carColor: string;
   tableLabel: string;
+  sessionId: string | null;
   lines: CartLine[];
   total: number;
 }): Promise<{ orderId: string | null }> {
@@ -587,6 +621,7 @@ async function persistOrder({
     car_plate: orderType === "car" ? (carPlate || null) : null,
     car_color: orderType === "car" ? (carColor || null) : null,
     table_label: tableLabel || null,
+    session_id: sessionId || null,
     items: lines.map((l) => {
       let variantText = l.variantLabel || "";
       if (l.modifiers && l.modifiers.length > 0) {

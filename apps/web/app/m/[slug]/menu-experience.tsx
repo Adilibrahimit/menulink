@@ -21,6 +21,7 @@ import ItemCustomizerSheet from "./item-customizer-sheet";
 import CartDrawer from "./cart-drawer";
 import TrackingSheet from "./tracking-sheet";
 import type { TrackingState } from "./tracking-sheet";
+import TableSessionBar from "./table-session-bar";
 import ClosedPopup, { isRestaurantOpen } from "./closed-popup";
 
 function trackingKey(restaurantId: string) {
@@ -48,15 +49,21 @@ export default function MenuExperience({
     variant: PublicVariant | null;
     category: PublicCategory;
   } | null>(null);
+  const [tableSessionId, setTableSessionId] = useState<string | null>(null);
 
-  // Hydrate active car-order tracking from localStorage on mount.
-  // Runs in useEffect (not render) to avoid SSR/CSR mismatch.
+  // Hydrate active car-order tracking + table session from localStorage on mount.
   useEffect(() => {
     try {
       const raw = localStorage.getItem(trackingKey(menu.restaurant.id));
       if (raw) setTracking(JSON.parse(raw) as TrackingState);
     } catch {}
-  }, [menu.restaurant.id]);
+    if (tableLabel) {
+      try {
+        const sid = localStorage.getItem(`menulink:session:${menu.restaurant.id}:${tableLabel}`);
+        if (sid) setTableSessionId(sid);
+      } catch {}
+    }
+  }, [menu.restaurant.id, tableLabel]);
 
   function startTracking(t: TrackingState) {
     setTracking(t);
@@ -466,10 +473,28 @@ export default function MenuExperience({
           total={total}
           tableLabel={tableLabel}
           loyaltyPointsPerSar={loyaltyPointsPerSar}
+          sessionId={tableSessionId}
           onClose={() => setDrawerOpen(false)}
           onAdjust={adjustQty}
           onClear={clearCart}
           onCarOrderPlaced={startTracking}
+          onTableOrderPlaced={(sid) => {
+            setTableSessionId(sid);
+            try {
+              localStorage.setItem(`menulink:session:${menu.restaurant.id}:${tableLabel}`, sid);
+            } catch {}
+          }}
+        />
+      )}
+
+      {/* TABLE SESSION BAR — running tab for dine-in */}
+      {tableLabel && tableSessionId && (
+        <TableSessionBar
+          sessionId={tableSessionId}
+          restaurantName={menu.restaurant.name}
+          whatsappPhone={menu.restaurant.whatsapp_phone}
+          tableLabel={tableLabel}
+          onNewRound={() => setDrawerOpen(false)}
         />
       )}
 
