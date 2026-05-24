@@ -142,9 +142,12 @@ export default async function CustomerAccountPage({
         {/* Profile nav links — like Burgerizer */}
         {user && (
           <div className="space-y-2">
+            <NavCard href={`/m/${params.slug}/account/profile`} icon="👤" label="معلوماتي" />
             <NavCard href={`/m/${params.slug}/account/addresses`} icon="📍" label="عناويني" />
             {loyaltyEnabled && <NavCard href={`/m/${params.slug}/rewards`} icon="🎁" label="المكافآت" />}
             <NavCard href={`/m/${params.slug}/orders`} icon="🛒" label="طلباتي" />
+            <NavCard href={`/m/${params.slug}/about`} icon="ℹ️" label="معلومات عنا" />
+            <NavCard href={`/m/${params.slug}/contact`} icon="📞" label="اتصل بنا" />
             <NavCard href={`/m/${params.slug}/terms`} icon="📄" label="الشروط والأحكام" />
             <NavCard href={`/m/${params.slug}/privacy`} icon="🔒" label="سياسة الخصوصية" />
           </div>

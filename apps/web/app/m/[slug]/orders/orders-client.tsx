@@ -1,0 +1,263 @@
+"use client";
+
+import { useState } from "react";
+
+type OrderItem = {
+  item_name: string;
+  variant: string | null;
+  qty: number;
+  unit_price: number;
+  line_total: number;
+};
+
+type Order = {
+  id: string;
+  order_type: string;
+  status: string;
+  total: number;
+  notes: string | null;
+  created_at: string;
+  items: OrderItem[];
+};
+
+const STATUS_AR: Record<string, { label: string; color: string }> = {
+  submitted:  { label: "جديد",       color: "bg-blue-100 text-blue-800" },
+  confirmed:  { label: "مؤكد",       color: "bg-sky-100 text-sky-800" },
+  preparing:  { label: "قيد التجهيز", color: "bg-amber-100 text-amber-800" },
+  ready:      { label: "جاهز",       color: "bg-green-100 text-green-800" },
+  delivered:  { label: "تم التسليم",  color: "bg-neutral-100 text-neutral-700" },
+  cancelled:  { label: "ملغي",       color: "bg-red-100 text-red-800" },
+};
+
+const ORDER_TYPE_AR: Record<string, string> = {
+  delivery: "توصيل",
+  pickup:   "استلام",
+  dine_in:  "تناول في المطعم",
+  car:      "سيارة",
+};
+
+const ACTIVE_STATUSES = new Set(["submitted", "confirmed", "preparing", "ready"]);
+
+function toAr(s: string): string {
+  const m: Record<string, string> = {
+    "0": "٠", "1": "١", "2": "٢", "3": "٣", "4": "٤",
+    "5": "٥", "6": "٦", "7": "٧", "8": "٨", "9": "٩",
+  };
+  return s.replace(/[0-9]/g, (d) => m[d] ?? d);
+}
+
+export default function OrdersClient({
+  slug,
+  signedIn,
+  linked,
+  orders,
+}: {
+  slug: string;
+  signedIn: boolean;
+  linked: boolean;
+  orders: Order[];
+}) {
+  const [tab, setTab] = useState<"current" | "previous">("current");
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  if (!signedIn) {
+    return (
+      <div className="p-4">
+        <div className="bg-white border border-neutral-200 rounded-2xl p-8 text-center space-y-3">
+          <div className="text-4xl">🛒</div>
+          <p className="text-sm text-neutral-600" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+            ادخل بحساب Google لرؤية طلباتك السابقة
+          </p>
+          <a
+            href={`/m/${slug}/account`}
+            className="inline-block h-10 px-5 rounded-xl bg-neutral-100 text-neutral-700 text-sm font-bold leading-10 hover:bg-neutral-200"
+            style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+          >
+            تسجيل دخول
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  if (!linked) {
+    return (
+      <div className="p-4">
+        <div className="bg-white border border-neutral-200 rounded-2xl p-8 text-center space-y-3">
+          <div className="text-4xl">📱</div>
+          <p className="text-sm text-neutral-600" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+            اربط رقم جوالك بحسابك لرؤية طلباتك
+          </p>
+          <a
+            href={`/m/${slug}/account`}
+            className="inline-block h-10 px-5 rounded-xl bg-neutral-100 text-neutral-700 text-sm font-bold leading-10 hover:bg-neutral-200"
+            style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+          >
+            ربط الحساب
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  const currentOrders = orders.filter((o) => ACTIVE_STATUSES.has(o.status));
+  const previousOrders = orders.filter((o) => !ACTIVE_STATUSES.has(o.status));
+  const shown = tab === "current" ? currentOrders : previousOrders;
+
+  return (
+    <div className="p-4 space-y-4">
+      {/* Tabs */}
+      <div className="flex bg-white border border-neutral-200 rounded-xl overflow-hidden">
+        <TabButton
+          active={tab === "current"}
+          label="الطلبات الحالية"
+          count={currentOrders.length}
+          onClick={() => setTab("current")}
+        />
+        <TabButton
+          active={tab === "previous"}
+          label="الطلبات السابقة"
+          count={previousOrders.length}
+          onClick={() => setTab("previous")}
+        />
+      </div>
+
+      {/* Orders list */}
+      {shown.length === 0 ? (
+        <div className="bg-white border border-neutral-200 rounded-2xl p-8 text-center">
+          <div className="text-4xl mb-2">{tab === "current" ? "✨" : "📦"}</div>
+          <p className="text-sm text-neutral-500" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+            {tab === "current" ? "لا توجد طلبات نشطة حالياً" : "لا توجد طلبات سابقة"}
+          </p>
+          {tab === "current" && (
+            <a
+              href={`/m/${slug}`}
+              className="inline-block mt-3 h-10 px-5 rounded-xl bg-[var(--brand)] text-white text-sm font-bold leading-10"
+              style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+            >
+              تصفح القائمة
+            </a>
+          )}
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {shown.map((order) => (
+            <OrderCard
+              key={order.id}
+              order={order}
+              expanded={expandedId === order.id}
+              onToggle={() => setExpandedId(expandedId === order.id ? null : order.id)}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TabButton({
+  active,
+  label,
+  count,
+  onClick,
+}: {
+  active: boolean;
+  label: string;
+  count: number;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex-1 py-3 text-sm font-bold text-center transition-colors ${
+        active
+          ? "bg-[var(--brand)] text-white"
+          : "bg-white text-neutral-500 hover:bg-neutral-50"
+      }`}
+      style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+    >
+      {label}
+      {count > 0 && (
+        <span className={`mr-1 inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold ${
+          active ? "bg-white/25 text-white" : "bg-neutral-200 text-neutral-600"
+        }`}>
+          {toAr(String(count))}
+        </span>
+      )}
+    </button>
+  );
+}
+
+function OrderCard({
+  order,
+  expanded,
+  onToggle,
+}: {
+  order: Order;
+  expanded: boolean;
+  onToggle: () => void;
+}) {
+  const st = STATUS_AR[order.status] ?? { label: order.status, color: "bg-neutral-100 text-neutral-700" };
+  const date = new Date(order.created_at);
+  const dateStr = date.toLocaleDateString("ar-SA", { timeZone: "Asia/Riyadh", day: "numeric", month: "short" });
+  const timeStr = date.toLocaleTimeString("ar-SA", { timeZone: "Asia/Riyadh", hour: "2-digit", minute: "2-digit" });
+
+  return (
+    <div className="bg-white border border-neutral-200 rounded-2xl overflow-hidden">
+      <button
+        onClick={onToggle}
+        className="w-full px-4 py-3 flex items-center gap-3 text-right"
+      >
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${st.color}`}>
+              {st.label}
+            </span>
+            <span className="text-[11px] text-neutral-400">
+              {ORDER_TYPE_AR[order.order_type] ?? order.order_type}
+            </span>
+          </div>
+          <div className="text-xs text-neutral-500">
+            {dateStr} · {timeStr}
+          </div>
+        </div>
+        <div className="text-left shrink-0">
+          <div className="font-extrabold text-neutral-900" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+            {toAr(order.total.toFixed(2))} ر.س
+          </div>
+          <div className="text-[10px] text-neutral-400">
+            {toAr(String(order.items.length))} أصناف
+          </div>
+        </div>
+        <span className={`text-neutral-400 transition-transform ${expanded ? "rotate-90" : ""}`}>‹</span>
+      </button>
+
+      {expanded && (
+        <div className="border-t border-neutral-100 px-4 py-3 space-y-2">
+          {order.items.map((item, i) => (
+            <div key={i} className="flex items-start justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <div className="text-sm font-semibold text-neutral-800" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+                  {item.item_name}
+                </div>
+                {item.variant && (
+                  <div className="text-[11px] text-neutral-500">{item.variant}</div>
+                )}
+              </div>
+              <div className="text-left shrink-0 text-sm text-neutral-600">
+                <span className="text-neutral-400">×{toAr(String(item.qty))}</span>
+                {" "}
+                {toAr(item.line_total.toFixed(2))} ر.س
+              </div>
+            </div>
+          ))}
+          {order.notes && (
+            <div className="text-[11px] text-neutral-500 bg-neutral-50 rounded-lg px-3 py-2 mt-1">
+              💬 {order.notes}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
