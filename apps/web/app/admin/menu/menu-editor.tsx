@@ -169,7 +169,7 @@ export default function MenuEditor({
     refresh();
   }
 
-  // ---- Variant price update ----------------------------------------------
+  // ---- Variant mutations --------------------------------------------------
   async function updatePrice(variantId: string, priceStr: string) {
     const price = Number(priceStr);
     if (!Number.isFinite(price) || price < 0) {
@@ -180,6 +180,43 @@ export default function MenuEditor({
     const { error } = await sb.from("menu_item_variants").update({ price }).eq("id", variantId);
     if (error) notify("err", error.message);
     else notify("ok", "سعر محدّث");
+  }
+
+  async function renameVariant(variantId: string, current: string) {
+    const label = window.prompt("الاسم الجديد:", current);
+    if (!label || label === current) return;
+    const { error } = await sb.from("menu_item_variants").update({ variant_label_ar: label }).eq("id", variantId);
+    if (error) notify("err", error.message);
+    else { notify("ok", "تم"); refresh(); }
+  }
+
+  async function deleteVariant(variantId: string, label: string) {
+    if (!window.confirm(`حذف "${label}"؟`)) return;
+    const { error } = await sb.from("menu_item_variants").delete().eq("id", variantId);
+    if (error) notify("err", error.message);
+    else { notify("ok", "حُذف"); refresh(); }
+  }
+
+  async function addVariant(itemId: string, existingCount: number) {
+    const label = window.prompt("اسم الحجم/النوع (مثل: وسط، كبير، علبة):");
+    if (!label) return;
+    const priceStr = window.prompt("السعر بالريال:");
+    if (!priceStr) return;
+    const price = Number(priceStr);
+    if (!Number.isFinite(price) || price < 0) {
+      notify("err", "سعر غير صحيح");
+      return;
+    }
+    const key = label.trim().toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_؀-ۿ]/g, "") || `v_${Date.now()}`;
+    const { error } = await sb.from("menu_item_variants").insert({
+      menu_item_id: itemId,
+      variant_key: key,
+      variant_label_ar: label.trim(),
+      price,
+      sort: existingCount + 1,
+    });
+    if (error) notify("err", error.message);
+    else { notify("ok", "أُضيف"); refresh(); }
   }
 
   return (
@@ -318,8 +355,14 @@ export default function MenuEditor({
                   )}
                   <div className="mt-2 flex flex-wrap gap-2">
                     {it.variants.map((v) => (
-                      <label key={v.id} className="flex items-center gap-1 text-xs bg-neutral-50 rounded px-2 py-1">
-                        <span className="text-neutral-600">{v.variant_label_ar || v.variant_key}</span>
+                      <div key={v.id} className="flex items-center gap-1 text-xs bg-neutral-50 rounded px-2 py-1 border border-neutral-200">
+                        <button
+                          onClick={() => renameVariant(v.id, v.variant_label_ar || v.variant_key)}
+                          className="text-neutral-600 hover:text-brand-primary cursor-pointer font-medium"
+                          title="تعديل الاسم"
+                        >
+                          {v.variant_label_ar || v.variant_key}
+                        </button>
                         <input
                           type="number"
                           step="0.5"
@@ -329,8 +372,19 @@ export default function MenuEditor({
                           className="w-16 px-1 py-0.5 rounded border border-neutral-300 outline-none focus:border-brand-primary text-left"
                         />
                         <span className="text-neutral-400">ر.س</span>
-                      </label>
+                        <button
+                          onClick={() => deleteVariant(v.id, v.variant_label_ar || v.variant_key)}
+                          className="text-red-400 hover:text-red-600 mr-0.5"
+                          title="حذف"
+                        >✕</button>
+                      </div>
                     ))}
+                    <button
+                      onClick={() => addVariant(it.id, it.variants.length)}
+                      className="flex items-center gap-1 text-xs bg-green-50 text-green-700 border border-green-200 rounded px-2 py-1 hover:bg-green-100"
+                    >
+                      + حجم/نوع
+                    </button>
                   </div>
                 </div>
                 <div className="flex items-center gap-1 text-xs">

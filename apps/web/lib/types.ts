@@ -78,7 +78,7 @@ export type ModifierConfig = {
 export type Variant = {
   id: string;
   menu_item_id: string;
-  variant_key: "piece" | "meal" | "single";
+  variant_key: string;
   variant_label_ar: string | null;
   price: number;
   sort: number;
