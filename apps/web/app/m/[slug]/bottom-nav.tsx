@@ -2,14 +2,24 @@
 
 import { usePathname } from "next/navigation";
 
-export default function BottomNav({ slug }: { slug: string }) {
+export default function BottomNav({ slug, navItems = 3 }: { slug: string; navItems?: 3 | 5 }) {
   const pathname = usePathname();
 
-  const tabs = [
+  const baseTabs = [
     { href: `/m/${slug}`, label: "الرئيسية", icon: "🍽️", match: (p: string) => p === `/m/${slug}` },
     { href: `/m/${slug}/orders`, label: "طلباتي", icon: "🛒", match: (p: string) => p.startsWith(`/m/${slug}/orders`) },
+    { href: `/m/${slug}/account`, label: "الحس��ب", icon: "👤", match: (p: string) => p.startsWith(`/m/${slug}/account`) },
+  ];
+
+  const extendedTabs = [
+    { href: `/m/${slug}`, label: "الرئيسية", icon: "🍽️", match: (p: string) => p === `/m/${slug}` },
+    { href: `/m/${slug}/orders`, label: "طلباتي", icon: "🛒", match: (p: string) => p.startsWith(`/m/${slug}/orders`) },
+    { href: `/m/${slug}/rewards`, label: "المكافآت", icon: "��", match: (p: string) => p.startsWith(`/m/${slug}/rewards`) },
+    { href: `/m/${slug}/about`, label: "عن المطعم", icon: "ℹ️", match: (p: string) => p === `/m/${slug}/about` },
     { href: `/m/${slug}/account`, label: "الحساب", icon: "👤", match: (p: string) => p.startsWith(`/m/${slug}/account`) },
   ];
+
+  const tabs = navItems === 5 ? extendedTabs : baseTabs;
 
   return (
     <nav
@@ -30,7 +40,7 @@ export default function BottomNav({ slug }: { slug: string }) {
               <span className="text-lg">{tab.icon}</span>
               <span
                 className={`text-[10px] font-bold ${active ? "" : "font-medium"}`}
-                style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+                style={{ fontFamily: "var(--font-display)" }}
               >
                 {tab.label}
               </span>

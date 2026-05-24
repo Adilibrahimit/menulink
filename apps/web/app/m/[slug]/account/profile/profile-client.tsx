@@ -85,7 +85,7 @@ export default function ProfileClient({
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="w-full h-12 rounded-xl border border-neutral-200 px-3 outline-none focus:border-[var(--brand)] text-base"
-          style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+          style={{ fontFamily: "var(--font-display)" }}
           placeholder="اكتب اسمك"
         />
       </Field>
@@ -140,7 +140,7 @@ export default function ProfileClient({
         onClick={save}
         disabled={!dirty || saving}
         className="w-full h-12 rounded-2xl bg-[var(--brand)] text-white font-extrabold disabled:opacity-40 active:translate-y-px shadow-md"
-        style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+        style={{ fontFamily: "var(--font-display)" }}
       >
         {saving ? "..." : "حفظ التغييرات"}
       </button>
@@ -151,13 +151,13 @@ export default function ProfileClient({
           <button
             onClick={() => setShowDeleteConfirm(true)}
             className="w-full h-12 rounded-2xl bg-white border-2 border-red-200 text-red-700 font-bold hover:bg-red-50 active:translate-y-px"
-            style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+            style={{ fontFamily: "var(--font-display)" }}
           >
             حذف حسابي
           </button>
         ) : (
           <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-4 space-y-3">
-            <p className="text-sm text-red-900 font-bold text-center" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+            <p className="text-sm text-red-900 font-bold text-center" style={{ fontFamily: "var(--font-display)" }}>
               هل أنت متأكد من حذف حسابك؟
             </p>
             <p className="text-[11px] text-red-700 text-center leading-relaxed">
@@ -167,7 +167,7 @@ export default function ProfileClient({
               <button
                 onClick={() => setShowDeleteConfirm(false)}
                 className="flex-1 h-10 rounded-xl bg-white border border-neutral-200 text-neutral-700 text-sm font-bold"
-                style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+                style={{ fontFamily: "var(--font-display)" }}
               >
                 إلغاء
               </button>
@@ -175,7 +175,7 @@ export default function ProfileClient({
                 onClick={deleteAccount}
                 disabled={deleting}
                 className="flex-1 h-10 rounded-xl bg-red-600 text-white text-sm font-bold disabled:opacity-60"
-                style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+                style={{ fontFamily: "var(--font-display)" }}
               >
                 {deleting ? "..." : "نعم، احذف"}
               </button>
@@ -192,7 +192,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     <div>
       <label
         className="block text-sm font-bold text-neutral-700 mb-1.5"
-        style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+        style={{ fontFamily: "var(--font-display)" }}
       >
         {label}
       </label>

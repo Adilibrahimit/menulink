@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase-server";
+import { buildCssVars } from "@/lib/themes";
 import ProfileClient from "./profile-client";
 
 export default async function CustomerProfilePage({
@@ -42,10 +43,10 @@ export default async function CustomerProfilePage({
 
   if (!customer) redirect(`/m/${params.slug}/account`);
 
-  const cssVars = {
-    "--brand": restaurant.primary_color || "#ac0015",
-    "--bg": restaurant.background_color || "#fff8f6",
-  } as React.CSSProperties;
+  const cssVars = buildCssVars(params.slug, {
+    primary_color: restaurant.primary_color || "#ac0015",
+    background_color: restaurant.background_color || "#fff8f6",
+  });
 
   return (
     <div dir="rtl" style={cssVars} className="min-h-[100dvh] bg-[var(--bg)]">
@@ -53,7 +54,7 @@ export default async function CustomerProfilePage({
         <a href={`/m/${restaurant.slug}/account`} className="text-2xl">←</a>
         <h1
           className="font-extrabold text-lg leading-tight"
-          style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+          style={{ fontFamily: "var(--font-display)" }}
         >
           معلوماتي
         </h1>

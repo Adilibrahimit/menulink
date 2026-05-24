@@ -222,7 +222,7 @@ export default function CartDrawer({
         <header className="flex items-center justify-between p-4 border-b border-neutral-200">
           <h2
             className="font-extrabold text-lg"
-            style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+            style={{ fontFamily: "var(--font-display)" }}
           >
             السلة
           </h2>
@@ -248,7 +248,7 @@ export default function CartDrawer({
                 <div className="w-14 h-14 rounded-lg bg-neutral-200 flex items-center justify-center text-xl">🍽️</div>
               )}
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-extrabold truncate" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+                <div className="text-sm font-extrabold truncate" style={{ fontFamily: "var(--font-display)" }}>
                   {l.itemName}
                   {l.variantLabel && (
                     <span className="text-xs text-neutral-500 font-normal mr-1">· {l.variantLabel}</span>
@@ -287,7 +287,7 @@ export default function CartDrawer({
                 <div className="rounded-2xl bg-amber-50 border border-amber-200 px-3 py-3 flex items-center gap-2">
                   <span className="text-2xl">🪑</span>
                   <div className="flex-1 min-w-0 text-sm leading-snug">
-                    <div className="font-extrabold text-amber-900" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+                    <div className="font-extrabold text-amber-900" style={{ fontFamily: "var(--font-display)" }}>
                       طاولة {tableLabel}
                     </div>
                     <div className="text-xs text-amber-800/80">سيُسلَّم طلبك على هذه الطاولة</div>
@@ -359,7 +359,7 @@ export default function CartDrawer({
                                 <span className="text-sm">
                                   {a.label === "home" ? "🏠" : a.label === "office" ? "🏢" : "📍"}
                                 </span>
-                                <span className="text-sm font-bold text-neutral-800" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+                                <span className="text-sm font-bold text-neutral-800" style={{ fontFamily: "var(--font-display)" }}>
                                   {LABEL_AR[a.label] ?? a.label}
                                 </span>
                               </div>
@@ -375,7 +375,7 @@ export default function CartDrawer({
                             setLocation(null);
                           }}
                           className="text-xs text-[var(--brand)] font-bold hover:underline"
-                          style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+                          style={{ fontFamily: "var(--font-display)" }}
                         >
                           + عنوان جديد
                         </button>
@@ -445,7 +445,7 @@ export default function CartDrawer({
               <span className="text-neutral-500">المجموع</span>
               <span
                 className="font-extrabold text-xl"
-                style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+                style={{ fontFamily: "var(--font-display)" }}
               >
                 {toArabicDigits(String(total))} ر.س
               </span>
@@ -456,7 +456,7 @@ export default function CartDrawer({
               return (
                 <div className="mb-3 rounded-xl bg-amber-50 border border-amber-200 px-3 py-2 flex items-center gap-2">
                   <span className="text-xl">🏆</span>
-                  <span className="text-xs font-extrabold text-amber-900 leading-snug" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+                  <span className="text-xs font-extrabold text-amber-900 leading-snug" style={{ fontFamily: "var(--font-display)" }}>
                     ستربح {toArabicDigits(String(earn))} نقطة من هذا الطلب
                   </span>
                 </div>
@@ -469,7 +469,7 @@ export default function CartDrawer({
               >
                 <span className="flex items-center gap-2 min-w-0">
                   <span className="text-lg">🔗</span>
-                  <span className="text-xs font-bold text-neutral-700 leading-snug" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+                  <span className="text-xs font-bold text-neutral-700 leading-snug" style={{ fontFamily: "var(--font-display)" }}>
                     احفظ نقاطك مع حساب Google
                   </span>
                 </span>
@@ -480,7 +480,7 @@ export default function CartDrawer({
               onClick={submit}
               disabled={submitting}
               className="w-full h-12 rounded-2xl bg-[var(--brand)] text-white font-extrabold text-base hover:opacity-90 disabled:opacity-60 active:translate-y-px shadow-md"
-              style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+              style={{ fontFamily: "var(--font-display)" }}
             >
               {submitting ? "جاري الإرسال..." : "إرسال الطلب عبر واتساب"}
             </button>

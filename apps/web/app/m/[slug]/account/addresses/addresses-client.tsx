@@ -115,7 +115,7 @@ export default function AddressesClient({
         >
           <span className="text-2xl mt-0.5">{LABEL_ICON[a.label]}</span>
           <div className="flex-1 min-w-0">
-            <div className="font-bold text-sm text-neutral-900" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+            <div className="font-bold text-sm text-neutral-900" style={{ fontFamily: "var(--font-display)" }}>
               {LABEL_AR[a.label]}
               {a.is_default && (
                 <span className="text-[10px] text-green-700 bg-green-50 border border-green-200 rounded-full px-1.5 py-0.5 mr-2">
@@ -178,7 +178,7 @@ export default function AddressesClient({
               onClick={save}
               disabled={saving || !addressText.trim()}
               className="flex-1 h-10 rounded-xl text-white font-bold text-sm disabled:opacity-50"
-              style={{ background: "var(--brand)", fontFamily: "Tajawal, system-ui, sans-serif" }}
+              style={{ background: "var(--brand)", fontFamily: "var(--font-display)" }}
             >
               {saving ? "..." : "حفظ العنوان"}
             </button>
@@ -194,7 +194,7 @@ export default function AddressesClient({
         <button
           onClick={() => setAdding(true)}
           className="w-full h-12 rounded-xl border-2 border-dashed border-neutral-300 text-sm font-bold text-neutral-600 hover:border-neutral-400 active:translate-y-px"
-          style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+          style={{ fontFamily: "var(--font-display)" }}
         >
           + أضف عنوان جديد
         </button>

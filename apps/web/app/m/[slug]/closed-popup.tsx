@@ -42,18 +42,18 @@ export default function ClosedPopup({
           <div className="text-5xl mb-2">🕐</div>
           <h2
             className="font-extrabold text-lg text-neutral-900"
-            style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+            style={{ fontFamily: "var(--font-display)" }}
           >
             {restaurantName} مغلق حالياً
           </h2>
-          <p className="text-sm text-neutral-600 mt-1" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+          <p className="text-sm text-neutral-600 mt-1" style={{ fontFamily: "var(--font-display)" }}>
             لا يمكن إضافة أصناف للسلة خارج أوقات العمل
           </p>
         </div>
 
         {hoursJson && (
           <div className="bg-neutral-50 border border-neutral-200 rounded-2xl p-3 space-y-1">
-            <h3 className="text-xs font-bold text-neutral-500 mb-1" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+            <h3 className="text-xs font-bold text-neutral-500 mb-1" style={{ fontFamily: "var(--font-display)" }}>
               أوقات العمل
             </h3>
             {["sun", "mon", "tue", "wed", "thu", "fri", "sat"].map((d) => {
@@ -80,7 +80,7 @@ export default function ClosedPopup({
         <button
           onClick={onClose}
           className="w-full h-12 rounded-2xl bg-[var(--brand)] text-white font-extrabold active:translate-y-px shadow-md"
-          style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+          style={{ fontFamily: "var(--font-display)" }}
         >
           حسناً
         </button>

@@ -67,7 +67,7 @@ export default function TrackingSheet({
           <div className="flex-1 min-w-0">
             <h2
               className="font-extrabold text-lg leading-tight"
-              style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+              style={{ fontFamily: "var(--font-display)" }}
             >
               طلب استلام بالسيارة
             </h2>
@@ -105,7 +105,7 @@ export default function TrackingSheet({
               <div className="text-3xl mb-1">✅</div>
               <p
                 className="font-extrabold text-green-800 text-base"
-                style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+                style={{ fontFamily: "var(--font-display)" }}
               >
                 أبلغنا المطعم بوصولك
               </p>
@@ -126,7 +126,7 @@ export default function TrackingSheet({
               onClick={fireArrived}
               disabled={busy}
               className="w-full h-14 rounded-2xl bg-[var(--brand)] text-white font-extrabold text-base hover:opacity-90 disabled:opacity-60 active:translate-y-px shadow-md"
-              style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+              style={{ fontFamily: "var(--font-display)" }}
             >
               {busy ? "جاري الإرسال..." : "🚗 وصلت إلى المطعم"}
             </button>

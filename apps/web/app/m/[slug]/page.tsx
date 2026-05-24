@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase-server";
 import { hasAddon } from "@/lib/addons";
+import { getTheme, buildCssVars } from "@/lib/themes";
 import MenuExperience from "./menu-experience";
 import PwaBootstrap from "./pwa-bootstrap";
 import PushPrompt from "./push-prompt";
@@ -67,12 +68,11 @@ export default async function CustomerMenuPage({
     if (ls?.enabled) loyaltyPointsPerSar = Number(ls.points_per_sar);
   }
 
-  const cssVars = {
-    "--brand": menu.restaurant.primary_color,
-    "--bg": menu.restaurant.background_color || "#fff8f6",
-    "--ink": "#29170f",
-    "--accent-gold": "#fdc415",
-  } as React.CSSProperties;
+  const theme = getTheme(params.slug);
+  const cssVars = buildCssVars(params.slug, {
+    primary_color: menu.restaurant.primary_color,
+    background_color: menu.restaurant.background_color,
+  });
 
   return (
     <div
@@ -80,11 +80,16 @@ export default async function CustomerMenuPage({
       style={cssVars}
       className="min-h-[100dvh]"
     >
-      <CustomerShell menu={menu} tableParam={tableLabel}>
+      {theme.fonts.googleUrl && (
+        // eslint-disable-next-line @next/next/no-page-custom-font
+        <link rel="stylesheet" href={theme.fonts.googleUrl} />
+      )}
+      <CustomerShell menu={menu} tableParam={tableLabel} theme={theme}>
         <MenuExperience
           menu={menu}
           tableLabel={tableLabel}
           loyaltyPointsPerSar={loyaltyPointsPerSar}
+          theme={theme}
         />
         <PwaBootstrap />
         <PushPrompt

@@ -142,7 +142,7 @@ export default function AccountClient({
               ? "bg-green-50 border-2 border-green-300 text-green-900"
               : "bg-neutral-50 border-2 border-neutral-300 text-neutral-800")
           }
-          style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+          style={{ fontFamily: "var(--font-display)" }}
         >
           {toast.message}
         </div>
@@ -154,7 +154,7 @@ export default function AccountClient({
           {(userName ?? userEmail ?? "?").slice(0, 1).toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="font-extrabold text-neutral-900 truncate" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+          <div className="font-extrabold text-neutral-900 truncate" style={{ fontFamily: "var(--font-display)" }}>
             {userName ?? customer.name ?? userEmail ?? "—"}
           </div>
           <div className="text-xs text-neutral-500 truncate" dir="ltr">
@@ -169,14 +169,14 @@ export default function AccountClient({
       <div className="grid grid-cols-2 gap-3">
         <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 text-center">
           <div className="text-3xl mb-1">🏆</div>
-          <div className="text-3xl font-extrabold text-amber-900" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+          <div className="text-3xl font-extrabold text-amber-900" style={{ fontFamily: "var(--font-display)" }}>
             {toArabicDigits(String(customer.loyalty_points_balance))}
           </div>
           <div className="text-xs text-amber-800 mt-0.5">نقطة متاحة</div>
         </div>
         <div className="bg-white border-2 border-neutral-200 rounded-2xl p-4 text-center">
           <div className="text-3xl mb-1">{tierLabel?.split(" ")[0] ?? "🥉"}</div>
-          <div className="text-base font-extrabold text-neutral-900" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+          <div className="text-base font-extrabold text-neutral-900" style={{ fontFamily: "var(--font-display)" }}>
             {tierLabel?.split(" ").slice(1).join(" ") ?? "برونزي"}
           </div>
           <div className="text-[11px] text-neutral-500 mt-0.5">
@@ -192,7 +192,7 @@ export default function AccountClient({
       >
         <span className="text-3xl shrink-0">🎁</span>
         <span className="flex-1 min-w-0">
-          <span className="block font-extrabold text-neutral-900 text-sm" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+          <span className="block font-extrabold text-neutral-900 text-sm" style={{ fontFamily: "var(--font-display)" }}>
             استبدل نقاطك بمكافآت
           </span>
           <span className="block text-[11px] text-neutral-500 mt-0.5">شاهد المكافآت المتاحة لك</span>
@@ -202,7 +202,7 @@ export default function AccountClient({
 
       {/* Order history */}
       <div className="bg-white border border-neutral-200 rounded-2xl p-4">
-        <h2 className="font-extrabold mb-3" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+        <h2 className="font-extrabold mb-3" style={{ fontFamily: "var(--font-display)" }}>
           آخر الطلبات
         </h2>
         {recentOrders.length === 0 ? (
@@ -219,7 +219,7 @@ export default function AccountClient({
                     {STATUS_AR[o.status] ?? o.status}
                   </div>
                 </div>
-                <div className="font-extrabold text-neutral-900" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+                <div className="font-extrabold text-neutral-900" style={{ fontFamily: "var(--font-display)" }}>
                   {toArabicDigits(String(o.total))} ر.س
                 </div>
               </li>
@@ -231,7 +231,7 @@ export default function AccountClient({
       {/* Redemption history */}
       {redemptions.length > 0 && (
         <div className="bg-white border border-neutral-200 rounded-2xl p-4">
-          <h2 className="font-extrabold mb-3" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+          <h2 className="font-extrabold mb-3" style={{ fontFamily: "var(--font-display)" }}>
             آخر الاستبدالات
           </h2>
           <ul className="divide-y divide-neutral-100">
@@ -258,7 +258,7 @@ export default function AccountClient({
       <a
         href={`/m/${slug}`}
         className="block w-full h-12 rounded-2xl bg-[var(--brand)] text-white text-center text-base font-extrabold leading-[3rem] active:translate-y-px shadow-md"
-        style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+        style={{ fontFamily: "var(--font-display)" }}
       >
         تصفح القائمة
       </a>
@@ -292,7 +292,7 @@ function SignedOutCard({ slug, tenantName }: { slug: string; tenantName: string 
     <div className="space-y-4">
       <div className="bg-white border border-neutral-200 rounded-2xl p-6 text-center space-y-3">
         <div className="text-5xl">🏆</div>
-        <h2 className="text-lg font-extrabold text-neutral-900" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+        <h2 className="text-lg font-extrabold text-neutral-900" style={{ fontFamily: "var(--font-display)" }}>
           احفظ نقاطك وطلباتك
         </h2>
         <p className="text-sm text-neutral-600 leading-relaxed">
@@ -303,7 +303,7 @@ function SignedOutCard({ slug, tenantName }: { slug: string; tenantName: string 
           onClick={signInWithGoogle}
           disabled={busy}
           className="w-full h-12 rounded-2xl bg-white border-2 border-neutral-300 text-neutral-900 font-extrabold hover:border-neutral-400 disabled:opacity-60 active:translate-y-px shadow-sm flex items-center justify-center gap-2"
-          style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+          style={{ fontFamily: "var(--font-display)" }}
         >
           <GoogleG />
           {busy ? "..." : "متابعة بحساب Google"}
@@ -318,7 +318,7 @@ function SignedOutCard({ slug, tenantName }: { slug: string; tenantName: string 
         <a
           href={`/m/${slug}`}
           className="block w-full h-12 rounded-2xl bg-neutral-100 text-neutral-700 font-extrabold text-center leading-[3rem] hover:bg-neutral-200 active:translate-y-px"
-          style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+          style={{ fontFamily: "var(--font-display)" }}
         >
           متابعة كزائر
         </a>
@@ -386,7 +386,7 @@ function LinkPhoneCard({ slug, userEmail, userName }: { slug: string; userEmail:
     return (
       <div className="bg-white border border-neutral-200 rounded-2xl p-6 text-center space-y-3">
         <div className="text-4xl">✅</div>
-        <h2 className="text-lg font-extrabold text-neutral-900" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+        <h2 className="text-lg font-extrabold text-neutral-900" style={{ fontFamily: "var(--font-display)" }}>
           تم ربط حسابك
         </h2>
         <p className="text-sm text-neutral-600 leading-relaxed">
@@ -395,7 +395,7 @@ function LinkPhoneCard({ slug, userEmail, userName }: { slug: string; userEmail:
         <button
           onClick={() => window.location.reload()}
           className="w-full h-12 rounded-2xl bg-[var(--brand)] text-white font-extrabold"
-          style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+          style={{ fontFamily: "var(--font-display)" }}
         >
           متابعة
         </button>
@@ -407,7 +407,7 @@ function LinkPhoneCard({ slug, userEmail, userName }: { slug: string; userEmail:
     <div className="bg-white border border-neutral-200 rounded-2xl p-6 space-y-3">
       <div className="text-center">
         <div className="text-4xl mb-2">📱</div>
-        <h2 className="text-lg font-extrabold text-neutral-900" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+        <h2 className="text-lg font-extrabold text-neutral-900" style={{ fontFamily: "var(--font-display)" }}>
           ربط حسابك برقم جوالك
         </h2>
         <p className="text-sm text-neutral-600 mt-1 leading-relaxed">
@@ -434,7 +434,7 @@ function LinkPhoneCard({ slug, userEmail, userName }: { slug: string; userEmail:
         onClick={() => attemptLink()}
         disabled={busy}
         className="w-full h-12 rounded-2xl bg-[var(--brand)] text-white font-extrabold disabled:opacity-60 active:translate-y-px shadow-md"
-        style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+        style={{ fontFamily: "var(--font-display)" }}
       >
         {busy ? "..." : "ربط الحساب"}
       </button>

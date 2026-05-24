@@ -68,7 +68,7 @@ export default function MenuItemCard({
       <div className="p-3 flex flex-col gap-2 flex-1">
         <h3
           className="font-extrabold text-neutral-900 leading-tight text-[15px]"
-          style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+          style={{ fontFamily: "var(--font-display)" }}
         >
           {item.name_ar}
         </h3>

@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase-server";
+import { buildCssVars } from "@/lib/themes";
 import AddressesClient from "./addresses-client";
 
 export default async function AddressesPage({
@@ -34,10 +35,10 @@ export default async function AddressesPage({
         .order("created_at", { ascending: true })
     : { data: [] };
 
-  const cssVars = {
-    "--brand": restaurant.primary_color || "#ac0015",
-    "--bg": restaurant.background_color || "#fff8f6",
-  } as React.CSSProperties;
+  const cssVars = buildCssVars(params.slug, {
+    primary_color: restaurant.primary_color || "#ac0015",
+    background_color: restaurant.background_color || "#fff8f6",
+  });
 
   return (
     <div dir="rtl" style={cssVars} className="min-h-[100dvh] bg-[var(--bg)]">
@@ -45,7 +46,7 @@ export default async function AddressesPage({
         <a href={`/m/${params.slug}/account`} className="text-2xl">←</a>
         <h1
           className="font-extrabold text-lg"
-          style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+          style={{ fontFamily: "var(--font-display)" }}
         >
           عناويني
         </h1>

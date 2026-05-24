@@ -60,13 +60,13 @@ export default function OrdersClient({
       <div className="p-4">
         <div className="bg-white border border-neutral-200 rounded-2xl p-8 text-center space-y-3">
           <div className="text-4xl">🛒</div>
-          <p className="text-sm text-neutral-600" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+          <p className="text-sm text-neutral-600" style={{ fontFamily: "var(--font-display)" }}>
             ادخل بحساب Google لرؤية طلباتك السابقة
           </p>
           <a
             href={`/m/${slug}/account`}
             className="inline-block h-10 px-5 rounded-xl bg-neutral-100 text-neutral-700 text-sm font-bold leading-10 hover:bg-neutral-200"
-            style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+            style={{ fontFamily: "var(--font-display)" }}
           >
             تسجيل دخول
           </a>
@@ -80,13 +80,13 @@ export default function OrdersClient({
       <div className="p-4">
         <div className="bg-white border border-neutral-200 rounded-2xl p-8 text-center space-y-3">
           <div className="text-4xl">📱</div>
-          <p className="text-sm text-neutral-600" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+          <p className="text-sm text-neutral-600" style={{ fontFamily: "var(--font-display)" }}>
             اربط رقم جوالك بحسابك لرؤية طلباتك
           </p>
           <a
             href={`/m/${slug}/account`}
             className="inline-block h-10 px-5 rounded-xl bg-neutral-100 text-neutral-700 text-sm font-bold leading-10 hover:bg-neutral-200"
-            style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+            style={{ fontFamily: "var(--font-display)" }}
           >
             ربط الحساب
           </a>
@@ -121,14 +121,14 @@ export default function OrdersClient({
       {shown.length === 0 ? (
         <div className="bg-white border border-neutral-200 rounded-2xl p-8 text-center">
           <div className="text-4xl mb-2">{tab === "current" ? "✨" : "📦"}</div>
-          <p className="text-sm text-neutral-500" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+          <p className="text-sm text-neutral-500" style={{ fontFamily: "var(--font-display)" }}>
             {tab === "current" ? "لا توجد طلبات نشطة حالياً" : "لا توجد طلبات سابقة"}
           </p>
           {tab === "current" && (
             <a
               href={`/m/${slug}`}
               className="inline-block mt-3 h-10 px-5 rounded-xl bg-[var(--brand)] text-white text-sm font-bold leading-10"
-              style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+              style={{ fontFamily: "var(--font-display)" }}
             >
               تصفح القائمة
             </a>
@@ -169,7 +169,7 @@ function TabButton({
           ? "bg-[var(--brand)] text-white"
           : "bg-white text-neutral-500 hover:bg-neutral-50"
       }`}
-      style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+      style={{ fontFamily: "var(--font-display)" }}
     >
       {label}
       {count > 0 && (
@@ -217,7 +217,7 @@ function OrderCard({
           </div>
         </div>
         <div className="text-left shrink-0">
-          <div className="font-extrabold text-neutral-900" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+          <div className="font-extrabold text-neutral-900" style={{ fontFamily: "var(--font-display)" }}>
             {toAr(order.total.toFixed(2))} ر.س
           </div>
           <div className="text-[10px] text-neutral-400">
@@ -232,7 +232,7 @@ function OrderCard({
           {order.items.map((item, i) => (
             <div key={i} className="flex items-start justify-between gap-2">
               <div className="min-w-0 flex-1">
-                <div className="text-sm font-semibold text-neutral-800" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+                <div className="text-sm font-semibold text-neutral-800" style={{ fontFamily: "var(--font-display)" }}>
                   {item.item_name}
                 </div>
                 {item.variant && (

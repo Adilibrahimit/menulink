@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { SLUG_TO_IMG } from "@/lib/koko-images";
 import { toArabicDigits } from "@/lib/arabic";
+import type { ThemeConfig } from "@/lib/themes";
 import type {
   PublicMenu,
   PublicMenuItem,
@@ -24,10 +25,12 @@ export default function MenuExperience({
   menu,
   tableLabel,
   loyaltyPointsPerSar,
+  theme,
 }: {
   menu: PublicMenu;
   tableLabel: string | null;
   loyaltyPointsPerSar: number | null;
+  theme: ThemeConfig;
 }) {
   const [cart, setCart] = useState<Record<string, CartLine>>({});
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -122,22 +125,53 @@ export default function MenuExperience({
 
   return (
     <main
-      className="bg-[var(--bg)] text-[#29170f] pb-28"
-      style={{ fontFamily: "Cairo, system-ui, sans-serif" }}
+      className="bg-[var(--bg)] text-[var(--ink)] pb-28"
+      style={{ fontFamily: "var(--font-body)" }}
     >
       {/* TABLE BANNER — only when the customer arrived via a table QR */}
       {tableLabel && (
         <div
           className="bg-amber-400 text-amber-950 text-sm font-extrabold py-2 px-4 text-center"
-          style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+          style={{ fontFamily: "var(--font-display)" }}
         >
           🪑 أنت تطلب من طاولة {tableLabel}
         </div>
       )}
 
-      {/* HERO — cover image with restaurant name overlaid in big bold display */}
+      {/* HERO */}
       <header className="relative">
-        {hasCover ? (
+        {theme.headerStyle === "dark-navy" ? (
+          <div className="bg-[var(--header-bg)] px-5 pt-8 pb-6">
+            <div className="flex items-start gap-3">
+              {menu.restaurant.logo_url && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={menu.restaurant.logo_url}
+                  alt={menu.restaurant.name}
+                  className="w-16 h-16 rounded-2xl object-cover bg-white border-2 border-white/20 shadow-md shrink-0"
+                />
+              )}
+              <div className="flex-1 min-w-0 pt-1">
+                <h1
+                  className="text-[var(--header-text)] font-extrabold leading-[1.05] text-3xl sm:text-4xl"
+                  style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.02em" }}
+                >
+                  {menu.restaurant.name}
+                </h1>
+                {menu.restaurant.tagline_ar && (
+                  <p className="text-white/75 text-sm mt-1 leading-snug">
+                    {menu.restaurant.tagline_ar}
+                  </p>
+                )}
+                {menu.restaurant.address_ar && (
+                  <p className="text-white/60 text-xs mt-1.5">
+                    📍 {menu.restaurant.address_ar}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        ) : hasCover ? (
           <div className="relative w-full h-56 sm:h-72 overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -145,7 +179,6 @@ export default function MenuExperience({
               alt=""
               className="w-full h-full object-cover"
             />
-            {/* Darker overlay so the big name reads cleanly */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/30 to-black/10" />
 
             <div className="absolute inset-x-0 bottom-0 p-5 flex items-end gap-3">
@@ -160,7 +193,7 @@ export default function MenuExperience({
               <div className="flex-1 min-w-0">
                 <h1
                   className="text-white font-extrabold leading-[1.05] text-3xl sm:text-4xl drop-shadow-sm"
-                  style={{ fontFamily: "Tajawal, system-ui, sans-serif", letterSpacing: "-0.02em" }}
+                  style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.02em" }}
                 >
                   {menu.restaurant.name}
                 </h1>
@@ -186,7 +219,7 @@ export default function MenuExperience({
               <div className="flex-1 min-w-0 pt-1">
                 <h1
                   className="text-neutral-900 font-extrabold leading-[1.05] text-3xl"
-                  style={{ fontFamily: "Tajawal, system-ui, sans-serif", letterSpacing: "-0.02em" }}
+                  style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.02em" }}
                 >
                   {menu.restaurant.name}
                 </h1>
@@ -213,7 +246,7 @@ export default function MenuExperience({
         </div>
       )}
 
-      <CategoryTabs categories={menu.categories} />
+      <CategoryTabs categories={menu.categories} categoryStyle={theme.categoryStyle} />
 
       {/* MENU SECTIONS — 2-col grid on mobile, 3 on sm, 4 on lg */}
       <div className="px-4 mt-5 space-y-8">
@@ -222,7 +255,7 @@ export default function MenuExperience({
             <div className="flex items-baseline justify-between mb-3 px-1">
               <h2
                 className="text-2xl font-extrabold text-neutral-900"
-                style={{ fontFamily: "Tajawal, system-ui, sans-serif", letterSpacing: "-0.01em" }}
+                style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.01em" }}
               >
                 {c.emoji && <span className="ml-2">{c.emoji}</span>}
                 {c.name_ar}
@@ -249,7 +282,7 @@ export default function MenuExperience({
         <div className="bg-white border border-neutral-200 rounded-2xl p-4 text-center space-y-2">
           <h3
             className="text-sm font-extrabold text-neutral-700"
-            style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+            style={{ fontFamily: "var(--font-display)" }}
           >
             📊 الاحتياج اليومي المقدّر من السعرات الحرارية
           </h3>
@@ -266,7 +299,7 @@ export default function MenuExperience({
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 space-y-1.5">
           <h3
             className="text-sm font-extrabold text-amber-900"
-            style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+            style={{ fontFamily: "var(--font-display)" }}
           >
             ⚠️ تنبيه حساسية الطعام
           </h3>
@@ -284,7 +317,12 @@ export default function MenuExperience({
       {count > 0 && (
         <button
           onClick={() => setDrawerOpen(true)}
-          className="fixed bottom-3 inset-x-3 z-40 h-14 rounded-2xl bg-[var(--brand)] text-white shadow-[0_8px_24px_rgba(0,0,0,0.18)] flex items-center justify-between px-4 hover:opacity-95 active:translate-y-px"
+          className={
+            "fixed bottom-3 inset-x-3 z-40 h-14 rounded-2xl shadow-[0_8px_24px_rgba(0,0,0,0.18)] flex items-center justify-between px-4 hover:opacity-95 active:translate-y-px " +
+            (theme.cartBarStyle === "gold-navy"
+              ? "bg-[var(--cta-bg)] text-[var(--cta-text)]"
+              : "bg-[var(--brand)] text-white")
+          }
           dir="rtl"
         >
           <span className="flex items-center gap-2">
@@ -297,14 +335,14 @@ export default function MenuExperience({
                 {toArabicDigits(String(count))}
               </span>
             </span>
-            <span className="font-extrabold text-base" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+            <span className="font-extrabold text-base" style={{ fontFamily: "var(--font-display)" }}>
               السلة
             </span>
           </span>
           <span className="flex items-center gap-2">
             <span
               className="text-lg font-extrabold"
-              style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+              style={{ fontFamily: "var(--font-display)" }}
             >
               {toArabicDigits(String(total))} ر.س
             </span>
@@ -323,7 +361,7 @@ export default function MenuExperience({
         >
           <span className="flex items-center gap-2">
             <span className="text-2xl">🚗</span>
-            <span className="font-extrabold text-base" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+            <span className="font-extrabold text-base" style={{ fontFamily: "var(--font-display)" }}>
               {tracking.arrived ? "تم إبلاغ المطعم بوصولك" : "اضغط لإبلاغ المطعم بوصولك"}
             </span>
           </span>

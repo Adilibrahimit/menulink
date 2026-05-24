@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase-server";
 import { hasAddon } from "@/lib/addons";
+import { buildCssVars, getTheme } from "@/lib/themes";
 import AccountClient from "./account-client";
 
 const TIER_LABEL: Record<string, string> = {
@@ -27,11 +28,10 @@ export default async function CustomerAccountPage({
 
   const loyaltyEnabled = await hasAddon(restaurant.id, "loyalty");
 
-  const cssVars = {
-    "--brand": restaurant.primary_color || "#ac0015",
-    "--bg":    restaurant.background_color || "#fff8f6",
-    "--ink":   "#29170f",
-  } as React.CSSProperties;
+  const cssVars = buildCssVars(params.slug, {
+    primary_color: restaurant.primary_color || "#ac0015",
+    background_color: restaurant.background_color || "#fff8f6",
+  });
 
   // Fetch current user (Google-signed-in customer, owner, or none).
   const { data: { user } } = await sb.auth.getUser();
@@ -128,14 +128,20 @@ export default async function CustomerAccountPage({
     }
   }
 
+  const theme = getTheme(params.slug);
+
   return (
     <div dir="rtl" style={cssVars} className="min-h-[100dvh] bg-[var(--bg)]">
+      {theme.fonts.googleUrl && (
+        // eslint-disable-next-line @next/next/no-page-custom-font
+        <link rel="stylesheet" href={theme.fonts.googleUrl} />
+      )}
       <header className="bg-[var(--brand)] text-white px-5 py-4 flex items-center gap-3">
         <a href={`/m/${restaurant.slug}`} className="text-2xl">←</a>
         <div className="flex-1 min-w-0">
           <h1
             className="font-extrabold text-lg leading-tight truncate"
-            style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+            style={{ fontFamily: "var(--font-display)" }}
           >
             حسابي · {restaurant.name}
           </h1>
@@ -181,7 +187,7 @@ function NavCard({ href, icon, label }: { href: string; icon: string; label: str
       className="flex items-center gap-3 bg-white border border-neutral-200 rounded-xl px-4 py-3 hover:border-neutral-300 active:translate-y-px"
     >
       <span className="text-xl">{icon}</span>
-      <span className="flex-1 text-sm font-bold text-neutral-800" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+      <span className="flex-1 text-sm font-bold text-neutral-800" style={{ fontFamily: "var(--font-display)" }}>
         {label}
       </span>
       <span className="text-neutral-400">‹</span>

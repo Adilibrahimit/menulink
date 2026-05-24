@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase-server";
+import { buildCssVars } from "@/lib/themes";
 
 export default async function TermsPage({ params }: { params: { slug: string } }) {
   const sb = createClient();
@@ -10,10 +11,10 @@ export default async function TermsPage({ params }: { params: { slug: string } }
     .single();
   if (!restaurant) notFound();
 
-  const cssVars = {
-    "--brand": restaurant.primary_color || "#ac0015",
-    "--bg": restaurant.background_color || "#fff8f6",
-  } as React.CSSProperties;
+  const cssVars = buildCssVars(params.slug, {
+    primary_color: restaurant.primary_color || "#ac0015",
+    background_color: restaurant.background_color || "#fff8f6",
+  });
 
   return (
     <div dir="rtl" style={cssVars} className="min-h-[100dvh] bg-[var(--bg)]">

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase-server";
+import { buildCssVars, getTheme } from "@/lib/themes";
 import OrdersClient from "./orders-client";
 
 export default async function CustomerOrdersPage({
@@ -16,10 +17,10 @@ export default async function CustomerOrdersPage({
     .single();
   if (!restaurant) notFound();
 
-  const cssVars = {
-    "--brand": restaurant.primary_color || "#ac0015",
-    "--bg": restaurant.background_color || "#fff8f6",
-  } as React.CSSProperties;
+  const cssVars = buildCssVars(params.slug, {
+    primary_color: restaurant.primary_color || "#ac0015",
+    background_color: restaurant.background_color || "#fff8f6",
+  });
 
   const { data: { user } } = await sb.auth.getUser();
 
@@ -86,13 +87,19 @@ export default async function CustomerOrdersPage({
     }
   }
 
+  const theme = getTheme(params.slug);
+
   return (
     <div dir="rtl" style={cssVars} className="min-h-[100dvh] bg-[var(--bg)]">
+      {theme.fonts.googleUrl && (
+        // eslint-disable-next-line @next/next/no-page-custom-font
+        <link rel="stylesheet" href={theme.fonts.googleUrl} />
+      )}
       <header className="bg-[var(--brand)] text-white px-5 py-4 flex items-center gap-3">
         <a href={`/m/${restaurant.slug}`} className="text-2xl">←</a>
         <h1
           className="font-extrabold text-lg leading-tight"
-          style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+          style={{ fontFamily: "var(--font-display)" }}
         >
           طلباتي
         </h1>

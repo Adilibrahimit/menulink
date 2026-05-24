@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase-server";
 import { hasAddon } from "@/lib/addons";
+import { buildCssVars } from "@/lib/themes";
 import RewardsClient from "./rewards-client";
 
 type CustomerView = {
@@ -20,11 +21,10 @@ export default async function CustomerRewardsPage({ params }: { params: { slug: 
   if (!restaurant) notFound();
   if (!(await hasAddon(restaurant.id, "loyalty"))) notFound();
 
-  const cssVars = {
-    "--brand": restaurant.primary_color || "#ac0015",
-    "--bg":    restaurant.background_color || "#fff8f6",
-    "--ink":   "#29170f",
-  } as React.CSSProperties;
+  const cssVars = buildCssVars(params.slug, {
+    primary_color: restaurant.primary_color || "#ac0015",
+    background_color: restaurant.background_color || "#fff8f6",
+  });
 
   // Active rewards for this tenant (anon read allowed by RLS).
   const { data: rewards } = await sb

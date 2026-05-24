@@ -5,7 +5,13 @@ import type { PublicCategory } from "./types";
 
 // Sticky horizontal-scrolling category bar. Active tab tracks scroll position
 // via IntersectionObserver on the category sections.
-export default function CategoryTabs({ categories }: { categories: PublicCategory[] }) {
+export default function CategoryTabs({
+  categories,
+  categoryStyle = "tabs",
+}: {
+  categories: PublicCategory[];
+  categoryStyle?: "pills" | "tabs";
+}) {
   const [active, setActive] = useState(categories[0]?.id ?? "");
   const tabsRef = useRef<HTMLDivElement>(null);
 
@@ -59,10 +65,15 @@ export default function CategoryTabs({ categories }: { categories: PublicCategor
               onClick={() => scrollTo(c.id)}
               className={
                 "shrink-0 px-4 h-9 rounded-full text-sm font-semibold transition-colors " +
-                (active === c.id
-                  ? "bg-[var(--brand)] text-white"
-                  : "bg-white text-neutral-700 border border-neutral-200 hover:border-neutral-300")
+                (categoryStyle === "pills"
+                  ? (active === c.id
+                      ? "bg-[var(--cta-bg,var(--brand))] text-[var(--cta-text,#fff)] shadow-sm"
+                      : "bg-[var(--card-bg,#fff)] text-[var(--text-secondary,#52525b)] border border-[var(--card-border,#e5e7eb)]")
+                  : (active === c.id
+                      ? "bg-[var(--brand)] text-white"
+                      : "bg-white text-neutral-700 border border-neutral-200 hover:border-neutral-300"))
               }
+              style={{ fontFamily: "var(--font-display)" }}
             >
               {c.emoji && <span className="ml-1.5">{c.emoji}</span>}
               {c.name_ar}

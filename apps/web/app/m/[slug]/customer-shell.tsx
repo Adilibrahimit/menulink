@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase-browser";
+import type { ThemeConfig } from "@/lib/themes";
 import LoginGate from "./login-gate";
 import BottomNav from "./bottom-nav";
 import type { PublicMenu } from "./types";
@@ -17,10 +18,12 @@ const GUEST_KEY = "menulink:guest";
 export default function CustomerShell({
   menu,
   tableParam,
+  theme,
   children,
 }: {
   menu: PublicMenu;
   tableParam: string | null;
+  theme: ThemeConfig;
   children: React.ReactNode;
 }) {
   const [auth, setAuth] = useState<AuthState>({ kind: "loading" });
@@ -85,7 +88,7 @@ export default function CustomerShell({
   return (
     <>
       <div className="pb-16">{children}</div>
-      <BottomNav slug={menu.restaurant.slug} />
+      <BottomNav slug={menu.restaurant.slug} navItems={theme.bottomNavItems} />
     </>
   );
 }
