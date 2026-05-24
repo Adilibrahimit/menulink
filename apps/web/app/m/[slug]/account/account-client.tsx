@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase-browser";
 import { normalizePhone } from "@/lib/phone";
 import { toArabicDigits } from "@/lib/arabic";
+import SarSymbol from "../sar-symbol";
 
 type CustomerView = {
   id: string;
@@ -226,8 +227,8 @@ export default function AccountClient({
                     {STATUS_AR[o.status] ?? o.status}
                   </div>
                 </div>
-                <div className="font-extrabold text-neutral-900" style={{ fontFamily: "var(--font-display)" }}>
-                  {toArabicDigits(String(o.total))} ر.س
+                <div className="font-extrabold text-neutral-900 flex items-center gap-0.5" style={{ fontFamily: "var(--font-display)" }}>
+                  {toArabicDigits(String(o.total))} <SarSymbol size={14} />
                 </div>
               </li>
             ))}

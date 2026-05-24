@@ -3,6 +3,7 @@
 import { SLUG_TO_IMG } from "@/lib/koko-images";
 import { ALLERGEN_MAP } from "@/lib/allergens";
 import { toArabicDigits } from "@/lib/arabic";
+import SarSymbol from "./sar-symbol";
 import type { PublicMenuItem, PublicVariant } from "./types";
 
 // Stitch "Vibrant Poultry" card. Image fills the top of the card, square
@@ -123,7 +124,7 @@ export default function MenuItemCard({
               <span className="text-sm font-extrabold">
                 {toArabicDigits(String(v.price))}
               </span>
-              <span className="text-[9px] opacity-80 font-semibold">ر.س</span>
+              <SarSymbol size={10} className="opacity-80" />
             </button>
           ))}
         </div>

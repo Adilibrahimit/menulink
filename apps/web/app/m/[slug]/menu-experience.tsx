@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { SLUG_TO_IMG } from "@/lib/koko-images";
 import { toArabicDigits } from "@/lib/arabic";
 import type { ThemeConfig } from "@/lib/themes";
+import SarSymbol from "./sar-symbol";
 import type {
   PublicMenu,
   PublicMenuItem,
@@ -248,6 +249,13 @@ export default function MenuExperience({
 
       <CategoryTabs categories={menu.categories} categoryStyle={theme.categoryStyle} />
 
+      <div className="px-4 mt-3">
+        <div className="flex items-center justify-center gap-1.5 text-[11px] text-[var(--text-secondary,#71717a)]">
+          <SarSymbol size={11} />
+          <span>جميع الأسعار شاملة ضريبة القيمة المضافة</span>
+        </div>
+      </div>
+
       {/* MENU SECTIONS — 2-col grid on mobile, 3 on sm, 4 on lg */}
       <div className="px-4 mt-5 space-y-8">
         {menu.categories.map((c) => (
@@ -344,7 +352,7 @@ export default function MenuExperience({
               className="text-lg font-extrabold"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              {toArabicDigits(String(total))} ر.س
+              {toArabicDigits(String(total))} <SarSymbol size={18} />
             </span>
             <span className="text-xl">←</span>
           </span>

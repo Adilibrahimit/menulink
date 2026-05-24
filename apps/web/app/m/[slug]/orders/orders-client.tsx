@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toArabicDigits } from "@/lib/arabic";
+import SarSymbol from "../sar-symbol";
 
 type OrderItem = {
   item_name: string;
@@ -217,8 +218,8 @@ function OrderCard({
           </div>
         </div>
         <div className="text-left shrink-0">
-          <div className="font-extrabold text-neutral-900" style={{ fontFamily: "var(--font-display)" }}>
-            {toAr(order.total.toFixed(2))} ر.س
+          <div className="font-extrabold text-neutral-900 flex items-center gap-0.5" style={{ fontFamily: "var(--font-display)" }}>
+            {toAr(order.total.toFixed(2))} <SarSymbol size={14} />
           </div>
           <div className="text-[10px] text-neutral-400">
             {toAr(String(order.items.length))} أصناف
@@ -242,7 +243,7 @@ function OrderCard({
               <div className="text-left shrink-0 text-sm text-neutral-600">
                 <span className="text-neutral-400">×{toAr(String(item.qty))}</span>
                 {" "}
-                {toAr(item.line_total.toFixed(2))} ر.س
+                <span className="inline-flex items-center gap-0.5">{toAr(item.line_total.toFixed(2))} <SarSymbol size={12} /></span>
               </div>
             </div>
           ))}

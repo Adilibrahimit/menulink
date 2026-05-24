@@ -6,6 +6,7 @@ import { normalizePhone } from "@/lib/phone";
 import { toArabicDigits } from "@/lib/arabic";
 import LocationPicker from "./location-picker";
 import { usePreselectedOrderType } from "./order-context";
+import SarSymbol from "./sar-symbol";
 import type { PublicMenu, CartLine, OrderType } from "./types";
 import type { TrackingState } from "./tracking-sheet";
 
@@ -258,8 +259,8 @@ export default function CartDrawer({
                     <span className="text-xs text-neutral-500 font-normal mr-1">· {l.variantLabel}</span>
                   )}
                 </div>
-                <div className="text-xs text-neutral-500 mt-0.5">
-                  {toArabicDigits(String(l.price * l.qty))} ر.س
+                <div className="text-xs text-neutral-500 mt-0.5 flex items-center gap-0.5">
+                  {toArabicDigits(String(l.price * l.qty))} <SarSymbol size={11} />
                 </div>
               </div>
               <div className="flex items-center gap-1.5">
@@ -470,7 +471,7 @@ export default function CartDrawer({
                 className="font-extrabold text-xl"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                {toArabicDigits(String(total))} ر.س
+                {toArabicDigits(String(total))} <SarSymbol size={20} />
               </span>
             </div>
             {loyaltyPointsPerSar != null && loyaltyPointsPerSar > 0 && rawPhone.trim() && (() => {
