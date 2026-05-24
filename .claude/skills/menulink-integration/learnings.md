@@ -426,6 +426,18 @@ The cashier UI also has Family/Section types (likely 2, but untested today). Eac
 **Context:** Built an item customizer sheet with modifiers (rice types, extras) hardcoded in `lib/menu-modifiers.ts` based on category-name keyword matching. Worked for customers but owners couldn't see/edit/remove them from admin — they were invisible because not in the DB.
 **Learning:** **When moving config from hardcoded to DB-driven, you MUST backfill existing items.** Pattern: (1) add nullable jsonb column, (2) update the RPC to return it, (3) client reads DB value first, falls back to hardcoded if null, (4) backfill existing items via SQL UPDATE...FROM with the same keyword matching logic, (5) owner can now see and edit. Without step 4, the "fallback" creates a ghost layer the owner can never touch. The backfill SQL should use the SAME matching logic as the TypeScript (category ILIKE keywords) to ensure 1:1 coverage.
 **Source:** session:2026-05-24 modifiers migration
+
+### LRN-2026-05-24-go-live-checklist (confidence: high) ⭐ OPERATIONAL
+**Context:** Activating KO-KO as the first real paying customer. Had to: update WhatsApp phone, change owner email from test to real, log payment to trigger subscription activation, clear all test/seed data (orders, customers, order_items).
+**Learning:** **Go-live for a tenant requires a clean-slate sequence:** (1) update `restaurants.whatsapp_phone` to real number, (2) update `auth.users.email` to real owner email + set `email_confirmed_at = now()`, (3) reset password to something shareable via `crypt('...', gen_salt('bf'))`, (4) INSERT into `payments` to trigger the subscription activation, (5) DELETE order_items → orders → customers for that restaurant_id (FK order matters). Do NOT delete menu data — that's real content the owner or ops already curated. After this, the admin dashboard shows 0 orders / 0 customers and the first real order is their actual #1.
+**Source:** session:2026-05-24 KO-KO activation
+**Triggers:** go-live, activation, first customer, clean slate, test data, production, payment trigger
+
+### LRN-2026-05-24-table-session-8hr-window (confidence: medium)
+**Context:** Designed `open_table_session` RPC to reuse an existing open session at the same table. Without a time limit, a session from yesterday (customer left without checking out) would get reused by today's customer at the same table.
+**Learning:** **Table sessions auto-expire after 8 hours.** The `open_table_session` RPC only reuses sessions where `opened_at > now() - interval '8 hours'`. This covers a full dinner service without leaking into the next day. If a customer never taps "طلب الحساب", the session just becomes stale and a new one is created next time. Admin may want a "close stale sessions" button later, but for now the 8hr window prevents cross-customer data leaks.
+**Source:** session:2026-05-24 table sessions design
+**Triggers:** table session, expiry, reuse window, stale session, dine-in
 **Triggers:** hardcoded config, DB migration, backfill, modifiers_json, owner-editable, ghost config
 
 ---

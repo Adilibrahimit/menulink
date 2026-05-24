@@ -1,14 +1,14 @@
 # MenuLink · Project Memory
 
 > **Read this first** when picking up the project in a new session.
-> Last saved: **2026-05-24 (session 3)** — Item customizer sheet + server-side price validation (0030) + per-item modifiers admin UI (0031). Owners can now edit add-ons/modifiers per menu item from /admin/menu.
-> Status line: **production SaaS, 4 tenants. Full feature set: 4 order types (delivery/pickup/dine_in/car) + dine-in tables with QR + per-tenant addon framework (5 services) + full loyalty program (earn/redeem/tiers/rewards/manual-adjust/welcome-bonus/points-expiry/realtime-notifications) + customer Google accounts with phone linking + SFDA-compliant nutrition display (calories+allergens on 70 items, 98%/96% audit scores) + per-tenant QR posters + item customizer sheet with owner-editable modifiers/add-ons. 3 skills (menu-onboarding, tenant-deployment, nutrition-audit). Graphify knowledge graph: 214 nodes, 173 edges, 27 communities, 468x token reduction. Next: push marketing (OneSignal) + payment gateway (Moyasar) + Samer's .NET workflow patch + trace all 27 graphify communities.**
+> Last saved: **2026-05-24 (session 3 — HANDOFF)** — KO-KO is LIVE (first paying customer, 499 SAR yearly). Item customizer + modifiers admin + table sessions (open tabs) + price validation. 4 migrations (0029-0032).
+> Status line: **production SaaS, 4 tenants (ALL PAID). Full feature set: 4 order types (delivery/pickup/dine_in/car) + dine-in tables with QR + TABLE SESSIONS (open tabs, multi-round, checkout request) + per-tenant addon framework (5 services) + full loyalty program (earn/redeem/tiers/rewards/manual-adjust/welcome-bonus/points-expiry/realtime-notifications) + customer Google accounts with phone linking + SFDA-compliant nutrition display (calories+allergens on 70 items, 98%/96% audit scores) + per-tenant QR posters + item customizer sheet with owner-editable modifiers/add-ons + server-side price validation. 3 skills (menu-onboarding, tenant-deployment, nutrition-audit). Graphify knowledge graph: 214 nodes, 173 edges, 27 communities, 468x token reduction. Next: push marketing (OneSignal) + payment gateway (Moyasar) + Samer's .NET workflow patch + trace all 27 graphify communities.**
 
 ---
 
 ## 30-Second TL;DR
 
-MenuLink is a multi-tenant Arabic SaaS for Saudi restaurants. Three surfaces live, all on Vercel + Supabase. **Four tenants** onboarded as of 2026-05-19 — KO-KO + three others (all three paid, KO-KO subscription still pending).
+MenuLink is a multi-tenant Arabic SaaS for Saudi restaurants. Three surfaces live, all on Vercel + Supabase. **Four tenants** onboarded, **all 4 subscriptions active**. KO-KO is the **first paying customer** (499 SAR/year, activated 2026-05-24, live with real orders).
 
 - **Customer PWA** at `/m/<slug>` (KO-KO is `/m/koko`) — customers order food, message goes to WhatsApp, order persists to Supabase.
 - **Tenant Admin** at `/admin/*` — restaurant owners edit menu, see realtime orders, manage customers, **upload their own logo + cover**, watch a 14-day revenue / orders chart on the dashboard.
@@ -478,10 +478,12 @@ These won't block anything but are worth knowing about:
 - Forest-green Tier-2 palette, Aptos Narrow font, RTL Arabic sheet view, SAR currency formats, formula-first (zero hardcoded computed values)
 
 ### Pinned for next session
+- **KO-KO is LIVE — monitor first real orders.** Customer-facing menu at `/m/koko`, orders go to WhatsApp +966501100057. Owner logged in at `id.koko.owner@gmail.com`. Tell owner to change password from `Koko2026!` after first login.
 - **Push marketing (OneSignal)** — broadcast to dormant RFM segments from `/admin/customers`. Auto-push when order status changes to "ready". The addon framework (`push_marketing` catalog row, 29 ر.س, 14-day trial) is already in place; just needs the OneSignal integration + UI.
 - **Payment gateway (Moyasar)** — automate 499 ر.س collection. Webhook flips subscription to active. Receipt PDFs. Minimal ZATCA compliance.
 - **Samer .NET workflow patch** — the only thing blocking re-enable of per-type InvoiceType. When Samer modifies the cashier UI to skip the driver/customer dispatch workflow on bridge-originated invoices, flip `pos_settings.invoice_type_map` back to `{"delivery":3,"dine_in":1,"pickup":0,"car":10}` and the printer icons differentiate by order type automatically.
 - **Loyalty slice follow-ups** — order-attached redemptions, SMS OTP for phone verification (Unifonic), birthday bonus automation.
+- **Table sessions testing** — the feature just shipped (0032). Test on a real table QR. Admin side may need a "close session" button and session grouping in the orders feed.
 
 ---
 
