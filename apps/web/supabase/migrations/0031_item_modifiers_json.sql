@@ -40,7 +40,7 @@ begin
     return null;
   end if;
 
-  select coalesce(jsonb_agg(cat order by cat ->> 'sort'), '[]'::jsonb)
+  select coalesce(jsonb_agg(cat order by (cat ->> 'sort')::int), '[]'::jsonb)
     into v_categories
   from (
     select jsonb_build_object(
@@ -51,7 +51,7 @@ begin
       'info_ar',    c.info_ar,
       'sort',       c.sort,
       'items', (
-        select coalesce(jsonb_agg(it order by it ->> 'sort'), '[]'::jsonb)
+        select coalesce(jsonb_agg(it order by (it ->> 'sort')::int), '[]'::jsonb)
         from (
           select jsonb_build_object(
             'id',             mi.id,
@@ -68,7 +68,7 @@ begin
             'allergens',      mi.allergens_json,
             'modifiers',      mi.modifiers_json,
             'variants', (
-              select coalesce(jsonb_agg(v order by v ->> 'sort'), '[]'::jsonb)
+              select coalesce(jsonb_agg(v order by (v ->> 'sort')::int), '[]'::jsonb)
               from (
                 select jsonb_build_object(
                   'key',          mv.variant_key,
