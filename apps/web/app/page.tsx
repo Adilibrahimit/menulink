@@ -42,7 +42,7 @@ export default function Home() {
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <a
-            href="https://wa.me/966500000000?text=أهلاً%20MenuLink،%20أبغى%20أعرف%20أكثر%20عن%20المنصة"
+            href="https://wa.me/966504744517?text=أهلاً%20MenuLink،%20أبغى%20أعرف%20أكثر%20عن%20المنصة"
             target="_blank"
             rel="noreferrer"
             className="inline-block rounded-md bg-brand-primary text-white px-6 py-3 font-semibold hover:opacity-90"
@@ -102,7 +102,7 @@ export default function Home() {
             راسلنا على واتساب وبنوصلك بالباقة اللي تناسب مطعمك — بدون التزام.
           </p>
           <a
-            href="https://wa.me/966500000000?text=أهلاً%20MenuLink،%20أبغى%20أعرف%20الأسعار"
+            href="https://wa.me/966504744517?text=أهلاً%20MenuLink،%20أبغى%20أعرف%20الأسعار"
             target="_blank"
             rel="noreferrer"
             className="inline-block w-full rounded-xl bg-brand-primary text-white px-6 py-3 font-bold hover:opacity-90"
@@ -119,7 +119,7 @@ export default function Home() {
           راسلنا على واتساب وخل MenuLink ينطلق لمطعمك في أقل من ٢٤ ساعة.
         </p>
         <a
-          href="https://wa.me/966500000000?text=أهلاً%20MenuLink،%20أبغى%20أبدأ"
+          href="https://wa.me/966504744517?text=أهلاً%20MenuLink،%20أبغى%20أبدأ"
           target="_blank"
           rel="noreferrer"
           className="inline-block rounded-md bg-brand-primary text-white px-8 py-4 font-bold hover:opacity-90"
