@@ -58,47 +58,31 @@ export default function MenuEditor({
     else { notify("ok", "حُذفت"); refresh(); }
   }
 
-  async function moveCategoryUp(idx: number) {
-    if (idx === 0) return;
-    const current = initial[idx];
-    const above = initial[idx - 1];
-    await Promise.all([
-      sb.from("menu_categories").update({ sort: above.sort }).eq("id", current.id),
-      sb.from("menu_categories").update({ sort: current.sort }).eq("id", above.id),
-    ]);
+  async function reorderCategories(fromIdx: number, toIdx: number) {
+    if (fromIdx === toIdx) return;
+    const ids = initial.map((c) => c.id);
+    const [moved] = ids.splice(fromIdx, 1);
+    ids.splice(toIdx, 0, moved);
+    const updates = ids.map((id, i) =>
+      sb.from("menu_categories").update({ sort: i + 1 }).eq("id", id)
+    );
+    const results = await Promise.all(updates);
+    const err = results.find((r) => r.error);
+    if (err?.error) notify("err", err.error.message);
     refresh();
   }
 
-  async function moveCategoryDown(idx: number) {
-    if (idx >= initial.length - 1) return;
-    const current = initial[idx];
-    const below = initial[idx + 1];
-    await Promise.all([
-      sb.from("menu_categories").update({ sort: below.sort }).eq("id", current.id),
-      sb.from("menu_categories").update({ sort: current.sort }).eq("id", below.id),
-    ]);
-    refresh();
-  }
-
-  async function moveItemUp(catItems: typeof initial[0]["items"], idx: number) {
-    if (idx === 0) return;
-    const current = catItems[idx];
-    const above = catItems[idx - 1];
-    await Promise.all([
-      sb.from("menu_items").update({ sort: above.sort }).eq("id", current.id),
-      sb.from("menu_items").update({ sort: current.sort }).eq("id", above.id),
-    ]);
-    refresh();
-  }
-
-  async function moveItemDown(catItems: typeof initial[0]["items"], idx: number) {
-    if (idx >= catItems.length - 1) return;
-    const current = catItems[idx];
-    const below = catItems[idx + 1];
-    await Promise.all([
-      sb.from("menu_items").update({ sort: below.sort }).eq("id", current.id),
-      sb.from("menu_items").update({ sort: current.sort }).eq("id", below.id),
-    ]);
+  async function reorderItems(catItems: typeof initial[0]["items"], fromIdx: number, toIdx: number) {
+    if (fromIdx === toIdx) return;
+    const ids = catItems.map((it) => it.id);
+    const [moved] = ids.splice(fromIdx, 1);
+    ids.splice(toIdx, 0, moved);
+    const updates = ids.map((id, i) =>
+      sb.from("menu_items").update({ sort: i + 1 }).eq("id", id)
+    );
+    const results = await Promise.all(updates);
+    const err = results.find((r) => r.error);
+    if (err?.error) notify("err", err.error.message);
     refresh();
   }
 
@@ -238,17 +222,17 @@ export default function MenuEditor({
         >
           <header className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
-              <div className="flex flex-col">
+              <div className="flex flex-col gap-0.5">
                 <button
-                  onClick={() => moveCategoryUp(ci)}
+                  onClick={() => reorderCategories(ci, ci - 1)}
                   disabled={ci === 0}
-                  className="text-[10px] leading-none text-neutral-400 hover:text-neutral-700 disabled:opacity-30"
+                  className="w-6 h-6 flex items-center justify-center rounded bg-neutral-100 hover:bg-neutral-200 text-neutral-600 disabled:opacity-30 disabled:hover:bg-neutral-100"
                   title="رفع"
                 >▲</button>
                 <button
-                  onClick={() => moveCategoryDown(ci)}
+                  onClick={() => reorderCategories(ci, ci + 1)}
                   disabled={ci === initial.length - 1}
-                  className="text-[10px] leading-none text-neutral-400 hover:text-neutral-700 disabled:opacity-30"
+                  className="w-6 h-6 flex items-center justify-center rounded bg-neutral-100 hover:bg-neutral-200 text-neutral-600 disabled:opacity-30 disabled:hover:bg-neutral-100"
                   title="خفض"
                 >▼</button>
               </div>
@@ -282,17 +266,17 @@ export default function MenuEditor({
             {c.items.map((it, ii) => (
               <li key={it.id} className="py-3 flex items-start justify-between gap-3 flex-wrap">
                 {/* Sort arrows */}
-                <div className="flex flex-col justify-center shrink-0 pt-4">
+                <div className="flex flex-col gap-0.5 justify-center shrink-0">
                   <button
-                    onClick={() => moveItemUp(c.items, ii)}
+                    onClick={() => reorderItems(c.items, ii, ii - 1)}
                     disabled={ii === 0}
-                    className="text-[10px] leading-none text-neutral-400 hover:text-neutral-700 disabled:opacity-30"
+                    className="w-5 h-5 flex items-center justify-center rounded bg-neutral-100 hover:bg-neutral-200 text-[10px] text-neutral-600 disabled:opacity-30 disabled:hover:bg-neutral-100"
                     title="رفع"
                   >▲</button>
                   <button
-                    onClick={() => moveItemDown(c.items, ii)}
+                    onClick={() => reorderItems(c.items, ii, ii + 1)}
                     disabled={ii === c.items.length - 1}
-                    className="text-[10px] leading-none text-neutral-400 hover:text-neutral-700 disabled:opacity-30"
+                    className="w-5 h-5 flex items-center justify-center rounded bg-neutral-100 hover:bg-neutral-200 text-[10px] text-neutral-600 disabled:opacity-30 disabled:hover:bg-neutral-100"
                     title="خفض"
                   >▼</button>
                 </div>
