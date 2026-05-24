@@ -22,6 +22,7 @@ import CartDrawer from "./cart-drawer";
 import TrackingSheet from "./tracking-sheet";
 import type { TrackingState } from "./tracking-sheet";
 import TableSessionBar from "./table-session-bar";
+import PushToggle from "./push-toggle";
 import ClosedPopup, { isRestaurantOpen } from "./closed-popup";
 
 function trackingKey(restaurantId: string) {
@@ -33,11 +34,15 @@ export default function MenuExperience({
   tableLabel,
   loyaltyPointsPerSar,
   theme,
+  pushEnabled,
+  vapidKey,
 }: {
   menu: PublicMenu;
   tableLabel: string | null;
   loyaltyPointsPerSar: number | null;
   theme: ThemeConfig;
+  pushEnabled: boolean;
+  vapidKey: string;
 }) {
   const [cart, setCart] = useState<Record<string, CartLine>>({});
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -219,6 +224,15 @@ export default function MenuExperience({
 
       {/* HERO */}
       <header className="relative">
+        {/* Push notification toggle — top-left in RTL = top-right visually */}
+        <div className="absolute top-3 left-3 z-10">
+          <PushToggle
+            restaurantId={menu.restaurant.id}
+            customerId={null}
+            vapidKey={vapidKey}
+            enabled={pushEnabled}
+          />
+        </div>
         {theme.headerStyle === "dark-navy" ? (
           <div className="bg-[var(--header-bg)] px-5 pt-8 pb-6">
             <div className="flex items-start gap-3">

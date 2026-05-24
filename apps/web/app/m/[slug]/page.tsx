@@ -5,7 +5,6 @@ import { hasAddon } from "@/lib/addons";
 import { getTheme, buildCssVars } from "@/lib/themes";
 import MenuExperience from "./menu-experience";
 import PwaBootstrap from "./pwa-bootstrap";
-import PushPrompt from "./push-prompt";
 import CustomerShell from "./customer-shell";
 import type { PublicMenu } from "./types";
 
@@ -90,14 +89,10 @@ export default async function CustomerMenuPage({
           tableLabel={tableLabel}
           loyaltyPointsPerSar={loyaltyPointsPerSar}
           theme={theme}
+          pushEnabled={pushEnabled}
+          vapidKey={process.env.NEXT_PUBLIC_VAPID_KEY ?? ""}
         />
         <PwaBootstrap />
-        <PushPrompt
-          restaurantId={menu.restaurant.id}
-          customerId={null}
-          vapidKey={process.env.NEXT_PUBLIC_VAPID_KEY ?? ""}
-          enabled={pushEnabled}
-        />
       </CustomerShell>
     </div>
   );
