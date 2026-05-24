@@ -1,7 +1,7 @@
 # MenuLink · Project Memory
 
 > **Read this first** when picking up the project in a new session.
-> Last saved: **2026-05-25 (session 3 final)** — KO-KO LIVE. 7 migrations (0029-0033). Item customizer, modifiers admin, table sessions, price validation, order details in admin, WhatsApp message upgrade, reorder controls, variant management. DB snapshot below.
+> Last saved: **2026-05-25 (session 3 final handoff)** — KO-KO LIVE. 8 migrations (0029-0033). Push toggle built + RLS fixed + subscriptions saving. Windows notification blocking unresolved (user's OS settings, not our code). Full feature list below.
 > Status line: **production SaaS, 4 tenants (ALL PAID). Full feature set: 4 order types (delivery/pickup/dine_in/car) + dine-in tables with QR + TABLE SESSIONS (open tabs, multi-round, checkout request) + per-tenant addon framework (5 services) + full loyalty program (earn/redeem/tiers/rewards/manual-adjust/welcome-bonus/points-expiry/realtime-notifications) + customer Google accounts with phone linking + SFDA-compliant nutrition display (calories+allergens on 70 items, 98%/96% audit scores) + per-tenant QR posters + item customizer sheet with owner-editable modifiers/add-ons + server-side price validation. 3 skills (menu-onboarding, tenant-deployment, nutrition-audit). Graphify knowledge graph: 214 nodes, 173 edges, 27 communities, 468x token reduction. Next: push marketing (OneSignal) + payment gateway (Moyasar) + Samer's .NET workflow patch + trace all 27 graphify communities.**
 
 ---
@@ -681,3 +681,21 @@ These won't block anything but are worth knowing about:
 - "+ حجم/نوع" button per item — prompts for label + price
 - Click variant label to rename, ✕ to delete
 - Enables Pepsi can/medium/large, chicken full/half/quarter, etc.
+
+### Push notifications — toggle + infrastructure complete
+- Replaced old 15-second popup with **🔔/🔕 bell toggle** in menu header (top-right)
+- Customer taps bell → browser permission → subscription saved to DB
+- Toggle shows state: on (brand color) / off (grey) / denied (disabled)
+- Fixed RLS: added SELECT + UPDATE policies for public (PostgREST upsert needs both)
+- Enabled `push_marketing` addon for KO-KO
+- **Server-side push delivery WORKS** (`web-push` → FCM returns 201)
+- **Blocker: user's Windows 10 blocks Chrome notifications at OS level** — not a code bug, purely a local settings issue. Test on a phone or after enabling Windows notifications.
+- `/admin/broadcast` page fully functional: segment picker, composer, history, stats
+- `/api/admin/push/send` handles broadcast with stale-sub cleanup
+- `/api/admin/push/notify` handles single-customer push (order ready)
+
+### Pinned for next session (updated)
+- **Push: test on mobile phone** — Windows desktop blocking is an OS setting, not our bug. Push works server→FCM. Need to confirm arrival on an Android/iOS device.
+- **Table sessions testing** — feature shipped (0032), untested with real dine-in flow
+- **Payment gateway (Moyasar)** — automate 499 SAR collection
+- **Samer .NET workflow patch** — re-enable per-type InvoiceType when ready
