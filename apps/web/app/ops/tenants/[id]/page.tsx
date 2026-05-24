@@ -40,7 +40,7 @@ export default async function TenantDetailPage({
     sb.rpc("get_tenant_owners", { p_restaurant_id: params.id }),
     sb.from("orders").select("id", { count: "exact", head: true }).eq("restaurant_id", params.id),
     sb.from("addon_catalog")
-      .select("key, name_ar, description_ar, category, default_price_sar, trial_days, is_default, sort_order")
+      .select("key, name_ar, name_en, description_ar, description_en, category, default_price_sar, trial_days, is_default, sort_order")
       .order("sort_order", { ascending: true }),
     sb.from("subscription_addons")
       .select("addon_key, enabled, trial_ends_at, price_override_sar, notes")

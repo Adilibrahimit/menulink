@@ -15,7 +15,14 @@ export type AddonKey =
   | "excel_export"
   | "pos_bridge"
   | "loyalty"
-  | "push_marketing";
+  | "push_marketing"
+  | "multi_branch"
+  | "branch_admins"
+  | "branch_accounting"
+  | "business_day_numbering"
+  | "drivers"
+  | "delivery_zones"
+  | "advanced_reports";
 
 export async function getEnabledAddons(restaurantId: string): Promise<Set<AddonKey>> {
   const sb = createClient();

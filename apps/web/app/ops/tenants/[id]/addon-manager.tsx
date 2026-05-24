@@ -6,7 +6,9 @@ import { createClient } from "@/lib/supabase-browser";
 type CatalogRow = {
   key: string;
   name_ar: string;
+  name_en: string | null;
   description_ar: string | null;
+  description_en: string | null;
   category: "operations" | "growth" | "integrations";
   default_price_sar: number;
   trial_days: number;
@@ -140,6 +142,9 @@ export default function AddonManager({
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="font-semibold text-neutral-100">{c.name_ar}</span>
+                          {c.name_en && (
+                            <span className="text-xs text-neutral-400">{c.name_en}</span>
+                          )}
                           <code className="text-[10px] text-neutral-500 font-mono">{c.key}</code>
                           {c.is_default && (
                             <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-900/40 text-green-300 border border-green-800">
