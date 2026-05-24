@@ -67,8 +67,16 @@ export type PublicMenu = {
   categories: PublicCategory[];
 };
 
+export type CartLineModifier = {
+  groupKey: string;
+  groupLabel: string;
+  selected: string[];
+  priceDelta: number;
+};
+
 export type CartLine = {
   lineId: string;
+  itemId: string;
   itemSlug: string;
   itemName: string;
   variantKey: string;
@@ -76,6 +84,8 @@ export type CartLine = {
   price: number;
   qty: number;
   imageUrl: string | null;
+  modifiers?: CartLineModifier[];
+  itemNote?: string;
 };
 
 export type OrderType = "delivery" | "pickup" | "dine_in" | "car";

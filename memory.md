@@ -1,7 +1,7 @@
 # MenuLink · Project Memory
 
 > **Read this first** when picking up the project in a new session.
-> Last saved: **2026-05-24 (end of session)** — Biggest session ever: 11 migrations (0014-0024), car-curbside, dine-in tables, addon framework, loyalty (4 slices), SFDA nutrition, customer Google accounts, 3 skills, graphify knowledge graph.
+> Last saved: **2026-05-24 (session 2)** — Fixed push subscription bug (0029): customer_id was NOT NULL, silently broke all anonymous subscriptions. Also added 0025-0028 to migration table.
 > Status line: **production SaaS, 4 tenants. Full feature set: 4 order types (delivery/pickup/dine_in/car) + dine-in tables with QR + per-tenant addon framework (5 services) + full loyalty program (earn/redeem/tiers/rewards/manual-adjust/welcome-bonus/points-expiry/realtime-notifications) + customer Google accounts with phone linking + SFDA-compliant nutrition display (calories+allergens on 70 items, 98%/96% audit scores) + per-tenant QR posters. 3 skills (menu-onboarding, tenant-deployment, nutrition-audit). Graphify knowledge graph: 214 nodes, 173 edges, 27 communities, 468x token reduction. Next: push marketing (OneSignal) + payment gateway (Moyasar) + Samer's .NET workflow patch + trace all 27 graphify communities.**
 
 ---
@@ -67,7 +67,7 @@ The `sb_publishable_*` anon key is intentionally public and committed in `apps/w
 - **Owner email:** `id.menulink@gmail.com`
 - **Dashboard:** https://supabase.com/dashboard/project/dhmjrrsynfvomlzhggvu
 
-### Schema (8 migrations applied)
+### Schema (29 migrations applied)
 
 | Migration | What it does |
 |---|---|
@@ -190,14 +190,8 @@ D:\menulink\
 │           ├── seed.sql                   ← Analytics seed (20 fake customers, 80 orders)
 │           ├── seed_koko_menu_backfill.sql ← KO-KO menu from v6 HTML
 │           └── migrations/
-│               ├── 0001_init.sql
-│               ├── 0002_analytics_views.sql
-│               ├── 0003_submit_order_rpc.sql
-│               ├── 0004_multi_tenant_menu.sql
-│               ├── 0005_subscriptions_ops.sql
-│               ├── 0006_ops_helpers.sql
-│               ├── 0007_menu_images_storage.sql
-│               └── 0008_fix_rls_and_columns.sql
+│               ├── 0001_init.sql … 0028_auto_link_customer_rpc.sql
+│               └── 0029_push_subs_nullable_customer.sql  ← latest
 │
 ├── current-state/
 │   └── pwa-starter/                       ← Legacy v6 static PWA (still in repo, now redirects)
@@ -323,6 +317,7 @@ These were debated and resolved during the build. Don't relitigate without stron
 9. **MCP Supabase / Vercel servers are bound to whichever account the MCP was set up with**, NOT the account the user references in chat. Bypass via the REST API + their access token.
 10. **Supabase JWT claims from `raw_app_meta_data` are nested under `app_metadata`, NOT top-level.** `auth.jwt() ->> 'restaurant_id'` always returns NULL — that broke every authenticated RLS check from 0001 until **0008** fixed it by switching to `auth.uid()` + `restaurant_owners` / `platform_admins` lookups via `public.owns_restaurant(uuid)` and `public.is_platform_admin()` SECURITY DEFINER helpers. **Never write RLS that reads JWT-nested claims as top-level.**
 11. **Postgres views default to `security_invoker=false`, which bypasses RLS on underlying tables.** `v_revenue_daily` was leaking cross-tenant data until 0008-era dashboard fix added explicit `.eq("restaurant_id", me.restaurant_id)`. Always scope view queries explicitly, OR add `security_invoker=true` to the view.
+12. **Silent `catch {}` hides DB constraint failures.** `push_subscriptions.customer_id NOT NULL` broke every anonymous push subscription since launch — the PWA's `catch {}` swallowed the error. Always log errors even in "expected failure" catch blocks. Fixed in 0029.
 
 ---
 
@@ -505,6 +500,11 @@ These won't block anything but are worth knowing about:
 | `0022_welcome_bonus_and_adjust.sql` | `link_customer_account` v2 grants welcome bonus per tenant on first link. `adjust_customer_points(customer_id, delta, reason)` for manual +/- by owner. |
 | `0023_loyalty_expiry_and_realtime.sql` | `points_expiry_days`, `last_loyalty_earn_at`. `expire_stale_points_if_needed()` lazy expiry. `loyalty_redemptions` added to Realtime publication. |
 | `0024_nutrition_allergens.sql` | `menu_items`: +`calories_kcal`, +`sodium_mg`, +`caffeine_mg`, +`allergens_json`. `menu_item_variants`: +`calories_kcal`. `get_public_menu` rewritten to include nutrition. |
+| `0025_push_marketing.sql` | Push marketing infra: `restaurant_id` column on `push_subscriptions`, anon INSERT policy, `push_broadcasts` table for send history, Realtime publication. |
+| `0026_customer_addresses.sql` | Customer address book for delivery. |
+| `0027_phase1b_profile_about.sql` | Restaurant profile/about fields. |
+| `0028_auto_link_customer_rpc.sql` | Auto-link customer RPC. |
+| `0029_push_subs_nullable_customer.sql` | **Bugfix:** `push_subscriptions.customer_id` was NOT NULL — every anonymous PWA subscription silently failed. Made nullable + rewrote owner SELECT policy to use `restaurant_id` directly (was joining through `customers`, which returned 0 rows for null customer_id). |
 
 ### Car-curbside order type
 - 4th order-type button in cart drawer ("استلام بالسيارة")

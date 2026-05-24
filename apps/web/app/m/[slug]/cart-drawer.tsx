@@ -180,7 +180,16 @@ export default function CartDrawer({
     const lineList = lines
       .map((l, i) => {
         const v = l.variantLabel ? ` (${l.variantLabel})` : "";
-        return `${toArabicDigits(String(i + 1))}. ${l.itemName}${v}  ×${toArabicDigits(String(l.qty))}  =  ${toArabicDigits(String(l.price * l.qty))} ر.س`;
+        let line = `${toArabicDigits(String(i + 1))}. ${l.itemName}${v}  ×${toArabicDigits(String(l.qty))}  =  ${toArabicDigits(String(l.price * l.qty))} ر.س`;
+        if (l.modifiers && l.modifiers.length > 0) {
+          for (const m of l.modifiers) {
+            line += `\n   ${m.groupLabel}: ${m.selected.join("، ")}`;
+          }
+        }
+        if (l.itemNote) {
+          line += `\n   ملاحظة: ${l.itemNote}`;
+        }
+        return line;
       })
       .join("\n");
 
@@ -259,6 +268,21 @@ export default function CartDrawer({
                     <span className="text-xs text-neutral-500 font-normal mr-1">· {l.variantLabel}</span>
                   )}
                 </div>
+                {l.modifiers && l.modifiers.length > 0 && (
+                  <div className="text-[10px] text-neutral-500 mt-0.5 leading-snug space-y-0.5">
+                    {l.modifiers.map((m) => (
+                      <div key={m.groupKey}>
+                        <span className="font-semibold">{m.groupLabel}:</span>{" "}
+                        {m.selected.join("، ")}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {l.itemNote && (
+                  <div className="text-[10px] text-neutral-400 mt-0.5 truncate">
+                    ملاحظة: {l.itemNote}
+                  </div>
+                )}
                 <div className="text-xs text-neutral-500 mt-0.5 flex items-center gap-0.5">
                   {toArabicDigits(String(l.price * l.qty))} <SarSymbol size={11} />
                 </div>
@@ -563,13 +587,27 @@ async function persistOrder({
     car_plate: orderType === "car" ? (carPlate || null) : null,
     car_color: orderType === "car" ? (carColor || null) : null,
     table_label: tableLabel || null,
-    items: lines.map((l) => ({
-      item_name: l.itemName,
-      variant: l.variantLabel,
-      qty: l.qty,
-      unit_price: l.price,
-      line_total: l.price * l.qty,
-    })),
+    items: lines.map((l) => {
+      let variantText = l.variantLabel || "";
+      if (l.modifiers && l.modifiers.length > 0) {
+        const modSummary = l.modifiers.map((m) => m.selected.join("، ")).join(" · ");
+        variantText = variantText ? `${variantText} · ${modSummary}` : modSummary;
+      }
+      if (l.itemNote) {
+        variantText = variantText
+          ? `${variantText} · ملاحظة: ${l.itemNote}`
+          : `ملاحظة: ${l.itemNote}`;
+      }
+      return {
+        item_id: l.itemId,
+        variant_key: l.variantKey,
+        item_name: l.itemName,
+        variant: variantText || l.variantLabel,
+        qty: l.qty,
+        unit_price: l.price,
+        line_total: l.price * l.qty,
+      };
+    }),
   };
   const { data, error } = await sb.rpc("submit_order", { p_order: payload });
   if (error) throw error;

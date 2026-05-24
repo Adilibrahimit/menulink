@@ -9,10 +9,14 @@ import type {
   PublicMenu,
   PublicMenuItem,
   PublicVariant,
+  PublicCategory,
   CartLine,
+  CartLineModifier,
 } from "./types";
+import { getItemModifiers } from "@/lib/menu-modifiers";
 import CategoryTabs from "./category-tabs";
 import MenuItemCard from "./menu-item";
+import ItemCustomizerSheet from "./item-customizer-sheet";
 import CartDrawer from "./cart-drawer";
 import TrackingSheet from "./tracking-sheet";
 import type { TrackingState } from "./tracking-sheet";
@@ -38,6 +42,11 @@ export default function MenuExperience({
   const [tracking, setTracking] = useState<TrackingState | null>(null);
   const [trackingSheetOpen, setTrackingSheetOpen] = useState(false);
   const [closedPopup, setClosedPopup] = useState(false);
+  const [customizerState, setCustomizerState] = useState<{
+    item: PublicMenuItem;
+    variant: PublicVariant | null;
+    category: PublicCategory;
+  } | null>(null);
 
   // Hydrate active car-order tracking from localStorage on mount.
   // Runs in useEffect (not render) to avoid SSR/CSR mismatch.
@@ -78,7 +87,34 @@ export default function MenuExperience({
   const count = lines.reduce((s, l) => s + l.qty, 0);
   const total = lines.reduce((s, l) => s + l.qty * l.price, 0);
 
-  function addToCart(item: PublicMenuItem, variant: PublicVariant) {
+  function buildLineId(
+    slug: string,
+    variantKey: string,
+    modifiers: CartLineModifier[],
+    note: string,
+  ): string {
+    const modPart = modifiers
+      .map((m) => `${m.groupKey}=${m.selected.join(",")}`)
+      .join("|");
+    const notePart = note ? `n:${note}` : "";
+    return [slug, variantKey, modPart, notePart].filter(Boolean).join("::");
+  }
+
+  function openCustomizer(
+    item: PublicMenuItem,
+    variant: PublicVariant | null,
+    category: PublicCategory,
+  ) {
+    const { open } = isRestaurantOpen(menu.restaurant.hours_json);
+    if (!open) {
+      setClosedPopup(true);
+      return;
+    }
+    if (item.variants.length === 0) return;
+    setCustomizerState({ item, variant, category });
+  }
+
+  function addToCartSimple(item: PublicMenuItem, variant: PublicVariant) {
     const { open } = isRestaurantOpen(menu.restaurant.hours_json);
     if (!open) {
       setClosedPopup(true);
@@ -93,6 +129,7 @@ export default function MenuExperience({
           ? { ...existing, qty: existing.qty + 1 }
           : {
               lineId,
+              itemId: item.id,
               itemSlug: item.slug,
               itemName: item.name_ar,
               variantKey: variant.key,
@@ -100,6 +137,39 @@ export default function MenuExperience({
               price: Number(variant.price),
               qty: 1,
               imageUrl: item.image_url ?? SLUG_TO_IMG[item.slug] ?? null,
+            },
+      };
+    });
+  }
+
+  function addToCartCustomized(
+    item: PublicMenuItem,
+    variant: PublicVariant,
+    qty: number,
+    modifiers: CartLineModifier[],
+    note: string,
+  ) {
+    const modDelta = modifiers.reduce((s, m) => s + m.priceDelta, 0);
+    const effectivePrice = Number(variant.price) + modDelta;
+    const lineId = buildLineId(item.slug, variant.key, modifiers, note);
+    setCart((c) => {
+      const existing = c[lineId];
+      return {
+        ...c,
+        [lineId]: existing
+          ? { ...existing, qty: existing.qty + qty }
+          : {
+              lineId,
+              itemId: item.id,
+              itemSlug: item.slug,
+              itemName: item.name_ar,
+              variantKey: variant.key,
+              variantLabel: variant.label || null,
+              price: effectivePrice,
+              qty,
+              imageUrl: item.image_url ?? SLUG_TO_IMG[item.slug] ?? null,
+              modifiers: modifiers.length > 0 ? modifiers : undefined,
+              itemNote: note || undefined,
             },
       };
     });
@@ -277,7 +347,17 @@ export default function MenuExperience({
                 <MenuItemCard
                   key={item.id}
                   item={item}
-                  onAdd={(v) => addToCart(item, v)}
+                  hasDetailSheet={theme.hasItemDetailSheet}
+                  onAdd={(v) =>
+                    theme.hasItemDetailSheet
+                      ? openCustomizer(item, v, c)
+                      : addToCartSimple(item, v)
+                  }
+                  onTapCard={() =>
+                    theme.hasItemDetailSheet
+                      ? openCustomizer(item, null, c)
+                      : undefined
+                  }
                 />
               ))}
             </div>
@@ -408,6 +488,19 @@ export default function MenuExperience({
           restaurantName={menu.restaurant.name}
           hoursJson={menu.restaurant.hours_json}
           onClose={() => setClosedPopup(false)}
+        />
+      )}
+
+      {customizerState && (
+        <ItemCustomizerSheet
+          item={customizerState.item}
+          initialVariant={customizerState.variant}
+          modifierConfig={getItemModifiers(
+            customizerState.category.name_ar,
+            customizerState.item.name_ar,
+          )}
+          onAddToCart={addToCartCustomized}
+          onClose={() => setCustomizerState(null)}
         />
       )}
     </main>

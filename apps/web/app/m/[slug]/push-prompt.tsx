@@ -54,8 +54,8 @@ export default function PushPrompt({
           },
         }),
       });
-    } catch {
-      // permission denied or network error — silent
+    } catch (err) {
+      console.error("[push] subscribe failed:", err);
     }
   }
 

@@ -13,17 +13,27 @@ import type { PublicMenuItem, PublicVariant } from "./types";
 // Designed for a 2-column grid on mobile, 3-4 columns on tablet+.
 export default function MenuItemCard({
   item,
+  hasDetailSheet,
   onAdd,
+  onTapCard,
 }: {
   item: PublicMenuItem;
+  hasDetailSheet?: boolean;
   onAdd: (variant: PublicVariant) => void;
+  onTapCard?: () => void;
 }) {
   const img = item.image_url ?? SLUG_TO_IMG[item.slug] ?? null;
   const isPremium = item.badges?.some((b) => b.type === "premium");
   const isHot = item.badges?.some((b) => b.type === "hot");
 
   return (
-    <article className="bg-white rounded-2xl overflow-hidden border border-black/5 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_4px_12px_rgba(0,0,0,0.04)] flex flex-col group">
+    <article
+      className={
+        "bg-white rounded-2xl overflow-hidden border border-black/5 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_4px_12px_rgba(0,0,0,0.04)] flex flex-col group" +
+        (hasDetailSheet ? " cursor-pointer" : "")
+      }
+      onClick={hasDetailSheet ? onTapCard : undefined}
+    >
       {/* IMAGE — fills card top, top-rounded only, bleeds to edges */}
       <div className="relative aspect-square bg-neutral-100 overflow-hidden">
         {img ? (
@@ -112,7 +122,10 @@ export default function MenuItemCard({
           {item.variants.map((v) => (
             <button
               key={v.key}
-              onClick={() => onAdd(v)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onAdd(v);
+              }}
               className="flex-1 min-w-[88px] inline-flex items-center justify-center gap-1.5 h-9 px-2.5 rounded-full bg-[var(--brand)] text-white text-[11px] font-extrabold active:translate-y-px hover:opacity-90 shadow-sm shadow-black/5"
               aria-label={`أضف ${item.name_ar}${v.label ? ` ${v.label}` : ""}`}
             >

@@ -4,7 +4,7 @@
 >
 > **🆕 Read [`memory.md`](../../../memory.md) at project root for current state.** This file is for *transferable gotchas* — patterns that apply to any tenant, any session.
 >
-> **Last updated:** 2026-05-19 (post-RLS-rewrite: 0008 shipped, 4 tenants live, dashboard charts, owner self-service logo)
+> **Last updated:** 2026-05-24 (0029: push_subscriptions nullable customer_id fix)
 > **Update protocol:** Append new entries under the right section. Keep each entry to 2-4 lines. Tag with confidence level.
 
 ---
@@ -415,6 +415,12 @@ The cashier UI also has Family/Section types (likely 2, but untested today). Eac
 **Learning:** **In the MenuLink addon framework, `is_default = true` means "auto-enable for new tenants on onboarding + backfill existing tenants on launch". It is NOT a permission gate — ops can still toggle `is_default = true` addons OFF for problem cases.** Keeps flexibility for "tenant abused excel_export → temporarily disable" scenarios. Don't confuse with a future "required addon, cannot disable" flag (which we don't have yet and probably won't need until enterprise tier).
 **Source:** session:2026-05-23 addon framework rollout
 **Triggers:** addon catalog, is_default, default vs required, addon semantics, onboarding wizard
+
+### LRN-2026-05-24-push-subs-not-null-broke-all-anon-subscribes (confidence: high) ⭐⭐ CRITICAL
+**Context:** Push notifications were never working for anonymous PWA visitors. The `push_subscriptions.customer_id` column was `NOT NULL` since 0001_init.sql, but the PWA's `PushPrompt` component always passes `customer_id: null` for non-logged-in visitors (the majority). The subscribe API route did `customer_id: customer_id || null` → upsert failed with NOT NULL violation → the `catch {}` in `push-prompt.tsx` swallowed the error silently. Additionally, the owner SELECT RLS policy (from 0008) joined through `customers.customer_id` — even if `customer_id` were nullable, anonymous subscriptions would be invisible to the broadcast query.
+**Learning:** **Two-part fix in 0029:** (1) `ALTER COLUMN customer_id DROP NOT NULL`, (2) replace the owner SELECT policy to use `restaurant_id` directly (`owns_restaurant(restaurant_id)`) instead of joining through `customers`. The silent `catch {}` was changed to `console.error` so future failures surface in DevTools. **Meta-lesson: never use a bare `catch {}` on any DB write — at minimum log the error.** The push system was broken since it was first deployed, and no one noticed because the error was completely swallowed.
+**Source:** session:2026-05-24
+**Triggers:** push_subscriptions, customer_id NOT NULL, silent catch, anonymous subscription, RLS SELECT policy, broadcast invisible
 
 ---
 
