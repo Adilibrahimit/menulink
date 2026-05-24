@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toArabicDigits } from "@/lib/arabic";
 
 type OrderItem = {
   item_name: string;
@@ -38,13 +39,7 @@ const ORDER_TYPE_AR: Record<string, string> = {
 
 const ACTIVE_STATUSES = new Set(["submitted", "confirmed", "preparing", "ready"]);
 
-function toAr(s: string): string {
-  const m: Record<string, string> = {
-    "0": "٠", "1": "١", "2": "٢", "3": "٣", "4": "٤",
-    "5": "٥", "6": "٦", "7": "٧", "8": "٨", "9": "٩",
-  };
-  return s.replace(/[0-9]/g, (d) => m[d] ?? d);
-}
+const toAr = toArabicDigits;
 
 export default function OrdersClient({
   slug,

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase-browser";
 import { normalizePhone } from "@/lib/phone";
+import { toArabicDigits } from "@/lib/arabic";
 
 type CustomerView = {
   id: string;
@@ -37,14 +38,6 @@ const STATUS_AR: Record<string, string> = {
   delivered: "تم التسليم",
   cancelled: "ملغي",
 };
-
-function toArabicDigits(s: string): string {
-  const m: Record<string, string> = {
-    "0": "٠", "1": "١", "2": "٢", "3": "٣", "4": "٤",
-    "5": "٥", "6": "٦", "7": "٧", "8": "٨", "9": "٩",
-  };
-  return s.replace(/[0-9]/g, (d) => m[d] ?? d);
-}
 
 const REDEMPTION_STATUS_LABEL: Record<RedemptionView["status"], string> = {
   pending:   "بانتظار التسليم",
