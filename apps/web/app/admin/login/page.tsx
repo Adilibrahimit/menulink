@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Image from "next/image";
 import { getCurrentUser } from "@/lib/auth";
 import LoginForm from "./login-form";
 
@@ -14,6 +15,7 @@ export default async function LoginPage({
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-4 bg-brand-bg">
       <div className="w-full max-w-sm bg-white border border-neutral-200 rounded-2xl shadow-sm p-8">
+        <Image src="/menulink-logo.png" alt="MenuLink" width={80} height={80} className="rounded-2xl mb-3 shadow-md" />
         <h1 className="text-2xl font-bold text-brand-primary mb-1">MenuLink</h1>
         <p className="text-sm text-neutral-500 mb-6">دخول مالك المطعم</p>
 

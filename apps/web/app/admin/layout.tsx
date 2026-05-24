@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { headers } from "next/headers";
 import { getCurrentUser, requireOwner } from "@/lib/auth";
 import { createClient } from "@/lib/supabase-server";
@@ -53,6 +54,7 @@ export default async function AdminLayout({
       <header className="bg-white border-b border-neutral-200 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
+            <Image src="/menulink-logo.png" alt="MenuLink" width={48} height={48} className="rounded-lg" />
             <span className="text-brand-primary font-bold">MenuLink</span>
             <span className="text-neutral-300">/</span>
             <span className="text-neutral-700 text-sm font-medium">

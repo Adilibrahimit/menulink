@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 const FEATURES = [
   { icon: "📱", title: "قائمة رقمية احترافية", body: "تثبت كتطبيق على جوال الزبون. سريعة، تشتغل أوفلاين، عربية بالكامل مع تصميم يعكس هوية مطعمك." },
@@ -31,6 +32,7 @@ export default function Home() {
     <main dir="rtl" className="min-h-screen bg-brand-bg text-neutral-900">
       {/* Hero */}
       <section className="px-6 pt-16 pb-12 max-w-5xl mx-auto text-center">
+        <Image src="/menulink-logo.png" alt="MenuLink" width={120} height={120} className="rounded-3xl mx-auto mb-6 shadow-lg ring-1 ring-neutral-200" />
         <div className="inline-block px-3 py-1 rounded-full bg-white border border-neutral-200 text-xs text-neutral-600 mb-6">
           منصة قوائم وطلبات للمطاعم السعودية
         </div>
