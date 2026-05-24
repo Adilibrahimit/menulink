@@ -150,9 +150,8 @@ export default function Home() {
 
       <footer className="px-6 py-8 text-center text-xs text-neutral-500 border-t border-neutral-200">
         <div>MenuLink © 2026 · صنع في الرياض 🇸🇦</div>
-        <div className="mt-2 space-x-4 space-x-reverse">
+        <div className="mt-2">
           <Link href="/admin/login" className="hover:text-neutral-700">دخول المطاعم</Link>
-          <Link href="/ops/login" className="hover:text-neutral-700">دخول المنصة</Link>
         </div>
       </footer>
     </main>
