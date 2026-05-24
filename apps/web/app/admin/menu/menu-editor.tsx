@@ -58,6 +58,50 @@ export default function MenuEditor({
     else { notify("ok", "حُذفت"); refresh(); }
   }
 
+  async function moveCategoryUp(idx: number) {
+    if (idx === 0) return;
+    const current = initial[idx];
+    const above = initial[idx - 1];
+    await Promise.all([
+      sb.from("menu_categories").update({ sort: above.sort }).eq("id", current.id),
+      sb.from("menu_categories").update({ sort: current.sort }).eq("id", above.id),
+    ]);
+    refresh();
+  }
+
+  async function moveCategoryDown(idx: number) {
+    if (idx >= initial.length - 1) return;
+    const current = initial[idx];
+    const below = initial[idx + 1];
+    await Promise.all([
+      sb.from("menu_categories").update({ sort: below.sort }).eq("id", current.id),
+      sb.from("menu_categories").update({ sort: current.sort }).eq("id", below.id),
+    ]);
+    refresh();
+  }
+
+  async function moveItemUp(catItems: typeof initial[0]["items"], idx: number) {
+    if (idx === 0) return;
+    const current = catItems[idx];
+    const above = catItems[idx - 1];
+    await Promise.all([
+      sb.from("menu_items").update({ sort: above.sort }).eq("id", current.id),
+      sb.from("menu_items").update({ sort: current.sort }).eq("id", above.id),
+    ]);
+    refresh();
+  }
+
+  async function moveItemDown(catItems: typeof initial[0]["items"], idx: number) {
+    if (idx >= catItems.length - 1) return;
+    const current = catItems[idx];
+    const below = catItems[idx + 1];
+    await Promise.all([
+      sb.from("menu_items").update({ sort: below.sort }).eq("id", current.id),
+      sb.from("menu_items").update({ sort: current.sort }).eq("id", below.id),
+    ]);
+    refresh();
+  }
+
   // ---- Item mutations -----------------------------------------------------
   async function renameItem(itemId: string, current: string) {
     const name = window.prompt("الاسم الجديد:", current);
@@ -187,13 +231,27 @@ export default function MenuEditor({
         <p className="text-neutral-500 text-sm">لا توجد فئات بعد. اضغط "إضافة فئة" للبدء.</p>
       )}
 
-      {initial.map((c) => (
+      {initial.map((c, ci) => (
         <section
           key={c.id}
           className="bg-white border border-neutral-200 rounded-xl p-4 space-y-3"
         >
           <header className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
+              <div className="flex flex-col">
+                <button
+                  onClick={() => moveCategoryUp(ci)}
+                  disabled={ci === 0}
+                  className="text-[10px] leading-none text-neutral-400 hover:text-neutral-700 disabled:opacity-30"
+                  title="رفع"
+                >▲</button>
+                <button
+                  onClick={() => moveCategoryDown(ci)}
+                  disabled={ci === initial.length - 1}
+                  className="text-[10px] leading-none text-neutral-400 hover:text-neutral-700 disabled:opacity-30"
+                  title="خفض"
+                >▼</button>
+              </div>
               <span className="text-xl">{c.emoji || "🍽️"}</span>
               <h2 className={`font-semibold ${c.is_active ? "" : "text-neutral-400 line-through"}`}>
                 {c.name_ar}
@@ -221,8 +279,23 @@ export default function MenuEditor({
           )}
 
           <ul className="divide-y divide-neutral-100">
-            {c.items.map((it) => (
+            {c.items.map((it, ii) => (
               <li key={it.id} className="py-3 flex items-start justify-between gap-3 flex-wrap">
+                {/* Sort arrows */}
+                <div className="flex flex-col justify-center shrink-0 pt-4">
+                  <button
+                    onClick={() => moveItemUp(c.items, ii)}
+                    disabled={ii === 0}
+                    className="text-[10px] leading-none text-neutral-400 hover:text-neutral-700 disabled:opacity-30"
+                    title="رفع"
+                  >▲</button>
+                  <button
+                    onClick={() => moveItemDown(c.items, ii)}
+                    disabled={ii === c.items.length - 1}
+                    className="text-[10px] leading-none text-neutral-400 hover:text-neutral-700 disabled:opacity-30"
+                    title="خفض"
+                  >▼</button>
+                </div>
                 {/* Image thumbnail / upload */}
                 <label className="shrink-0 cursor-pointer group relative w-14 h-14 rounded-lg overflow-hidden bg-neutral-100 border border-neutral-200 hover:border-brand-primary">
                   <input
