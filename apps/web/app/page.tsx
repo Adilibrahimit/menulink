@@ -1,29 +1,29 @@
 import Link from "next/link";
 
 const FEATURES = [
-  { icon: "📱", title: "قائمة رقمية احترافية", body: "تثبت كتطبيق على جوال الزبون. سريعة، تشتغل أوفلاين، عربية بالكامل." },
-  { icon: "💬", title: "طلبات عبر واتساب", body: "كل طلب يصلك على واتساب مع كل التفاصيل، بدون احتياج لتطبيق توصيل." },
-  { icon: "📊", title: "تحليلات عملاءك", body: "شوف العملاء الأكثر ولاءً، اللي ابتعدوا، والأصناف الأكثر طلباً تلقائياً." },
-  { icon: "🔔", title: "تحديثات فورية", body: "كل طلب جديد يظهر في لوحة التحكم فوراً — بدون تحديث الصفحة." },
-  { icon: "🎨", title: "ألوان مطعمك", body: "اضبط هوية مطعمك (الشعار، الألوان، الخط). القائمة تعكس برندك." },
-  { icon: "🇸🇦", title: "صُمم للسوق السعودي", body: "RTL، أرقام عربية، واتساب، مدى، تحويل بنكي. كل شي محلي." },
+  { icon: "📱", title: "قائمة رقمية احترافية", body: "تثبت كتطبيق على جوال الزبون. سريعة، تشتغل أوفلاين، عربية بالكامل مع تصميم يعكس هوية مطعمك." },
+  { icon: "💬", title: "طلبات عبر واتساب", body: "كل طلب يوصلك على واتساب مع التفاصيل كاملة — بدون عمولات وبدون تطبيقات توصيل." },
+  { icon: "🚗", title: "أنواع طلبات متعددة", body: "توصيل، استلام من الفرع، تناول في المطعم، واستلام بالسيارة (Curbside) مع زر 'وصلت'." },
+  { icon: "📊", title: "تحليلات عملاء RFM", body: "شوف عملاءك الأوفياء، اللي ابتعدوا، والجدد. تصنيف تلقائي بحسب تكرار الشراء والقيمة." },
+  { icon: "🏆", title: "نظام ولاء ومكافآت", body: "نقاط على كل طلب، مستويات (برونزي-بلاتيني)، ومكافآت يستبدلها الزبون من حسابه." },
+  { icon: "🔔", title: "إشعارات Push", body: "أرسل عروض وتنبيهات مباشرة لجوال زبائنك. استهداف ذكي حسب شريحة العميل (RFM)." },
+  { icon: "🪑", title: "طلبات الطاولات (QR)", body: "طبّق QR لكل طاولة. الزبون يمسح ويطلب من مكانه — طلبه مربوط بالطاولة تلقائياً." },
+  { icon: "🎨", title: "تصميم مخصص لكل مطعم", body: "ألوان، خطوط، ثيم كامل يعكس برند مطعمك. كل عميل يشوف تجربة مختلفة." },
+  { icon: "📍", title: "خرائط وعناوين محفوظة", body: "الزبون يحدد موقعه بالخريطة أو يختار من عناوينه المحفوظة — توصيل أسرع وأدق." },
+  { icon: "🔥", title: "معلومات غذائية (SFDA)", body: "سعرات حرارية، مسببات حساسية، صوديوم وكافيين — متوافق مع متطلبات هيئة الغذاء والدواء." },
+  { icon: "👤", title: "حسابات العملاء", body: "تسجيل دخول بـ Google أو كزائر. حفظ الطلبات السابقة، النقاط، والعناوين تلقائياً." },
+  { icon: "🇸🇦", title: "صُمم للسوق السعودي", body: "عربي أولاً، RTL، أرقام عربية، واتساب، توقيت الرياض. كل شي محلي من البداية." },
 ];
 
-const PRICING = [
-  {
-    plan: "شهري",
-    price: "٥٩",
-    suffix: "ر.س / شهر",
-    desc: "ابدأ بدون التزام طويل",
-    highlight: false,
-  },
-  {
-    plan: "سنوي",
-    price: "٤٩٩",
-    suffix: "ر.س / سنة",
-    desc: "وفّر ٢٠٩ ر.س — يعادل ٤١.٥ ر.س شهرياً",
-    highlight: true,
-  },
+const ADMIN_FEATURES = [
+  "إدارة كاملة للقائمة: أصناف، تصنيفات، أسعار، متغيرات، صور",
+  "متابعة الطلبات لحظياً (Realtime) — بدون تحديث الصفحة",
+  "إدارة العملاء مع تصنيف RFM تلقائي",
+  "نظام ولاء: إعدادات النقاط، المكافآت، الاستبدالات",
+  "بث إشعارات Push لشرائح محددة من العملاء",
+  "إدارة الطاولات وأكواد QR",
+  "تعديل معلومات المطعم: ساعات العمل، العنوان، التواصل",
+  "تصدير بيانات العملاء والطلبات (CSV)",
 ];
 
 export default function Home() {
@@ -38,16 +38,16 @@ export default function Home() {
           مطعمك يستحق <span className="text-brand-primary">قائمة احترافية</span>
         </h1>
         <p className="text-lg text-neutral-600 max-w-2xl mx-auto mb-8">
-          MenuLink منصة كاملة: قائمة رقمية، طلبات واتساب، تحليلات عملاء، ولوحة تحكم للمطعم — بأقل من نصف سعر المنافسين.
+          MenuLink منصة كاملة: قائمة رقمية، طلبات واتساب، نظام ولاء، تحليلات عملاء، إشعارات Push، ولوحة تحكم شاملة — كل ما يحتاجه مطعمك في مكان واحد.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <a
-            href="https://wa.me/966500000000?text=أهلاً%20MenuLink،%20أبغى%20أبدأ%20تجربة%20لمطعمي"
+            href="https://wa.me/966500000000?text=أهلاً%20MenuLink،%20أبغى%20أعرف%20أكثر%20عن%20المنصة"
             target="_blank"
             rel="noreferrer"
             className="inline-block rounded-md bg-brand-primary text-white px-6 py-3 font-semibold hover:opacity-90"
           >
-            ابدأ مع MenuLink
+            💬 تواصل مع فريق MenuLink
           </a>
           <Link
             href="/admin/login"
@@ -58,8 +58,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features */}
+      {/* Features — Customer Experience */}
       <section className="px-6 py-12 max-w-5xl mx-auto">
+        <h2 className="text-3xl font-bold text-center mb-2">تجربة عميل متكاملة</h2>
+        <p className="text-center text-neutral-600 mb-8">كل ما يحتاجه زبونك من لحظة فتح القائمة إلى استلام الطلب</p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {FEATURES.map((f) => (
             <div key={f.title} className="bg-white border border-neutral-200 rounded-xl p-5">
@@ -71,43 +73,43 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing */}
+      {/* Features — Admin Dashboard */}
       <section className="px-6 py-12 max-w-3xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-2">سعر بسيط وواضح</h2>
-        <p className="text-center text-neutral-600 mb-8">
-          بدون عمولات على الطلبات. بدون رسوم إعداد. ادفع شهرياً أو سنوياً، إلغاء في أي وقت.
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {PRICING.map((p) => (
-            <div
-              key={p.plan}
-              className={
-                p.highlight
-                  ? "bg-white border-2 border-brand-primary rounded-2xl p-6 shadow-md"
-                  : "bg-white border border-neutral-200 rounded-2xl p-6"
-              }
-            >
-              {p.highlight && (
-                <div className="inline-block text-xs px-2 py-0.5 rounded-full bg-brand-primary text-white mb-2">
-                  الأكثر طلباً
-                </div>
-              )}
-              <h3 className="font-bold text-neutral-900 mb-1">{p.plan}</h3>
-              <div className="flex items-baseline gap-1 mb-2">
-                <span className="text-4xl font-extrabold">{p.price}</span>
-                <span className="text-neutral-500 text-sm">{p.suffix}</span>
-              </div>
-              <p className="text-sm text-neutral-600">{p.desc}</p>
-            </div>
-          ))}
+        <h2 className="text-3xl font-bold text-center mb-2">لوحة تحكم قوية للمطعم</h2>
+        <p className="text-center text-neutral-600 mb-8">أدِر مطعمك بالكامل من مكان واحد</p>
+        <div className="bg-white border border-neutral-200 rounded-2xl p-6">
+          <ul className="space-y-3">
+            {ADMIN_FEATURES.map((f) => (
+              <li key={f} className="flex items-start gap-2 text-sm text-neutral-700">
+                <span className="text-brand-primary mt-0.5 shrink-0">✓</span>
+                <span>{f}</span>
+              </li>
+            ))}
+          </ul>
         </div>
-        <ul className="mt-8 space-y-2 text-sm text-neutral-700">
-          <li>✓ قائمة رقمية كاملة (يستضافها MenuLink — بدون قلق)</li>
-          <li>✓ طلبات لا محدودة عبر واتساب</li>
-          <li>✓ لوحة تحكم للمطعم: تعديل القائمة، رؤية الطلبات، تحليلات العملاء</li>
-          <li>✓ تحديثات تلقائية + استضافة مدفوعة</li>
-          <li>✓ دعم فني عبر واتساب</li>
-        </ul>
+      </section>
+
+      {/* Pricing → Contact */}
+      <section className="px-6 py-16 max-w-3xl mx-auto text-center">
+        <h2 className="text-3xl font-bold mb-3">الأسعار</h2>
+        <p className="text-neutral-600 mb-8 max-w-xl mx-auto">
+          نقدم باقات مرنة تناسب حجم مطعمك واحتياجاتك. تواصل مع فريق MenuLink لمعرفة الباقة المناسبة لك.
+        </p>
+        <div className="bg-white border-2 border-brand-primary rounded-2xl p-8 max-w-md mx-auto space-y-4">
+          <div className="text-5xl">💬</div>
+          <h3 className="text-xl font-extrabold text-neutral-900">تواصل معنا للتسعير</h3>
+          <p className="text-sm text-neutral-600">
+            راسلنا على واتساب وبنوصلك بالباقة اللي تناسب مطعمك — بدون التزام.
+          </p>
+          <a
+            href="https://wa.me/966500000000?text=أهلاً%20MenuLink،%20أبغى%20أعرف%20الأسعار"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-block w-full rounded-xl bg-brand-primary text-white px-6 py-3 font-bold hover:opacity-90"
+          >
+            💬 اسأل عن الأسعار
+          </a>
+        </div>
       </section>
 
       {/* CTA */}
