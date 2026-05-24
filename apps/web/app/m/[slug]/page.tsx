@@ -5,6 +5,7 @@ import { hasAddon } from "@/lib/addons";
 import MenuExperience from "./menu-experience";
 import PwaBootstrap from "./pwa-bootstrap";
 import PushPrompt from "./push-prompt";
+import CustomerShell from "./customer-shell";
 import type { PublicMenu } from "./types";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
@@ -79,18 +80,20 @@ export default async function CustomerMenuPage({
       style={cssVars}
       className="min-h-[100dvh]"
     >
-      <MenuExperience
-        menu={menu}
-        tableLabel={tableLabel}
-        loyaltyPointsPerSar={loyaltyPointsPerSar}
-      />
-      <PwaBootstrap />
-      <PushPrompt
-        restaurantId={menu.restaurant.id}
-        customerId={null}
-        vapidKey={process.env.NEXT_PUBLIC_VAPID_KEY ?? ""}
-        enabled={pushEnabled}
-      />
+      <CustomerShell menu={menu} tableParam={tableLabel}>
+        <MenuExperience
+          menu={menu}
+          tableLabel={tableLabel}
+          loyaltyPointsPerSar={loyaltyPointsPerSar}
+        />
+        <PwaBootstrap />
+        <PushPrompt
+          restaurantId={menu.restaurant.id}
+          customerId={null}
+          vapidKey={process.env.NEXT_PUBLIC_VAPID_KEY ?? ""}
+          enabled={pushEnabled}
+        />
+      </CustomerShell>
     </div>
   );
 }

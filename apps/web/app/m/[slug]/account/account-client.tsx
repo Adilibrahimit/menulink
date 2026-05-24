@@ -68,6 +68,7 @@ export default function AccountClient({
   recentOrders,
   recentRedemptions,
   tierLabel,
+  loyaltyEnabled = true,
 }: {
   slug: string;
   tenantName: string;
@@ -78,6 +79,7 @@ export default function AccountClient({
   recentOrders: OrderView[];
   recentRedemptions: RedemptionView[];
   tierLabel: string | null;
+  loyaltyEnabled?: boolean;
 }) {
   // Hooks must be called unconditionally before any early returns.
   const [redemptions, setRedemptions] = useState<RedemptionView[]>(recentRedemptions);

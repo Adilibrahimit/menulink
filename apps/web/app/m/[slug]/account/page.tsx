@@ -25,8 +25,7 @@ export default async function CustomerAccountPage({
     .single();
   if (!restaurant) notFound();
 
-  // Account page is loyalty-feature-only. If addon off, 404.
-  if (!(await hasAddon(restaurant.id, "loyalty"))) notFound();
+  const loyaltyEnabled = await hasAddon(restaurant.id, "loyalty");
 
   const cssVars = {
     "--brand": restaurant.primary_color || "#ac0015",
@@ -75,7 +74,7 @@ export default async function CustomerAccountPage({
         }
       : null;
 
-    if (customer) {
+    if (customer && loyaltyEnabled) {
       const [{ data: orders }, { data: redemptions }] = await Promise.all([
         sb
           .from("orders")
@@ -137,8 +136,35 @@ export default async function CustomerAccountPage({
           recentOrders={recentOrders}
           recentRedemptions={recentRedemptions}
           tierLabel={customer ? TIER_LABEL[customer.loyalty_tier] ?? customer.loyalty_tier : null}
+          loyaltyEnabled={loyaltyEnabled}
         />
+
+        {/* Profile nav links — like Burgerizer */}
+        {user && (
+          <div className="space-y-2">
+            <NavCard href={`/m/${params.slug}/account/addresses`} icon="📍" label="عناويني" />
+            {loyaltyEnabled && <NavCard href={`/m/${params.slug}/rewards`} icon="🎁" label="المكافآت" />}
+            <NavCard href={`/m/${params.slug}/orders`} icon="🛒" label="طلباتي" />
+            <NavCard href={`/m/${params.slug}/terms`} icon="📄" label="الشروط والأحكام" />
+            <NavCard href={`/m/${params.slug}/privacy`} icon="🔒" label="سياسة الخصوصية" />
+          </div>
+        )}
       </main>
     </div>
+  );
+}
+
+function NavCard({ href, icon, label }: { href: string; icon: string; label: string }) {
+  return (
+    <a
+      href={href}
+      className="flex items-center gap-3 bg-white border border-neutral-200 rounded-xl px-4 py-3 hover:border-neutral-300 active:translate-y-px"
+    >
+      <span className="text-xl">{icon}</span>
+      <span className="flex-1 text-sm font-bold text-neutral-800" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+        {label}
+      </span>
+      <span className="text-neutral-400">‹</span>
+    </a>
   );
 }
