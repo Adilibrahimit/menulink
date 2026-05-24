@@ -21,7 +21,13 @@ export default function PushPrompt({
   useEffect(() => {
     if (!enabled || !vapidKey) return;
     if (!("Notification" in window) || !("serviceWorker" in navigator)) return;
-    if (Notification.permission === "granted" || Notification.permission === "denied") return;
+
+    // If permission already granted, silently ensure subscription is saved
+    if (Notification.permission === "granted") {
+      silentSubscribe();
+      return;
+    }
+    if (Notification.permission === "denied") return;
 
     const dismissed = localStorage.getItem(DISMISS_KEY);
     if (dismissed) {
@@ -31,7 +37,31 @@ export default function PushPrompt({
 
     const timer = setTimeout(() => setShow(true), 15000);
     return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled, vapidKey]);
+
+  async function silentSubscribe() {
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const existing = await reg.pushManager.getSubscription();
+      const sub = existing || await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(vapidKey) as unknown as ArrayBuffer,
+      });
+      const json = sub.toJSON();
+      await fetch("/api/push/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          restaurant_id: restaurantId,
+          customer_id: customerId,
+          subscription: { endpoint: json.endpoint, keys: json.keys },
+        }),
+      });
+    } catch (err) {
+      console.error("[push] silent re-subscribe failed:", err);
+    }
+  }
 
   async function accept() {
     setShow(false);
