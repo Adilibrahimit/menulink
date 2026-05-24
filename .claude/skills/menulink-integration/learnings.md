@@ -422,6 +422,12 @@ The cashier UI also has Family/Section types (likely 2, but untested today). Eac
 **Source:** session:2026-05-24
 **Triggers:** push_subscriptions, customer_id NOT NULL, silent catch, anonymous subscription, RLS SELECT policy, broadcast invisible
 
+### LRN-2026-05-24-hardcoded-to-db-migration-pattern (confidence: high) ⭐
+**Context:** Built an item customizer sheet with modifiers (rice types, extras) hardcoded in `lib/menu-modifiers.ts` based on category-name keyword matching. Worked for customers but owners couldn't see/edit/remove them from admin — they were invisible because not in the DB.
+**Learning:** **When moving config from hardcoded to DB-driven, you MUST backfill existing items.** Pattern: (1) add nullable jsonb column, (2) update the RPC to return it, (3) client reads DB value first, falls back to hardcoded if null, (4) backfill existing items via SQL UPDATE...FROM with the same keyword matching logic, (5) owner can now see and edit. Without step 4, the "fallback" creates a ghost layer the owner can never touch. The backfill SQL should use the SAME matching logic as the TypeScript (category ILIKE keywords) to ensure 1:1 coverage.
+**Source:** session:2026-05-24 modifiers migration
+**Triggers:** hardcoded config, DB migration, backfill, modifiers_json, owner-editable, ghost config
+
 ---
 
 ## ❌ What Has Failed (Avoid These)

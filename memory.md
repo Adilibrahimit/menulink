@@ -1,8 +1,8 @@
 # MenuLink · Project Memory
 
 > **Read this first** when picking up the project in a new session.
-> Last saved: **2026-05-24 (session 2)** — Fixed push subscription bug (0029): customer_id was NOT NULL, silently broke all anonymous subscriptions. Also added 0025-0028 to migration table.
-> Status line: **production SaaS, 4 tenants. Full feature set: 4 order types (delivery/pickup/dine_in/car) + dine-in tables with QR + per-tenant addon framework (5 services) + full loyalty program (earn/redeem/tiers/rewards/manual-adjust/welcome-bonus/points-expiry/realtime-notifications) + customer Google accounts with phone linking + SFDA-compliant nutrition display (calories+allergens on 70 items, 98%/96% audit scores) + per-tenant QR posters. 3 skills (menu-onboarding, tenant-deployment, nutrition-audit). Graphify knowledge graph: 214 nodes, 173 edges, 27 communities, 468x token reduction. Next: push marketing (OneSignal) + payment gateway (Moyasar) + Samer's .NET workflow patch + trace all 27 graphify communities.**
+> Last saved: **2026-05-24 (session 3)** — Item customizer sheet + server-side price validation (0030) + per-item modifiers admin UI (0031). Owners can now edit add-ons/modifiers per menu item from /admin/menu.
+> Status line: **production SaaS, 4 tenants. Full feature set: 4 order types (delivery/pickup/dine_in/car) + dine-in tables with QR + per-tenant addon framework (5 services) + full loyalty program (earn/redeem/tiers/rewards/manual-adjust/welcome-bonus/points-expiry/realtime-notifications) + customer Google accounts with phone linking + SFDA-compliant nutrition display (calories+allergens on 70 items, 98%/96% audit scores) + per-tenant QR posters + item customizer sheet with owner-editable modifiers/add-ons. 3 skills (menu-onboarding, tenant-deployment, nutrition-audit). Graphify knowledge graph: 214 nodes, 173 edges, 27 communities, 468x token reduction. Next: push marketing (OneSignal) + payment gateway (Moyasar) + Samer's .NET workflow patch + trace all 27 graphify communities.**
 
 ---
 
@@ -190,8 +190,8 @@ D:\menulink\
 │           ├── seed.sql                   ← Analytics seed (20 fake customers, 80 orders)
 │           ├── seed_koko_menu_backfill.sql ← KO-KO menu from v6 HTML
 │           └── migrations/
-│               ├── 0001_init.sql … 0028_auto_link_customer_rpc.sql
-│               └── 0029_push_subs_nullable_customer.sql  ← latest
+│               ├── 0001_init.sql … 0030_submit_order_price_validation.sql
+│               └── 0031_item_modifiers_json.sql  ← latest
 │
 ├── current-state/
 │   └── pwa-starter/                       ← Legacy v6 static PWA (still in repo, now redirects)
@@ -585,3 +585,34 @@ These won't block anything but are worth knowing about:
 - `lrn-2026-05-23-two-trigger-isolation` — risky triggers go in separate EXCEPTION-wrapped functions
 - `lrn-2026-05-23-uuid-is-real-auth` — UUID is the security boundary; phone/plate are soft sanity checks
 - `lrn-2026-05-23-addon-is-default-semantic` — is_default means auto-enable, not "cannot disable"
+
+---
+
+## 📍 What changed on 2026-05-24 (session 3)
+
+### Migrations applied (0030–0031)
+
+| Migration | Summary |
+|-----------|---------|
+| `0030_submit_order_price_validation.sql` | Server-side price validation in `submit_order` RPC. Looks up real variant price from `menu_item_variants`, rejects if `unit_price < real_price`, caps modifier delta at 30 SAR, recomputes `line_total` server-side. Backwards compatible (orders without `item_id`/`variant_key` skip validation). |
+| `0031_item_modifiers_json.sql` | `menu_items.modifiers_json` jsonb column + `get_public_menu` rewritten to include `modifiers` field. Moves modifier config from hardcoded TypeScript to DB, editable by owners. |
+
+### Item customizer sheet (customer PWA)
+- Bottom-sheet for modifier selection (size variants, extras, sauces)
+- Two-layer guard against empty-variants crash: `openCustomizer()` returns early if 0 variants, sheet has post-hooks `if (!safeFirstVariant) return null`
+- Reads `modifiers` from DB first, falls back to hardcoded keyword matcher if null
+- Price deltas computed and displayed live as customer picks options
+
+### Owner-editable modifiers (admin)
+- `/admin/menu` — new "🧩 إضافات" button per item (indigo-themed, like "🔥 سعرات" for nutrition)
+- Expandable panel: add/remove modifier groups, set single/multi select, required flag, max limit
+- Per-option: label + price delta (ر.س)
+- Toggle customer notes on/off
+- Save writes `modifiers_json` to DB; Clear removes it (reverts to hardcoded fallback)
+- Existing hardcoded modifiers (rice types + extras) backfilled into DB for 24 RzRz items across 6 categories — owners can now see and edit them
+- `apps/web/app/admin/menu/modifiers-panel.tsx` — new component
+- `apps/web/lib/types.ts` — added `ModifierConfig`, `ModifierGroup`, `ModifierOption` types
+
+### Types updated
+- `PublicMenuItem` now includes `modifiers: PublicModifierConfig | null`
+- `PublicModifierConfig`, `PublicModifierGroup`, `PublicModifierOption` types added to customer-side types
