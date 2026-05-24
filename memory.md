@@ -689,13 +689,13 @@ These won't block anything but are worth knowing about:
 - Fixed RLS: added SELECT + UPDATE policies for public (PostgREST upsert needs both)
 - Enabled `push_marketing` addon for KO-KO
 - **Server-side push delivery WORKS** (`web-push` → FCM returns 201)
-- **Blocker: user's Windows 10 blocks Chrome notifications at OS level** — not a code bug, purely a local settings issue. Test on a phone or after enabling Windows notifications.
+- **Blocker: notifications don't arrive on ANY device** — tested laptop (Windows blocks Chrome) AND phone (Chrome Android). FCM returns 201 (accepted) but notification never appears. The service worker push handler exists in `sw.js` (lines 92-120) and looks correct. Likely cause: SW not activating the push handler OR the SW is serving a cached version without the handler. **Debug next session:** check SW version on device, force-update, test with Chrome DevTools Application > Service Workers > Push.
 - `/admin/broadcast` page fully functional: segment picker, composer, history, stats
 - `/api/admin/push/send` handles broadcast with stale-sub cleanup
 - `/api/admin/push/notify` handles single-customer push (order ready)
 
 ### Pinned for next session (updated)
-- **Push: test on mobile phone** — Windows desktop blocking is an OS setting, not our bug. Push works server→FCM. Need to confirm arrival on an Android/iOS device.
+- **Push delivery debugging** — FCM accepts (201) but notification never shows on any device. Subscription saves, bell toggle works, server sends fine. Issue is between FCM and the service worker push handler. Debug SW state on device.
 - **Table sessions testing** — feature shipped (0032), untested with real dine-in flow
 - **Payment gateway (Moyasar)** — automate 499 SAR collection
 - **Samer .NET workflow patch** — re-enable per-type InvoiceType when ready

@@ -437,6 +437,18 @@ The cashier UI also has Family/Section types (likely 2, but untested today). Eac
 **Context:** Designed `open_table_session` RPC to reuse an existing open session at the same table. Without a time limit, a session from yesterday (customer left without checking out) would get reused by today's customer at the same table.
 **Learning:** **Table sessions auto-expire after 8 hours.** The `open_table_session` RPC only reuses sessions where `opened_at > now() - interval '8 hours'`. This covers a full dinner service without leaking into the next day. If a customer never taps "طلب الحساب", the session just becomes stale and a new one is created next time. Admin may want a "close stale sessions" button later, but for now the 8hr window prevents cross-customer data leaks.
 **Source:** session:2026-05-24 table sessions design
+
+### LRN-2026-05-25-push-delivery-gap (confidence: high) ⚠️ OPEN BUG
+**Context:** Built full push stack: bell toggle subscribes → saves to `push_subscriptions` → server calls `web-push.sendNotification()` → FCM returns HTTP 201 (accepted). But the notification NEVER appears on ANY device (tested Windows Chrome + Android Chrome).
+**Learning:** **FCM 201 does NOT mean the notification was displayed — only that FCM queued it.** The delivery gap is between FCM and the service worker's `push` event listener. Likely causes: (1) the SW on the device is stale (cached version without the push handler), (2) the SW `push` event fires but `showNotification()` fails silently (e.g., missing icon URL, promise not awaited properly), (3) Chrome requires the SW to be "active" (the page was open at least once recently). **Debug plan for next session:** Use Chrome DevTools > Application > Service Workers > "Push" button to simulate a push locally and see if the SW handler fires. Also check SW version matches deployed `sw.js`. Consider bumping `VERSION` constant to force SW update.
+**Source:** session:2026-05-25 push debugging
+**Triggers:** push notification, FCM 201, service worker, showNotification, web-push, delivery gap, sw.js VERSION
+
+### LRN-2026-05-25-postgrest-upsert-needs-select-policy (confidence: high)
+**Context:** `push_subscriptions` had INSERT + UPDATE policies for public, but the `/api/push/subscribe` route using `.upsert({...}, { onConflict: "endpoint" })` still failed with "violates row-level security".
+**Learning:** **PostgREST's upsert (INSERT ... ON CONFLICT DO UPDATE) requires a SELECT policy in addition to INSERT and UPDATE.** Without SELECT, PostgREST can't verify the conflict target row exists, so the entire operation is rejected. Fix: add `CREATE POLICY ... FOR SELECT TO public USING (true)` on any table where anon/public does upsert. This is a Supabase/PostgREST-specific behavior — raw PostgreSQL's `INSERT ON CONFLICT` doesn't need explicit SELECT permission, but PostgREST's translation layer does.
+**Source:** session:2026-05-25 push subscribe debugging
+**Triggers:** upsert, PostgREST, RLS, SELECT policy, onConflict, push_subscriptions
 **Triggers:** table session, expiry, reuse window, stale session, dine-in
 **Triggers:** hardcoded config, DB migration, backfill, modifiers_json, owner-editable, ghost config
 
