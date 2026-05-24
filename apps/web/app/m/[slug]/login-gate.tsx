@@ -16,10 +16,12 @@ export default function LoginGate({
   restaurant,
   tableParam,
   onGuest,
+  googleOnly = false,
 }: {
   restaurant: Restaurant;
   tableParam: string | null;
   onGuest: (phone: string, name: string) => void;
+  googleOnly?: boolean;
 }) {
   const [mode, setMode] = useState<"choose" | "guest">("choose");
   const [phone, setPhone] = useState("");
@@ -71,17 +73,33 @@ export default function LoginGate({
 
       <h1
         className="text-2xl font-extrabold text-neutral-900 mb-1"
-        style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+        style={{ fontFamily: "var(--font-display)" }}
       >
         {restaurant.name}
       </h1>
       <p className="text-sm text-neutral-500 mb-8">
-        أهلاً بك! ادخل لتجربة أفضل
+        {googleOnly ? "سجّل بحساب Google للمتابعة" : "أهلاً بك! ادخل لتجربة أفضل"}
       </p>
 
-      {mode === "choose" ? (
+      {googleOnly ? (
         <div className="w-full max-w-sm space-y-3">
-          {/* Google sign-in */}
+          <button
+            onClick={signInWithGoogle}
+            disabled={busy}
+            className="w-full h-14 rounded-2xl bg-white border-2 border-neutral-200 flex items-center justify-center gap-3 text-base font-bold text-neutral-800 hover:border-neutral-300 active:translate-y-px shadow-sm disabled:opacity-50"
+          >
+            <GoogleIcon />
+            {busy ? "..." : "الدخول بحساب Google"}
+          </button>
+
+          {tableParam && (
+            <p className="text-center text-xs text-neutral-400 mt-2">
+              {"\u{1FA91}"} الطاولة: {tableParam}
+            </p>
+          )}
+        </div>
+      ) : mode === "choose" ? (
+        <div className="w-full max-w-sm space-y-3">
           <button
             onClick={signInWithGoogle}
             disabled={busy}
@@ -91,38 +109,36 @@ export default function LoginGate({
             {busy ? "..." : "الدخول بحساب Google"}
           </button>
 
-          {/* Divider */}
           <div className="flex items-center gap-3">
             <div className="flex-1 h-px bg-neutral-200" />
-            <span className="text-xs text-neutral-400">أو</span>
+            <span className="text-xs text-neutral-400">{"أو"}</span>
             <div className="flex-1 h-px bg-neutral-200" />
           </div>
 
-          {/* Guest */}
           <button
             onClick={() => setMode("guest")}
             className="w-full h-12 rounded-2xl border-2 border-neutral-200 bg-neutral-50 text-sm font-bold text-neutral-700 hover:border-neutral-300 active:translate-y-px"
-            style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+            style={{ fontFamily: "var(--font-display)" }}
           >
-            متابعة كزائر
+            {"متابعة كزائر"}
           </button>
 
           {tableParam && (
             <p className="text-center text-xs text-neutral-400 mt-2">
-              🪑 الطاولة: {tableParam}
+              {"\u{1FA91}"} الطاولة: {tableParam}
             </p>
           )}
         </div>
       ) : (
         <div className="w-full max-w-sm space-y-4">
-          <p className="text-sm text-neutral-600 font-bold" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
-            أدخل بياناتك للمتابعة
+          <p className="text-sm text-neutral-600 font-bold" style={{ fontFamily: "var(--font-display)" }}>
+            {"أدخل بياناتك للمتابعة"}
           </p>
 
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="الاسم (اختياري)"
+            placeholder={"الاسم (اختياري)"}
             className="w-full h-11 px-4 rounded-xl border border-neutral-200 outline-none focus:border-[var(--brand)] text-sm"
           />
 
@@ -144,29 +160,29 @@ export default function LoginGate({
             onClick={handleGuest}
             disabled={!phone.trim()}
             className="w-full h-12 rounded-2xl text-white font-extrabold disabled:opacity-50 active:translate-y-px shadow-md"
-            style={{ background: "var(--brand)", fontFamily: "Tajawal, system-ui, sans-serif" }}
+            style={{ background: "var(--brand)", fontFamily: "var(--font-display)" }}
           >
-            متابعة
+            {"متابعة"}
           </button>
 
           <button
             onClick={() => setMode("choose")}
             className="w-full h-10 rounded-xl text-sm text-neutral-500 hover:text-neutral-700"
           >
-            ← رجوع
+            {"← رجوع"}
           </button>
         </div>
       )}
 
       {/* Terms footer */}
       <p className="mt-8 text-[11px] text-neutral-400 text-center leading-snug max-w-xs">
-        بالمتابعة أنت توافق على{" "}
+        {"بالمتابعة أنت توافق على"}{" "}
         <a href={`/m/${restaurant.slug}/terms`} className="underline">
-          الشروط والأحكام
+          {"الشروط والأحكام"}
         </a>{" "}
-        و{" "}
+        {"و"}{" "}
         <a href={`/m/${restaurant.slug}/privacy`} className="underline">
-          سياسة الخصوصية
+          {"سياسة الخصوصية"}
         </a>
       </p>
     </div>

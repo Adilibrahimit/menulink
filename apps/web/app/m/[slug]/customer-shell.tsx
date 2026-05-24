@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase-browser";
 import type { ThemeConfig } from "@/lib/themes";
 import LoginGate from "./login-gate";
+import OrderTypeGate from "./order-type-gate";
+import { OrderTypeProvider } from "./order-context";
 import BottomNav from "./bottom-nav";
-import type { PublicMenu } from "./types";
+import type { PublicMenu, OrderType } from "./types";
 
 type AuthState =
   | { kind: "loading" }
@@ -14,6 +16,10 @@ type AuthState =
   | { kind: "signed_in"; userId: string };
 
 const GUEST_KEY = "menulink:guest";
+
+function orderTypeKey(restaurantId: string) {
+  return `menulink:orderType:${restaurantId}`;
+}
 
 export default function CustomerShell({
   menu,
@@ -27,12 +33,18 @@ export default function CustomerShell({
   children: React.ReactNode;
 }) {
   const [auth, setAuth] = useState<AuthState>({ kind: "loading" });
+  const [orderType, setOrderType] = useState<OrderType | null>(null);
+  const googleFirst = theme.loginFlow === "google-first";
 
   useEffect(() => {
     const sb = createClient();
     sb.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         setAuth({ kind: "signed_in", userId: session.user.id });
+        return;
+      }
+      if (googleFirst) {
+        setAuth({ kind: "gate" });
         return;
       }
       const stored = localStorage.getItem(GUEST_KEY);
@@ -54,11 +66,26 @@ export default function CustomerShell({
       }
     });
     return () => subscription.unsubscribe();
-  }, []);
+  }, [googleFirst]);
+
+  useEffect(() => {
+    if (!googleFirst) return;
+    try {
+      const stored = localStorage.getItem(orderTypeKey(menu.restaurant.id));
+      if (stored) setOrderType(stored as OrderType);
+    } catch {}
+  }, [googleFirst, menu.restaurant.id]);
 
   function handleGuest(phone: string, name: string) {
     localStorage.setItem(GUEST_KEY, JSON.stringify({ phone, name }));
     setAuth({ kind: "guest", phone, name });
+  }
+
+  function handleOrderType(type: OrderType) {
+    setOrderType(type);
+    try {
+      localStorage.setItem(orderTypeKey(menu.restaurant.id), type);
+    } catch {}
   }
 
   if (auth.kind === "loading") {
@@ -70,6 +97,22 @@ export default function CustomerShell({
   }
 
   if (auth.kind === "gate") {
+    if (googleFirst) {
+      return (
+        <LoginGate
+          restaurant={{
+            id: menu.restaurant.id,
+            name: menu.restaurant.name,
+            slug: menu.restaurant.slug,
+            logo_url: menu.restaurant.logo_url,
+            primary_color: menu.restaurant.primary_color,
+          }}
+          tableParam={tableParam}
+          onGuest={handleGuest}
+          googleOnly
+        />
+      );
+    }
     return (
       <LoginGate
         restaurant={{
@@ -85,10 +128,20 @@ export default function CustomerShell({
     );
   }
 
+  if (googleFirst && !orderType && !tableParam) {
+    return (
+      <OrderTypeGate
+        restaurantName={menu.restaurant.name}
+        logoUrl={menu.restaurant.logo_url}
+        onSelect={handleOrderType}
+      />
+    );
+  }
+
   return (
-    <>
+    <OrderTypeProvider orderType={orderType}>
       <div className="pb-16">{children}</div>
       <BottomNav slug={menu.restaurant.slug} navItems={theme.bottomNavItems} />
-    </>
+    </OrderTypeProvider>
   );
 }

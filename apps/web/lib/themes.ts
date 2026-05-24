@@ -15,6 +15,7 @@ export type ThemeConfig = {
   cartBarStyle: "gold-navy" | "brand-default";
   hasItemDetailSheet: boolean;
   checkoutStyle: "stepper" | "drawer";
+  loginFlow: "google-first" | "default";
 };
 
 const DEFAULT_THEME: ThemeConfig = {
@@ -32,6 +33,7 @@ const DEFAULT_THEME: ThemeConfig = {
   cartBarStyle: "brand-default",
   hasItemDetailSheet: false,
   checkoutStyle: "drawer",
+  loginFlow: "default",
 };
 
 const RZRZ_THEME: ThemeConfig = {
@@ -65,6 +67,7 @@ const RZRZ_THEME: ThemeConfig = {
   cartBarStyle: "gold-navy",
   hasItemDetailSheet: true,
   checkoutStyle: "stepper",
+  loginFlow: "google-first",
 };
 
 const THEMES: Record<string, ThemeConfig> = {

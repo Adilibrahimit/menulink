@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase-browser";
 import { normalizePhone } from "@/lib/phone";
 import { toArabicDigits } from "@/lib/arabic";
 import LocationPicker from "./location-picker";
+import { usePreselectedOrderType } from "./order-context";
 import type { PublicMenu, CartLine, OrderType } from "./types";
 import type { TrackingState } from "./tracking-sheet";
 
@@ -45,8 +46,11 @@ export default function CartDrawer({
   onClear: () => void;
   onCarOrderPlaced: (t: TrackingState) => void;
 }) {
+  const preselected = usePreselectedOrderType();
   const lockedToTable = !!tableLabel;
-  const [orderType, setOrderType] = useState<OrderType>(lockedToTable ? "dine_in" : "delivery");
+  const [orderType, setOrderType] = useState<OrderType>(
+    lockedToTable ? "dine_in" : preselected ?? "delivery"
+  );
   const [name, setName] = useState("");
   const [rawPhone, setRawPhone] = useState("");
   const [address, setAddress] = useState("");
@@ -292,6 +296,25 @@ export default function CartDrawer({
                     </div>
                     <div className="text-xs text-amber-800/80">سيُسلَّم طلبك على هذه الطاولة</div>
                   </div>
+                </div>
+              ) : preselected ? (
+                <div className="rounded-2xl bg-neutral-50 border border-neutral-200 px-3 py-3 flex items-center gap-2">
+                  <span className="text-2xl">{orderType === "delivery" ? "🚗" : orderType === "pickup" ? "🏪" : orderType === "car" ? "🚙" : "🪑"}</span>
+                  <div className="flex-1 min-w-0 text-sm leading-snug">
+                    <div className="font-extrabold text-neutral-900" style={{ fontFamily: "var(--font-display)" }}>
+                      {orderTypeLabel[orderType]}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      try { localStorage.removeItem(`menulink:orderType:${restaurant.id}`); } catch {}
+                      window.location.reload();
+                    }}
+                    className="text-xs text-[var(--brand)] font-bold"
+                  >
+                    تغيير
+                  </button>
                 </div>
               ) : (
                 <fieldset className="space-y-3">
