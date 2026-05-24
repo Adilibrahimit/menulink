@@ -43,10 +43,6 @@ export default function CustomerShell({
         setAuth({ kind: "signed_in", userId: session.user.id });
         return;
       }
-      if (googleFirst) {
-        setAuth({ kind: "gate" });
-        return;
-      }
       const stored = localStorage.getItem(GUEST_KEY);
       if (stored) {
         try {
@@ -97,22 +93,6 @@ export default function CustomerShell({
   }
 
   if (auth.kind === "gate") {
-    if (googleFirst) {
-      return (
-        <LoginGate
-          restaurant={{
-            id: menu.restaurant.id,
-            name: menu.restaurant.name,
-            slug: menu.restaurant.slug,
-            logo_url: menu.restaurant.logo_url,
-            primary_color: menu.restaurant.primary_color,
-          }}
-          tableParam={tableParam}
-          onGuest={handleGuest}
-          googleOnly
-        />
-      );
-    }
     return (
       <LoginGate
         restaurant={{

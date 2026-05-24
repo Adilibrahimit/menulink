@@ -127,7 +127,7 @@ export default function AccountClient({
   }, [toast]);
 
   /* ---------------- signed-out ---------------- */
-  if (!signedIn) return <SignedOutCard slug={slug} tenantName={tenantName} />;
+  if (!signedIn) return <SignedOutCard slug={slug} tenantName={tenantName} googleFirstFlow={googleFirstFlow} />;
 
   /* ---------------- signed in, no link ---------------- */
   if (!customer) {
@@ -276,7 +276,7 @@ export default function AccountClient({
 /* ============================================================
  * Signed-out: Google sign-in CTA
  * ============================================================ */
-function SignedOutCard({ slug, tenantName }: { slug: string; tenantName: string }) {
+function SignedOutCard({ slug, tenantName, googleFirstFlow = false }: { slug: string; tenantName: string; googleFirstFlow?: boolean }) {
   const [busy, setBusy] = useState(false);
 
   async function signInWithGoogle() {
@@ -292,19 +292,20 @@ function SignedOutCard({ slug, tenantName }: { slug: string; tenantName: string 
       alert(`فشل تسجيل الدخول: ${error.message}`);
       setBusy(false);
     }
-    // On success the browser is redirected — no need to clear `busy`.
   }
 
   return (
     <div className="space-y-4">
       <div className="bg-white border border-neutral-200 rounded-2xl p-6 text-center space-y-3">
-        <div className="text-5xl">🏆</div>
+        <div className="text-5xl">{googleFirstFlow ? "👤" : "🏆"}</div>
         <h2 className="text-lg font-extrabold text-neutral-900" style={{ fontFamily: "var(--font-display)" }}>
-          احفظ نقاطك وطلباتك
+          {googleFirstFlow ? "ربط حسابك" : "احفظ نقاطك وطلباتك"}
         </h2>
         <p className="text-sm text-neutral-600 leading-relaxed">
-          ادخل بـ Google لرؤية رصيد نقاطك في {tenantName}،
-          مستواك، وقائمة طلباتك السابقة.
+          {googleFirstFlow
+            ? `اربط حسابك بـ Google لحفظ طلباتك ونقاطك في ${tenantName}.`
+            : `ادخل بـ Google لرؤية رصيد نقاطك في ${tenantName}، مستواك، وقائمة طلباتك السابقة.`
+          }
         </p>
         <button
           onClick={signInWithGoogle}
@@ -313,26 +314,16 @@ function SignedOutCard({ slug, tenantName }: { slug: string; tenantName: string 
           style={{ fontFamily: "var(--font-display)" }}
         >
           <GoogleG />
-          {busy ? "..." : "متابعة بحساب Google"}
+          {busy ? "..." : "ربط الحساب بـ Google"}
         </button>
-
-        <div className="flex items-center gap-3 my-1">
-          <div className="flex-1 h-px bg-neutral-200" />
-          <span className="text-[11px] text-neutral-400">أو</span>
-          <div className="flex-1 h-px bg-neutral-200" />
-        </div>
 
         <a
           href={`/m/${slug}`}
           className="block w-full h-12 rounded-2xl bg-neutral-100 text-neutral-700 font-extrabold text-center leading-[3rem] hover:bg-neutral-200 active:translate-y-px"
           style={{ fontFamily: "var(--font-display)" }}
         >
-          متابعة كزائر
+          {googleFirstFlow ? "رجوع للقائمة" : "متابعة كزائر"}
         </a>
-
-        <p className="text-[11px] text-neutral-500 leading-relaxed mt-1">
-          ستظل نقاطك مرتبطة برقم جوالك حتى لو لم تدخل بحساب.
-        </p>
       </div>
     </div>
   );
