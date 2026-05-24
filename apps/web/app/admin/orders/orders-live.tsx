@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase-browser";
 type CustomerInfo = { name: string | null; phone: string };
 type OrderRow = {
   id: string;
+  customer_id: string;
   order_type: string;
   channel: string;
   status: string;
@@ -125,11 +126,13 @@ export default function OrdersLive({
   initial,
   restaurantSlug,
   excelEnabled,
+  pushEnabled = false,
 }: {
   restaurantId: string;
   initial: OrderRow[];
   restaurantSlug: string;
   excelEnabled: boolean;
+  pushEnabled?: boolean;
 }) {
   const [rows, setRows] = useState<OrderRow[]>(initial);
   const [todayOnly, setTodayOnly] = useState(true);
@@ -202,6 +205,23 @@ export default function OrdersLive({
     const sb = createClient();
     await sb.from("orders").update({ status }).eq("id", id);
     setRows((r) => r.map((o) => (o.id === id ? { ...o, status } : o)));
+
+    if (status === "ready" && pushEnabled) {
+      const order = rows.find((o) => o.id === id);
+      if (order?.customer_id) {
+        fetch("/api/admin/push/notify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            customer_id: order.customer_id,
+            title: "طلبك جاهز! 🎉",
+            body: "تعال استلم طلبك من المطعم",
+            url: `/m/${restaurantSlug}`,
+          }),
+        }).catch(() => {});
+      }
+    }
   }
 
   function acknowledge() {

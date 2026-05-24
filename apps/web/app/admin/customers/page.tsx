@@ -57,10 +57,11 @@ export default async function CustomersPage() {
   const me = await requireOwner();
   const sb = createClient();
 
-  const [{ data: rfm }, { data: ltv }, excelEnabled] = await Promise.all([
+  const [{ data: rfm }, { data: ltv }, excelEnabled, pushEnabled] = await Promise.all([
     sb.from("v_customer_rfm").select("*").eq("restaurant_id", me.restaurant_id),
     sb.from("v_customer_ltv").select("customer_id, lifetime_value, avg_order_value, orders_count, first_order_at, last_order_at").eq("restaurant_id", me.restaurant_id),
     hasAddon(me.restaurant_id, "excel_export"),
+    hasAddon(me.restaurant_id, "push_marketing"),
   ]);
 
   const ltvByCust = new Map((ltv ?? []).map((r: any) => [r.customer_id, r]));
@@ -135,7 +136,7 @@ export default async function CustomersPage() {
         ))}
       </div>
 
-      <CustomersTable rows={rows} excelEnabled={excelEnabled} />
+      <CustomersTable rows={rows} excelEnabled={excelEnabled} pushEnabled={pushEnabled} restaurantId={me.restaurant_id} />
     </div>
   );
 }

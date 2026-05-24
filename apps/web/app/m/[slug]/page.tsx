@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase-server";
 import { hasAddon } from "@/lib/addons";
 import MenuExperience from "./menu-experience";
 import PwaBootstrap from "./pwa-bootstrap";
+import PushPrompt from "./push-prompt";
 import type { PublicMenu } from "./types";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
@@ -53,6 +54,8 @@ export default async function CustomerMenuPage({
   // loyalty_settings.enabled is true, the cart drawer renders an "earn X
   // points" preview once the customer types a phone. Lookup happens here
   // (server) so the client doesn't round-trip on every render.
+  const pushEnabled = await hasAddon(menu.restaurant.id, "push_marketing");
+
   let loyaltyPointsPerSar: number | null = null;
   if (await hasAddon(menu.restaurant.id, "loyalty")) {
     const { data: ls } = await sb
@@ -82,6 +85,12 @@ export default async function CustomerMenuPage({
         loyaltyPointsPerSar={loyaltyPointsPerSar}
       />
       <PwaBootstrap />
+      <PushPrompt
+        restaurantId={menu.restaurant.id}
+        customerId={null}
+        vapidKey={process.env.NEXT_PUBLIC_VAPID_KEY ?? ""}
+        enabled={pushEnabled}
+      />
     </div>
   );
 }

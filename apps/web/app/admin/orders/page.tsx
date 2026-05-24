@@ -9,10 +9,10 @@ export default async function OrdersPage() {
 
   // Pull last 200 to cover several days of today-filter switching without re-fetching.
   // The OrdersLive client component then filters in-memory based on the toggle state.
-  const [{ data: orders }, { data: rest }, excelEnabled] = await Promise.all([
+  const [{ data: orders }, { data: rest }, excelEnabled, pushEnabled] = await Promise.all([
     sb
       .from("orders")
-      .select("id, order_type, channel, status, subtotal, delivery_fee, total, address, notes, car_plate, car_color, car_arrived_at, table_label, created_at, customers(name, phone)")
+      .select("id, customer_id, order_type, channel, status, subtotal, delivery_fee, total, address, notes, car_plate, car_color, car_arrived_at, table_label, created_at, customers(name, phone)")
       .eq("restaurant_id", me.restaurant_id)
       .order("created_at", { ascending: false })
       .limit(200),
@@ -22,6 +22,7 @@ export default async function OrdersPage() {
       .eq("id", me.restaurant_id)
       .single(),
     hasAddon(me.restaurant_id, "excel_export"),
+    hasAddon(me.restaurant_id, "push_marketing"),
   ]);
 
   return (
@@ -35,6 +36,7 @@ export default async function OrdersPage() {
         restaurantSlug={rest?.slug ?? "report"}
         initial={orders ?? []}
         excelEnabled={excelEnabled}
+        pushEnabled={pushEnabled}
       />
     </div>
   );

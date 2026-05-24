@@ -41,10 +41,21 @@ function digitsOnly(s: string): string {
   return s.replace(/[^\d]/g, "");
 }
 
-export default function CustomersTable({ rows, excelEnabled }: { rows: Row[]; excelEnabled: boolean }) {
+export default function CustomersTable({
+  rows,
+  excelEnabled,
+  pushEnabled = false,
+  restaurantId = "",
+}: {
+  rows: Row[];
+  excelEnabled: boolean;
+  pushEnabled?: boolean;
+  restaurantId?: string;
+}) {
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortKey>("monetary_desc");
   const [segFilter, setSegFilter] = useState<string>("");
+  const [broadcastOpen, setBroadcastOpen] = useState(false);
 
   const visible = useMemo(() => {
     let r = rows;
@@ -107,6 +118,14 @@ export default function CustomersTable({ rows, excelEnabled }: { rows: Row[]; ex
           {visible.length} من {rows.length}
         </span>
         <div className="flex-1" />
+        {pushEnabled && (
+          <button
+            onClick={() => setBroadcastOpen(true)}
+            className="px-3 h-9 inline-flex items-center rounded-lg bg-blue-600 text-white text-sm font-semibold hover:opacity-90"
+          >
+            🔔 إرسال إشعار {segFilter ? `(${segFilter})` : ""}
+          </button>
+        )}
         {excelEnabled && (
           <a
             href="/api/admin/export/customers"
@@ -169,6 +188,124 @@ export default function CustomersTable({ rows, excelEnabled }: { rows: Row[]; ex
             )}
           </tbody>
         </table>
+      </div>
+
+      {broadcastOpen && (
+        <BroadcastModal
+          restaurantId={restaurantId}
+          segment={segFilter || null}
+          customerCount={visible.length}
+          onClose={() => setBroadcastOpen(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+function BroadcastModal({
+  restaurantId,
+  segment,
+  customerCount,
+  onClose,
+}: {
+  restaurantId: string;
+  segment: string | null;
+  customerCount: number;
+  onClose: () => void;
+}) {
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [sending, setSending] = useState(false);
+  const [result, setResult] = useState<{ sent: number; failed: number } | null>(null);
+
+  async function send() {
+    if (!title.trim() || !body.trim()) return;
+    setSending(true);
+    const res = await fetch("/api/admin/push/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        restaurant_id: restaurantId,
+        title: title.trim(),
+        body: body.trim(),
+        segments: segment ? [segment] : [],
+      }),
+    });
+    const data = await res.json();
+    setSending(false);
+    if (data.ok) setResult({ sent: data.sent, failed: data.failed });
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center" dir="rtl">
+      <div onClick={onClose} className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+      <div className="relative bg-white rounded-2xl shadow-xl p-6 w-full max-w-md space-y-4">
+        <h2 className="text-lg font-extrabold text-neutral-900" style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}>
+          🔔 إرسال إشعار Push
+        </h2>
+        <p className="text-xs text-neutral-500">
+          {segment ? `الشريحة: ${segment} · ` : "كل العملاء · "}
+          {customerCount} عميل
+        </p>
+
+        {result ? (
+          <div className="text-center space-y-3 py-4">
+            <div className="text-4xl">✅</div>
+            <p className="text-sm font-bold text-green-800">
+              تم الإرسال: {result.sent} · فشل: {result.failed}
+            </p>
+            <button
+              onClick={onClose}
+              className="h-10 px-6 rounded-xl bg-neutral-100 text-neutral-700 text-sm font-bold hover:bg-neutral-200"
+            >
+              إغلاق
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="space-y-3">
+              <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="عنوان الإشعار"
+                maxLength={60}
+                className="w-full h-10 px-3 rounded-lg border border-neutral-200 outline-none focus:border-blue-400 text-sm"
+              />
+              <textarea
+                value={body}
+                onChange={(e) => setBody(e.target.value)}
+                placeholder="نص الرسالة…"
+                maxLength={200}
+                rows={3}
+                className="w-full px-3 py-2 rounded-lg border border-neutral-200 outline-none focus:border-blue-400 text-sm resize-none"
+              />
+            </div>
+            {title.trim() && body.trim() && (
+              <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-3">
+                <p className="text-[11px] text-neutral-400 mb-1">معاينة</p>
+                <p className="text-sm font-bold text-neutral-900">{title}</p>
+                <p className="text-xs text-neutral-600 mt-0.5">{body}</p>
+              </div>
+            )}
+            <div className="flex gap-2">
+              <button
+                onClick={send}
+                disabled={sending || !title.trim() || !body.trim()}
+                className="flex-1 h-11 rounded-xl bg-blue-600 text-white font-extrabold disabled:opacity-50 active:translate-y-px"
+                style={{ fontFamily: "Tajawal, system-ui, sans-serif" }}
+              >
+                {sending ? "جاري الإرسال..." : "إرسال"}
+              </button>
+              <button
+                onClick={onClose}
+                disabled={sending}
+                className="h-11 px-4 rounded-xl bg-neutral-100 text-neutral-700 text-sm font-bold hover:bg-neutral-200"
+              >
+                إلغاء
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
