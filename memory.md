@@ -44,8 +44,8 @@ The original v6 static HTML PWA at `menulink-eight.vercel.app` now 302-redirects
 
 ## 🔐 Credentials & Tokens
 
-### Test accounts (rotate before real production)
-- **KO-KO owner:** `koko-owner@menulink.test` / `KokoMenuLink2026!`
+### Accounts
+- **KO-KO owner (PRODUCTION):** `id.koko.owner@gmail.com` / `Koko2026!` — shared with client, they should change after first login
 - **Platform ops:** `id.menulink@gmail.com` / `OpsMenuLink2026!`
 
 ### Tokens used during build sessions (all in earlier chat history)
@@ -84,10 +84,9 @@ All migrations live in `apps/web/supabase/migrations/`. Apply locally via `npx s
 
 ### Seed + production data
 - **4 restaurants** onboarded — KO-KO (`koko`) + 3 others added on 2026-05-19 via `/ops/tenants/new`
-- 20 fake customers across all 5 RFM segments (KO-KO only)
-- ~80 fake orders across last 90 days (KO-KO only)
+- KO-KO: **PRODUCTION** — all test data cleared (0 orders, 0 customers), starting fresh
 - 7 categories, 33 menu items (1 owner-added appetizer + 32 seed), 46+ price variants (real KO-KO menu)
-- 4 subscription rows — 3 active (the new tenants have already paid), KO-KO still `pending_payment` (no payment logged yet)
+- 4 subscription rows — **all 4 active** (KO-KO activated 2026-05-24, yearly plan, expires 2027-05-24)
 
 ### KO-KO restaurant_id
 `11111111-1111-1111-1111-111111111111` — hardcoded in seed, referenced by v6 PWA, used in test scripts.
@@ -410,8 +409,9 @@ Moyasar hosted checkout for the first 499 SAR payment. Webhook flips `subscripti
 These won't block anything but are worth knowing about:
 
 - The Vercel "GitHub user not found" warning is still showing because git commits are authored by `idxmac@gmail.com` which isn't verified on either the `Adilibrahimit` GitHub or the `id.menulink@gmail.com` Vercel account. Fix: `git config --global user.email "Adilibrahimit@users.noreply.github.com"` then push one new commit. Cosmetic — deploys aren't blocked.
-- **KO-KO subscription is still `pending_payment` in the DB.** The 3 tenants onboarded on 2026-05-19 have all paid (subscriptions active). To activate KO-KO: sign in as ops → `/ops/payments` → log a 499 SAR payment for KO-KO. Trigger sets `current_period_end` to a year out + status to `active`.
-- The `restaurants.contact_email` for KO-KO is still null (we left it empty per user's instruction "right now make it empty"). Real owner email goes here when known.
+- ~~KO-KO subscription pending~~ **RESOLVED 2026-05-24:** KO-KO paid 499 SAR, subscription active until 2027-05-24. All test data cleared.
+- KO-KO owner: `id.koko.owner@gmail.com` / `Koko2026!` — password shared with client, needs rotation after they log in.
+- KO-KO WhatsApp: `+966501100057` (production, live orders go here)
 - All tokens used during the build (Vercel, Supabase access, Supabase service_role, and the temporary Supabase PAT used to apply 0008 on 2026-05-19) are in chat history and should be rotated. The PAT used for 0008 was already flagged for rotation when applied — confirm it's revoked at https://supabase.com/dashboard/account/tokens.
 - `react-chartjs-2` semver moved to ^5.3.1 and `chart.js` to ^4.5.1 after `npm install` (initial package.json wrote ^5.2.0 / ^4.4.4 — npm chose newer compatible versions). Lockfile committed; nothing to do.
 
@@ -616,3 +616,17 @@ These won't block anything but are worth knowing about:
 ### Types updated
 - `PublicMenuItem` now includes `modifiers: PublicModifierConfig | null`
 - `PublicModifierConfig`, `PublicModifierGroup`, `PublicModifierOption` types added to customer-side types
+
+### Table sessions (open tabs for dine-in)
+- Migration 0032: `table_sessions` table + `orders.session_id` FK + 3 RPCs (`open_table_session`, `get_table_session`, `request_table_checkout`) + `submit_order` patched to accept `session_id`
+- Customer: persistent amber session bar shows running tab, round-by-round items, grand total
+- "طلب الحساب" sends a checkout summary WhatsApp with all items across all rounds
+- Sessions auto-reuse within 8 hours for same table
+- Realtime-enabled for admin visibility
+
+### KO-KO activated to production
+- **First paying customer is LIVE.** Subscription: yearly, 499 SAR, expires 2027-05-24.
+- WhatsApp: `+966501100057`
+- Owner email: `id.koko.owner@gmail.com` / password `Koko2026!` (shared with client)
+- All test data (orders, customers, order_items) deleted — clean slate
+- Menu (7 categories, 33 items) remains intact
