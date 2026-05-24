@@ -56,12 +56,29 @@ export default async function CustomerAccountPage({
   }> = [];
 
   if (user) {
-    const { data: c } = await sb
+    let { data: c } = await sb
       .from("customers")
       .select("id, name, phone, loyalty_points_balance, loyalty_lifetime_points, loyalty_tier, orders_count")
       .eq("auth_user_id", user.id)
       .eq("restaurant_id", restaurant.id)
       .maybeSingle();
+
+    // Cross-tenant auto-link: if signed in but no customer record on THIS
+    // restaurant, check if the user has a linked record on ANY restaurant.
+    // If so, auto-create one here with the same phone/name via RPC.
+    if (!c) {
+      const { data: result } = await sb.rpc("auto_link_customer", { p_restaurant_id: restaurant.id });
+      const r = result as { ok: boolean; customer_id?: string } | null;
+      if (r?.ok && r.customer_id) {
+        const { data: linked } = await sb
+          .from("customers")
+          .select("id, name, phone, loyalty_points_balance, loyalty_lifetime_points, loyalty_tier, orders_count")
+          .eq("id", r.customer_id)
+          .single();
+        if (linked) c = linked;
+      }
+    }
+
     customer = c
       ? {
           id: c.id as string,

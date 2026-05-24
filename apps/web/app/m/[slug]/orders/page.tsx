@@ -41,12 +41,22 @@ export default async function CustomerOrdersPage({
   }> = [];
 
   if (user) {
-    const { data: c } = await sb
+    let { data: c } = await sb
       .from("customers")
       .select("id")
       .eq("auth_user_id", user.id)
       .eq("restaurant_id", restaurant.id)
       .maybeSingle();
+
+    // Cross-tenant auto-link via RPC
+    if (!c) {
+      const { data: result } = await sb.rpc("auto_link_customer", { p_restaurant_id: restaurant.id });
+      const r = result as { ok: boolean; customer_id?: string } | null;
+      if (r?.ok && r.customer_id) {
+        c = { id: r.customer_id };
+      }
+    }
+
     customerId = c?.id as string | null;
 
     if (customerId) {

@@ -19,12 +19,27 @@ export default async function CustomerProfilePage({
   const { data: { user } } = await sb.auth.getUser();
   if (!user) redirect(`/m/${params.slug}/account`);
 
-  const { data: customer } = await sb
+  let { data: customer } = await sb
     .from("customers")
     .select("id, name, phone, email, birthday")
     .eq("auth_user_id", user.id)
     .eq("restaurant_id", restaurant.id)
     .maybeSingle();
+
+  // Cross-tenant auto-link via RPC
+  if (!customer) {
+    const { data: result } = await sb.rpc("auto_link_customer", { p_restaurant_id: restaurant.id });
+    const r = result as { ok: boolean; customer_id?: string } | null;
+    if (r?.ok && r.customer_id) {
+      const { data: linked } = await sb
+        .from("customers")
+        .select("id, name, phone, email, birthday")
+        .eq("id", r.customer_id)
+        .single();
+      if (linked) customer = linked;
+    }
+  }
+
   if (!customer) redirect(`/m/${params.slug}/account`);
 
   const cssVars = {
