@@ -1,7 +1,7 @@
 # MenuLink · Project Memory
 
 > **Read this first** when picking up the project in a new session.
-> Last saved: **2026-05-24 (session 3 — HANDOFF)** — KO-KO is LIVE (first paying customer, 499 SAR yearly). Item customizer + modifiers admin + table sessions (open tabs) + price validation. 4 migrations (0029-0032).
+> Last saved: **2026-05-25 (session 3 final)** — KO-KO LIVE. 7 migrations (0029-0033). Item customizer, modifiers admin, table sessions, price validation, order details in admin, WhatsApp message upgrade, reorder controls, variant management. DB snapshot below.
 > Status line: **production SaaS, 4 tenants (ALL PAID). Full feature set: 4 order types (delivery/pickup/dine_in/car) + dine-in tables with QR + TABLE SESSIONS (open tabs, multi-round, checkout request) + per-tenant addon framework (5 services) + full loyalty program (earn/redeem/tiers/rewards/manual-adjust/welcome-bonus/points-expiry/realtime-notifications) + customer Google accounts with phone linking + SFDA-compliant nutrition display (calories+allergens on 70 items, 98%/96% audit scores) + per-tenant QR posters + item customizer sheet with owner-editable modifiers/add-ons + server-side price validation. 3 skills (menu-onboarding, tenant-deployment, nutrition-audit). Graphify knowledge graph: 214 nodes, 173 edges, 27 communities, 468x token reduction. Next: push marketing (OneSignal) + payment gateway (Moyasar) + Samer's .NET workflow patch + trace all 27 graphify communities.**
 
 ---
@@ -67,7 +67,7 @@ The `sb_publishable_*` anon key is intentionally public and committed in `apps/w
 - **Owner email:** `id.menulink@gmail.com`
 - **Dashboard:** https://supabase.com/dashboard/project/dhmjrrsynfvomlzhggvu
 
-### Schema (29 migrations applied)
+### Schema (33 migrations applied)
 
 | Migration | What it does |
 |---|---|
@@ -83,10 +83,36 @@ The `sb_publishable_*` anon key is intentionally public and committed in `apps/w
 All migrations live in `apps/web/supabase/migrations/`. Apply locally via `npx supabase db reset` or push to cloud via `supabase db push` (we used the Management API directly in this build).
 
 ### Seed + production data
-- **4 restaurants** onboarded — KO-KO (`koko`) + 3 others added on 2026-05-19 via `/ops/tenants/new`
-- KO-KO: **PRODUCTION** — all test data cleared (0 orders, 0 customers), starting fresh
-- 7 categories, 33 menu items (1 owner-added appetizer + 32 seed), 46+ price variants (real KO-KO menu)
-- 4 subscription rows — **all 4 active** (KO-KO activated 2026-05-24, yearly plan, expires 2027-05-24)
+### DB Snapshot (2026-05-25)
+
+| Tenant | Categories | Items | Variants | Orders | Customers | Sub Status | Expires |
+|--------|-----------|-------|----------|--------|-----------|------------|---------|
+| koko (KO-KO) | 7 | 33 | 47 | 0 | 0 | active | 2027-05-24 |
+| rzrz-bukhari | 10 | 62 | 88 | 25 | 4 | active | 2027-05-19 |
+| sadaf-bukhari | 0 | 0 | 0 | 0 | 0 | active | 2027-05-19 |
+| maedah-house | 0 | 0 | 0 | 0 | 0 | active | 2027-05-19 |
+
+**Totals:** 26 tables · 95 menu items · 135 variants · 25 orders · 4 customers · 4 payments · 14 addon subscriptions · 52 POS item maps
+
+| Table | Rows | Notes |
+|-------|------|-------|
+| restaurants | 4 | all published + active |
+| menu_categories | 17 | koko:7, rzrz:10 |
+| menu_items | 95 | koko:33, rzrz:62 |
+| menu_item_variants | 135 | koko:47, rzrz:88 |
+| orders | 25 | all rzrz (koko cleared on activation) |
+| order_items | 56 | linked to the 25 orders |
+| customers | 4 | all rzrz |
+| subscriptions | 4 | all active yearly |
+| payments | 4 | 1 per tenant |
+| subscription_addons | 14 | 5 catalog × variable per tenant |
+| pos_item_map | 52 | rzrz only |
+| pos_outbox | 25 | rzrz bridge processed |
+| table_sessions | 0 | feature just shipped, untested live |
+| push_subscriptions | 0 | OneSignal not integrated yet |
+| loyalty_settings | 2 | rzrz + koko |
+| loyalty_rewards | 2 | rzrz test rewards |
+| loyalty_transactions | 8 | rzrz earn events |
 
 ### KO-KO restaurant_id
 `11111111-1111-1111-1111-111111111111` — hardcoded in seed, referenced by v6 PWA, used in test scripts.
@@ -632,3 +658,26 @@ These won't block anything but are worth knowing about:
 - Owner email: `id.koko.owner@gmail.com` / password `Koko2026!` (shared with client)
 - All test data (orders, customers, order_items) deleted — clean slate
 - Menu (7 categories, 33 items) remains intact
+
+### WhatsApp message enhanced
+- Order number (#hash) added for reference
+- Per-item detail: qty × price = total, modifiers with ➕, notes with 📝 in italic
+- Emojis throughout (🍽️ per item, 🔖 order number, etc.)
+- Item count in header
+
+### Admin orders: expandable details
+- Orders are now clickable to expand/collapse
+- Shows full item breakdown: name, variant, qty, unit_price, line_total
+- New Realtime orders auto-expand
+- Short order ID (#abc123) shown for quick reference
+
+### Category/item reorder controls
+- ▲/▼ buttons on categories and items in admin menu editor
+- Reassigns ALL sort values on move (robust — no equal-value bugs)
+- Fixed `get_public_menu` text sort bug: `(cat ->> 'sort')::int` for numeric ordering
+
+### Variant management (sizes/kinds)
+- Migration 0033: dropped `variant_key` CHECK constraint — owners can add any size/kind
+- "+ حجم/نوع" button per item — prompts for label + price
+- Click variant label to rename, ✕ to delete
+- Enables Pepsi can/medium/large, chicken full/half/quarter, etc.
