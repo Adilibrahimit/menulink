@@ -130,6 +130,8 @@ function useAlertSound() {
   return { unlock, start, stop, playing, unlocked: () => unlockedRef.current };
 }
 
+type CancelReason = { id: string; reason_ar: string; reason_en: string | null };
+
 export default function OrdersLive({
   restaurantId,
   initial,
@@ -149,6 +151,13 @@ export default function OrdersLive({
   const [unseenCount, setUnseenCount] = useState(0);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const alert = useAlertSound();
+
+  // Cancel-with-reason modal state
+  const [cancelModal, setCancelModal] = useState<{ orderId: string } | null>(null);
+  const [cancelReasons, setCancelReasons] = useState<CancelReason[]>([]);
+  const [selectedReason, setSelectedReason] = useState("");
+  const [otherText, setOtherText] = useState("");
+  const [cancelling, setCancelling] = useState(false);
 
   function toggleExpand(id: string) {
     setExpanded((prev) => {
@@ -220,7 +229,50 @@ export default function OrdersLive({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [restaurantId, soundEnabled]);
 
+  async function openCancelModal(orderId: string) {
+    setCancelModal({ orderId });
+    setSelectedReason("");
+    setOtherText("");
+    const sb = createClient();
+    const { data } = await sb
+      .from("order_reasons")
+      .select("id, reason_ar, reason_en")
+      .eq("restaurant_id", restaurantId)
+      .eq("actor_type", "restaurant")
+      .eq("is_active", true)
+      .order("sort_order");
+    setCancelReasons(data ?? []);
+  }
+
+  async function confirmCancel() {
+    if (!cancelModal) return;
+    setCancelling(true);
+    const sb = createClient();
+    const reasonId = selectedReason === "__other__" ? null : selectedReason || null;
+    const reasonText = selectedReason === "__other__" ? otherText.trim() || null : null;
+
+    await sb.from("orders").update({ status: "cancelled", cancellation_reason_id: reasonId }).eq("id", cancelModal.orderId);
+    await sb.from("order_events").insert({
+      order_id: cancelModal.orderId,
+      event_type: "cancellation",
+      old_status: rows.find((o) => o.id === cancelModal.orderId)?.status ?? null,
+      new_status: "cancelled",
+      actor_type: "restaurant",
+      reason_id: reasonId,
+      reason_text: reasonText,
+    });
+
+    setRows((r) => r.map((o) => (o.id === cancelModal.orderId ? { ...o, status: "cancelled" } : o)));
+    setCancelling(false);
+    setCancelModal(null);
+  }
+
   async function setStatus(id: string, status: string) {
+    if (status === "cancelled") {
+      openCancelModal(id);
+      return;
+    }
+
     const sb = createClient();
     await sb.from("orders").update({ status }).eq("id", id);
     setRows((r) => r.map((o) => (o.id === id ? { ...o, status } : o)));
@@ -434,6 +486,82 @@ export default function OrdersLive({
             );
           })}
         </ul>
+      )}
+
+      {/* Cancel-with-reason modal */}
+      {cancelModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-sm shadow-xl" dir="rtl">
+            <div className="p-5 border-b border-neutral-100">
+              <h3 className="text-lg font-bold">سبب الإلغاء</h3>
+              <p className="text-xs text-neutral-500 mt-0.5">اختر سبب إلغاء الطلب</p>
+            </div>
+            <div className="p-5 space-y-3">
+              {cancelReasons.map((r) => (
+                <label
+                  key={r.id}
+                  className={
+                    "flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors " +
+                    (selectedReason === r.id
+                      ? "border-brand-primary bg-brand-primary/5"
+                      : "border-neutral-200 hover:border-neutral-300")
+                  }
+                >
+                  <input
+                    type="radio"
+                    name="cancel-reason"
+                    value={r.id}
+                    checked={selectedReason === r.id}
+                    onChange={() => setSelectedReason(r.id)}
+                    className="accent-brand-primary"
+                  />
+                  <span className="text-sm">{r.reason_ar}</span>
+                </label>
+              ))}
+              <label
+                className={
+                  "flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors " +
+                  (selectedReason === "__other__"
+                    ? "border-brand-primary bg-brand-primary/5"
+                    : "border-neutral-200 hover:border-neutral-300")
+                }
+              >
+                <input
+                  type="radio"
+                  name="cancel-reason"
+                  value="__other__"
+                  checked={selectedReason === "__other__"}
+                  onChange={() => setSelectedReason("__other__")}
+                  className="accent-brand-primary"
+                />
+                <span className="text-sm">سبب آخر</span>
+              </label>
+              {selectedReason === "__other__" && (
+                <textarea
+                  value={otherText}
+                  onChange={(e) => setOtherText(e.target.value)}
+                  placeholder="اكتب السبب..."
+                  className="w-full border border-neutral-300 rounded-xl p-3 text-sm resize-none h-20 outline-none focus:border-brand-primary"
+                />
+              )}
+            </div>
+            <div className="p-4 border-t border-neutral-100 flex gap-2">
+              <button
+                onClick={() => setCancelModal(null)}
+                className="flex-1 px-4 py-2.5 rounded-xl border border-neutral-300 text-sm font-semibold hover:bg-neutral-50"
+              >
+                رجوع
+              </button>
+              <button
+                onClick={confirmCancel}
+                disabled={cancelling || (!selectedReason)}
+                className="flex-1 px-4 py-2.5 rounded-xl bg-rose-600 text-white text-sm font-semibold hover:bg-rose-700 disabled:opacity-50"
+              >
+                {cancelling ? "جاري الإلغاء..." : "تأكيد الإلغاء"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

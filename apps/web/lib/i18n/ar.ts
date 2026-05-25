@@ -59,6 +59,16 @@ const ar: Record<string, Record<string, string>> = {
     overdue: "متأخر",
     cancelled: "ملغي",
   },
+  cancellation: {
+    title: "سبب الإلغاء",
+    subtitle: "اختر سبب إلغاء الطلب",
+    select_reason: "اختر السبب",
+    other_reason: "سبب آخر",
+    other_placeholder: "اكتب السبب...",
+    confirm_cancel: "تأكيد الإلغاء",
+    cancelled_by: "ألغي بواسطة المطعم",
+    no_reason: "بدون سبب",
+  },
   addon: {
     enabled: "مفعّل",
     disabled: "معطّل",

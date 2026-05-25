@@ -59,6 +59,16 @@ const en: Record<string, Record<string, string>> = {
     overdue: "Overdue",
     cancelled: "Cancelled",
   },
+  cancellation: {
+    title: "Cancellation Reason",
+    subtitle: "Select the reason for cancelling this order",
+    select_reason: "Select reason",
+    other_reason: "Other reason",
+    other_placeholder: "Type the reason...",
+    confirm_cancel: "Confirm Cancellation",
+    cancelled_by: "Cancelled by restaurant",
+    no_reason: "No reason",
+  },
   addon: {
     enabled: "Enabled",
     disabled: "Disabled",

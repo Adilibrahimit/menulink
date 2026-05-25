@@ -100,6 +100,31 @@ export type OrderRow = {
   created_at: string;
 };
 
+export type OrderReason = {
+  id: string;
+  restaurant_id: string;
+  actor_type: "customer" | "restaurant" | "driver" | "system";
+  reason_ar: string;
+  reason_en: string | null;
+  is_active: boolean;
+  sort_order: number;
+  created_at: string;
+};
+
+export type OrderEvent = {
+  id: string;
+  order_id: string;
+  event_type: "status_change" | "cancellation" | "payment" | "note";
+  old_status: string | null;
+  new_status: string | null;
+  actor_type: "customer" | "restaurant" | "driver" | "system";
+  actor_id: string | null;
+  reason_id: string | null;
+  reason_text: string | null;
+  metadata: Record<string, unknown> | null;
+  created_at: string;
+};
+
 export type RfmRow = {
   customer_id: string;
   restaurant_id: string;
