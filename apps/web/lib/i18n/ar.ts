@@ -136,6 +136,17 @@ const ar: Record<string, Record<string, string>> = {
     settlement_pending: "بانتظار التسوية",
     settlement_disputed: "متنازع عليه",
   },
+  table: {
+    title: "الطاولات",
+    add_table: "إضافة طاولة",
+    table_number: "رقم الطاولة",
+    display_name_ar: "اسم العرض (عربي)",
+    display_name_en: "اسم العرض (إنجليزي)",
+    qr_code: "رمز QR",
+    scan_to_order: "امسح للطلب",
+    generate_qr: "إنشاء رمز QR",
+    print_qr: "طباعة QR",
+  },
   addon: {
     enabled: "مفعّل",
     disabled: "معطّل",

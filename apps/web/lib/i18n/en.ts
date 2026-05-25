@@ -136,6 +136,17 @@ const en: Record<string, Record<string, string>> = {
     settlement_pending: "Settlement Pending",
     settlement_disputed: "Disputed",
   },
+  table: {
+    title: "Tables",
+    add_table: "Add Table",
+    table_number: "Table Number",
+    display_name_ar: "Display Name (Arabic)",
+    display_name_en: "Display Name (English)",
+    qr_code: "QR Code",
+    scan_to_order: "Scan to Order",
+    generate_qr: "Generate QR Code",
+    print_qr: "Print QR",
+  },
   addon: {
     enabled: "Enabled",
     disabled: "Disabled",
