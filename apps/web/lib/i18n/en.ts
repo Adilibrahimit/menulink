@@ -88,6 +88,12 @@ const en: Record<string, Record<string, string>> = {
     all_branches: "All Branches",
     requires_addon: "Requires Multi-Branch subscription",
   },
+  numbering: {
+    business_date: "Business Date",
+    invoice_number: "Invoice Number",
+    order_number: "Order Number",
+    daily_order: "Daily Order",
+  },
   addon: {
     enabled: "Enabled",
     disabled: "Disabled",

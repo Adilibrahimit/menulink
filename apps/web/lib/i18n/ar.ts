@@ -88,6 +88,12 @@ const ar: Record<string, Record<string, string>> = {
     all_branches: "كل الفروع",
     requires_addon: "يتطلب اشتراك الفروع المتعددة",
   },
+  numbering: {
+    business_date: "يوم التشغيل",
+    invoice_number: "رقم الفاتورة",
+    order_number: "رقم الطلب",
+    daily_order: "الطلب اليومي",
+  },
   addon: {
     enabled: "مفعّل",
     disabled: "معطّل",
