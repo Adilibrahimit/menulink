@@ -808,8 +808,19 @@ Massive infrastructure session: implemented the full Global Operations Core plan
 - `find_nearest_branch(restaurant_id, lat, lng)` — Haversine nearest branch in coverage
 - `fn_log_order_status_change()` — trigger for order_events audit trail
 
+### Customer PWA branch picker
+- `PublicBranch` type added to `/m/[slug]/types.ts`
+- Server-side: page.tsx fetches active branches, passes to MenuExperience → CartDrawer
+- Cart drawer shows branch picker (styled radio cards) for multi-branch restaurants only
+- Filters branches by order type (delivery shows delivery-enabled only, pickup shows pickup-enabled, etc.)
+- Default branch pre-selected; cards show name_ar, address, "رئيسي" badge
+- `branch_id` passed to `submit_order` RPC via `persistOrder`
+- Branch name included in WhatsApp message (`🏢 *الفرع:* فرع العزيزية`)
+- WhatsApp routed to branch-specific number when available
+- Single-branch restaurants (KO-KO) see no picker — unchanged experience
+- Playwright-verified on prod: RzRz pickup shows 2 branches (العزيزية + الملز)
+
 ### What's NOT done yet (schema exists, no UI)
-- Customer PWA branch picker for delivery/pickup orders
 - Driver assignment dropdown in admin orders
 - Branch filter in admin orders list
 - Advanced reports page
@@ -818,7 +829,6 @@ Massive infrastructure session: implemented the full Global Operations Core plan
 - Admin UI for managing restaurant_admins (roles/permissions)
 
 ### Pinned for next session
-- **Build branch picker in customer PWA** — for multi-branch restaurants, let customer choose branch for pickup or auto-route for delivery
 - **Add driver assignment to admin orders** — dropdown to assign driver when status = ready
 - **Branch filter in admin orders** — filter orders by branch for multi-branch tenants
 - **Push delivery debugging** — still unresolved from session 3
