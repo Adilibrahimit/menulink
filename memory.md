@@ -1,8 +1,8 @@
 # MenuLink · Project Memory
 
 > **Read this first** when picking up the project in a new session.
-> Last saved: **2026-05-25 (session 3 final handoff)** — KO-KO LIVE. 8 migrations (0029-0033). Push toggle built + RLS fixed + subscriptions saving. Windows notification blocking unresolved (user's OS settings, not our code). Full feature list below.
-> Status line: **production SaaS, 4 tenants (ALL PAID). Full feature set: 4 order types (delivery/pickup/dine_in/car) + dine-in tables with QR + TABLE SESSIONS (open tabs, multi-round, checkout request) + per-tenant addon framework (5 services) + full loyalty program (earn/redeem/tiers/rewards/manual-adjust/welcome-bonus/points-expiry/realtime-notifications) + customer Google accounts with phone linking + SFDA-compliant nutrition display (calories+allergens on 70 items, 98%/96% audit scores) + per-tenant QR posters + item customizer sheet with owner-editable modifiers/add-ons + server-side price validation. 3 skills (menu-onboarding, tenant-deployment, nutrition-audit). Graphify knowledge graph: 214 nodes, 173 edges, 27 communities, 468x token reduction. Next: push marketing (OneSignal) + payment gateway (Moyasar) + Samer's .NET workflow patch + trace all 27 graphify communities.**
+> Last saved: **2026-05-25 (session 4 — Global Operations Core)** — 11 new migrations (0035–0045), 3 admin UIs shipped. Full multi-branch/driver/delivery-zone/numbering/permissions schema live in prod. RzRz has 2 branches (العزيزية + الملز) with drivers and delivery zones configured.
+> Status line: **production SaaS, 4 tenants (ALL PAID). Full Global Operations Core schema deployed: restaurant_branches + branch_order_counters + restaurant_admins + branch_service_areas + drivers + order_driver_assignments + order_reasons + order_events + pos_sync_events + pos_table_map. 12 addon catalog entries (5 original + 7 Global Ops). Admin UIs: branches, drivers, delivery zones. submit_order RPC: branch-aware + business-day numbering + session_id. 4 order types + dine-in tables + table sessions + loyalty + SFDA nutrition + customer Google accounts + QR posters + modifiers + price validation. 3 skills. Next: admin UIs for remaining phases (branch picker in PWA, driver assignment in orders, reports) + push debugging + payment gateway.**
 
 ---
 
@@ -34,6 +34,9 @@ The original v6 static HTML PWA at `menulink-eight.vercel.app` now 302-redirects
 | `https://menulink-admin-five.vercel.app/admin/info` | Operational info form (operator data only — NO design) | ✅ live |
 | `https://menulink-admin-five.vercel.app/admin/orders` | Live orders feed (Supabase Realtime) | ✅ live |
 | `https://menulink-admin-five.vercel.app/admin/customers` | RFM segments table | ✅ live |
+| `https://menulink-admin-five.vercel.app/admin/branches` | Branch management (multi_branch addon) | ✅ live |
+| `https://menulink-admin-five.vercel.app/admin/drivers` | Driver management (drivers addon) | ✅ live |
+| `https://menulink-admin-five.vercel.app/admin/zones` | Delivery zone management (delivery_zones addon) | ✅ live |
 | `https://menulink-admin-five.vercel.app/ops/login` | Platform admin sign-in | ✅ live |
 | `https://menulink-admin-five.vercel.app/ops` | All tenants list | ✅ live |
 | `https://menulink-admin-five.vercel.app/ops/tenants/[id]` | Drill-in: subscription, owners, payments, **design (logo+cover+colors)** | ✅ live |
@@ -67,7 +70,7 @@ The `sb_publishable_*` anon key is intentionally public and committed in `apps/w
 - **Owner email:** `id.menulink@gmail.com`
 - **Dashboard:** https://supabase.com/dashboard/project/dhmjrrsynfvomlzhggvu
 
-### Schema (33 migrations applied)
+### Schema (45 migrations applied)
 
 | Migration | What it does |
 |---|---|
@@ -92,7 +95,7 @@ All migrations live in `apps/web/supabase/migrations/`. Apply locally via `npx s
 | sadaf-bukhari | 0 | 0 | 0 | 0 | 0 | active | 2027-05-19 |
 | maedah-house | 0 | 0 | 0 | 0 | 0 | active | 2027-05-19 |
 
-**Totals:** 26 tables · 95 menu items · 135 variants · 25 orders · 4 customers · 4 payments · 14 addon subscriptions · 52 POS item maps
+**Totals:** 36+ tables · 95 menu items · 135 variants · 25 orders · 4 customers · 4 payments · 21 addon subscriptions · 52 POS item maps · 4 branches · 1 driver · 1 delivery zone
 
 | Table | Rows | Notes |
 |-------|------|-------|
@@ -105,7 +108,7 @@ All migrations live in `apps/web/supabase/migrations/`. Apply locally via `npx s
 | customers | 4 | all rzrz |
 | subscriptions | 4 | all active yearly |
 | payments | 4 | 1 per tenant |
-| subscription_addons | 14 | 5 catalog × variable per tenant |
+| subscription_addons | 21 | 12 catalog entries × variable per tenant |
 | pos_item_map | 52 | rzrz only |
 | pos_outbox | 25 | rzrz bridge processed |
 | table_sessions | 0 | feature just shipped, untested live |
@@ -113,6 +116,16 @@ All migrations live in `apps/web/supabase/migrations/`. Apply locally via `npx s
 | loyalty_settings | 2 | rzrz + koko |
 | loyalty_rewards | 2 | rzrz test rewards |
 | loyalty_transactions | 8 | rzrz earn events |
+| restaurant_branches | 4 | koko:1(main), rzrz:2(عزيزية+ملز), sadaf:1, maedah:1 |
+| branch_order_counters | 0 | auto-created on first order per branch per day |
+| restaurant_admins | 4 | 1 owner per restaurant (auto-seeded) |
+| branch_service_areas | 1 | rzrz عزيزية: 10km, 5 SAR fee, 20 SAR min |
+| drivers | 1 | rzrz: خالد المطيري (internal, عزيزية) |
+| order_driver_assignments | 0 | ready for use |
+| order_reasons | 24 | 6 default reasons × 4 restaurants |
+| order_events | 0 | auto-logged by trigger on status changes |
+| pos_sync_events | 0 | ready for bridge app logging |
+| pos_table_map | 0 | ready for POS table mapping |
 
 ### KO-KO restaurant_id
 `11111111-1111-1111-1111-111111111111` — hardcoded in seed, referenced by v6 PWA, used in test scripts.
@@ -190,8 +203,11 @@ D:\menulink\
 │       │   │   │   ├── menu-editor.tsx    ← Wraps modals; per-category & per-item controls
 │       │   │   │   ├── add-item-modal.tsx ← Simple form: Category > AR name > Price > Photo
 │       │   │   │   └── add-category-modal.tsx
-│       │   │   ├── orders/                ← Realtime feed
+│       │   │   ├── orders/                ← Realtime feed + cancel modal
 │       │   │   ├── customers/             ← RFM table
+│       │   │   ├── branches/              ← Branch CRUD (multi_branch addon)
+│       │   │   ├── drivers/               ← Driver CRUD (drivers addon)
+│       │   │   ├── zones/                 ← Delivery zone CRUD (delivery_zones addon)
 │       │   │   └── subscription-banner.tsx
 │       │   └── ops/                       ← Platform admin
 │       │       ├── layout.tsx             ← Dark theme + nav shell
@@ -215,8 +231,10 @@ D:\menulink\
 │           ├── seed.sql                   ← Analytics seed (20 fake customers, 80 orders)
 │           ├── seed_koko_menu_backfill.sql ← KO-KO menu from v6 HTML
 │           └── migrations/
-│               ├── 0001_init.sql … 0030_submit_order_price_validation.sql
-│               └── 0031_item_modifiers_json.sql  ← latest
+│               ├── 0001_init.sql … 0033_freeform_variant_key.sql
+│               ├── 0034_global_ops_addon_catalog.sql … 0036_fix_cancel_trigger_skip.sql
+│               ├── 0037_branch_foundation.sql … 0044_table_pos_workflow.sql
+│               └── 0045_fix_submit_order_session_id.sql  ← latest
 │
 ├── current-state/
 │   └── pwa-starter/                       ← Legacy v6 static PWA (still in repo, now redirects)
@@ -699,3 +717,110 @@ These won't block anything but are worth knowing about:
 - **Table sessions testing** — feature shipped (0032), untested with real dine-in flow
 - **Payment gateway (Moyasar)** — automate 499 SAR collection
 - **Samer .NET workflow patch** — re-enable per-type InvoiceType when ready
+
+---
+
+## 📍 What changed on 2026-05-25 (session 4 — Global Operations Core)
+
+### Overview
+Massive infrastructure session: implemented the full Global Operations Core plan (phases 3–11) from `docs/menulink_global_ops_plan_md_files/`. 11 new migrations applied to prod, 3 admin UIs built and deployed. RzRz configured as the multi-branch pilot with 2 branches, 1 driver, and 1 delivery zone.
+
+### Migrations applied (0034–0045)
+
+| Migration | Phase | Summary |
+|-----------|-------|---------|
+| `0034_global_ops_addon_catalog.sql` | 1 | Bilingual addon_catalog: name_en + description_en. 7 new Global Ops catalog entries (multi_branch, branch_admins, branch_accounting, business_day_numbering, drivers, delivery_zones, advanced_reports). |
+| `0035_cancellation_foundation.sql` | 9A | `order_reasons` (bilingual per-restaurant reason catalog), `order_events` (full audit trail), trigger for auto-logging status changes, `orders.cancellation_reason_id`. Seed 6 default reasons per restaurant. |
+| `0036_fix_cancel_trigger_skip.sql` | 9A | Fix trigger to skip cancellations (admin inserts event manually with reason details, avoids double-insert). |
+| `0037_branch_foundation.sql` | 3 | `restaurant_branches` table (bilingual names, slug, WhatsApp, service types, business day hours, is_default constraint). Auto-seeds 1 "main" branch per existing restaurant. `orders.branch_id` + `restaurant_tables.branch_id` backfilled. `get_default_branch_id()` helper. `submit_order` extended with branch_id. RLS: owner + ops + anon-read. |
+| `0038_business_day_numbering.sql` | 4 | `branch_order_counters` table. `compute_business_date()` (respects branch timezone + business_day_end cutoff). `next_order_number()` with `pg_advisory_xact_lock` for race safety. `orders`: business_date, invoice_sequence, daily_order_number, order_number_cycle columns. `submit_order` calls `next_order_number` atomically. |
+| `0039_branch_admin_permissions.sql` | 5 | `restaurant_admins` (owner/branch_manager/cashier/accountant/viewer), `restaurant_admin_branch_access`. `has_restaurant_access()`, `has_branch_access()`, `get_admin_role()` functions. Existing owners auto-seeded as admin role. |
+| `0040_delivery_routing.sql` | 6 | `branch_service_areas` (radius/polygon zones with delivery fee, min order, estimated minutes). `find_nearest_branch()` — Haversine distance check. `orders`: customer_location_lat/lng, address_label/details, payment_method. |
+| `0041_driver_workflow.sql` | 7 | `drivers` table (internal/external/aggregator per branch). `order_driver_assignments` (assign → handoff → delivery → cash settlement). `orders.driver_id` + `assigned_driver_at`. |
+| `0042_tables_qr_enhancement.sql` | 8 | `restaurant_tables`: display_name_ar/en, qr_token (12-char unique), is_active. Backfills display_name_ar from label, generates QR tokens. Branch-scoped unique index. |
+| `0043_pos_sync_events.sql` | 10 | `pos_sync_events` audit trail (per-operation with provider, operation_type, status, request/response, error tracking). `pos_settings.branch_id`. `pos_outbox`: branch_id, operation_type, driver_id, delivery_status. |
+| `0044_table_pos_workflow.sql` | 11 | `table_sessions`: branch_id, table_id, pos_table_opened, pos_external_id. `pos_table_map` for MenuLink-to-POS table mapping. `open_table_session` extended with branch_id + table_id. |
+| `0045_fix_submit_order_session_id.sql` | Fix | Restores `session_id` in `submit_order` RPC — regression from Phase 4 rewrite. Verified end-to-end. |
+
+### Cancellation flow (Phase 9A)
+- Cancel modal in `/admin/orders` with reason picker (radio list from `order_reasons`)
+- "سبب آخر" (other) option with free-text textarea
+- Writes `cancellation_reason_id` on orders + full event to `order_events`
+- Trigger auto-logs non-cancellation status changes; skips cancellations (admin inserts manually with reason details)
+- i18n strings in AR/EN for cancellation UI
+
+### Branch foundation (Phase 3)
+- `restaurant_branches` table with bilingual names, service type flags, business day config
+- Auto-seeded 4 branches (1 per existing restaurant)
+- All 25 existing orders backfilled with branch_id
+- `submit_order` resolves branch_id (explicit from client, or auto-default)
+- RzRz branches renamed: العزيزية (default) + الملز (added)
+
+### Business day numbering (Phase 4)
+- `branch_order_counters` — per-branch daily counter + invoice sequence
+- `compute_business_date()` — respects timezone + business_day_end (e.g., 2AM orders belong to previous day)
+- `next_order_number()` — atomic with `pg_advisory_xact_lock`, cycle counter at 999
+- `submit_order` now returns: branch_id, business_date, daily_order_number, invoice_sequence
+
+### Branch admin permissions (Phase 5)
+- `restaurant_admins` table: owner, branch_manager, cashier, accountant, viewer
+- `restaurant_admin_branch_access` for branch-level scoping
+- `has_restaurant_access()`, `has_branch_access()`, `get_admin_role()` functions
+- Existing 4 restaurant_owners auto-seeded as admin role
+
+### Admin UIs built
+- **`/admin/branches`** — gated by `multi_branch` addon. Add/edit modal (bilingual names, slug, WhatsApp, phone, address AR/EN, service type checkboxes). Set default, toggle active, delete. Playwright-verified on prod.
+- **`/admin/drivers`** — gated by `drivers` addon. Add/edit modal (name, phone, driver type radio cards: داخلي/خارجي/مجمّع, branch assignment dropdown). Active/inactive filter, toggle, delete. Active/total count. Playwright-verified on prod.
+- **`/admin/zones`** — gated by `delivery_zones` addon. Add/edit modal (branch selector, radius km, delivery fee SAR, minimum order SAR, estimated minutes). Visual stat cards per zone. Toggle active, delete. Playwright-verified on prod.
+
+### RzRz multi-branch configuration
+- **multi_branch** addon enabled
+- **drivers** addon enabled
+- **delivery_zones** addon enabled
+- Branch 1: فرع العزيزية (Aziziyah) — default, all existing orders linked here
+- Branch 2: فرع الملز (Malaz) — new, ready for orders
+- Driver: خالد المطيري (internal, assigned to عزيزية)
+- Delivery zone: عزيزية 10km radius, 5 SAR fee, 20 SAR min order, 30 min ETA
+
+### i18n strings added
+- `branch.*` — 18 keys (AR/EN) for branch management
+- `numbering.*` — 4 keys for business day/invoice/order numbers
+- `roles.*` — 11 keys for admin roles and permissions
+- `delivery.*` — 8 keys for delivery zones and routing
+- `driver.*` — 19 keys for driver workflow and settlement
+- `table.*` — 10 keys for table/QR management
+- `cancellation.*` — 8 keys for cancellation flow
+
+### TypeScript types added
+- `Branch` — full restaurant_branches row shape
+- `Driver` — drivers row shape
+- `DriverAssignment` — order_driver_assignments row shape
+- `OrderReason` — order_reasons row shape
+- `OrderEvent` — order_events row shape
+
+### Key functions added to Supabase
+- `get_default_branch_id(restaurant_id)` — returns default branch UUID
+- `compute_business_date(branch_id, now)` — timezone-aware business date
+- `next_order_number(branch_id)` — atomic race-safe number generation
+- `has_restaurant_access(restaurant_id)` — unified owner + admin check
+- `has_branch_access(branch_id)` — branch-level permission check
+- `get_admin_role(restaurant_id)` — returns user's role string
+- `find_nearest_branch(restaurant_id, lat, lng)` — Haversine nearest branch in coverage
+- `fn_log_order_status_change()` — trigger for order_events audit trail
+
+### What's NOT done yet (schema exists, no UI)
+- Customer PWA branch picker for delivery/pickup orders
+- Driver assignment dropdown in admin orders
+- Branch filter in admin orders list
+- Advanced reports page
+- POS sync monitoring dashboard
+- Branch accounting / consolidated reports
+- Admin UI for managing restaurant_admins (roles/permissions)
+
+### Pinned for next session
+- **Build branch picker in customer PWA** — for multi-branch restaurants, let customer choose branch for pickup or auto-route for delivery
+- **Add driver assignment to admin orders** — dropdown to assign driver when status = ready
+- **Branch filter in admin orders** — filter orders by branch for multi-branch tenants
+- **Push delivery debugging** — still unresolved from session 3
+- **Payment gateway (Moyasar)** — automate 499 SAR collection
+- **Samer .NET workflow patch** — re-enable per-type InvoiceType
