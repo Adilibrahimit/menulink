@@ -24,6 +24,7 @@ const NAV: NavItem[] = [
   { href: "/admin/drivers",   label: "السائقين", icon: "🛵", addon: "drivers" },
   { href: "/admin/zones",     label: "نطاق التوصيل", icon: "📍", addon: "delivery_zones" },
   { href: "/admin/tables",    label: "الطاولات", icon: "🪑", addon: "tables_qr" },
+  { href: "/admin/reports",   label: "التقارير", icon: "📊", addon: "advanced_reports" },
   { href: "/admin/loyalty",   label: "الولاء",   icon: "🏆", addon: "loyalty" },
   { href: "/admin/broadcast", label: "الإشعارات", icon: "🔔", addon: "push_marketing" },
   { href: "/admin/info",      label: "المعلومات", icon: "⚙️", addon: null },
