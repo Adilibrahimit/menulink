@@ -13,6 +13,7 @@ type OrderItem = {
   line_total: number;
 };
 type DriverOption = { id: string; name: string; branch_id: string | null };
+type BranchOption = { id: string; name_ar: string };
 type OrderRow = {
   id: string;
   customer_id: string;
@@ -29,6 +30,7 @@ type OrderRow = {
   car_arrived_at: string | null;
   table_label: string | null;
   driver_id: string | null;
+  branch_id: string | null;
   created_at: string;
   customers: CustomerInfo | CustomerInfo[] | null;
   order_items: OrderItem[] | null;
@@ -141,6 +143,7 @@ export default function OrdersLive({
   excelEnabled,
   pushEnabled = false,
   drivers = [],
+  branches = [],
 }: {
   restaurantId: string;
   initial: OrderRow[];
@@ -148,6 +151,7 @@ export default function OrdersLive({
   excelEnabled: boolean;
   pushEnabled?: boolean;
   drivers?: DriverOption[];
+  branches?: BranchOption[];
 }) {
   const [rows, setRows] = useState<OrderRow[]>(initial);
   const [todayOnly, setTodayOnly] = useState(true);
@@ -157,6 +161,9 @@ export default function OrdersLive({
   const alert = useAlertSound();
 
   // Cancel-with-reason modal state
+  const hasMultipleBranches = branches.length > 1;
+  const [branchFilter, setBranchFilter] = useState<string>("all");
+
   const [cancelModal, setCancelModal] = useState<{ orderId: string } | null>(null);
   const [cancelReasons, setCancelReasons] = useState<CancelReason[]>([]);
   const [selectedReason, setSelectedReason] = useState("");
@@ -172,11 +179,17 @@ export default function OrdersLive({
     });
   }
 
-  // Filter shown rows
   const visibleRows = useMemo(() => {
-    if (!todayOnly) return rows;
-    return rows.filter((r) => isToday(r.created_at));
-  }, [rows, todayOnly]);
+    let filtered = rows;
+    if (todayOnly) filtered = filtered.filter((r) => isToday(r.created_at));
+    if (branchFilter !== "all") filtered = filtered.filter((r) => r.branch_id === branchFilter);
+    return filtered;
+  }, [rows, todayOnly, branchFilter]);
+
+  function branchName(id: string | null): string | null {
+    if (!id) return null;
+    return branches.find((b) => b.id === id)?.name_ar ?? null;
+  }
 
   // Tab title reflects unseen new-order count so backgrounded tabs still surface the alert
   useEffect(() => {
@@ -356,6 +369,19 @@ export default function OrdersLive({
           {visibleRows.length} من {rows.length}
         </span>
 
+        {hasMultipleBranches && (
+          <select
+            value={branchFilter}
+            onChange={(e) => setBranchFilter(e.target.value)}
+            className="h-8 px-2 rounded-lg border border-neutral-200 text-xs outline-none focus:border-brand-primary"
+          >
+            <option value="all">كل الفروع</option>
+            {branches.map((b) => (
+              <option key={b.id} value={b.id}>{b.name_ar}</option>
+            ))}
+          </select>
+        )}
+
         <div className="flex-1" />
 
         {!soundEnabled ? (
@@ -442,6 +468,11 @@ export default function OrdersLive({
                       {waitingAtCurb && (
                         <span className="inline-flex items-center gap-1 text-xs font-extrabold bg-amber-500 text-amber-950 rounded-full px-2 py-0.5">
                           🚗 وصل العميل
+                        </span>
+                      )}
+                      {hasMultipleBranches && branchName(o.branch_id) && (
+                        <span className="inline-flex items-center gap-1 text-[10px] bg-blue-50 text-blue-700 border border-blue-200 rounded-full px-2 py-0.5">
+                          🏢 {branchName(o.branch_id)}
                         </span>
                       )}
                     </div>

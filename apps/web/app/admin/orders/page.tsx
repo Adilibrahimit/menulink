@@ -9,10 +9,10 @@ export default async function OrdersPage() {
 
   // Pull last 200 to cover several days of today-filter switching without re-fetching.
   // The OrdersLive client component then filters in-memory based on the toggle state.
-  const [{ data: orders }, { data: rest }, excelEnabled, pushEnabled, driversEnabled] = await Promise.all([
+  const [{ data: orders }, { data: rest }, { data: branchRows }, excelEnabled, pushEnabled, driversEnabled] = await Promise.all([
     sb
       .from("orders")
-      .select("id, customer_id, order_type, channel, status, subtotal, delivery_fee, total, address, notes, car_plate, car_color, car_arrived_at, table_label, driver_id, created_at, customers(name, phone), order_items(id, item_name, variant, qty, unit_price, line_total)")
+      .select("id, customer_id, order_type, channel, status, subtotal, delivery_fee, total, address, notes, car_plate, car_color, car_arrived_at, table_label, driver_id, branch_id, created_at, customers(name, phone), order_items(id, item_name, variant, qty, unit_price, line_total)")
       .eq("restaurant_id", me.restaurant_id)
       .order("created_at", { ascending: false })
       .limit(200),
@@ -21,10 +21,18 @@ export default async function OrdersPage() {
       .select("slug")
       .eq("id", me.restaurant_id)
       .single(),
+    sb
+      .from("restaurant_branches")
+      .select("id, name_ar")
+      .eq("restaurant_id", me.restaurant_id)
+      .eq("is_active", true)
+      .order("sort_order"),
     hasAddon(me.restaurant_id, "excel_export"),
     hasAddon(me.restaurant_id, "push_marketing"),
     hasAddon(me.restaurant_id, "drivers"),
   ]);
+
+  const branches = (branchRows ?? []) as { id: string; name_ar: string }[];
 
   let drivers: { id: string; name: string; branch_id: string | null }[] = [];
   if (driversEnabled) {
@@ -50,6 +58,7 @@ export default async function OrdersPage() {
         excelEnabled={excelEnabled}
         pushEnabled={pushEnabled}
         drivers={drivers}
+        branches={branches}
       />
     </div>
   );
