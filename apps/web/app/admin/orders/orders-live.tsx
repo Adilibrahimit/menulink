@@ -12,6 +12,7 @@ type OrderItem = {
   unit_price: number;
   line_total: number;
 };
+type DriverOption = { id: string; name: string; branch_id: string | null };
 type OrderRow = {
   id: string;
   customer_id: string;
@@ -27,6 +28,7 @@ type OrderRow = {
   car_color: string | null;
   car_arrived_at: string | null;
   table_label: string | null;
+  driver_id: string | null;
   created_at: string;
   customers: CustomerInfo | CustomerInfo[] | null;
   order_items: OrderItem[] | null;
@@ -138,12 +140,14 @@ export default function OrdersLive({
   restaurantSlug,
   excelEnabled,
   pushEnabled = false,
+  drivers = [],
 }: {
   restaurantId: string;
   initial: OrderRow[];
   restaurantSlug: string;
   excelEnabled: boolean;
   pushEnabled?: boolean;
+  drivers?: DriverOption[];
 }) {
   const [rows, setRows] = useState<OrderRow[]>(initial);
   const [todayOnly, setTodayOnly] = useState(true);
@@ -295,6 +299,31 @@ export default function OrdersLive({
     }
   }
 
+  async function assignDriver(orderId: string, driverId: string | null) {
+    const sb = createClient();
+    await sb.from("orders").update({
+      driver_id: driverId,
+      assigned_driver_at: driverId ? new Date().toISOString() : null,
+    }).eq("id", orderId);
+    setRows((r) => r.map((o) => (o.id === orderId ? { ...o, driver_id: driverId } : o)));
+
+    if (driverId) {
+      const order = rows.find((o) => o.id === orderId);
+      await sb.from("order_driver_assignments").insert({
+        order_id: orderId,
+        restaurant_id: restaurantId,
+        branch_id: null,
+        driver_id: driverId,
+        cash_expected: order ? parseFloat(order.total) : 0,
+      }).then(() => {}, () => {});
+    }
+  }
+
+  function driverName(driverId: string | null): string | null {
+    if (!driverId) return null;
+    return drivers.find((d) => d.id === driverId)?.name ?? null;
+  }
+
   function acknowledge() {
     alert.stop();
     setUnseenCount(0);
@@ -436,20 +465,42 @@ export default function OrdersLive({
                   </div>
                 </button>
 
-                {/* Status dropdown — always visible */}
-                <div className="px-3 pb-2 flex items-center gap-2">
-                  <span className="text-[10px] text-neutral-400">الحالة:</span>
-                  <select
-                    value={o.status}
-                    onChange={(e) => setStatus(o.id, e.target.value)}
-                    className="text-xs border border-neutral-300 rounded px-2 py-1 outline-none focus:border-brand-primary"
-                  >
-                    {STATUSES.map((s) => (
-                      <option key={s} value={s}>
-                        {STATUS_LABEL_AR[s]}
-                      </option>
-                    ))}
-                  </select>
+                {/* Status + driver — always visible */}
+                <div className="px-3 pb-2 flex items-center gap-3 flex-wrap">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] text-neutral-400">الحالة:</span>
+                    <select
+                      value={o.status}
+                      onChange={(e) => setStatus(o.id, e.target.value)}
+                      className="text-xs border border-neutral-300 rounded px-2 py-1 outline-none focus:border-brand-primary"
+                    >
+                      {STATUSES.map((s) => (
+                        <option key={s} value={s}>
+                          {STATUS_LABEL_AR[s]}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  {drivers.length > 0 && (o.order_type === "delivery" || o.order_type === "car") && (
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] text-neutral-400">🛵</span>
+                      <select
+                        value={o.driver_id ?? ""}
+                        onChange={(e) => assignDriver(o.id, e.target.value || null)}
+                        className={
+                          "text-xs border rounded px-2 py-1 outline-none focus:border-brand-primary " +
+                          (o.driver_id
+                            ? "border-blue-300 bg-blue-50 text-blue-800 font-semibold"
+                            : "border-neutral-300")
+                        }
+                      >
+                        <option value="">— بدون سائق</option>
+                        {drivers.map((d) => (
+                          <option key={d.id} value={d.id}>{d.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                 </div>
 
                 {/* Expanded: order items */}

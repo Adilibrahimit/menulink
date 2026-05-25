@@ -9,10 +9,10 @@ export default async function OrdersPage() {
 
   // Pull last 200 to cover several days of today-filter switching without re-fetching.
   // The OrdersLive client component then filters in-memory based on the toggle state.
-  const [{ data: orders }, { data: rest }, excelEnabled, pushEnabled] = await Promise.all([
+  const [{ data: orders }, { data: rest }, excelEnabled, pushEnabled, driversEnabled] = await Promise.all([
     sb
       .from("orders")
-      .select("id, customer_id, order_type, channel, status, subtotal, delivery_fee, total, address, notes, car_plate, car_color, car_arrived_at, table_label, created_at, customers(name, phone), order_items(id, item_name, variant, qty, unit_price, line_total)")
+      .select("id, customer_id, order_type, channel, status, subtotal, delivery_fee, total, address, notes, car_plate, car_color, car_arrived_at, table_label, driver_id, created_at, customers(name, phone), order_items(id, item_name, variant, qty, unit_price, line_total)")
       .eq("restaurant_id", me.restaurant_id)
       .order("created_at", { ascending: false })
       .limit(200),
@@ -23,7 +23,19 @@ export default async function OrdersPage() {
       .single(),
     hasAddon(me.restaurant_id, "excel_export"),
     hasAddon(me.restaurant_id, "push_marketing"),
+    hasAddon(me.restaurant_id, "drivers"),
   ]);
+
+  let drivers: { id: string; name: string; branch_id: string | null }[] = [];
+  if (driversEnabled) {
+    const { data } = await sb
+      .from("drivers")
+      .select("id, name, branch_id")
+      .eq("restaurant_id", me.restaurant_id)
+      .eq("is_active", true)
+      .order("name");
+    drivers = (data ?? []) as typeof drivers;
+  }
 
   return (
     <div className="space-y-4">
@@ -37,6 +49,7 @@ export default async function OrdersPage() {
         initial={orders ?? []}
         excelEnabled={excelEnabled}
         pushEnabled={pushEnabled}
+        drivers={drivers}
       />
     </div>
   );
