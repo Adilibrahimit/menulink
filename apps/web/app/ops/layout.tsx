@@ -1,11 +1,19 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { requireOps } from "@/lib/auth";
+import { getLocale, getDictionary, dir } from "@/lib/i18n";
+import LocaleToggle from "./locale-toggle";
 
-const NAV = [
+const NAV_AR = [
   { href: "/ops",                label: "المطاعم",     icon: "🏪" },
   { href: "/ops/tenants/new",    label: "إضافة جديد",  icon: "➕" },
   { href: "/ops/payments",       label: "المدفوعات",   icon: "💳" },
+];
+
+const NAV_EN = [
+  { href: "/ops",                label: "Restaurants",   icon: "🏪" },
+  { href: "/ops/tenants/new",    label: "Add New",       icon: "➕" },
+  { href: "/ops/payments",       label: "Payments",      icon: "💳" },
 ];
 
 export default async function OpsLayout({
@@ -17,9 +25,12 @@ export default async function OpsLayout({
   if (path.startsWith("/ops/login")) return <>{children}</>;
 
   const me = await requireOps();
+  const locale = getLocale();
+  const d = getDictionary(locale);
+  const NAV = locale === "ar" ? NAV_AR : NAV_EN;
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100" dir="rtl">
+    <div className="min-h-screen bg-neutral-950 text-neutral-100" dir={dir(locale)}>
       <header className="bg-neutral-900 border-b border-neutral-800 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -28,9 +39,12 @@ export default async function OpsLayout({
             <span className="text-neutral-300 text-sm font-medium">Ops</span>
           </div>
           <div className="flex items-center gap-4 text-sm">
+            <LocaleToggle current={locale} />
             <span className="text-neutral-400 hidden sm:inline">{me.email}</span>
             <form action="/ops/logout" method="post">
-              <button className="text-neutral-400 hover:text-neutral-100">خروج</button>
+              <button className="text-neutral-400 hover:text-neutral-100">
+                {d.common.logout}
+              </button>
             </form>
           </div>
         </div>
@@ -42,9 +56,9 @@ export default async function OpsLayout({
             <Link
               key={n.href}
               href={n.href}
-              className="block rounded-md px-3 py-2 text-sm text-neutral-300 hover:bg-neutral-900"
+              className={`block rounded-md px-3 py-2 text-sm text-neutral-300 hover:bg-neutral-900 ${locale === "ar" ? "" : "text-left"}`}
             >
-              <span className="ml-2">{n.icon}</span>
+              <span className={locale === "ar" ? "ml-2" : "mr-2"}>{n.icon}</span>
               {n.label}
             </Link>
           ))}
