@@ -820,8 +820,17 @@ Massive infrastructure session: implemented the full Global Operations Core plan
 - Single-branch restaurants (KO-KO) see no picker — unchanged experience
 - Playwright-verified on prod: RzRz pickup shows 2 branches (العزيزية + الملز)
 
+### Driver assignment in admin orders
+- page.tsx fetches active drivers (gated by `drivers` addon), passes to OrdersLive
+- 🛵 driver dropdown shown next to status dropdown for delivery/car orders only
+- "— بدون سائق" default option + list of active drivers
+- Blue highlight (`bg-blue-50 border-blue-300`) when driver is assigned
+- `assignDriver()` updates `orders.driver_id` + `assigned_driver_at`, inserts `order_driver_assignments` row with `cash_expected = order.total`
+- OrderRow type extended with `driver_id`
+- Restaurants without `drivers` addon see no change
+- Playwright-verified on prod: RzRz delivery order shows dropdown with خالد المطيري
+
 ### What's NOT done yet (schema exists, no UI)
-- Driver assignment dropdown in admin orders
 - Branch filter in admin orders list
 - Advanced reports page
 - POS sync monitoring dashboard
@@ -829,7 +838,6 @@ Massive infrastructure session: implemented the full Global Operations Core plan
 - Admin UI for managing restaurant_admins (roles/permissions)
 
 ### Pinned for next session
-- **Add driver assignment to admin orders** — dropdown to assign driver when status = ready
 - **Branch filter in admin orders** — filter orders by branch for multi-branch tenants
 - **Push delivery debugging** — still unresolved from session 3
 - **Payment gateway (Moyasar)** — automate 499 SAR collection
