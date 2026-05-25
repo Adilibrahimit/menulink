@@ -94,6 +94,18 @@ const en: Record<string, Record<string, string>> = {
     order_number: "Order Number",
     daily_order: "Daily Order",
   },
+  roles: {
+    owner: "Owner",
+    branch_manager: "Branch Manager",
+    cashier: "Cashier",
+    accountant: "Accountant",
+    viewer: "Viewer",
+    add_admin: "Add Admin",
+    edit_admin: "Edit Admin",
+    assign_branches: "Assign Branches",
+    role: "Role",
+    active: "Active",
+  },
   addon: {
     enabled: "Enabled",
     disabled: "Disabled",

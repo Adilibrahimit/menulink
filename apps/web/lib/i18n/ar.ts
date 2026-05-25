@@ -94,6 +94,18 @@ const ar: Record<string, Record<string, string>> = {
     order_number: "رقم الطلب",
     daily_order: "الطلب اليومي",
   },
+  roles: {
+    owner: "مالك",
+    branch_manager: "مدير فرع",
+    cashier: "كاشير",
+    accountant: "محاسب",
+    viewer: "مشاهد",
+    add_admin: "إضافة مسؤول",
+    edit_admin: "تعديل مسؤول",
+    assign_branches: "تعيين الفروع",
+    role: "الصلاحية",
+    active: "نشط",
+  },
   addon: {
     enabled: "مفعّل",
     disabled: "معطّل",
