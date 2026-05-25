@@ -830,15 +830,22 @@ Massive infrastructure session: implemented the full Global Operations Core plan
 - Restaurants without `drivers` addon see no change
 - Playwright-verified on prod: RzRz delivery order shows dropdown with خالد المطيري
 
+### Branch filter in admin orders
+- Branches fetched server-side, passed to OrdersLive
+- "كل الفروع" dropdown in toolbar — filters orders by branch_id (only for multi-branch)
+- Blue 🏢 branch badge on each order card showing branch name
+- Combines with todayOnly filter (both applied to visibleRows)
+- OrderRow extended with `branch_id`
+- Playwright-verified on prod: dropdown + badge visible for RzRz
+
 ### What's NOT done yet (schema exists, no UI)
-- Branch filter in admin orders list
 - Advanced reports page
 - POS sync monitoring dashboard
 - Branch accounting / consolidated reports
 - Admin UI for managing restaurant_admins (roles/permissions)
 
 ### Pinned for next session
-- **Branch filter in admin orders** — filter orders by branch for multi-branch tenants
 - **Push delivery debugging** — still unresolved from session 3
 - **Payment gateway (Moyasar)** — automate 499 SAR collection
 - **Samer .NET workflow patch** — re-enable per-type InvoiceType
+- **Advanced reports** — branch, driver, business day, cancellation reports
