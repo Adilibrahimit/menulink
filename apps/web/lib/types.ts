@@ -150,6 +150,37 @@ export type Branch = {
   created_at: string;
 };
 
+export type Driver = {
+  id: string;
+  restaurant_id: string;
+  branch_id: string | null;
+  name: string;
+  phone: string | null;
+  driver_type: "internal" | "external" | "aggregator";
+  is_active: boolean;
+  created_at: string;
+};
+
+export type DriverAssignment = {
+  id: string;
+  order_id: string;
+  restaurant_id: string;
+  branch_id: string | null;
+  driver_id: string;
+  assigned_at: string;
+  handed_to_driver_at: string | null;
+  out_for_delivery_at: string | null;
+  delivered_at: string | null;
+  returned_at: string | null;
+  delivery_result: "delivered" | "returned" | "partial" | "failed" | null;
+  failure_reason_id: string | null;
+  driver_note: string | null;
+  cash_expected: number;
+  cash_collected: number;
+  cash_settled: boolean;
+  settlement_status: "pending" | "settled" | "disputed";
+};
+
 export type RfmRow = {
   customer_id: string;
   restaurant_id: string;
