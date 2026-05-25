@@ -10,6 +10,7 @@ import type {
   PublicMenuItem,
   PublicVariant,
   PublicCategory,
+  PublicBranch,
   CartLine,
   CartLineModifier,
 } from "./types";
@@ -36,6 +37,7 @@ export default function MenuExperience({
   theme,
   pushEnabled,
   vapidKey,
+  branches,
 }: {
   menu: PublicMenu;
   tableLabel: string | null;
@@ -43,6 +45,7 @@ export default function MenuExperience({
   theme: ThemeConfig;
   pushEnabled: boolean;
   vapidKey: string;
+  branches: PublicBranch[];
 }) {
   const [cart, setCart] = useState<Record<string, CartLine>>({});
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -483,6 +486,7 @@ export default function MenuExperience({
       {drawerOpen && (
         <CartDrawer
           restaurant={menu.restaurant}
+          branches={branches}
           lines={lines}
           total={total}
           tableLabel={tableLabel}

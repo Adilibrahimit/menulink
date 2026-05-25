@@ -85,6 +85,22 @@ export type PublicCategory = {
   items: PublicMenuItem[];
 };
 
+export type PublicBranch = {
+  id: string;
+  name_ar: string;
+  name_en: string | null;
+  slug: string;
+  whatsapp: string | null;
+  address_ar: string | null;
+  lat: number | null;
+  lng: number | null;
+  supports_delivery: boolean;
+  supports_pickup: boolean;
+  supports_dine_in: boolean;
+  supports_car: boolean;
+  is_default: boolean;
+};
+
 export type PublicMenu = {
   restaurant: PublicRestaurant;
   categories: PublicCategory[];

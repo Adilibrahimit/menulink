@@ -57,6 +57,14 @@ export default async function CustomerMenuPage({
   // (server) so the client doesn't round-trip on every render.
   const pushEnabled = await hasAddon(menu.restaurant.id, "push_marketing");
 
+  const { data: branchRows } = await sb
+    .from("restaurant_branches")
+    .select("id, name_ar, name_en, slug, whatsapp, address_ar, lat, lng, supports_delivery, supports_pickup, supports_dine_in, supports_car, is_default")
+    .eq("restaurant_id", menu.restaurant.id)
+    .eq("is_active", true)
+    .order("sort_order");
+  const branches = branchRows ?? [];
+
   let loyaltyPointsPerSar: number | null = null;
   if (await hasAddon(menu.restaurant.id, "loyalty")) {
     const { data: ls } = await sb
@@ -91,6 +99,7 @@ export default async function CustomerMenuPage({
           theme={theme}
           pushEnabled={pushEnabled}
           vapidKey={process.env.NEXT_PUBLIC_VAPID_KEY ?? ""}
+          branches={branches}
         />
         <PwaBootstrap />
       </CustomerShell>

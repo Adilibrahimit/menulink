@@ -7,7 +7,7 @@ import { toArabicDigits } from "@/lib/arabic";
 import LocationPicker from "./location-picker";
 import { usePreselectedOrderType } from "./order-context";
 import SarSymbol from "./sar-symbol";
-import type { PublicMenu, CartLine, OrderType } from "./types";
+import type { PublicMenu, PublicBranch, CartLine, OrderType } from "./types";
 import type { TrackingState } from "./tracking-sheet";
 
 type SavedAddress = {
@@ -28,6 +28,7 @@ const LABEL_AR: Record<string, string> = {
 
 export default function CartDrawer({
   restaurant,
+  branches,
   lines,
   total,
   tableLabel,
@@ -40,6 +41,7 @@ export default function CartDrawer({
   onTableOrderPlaced,
 }: {
   restaurant: PublicMenu["restaurant"];
+  branches: PublicBranch[];
   lines: CartLine[];
   total: number;
   tableLabel: string | null;
@@ -67,6 +69,10 @@ export default function CartDrawer({
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [prefilled, setPrefilled] = useState(false);
+
+  const hasMultipleBranches = branches.length > 1;
+  const defaultBranch = branches.find((b) => b.is_default) ?? branches[0];
+  const [selectedBranchId, setSelectedBranchId] = useState<string>(defaultBranch?.id ?? "");
 
   // Auto-fill from customer record + load saved addresses
   useEffect(() => {
@@ -166,6 +172,7 @@ export default function CartDrawer({
 
     const persistArgs = {
       restaurantId: restaurant.id,
+      branchId: selectedBranchId || null,
       phone,
       name,
       address: orderType === "delivery" ? address : "",
@@ -229,10 +236,16 @@ export default function CartDrawer({
         ? `https://www.google.com/maps?q=${location.lat},${location.lng}`
         : null;
 
+    const selectedBranch = branches.find((b) => b.id === selectedBranchId);
+    const branchLine = hasMultipleBranches && selectedBranch
+      ? `🏢 *الفرع:* ${selectedBranch.name_ar}\n`
+      : "";
+
     const msg =
       `🌟 *طلب جديد · ${restaurant.name}* 🌟\n` +
       `🔖 *رقم الطلب:* #${orderNum}\n` +
       `━━━━━━━━━━━━━━━━\n` +
+      branchLine +
       (lockedToTable ? `🪑 *الطاولة:* ${tableLabel}\n` : "") +
       `📦 *نوع الطلب:* ${orderTypeLabel[orderType]}\n` +
       `👤 *الاسم:* ${name || "—"}\n` +
@@ -249,7 +262,8 @@ export default function CartDrawer({
       `━━━━━━━━━━━━━━━━\n` +
       `✅ شكراً لاختياركم *${restaurant.name}* 🙏`;
 
-    const waNumber = String(restaurant.whatsapp_phone).replace(/\D/g, "");
+    const branchWa = selectedBranch?.whatsapp;
+    const waNumber = String(branchWa || restaurant.whatsapp_phone).replace(/\D/g, "");
     window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`, "_blank");
 
     if (orderType === "car" && carOrderId) {
@@ -396,6 +410,55 @@ export default function CartDrawer({
                         {orderTypeLabel[t]}
                       </button>
                     ))}
+                  </div>
+                </fieldset>
+              )}
+
+              {/* Branch picker — shown only for multi-branch restaurants */}
+              {hasMultipleBranches && !lockedToTable && (
+                <fieldset className="space-y-2">
+                  <legend className="text-xs font-extrabold text-neutral-700 mb-1">
+                    {orderType === "pickup" ? "اختر فرع الاستلام" : "اختر الفرع"}
+                  </legend>
+                  <div className="space-y-1.5">
+                    {branches
+                      .filter((b) => {
+                        if (orderType === "delivery") return b.supports_delivery;
+                        if (orderType === "pickup") return b.supports_pickup;
+                        if (orderType === "dine_in") return b.supports_dine_in;
+                        if (orderType === "car") return b.supports_car;
+                        return true;
+                      })
+                      .map((b) => (
+                        <button
+                          key={b.id}
+                          type="button"
+                          onClick={() => setSelectedBranchId(b.id)}
+                          className={
+                            "w-full text-right rounded-xl border-2 px-3 py-2.5 transition-colors " +
+                            (selectedBranchId === b.id
+                              ? "border-[var(--brand)] bg-[var(--brand)]/5"
+                              : "border-neutral-200 bg-white hover:border-neutral-300")
+                          }
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="text-base">🏢</span>
+                            <span className="text-sm font-bold text-neutral-800" style={{ fontFamily: "var(--font-display)" }}>
+                              {b.name_ar}
+                            </span>
+                            {b.is_default && (
+                              <span className="text-[9px] bg-neutral-100 text-neutral-500 rounded-full px-1.5 py-0.5">
+                                رئيسي
+                              </span>
+                            )}
+                          </div>
+                          {b.address_ar && (
+                            <p className="text-[11px] text-neutral-500 mt-0.5 mr-6 truncate">
+                              📍 {b.address_ar}
+                            </p>
+                          )}
+                        </button>
+                      ))}
                   </div>
                 </fieldset>
               )}
@@ -579,6 +642,7 @@ export default function CartDrawer({
 
 async function persistOrder({
   restaurantId,
+  branchId,
   phone,
   name,
   address,
@@ -594,6 +658,7 @@ async function persistOrder({
   total,
 }: {
   restaurantId: string;
+  branchId: string | null;
   phone: string;
   name: string;
   address: string;
@@ -611,6 +676,7 @@ async function persistOrder({
   const sb = createClient();
   const payload = {
     restaurant_id: restaurantId,
+    branch_id: branchId || null,
     phone,
     name: name || null,
     address: orderType === "delivery" ? (address || null) : null,
