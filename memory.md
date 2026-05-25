@@ -1,8 +1,8 @@
 # MenuLink · Project Memory
 
 > **Read this first** when picking up the project in a new session.
-> Last saved: **2026-05-25 (session 4 — Global Operations Core)** — 11 new migrations (0035–0045), 3 admin UIs shipped. Full multi-branch/driver/delivery-zone/numbering/permissions schema live in prod. RzRz has 2 branches (العزيزية + الملز) with drivers and delivery zones configured.
-> Status line: **production SaaS, 4 tenants (ALL PAID). Full Global Operations Core schema deployed: restaurant_branches + branch_order_counters + restaurant_admins + branch_service_areas + drivers + order_driver_assignments + order_reasons + order_events + pos_sync_events + pos_table_map. 12 addon catalog entries (5 original + 7 Global Ops). Admin UIs: branches, drivers, delivery zones. submit_order RPC: branch-aware + business-day numbering + session_id. 4 order types + dine-in tables + table sessions + loyalty + SFDA nutrition + customer Google accounts + QR posters + modifiers + price validation. 3 skills. Next: admin UIs for remaining phases (branch picker in PWA, driver assignment in orders, reports) + push debugging + payment gateway.**
+> Last saved: **2026-05-25 (session 4 final)** — 12 migrations (0035–0046), 7 admin UIs + customer PWA branch picker + POS monitoring dashboard. Full Global Ops Core, POS integration docs, RzRz test clone.
+> Status line: **production SaaS, 5 tenants (4 PAID + 1 test clone). Full Global Operations Core: 12 new tables, 12 addon catalog entries, 7 admin UIs (branches/drivers/zones/reports/pos/orders-driver-assign/orders-branch-filter), customer PWA branch picker, cancel modal. POS sync monitoring dashboard (5 tabs, realtime, read-only mapping). RzRz test clone at /m/rzrz-bukhari-test (isolated lab, dummy WhatsApp, POS disabled). 5 POS integration docs in docs/ai_memory/. submit_order: branch-aware + numbering + session_id. Next: push debugging + payment gateway + Bridge App heartbeat + POS item mapping writes.**
 
 ---
 
@@ -37,6 +37,9 @@ The original v6 static HTML PWA at `menulink-eight.vercel.app` now 302-redirects
 | `https://menulink-admin-five.vercel.app/admin/branches` | Branch management (multi_branch addon) | ✅ live |
 | `https://menulink-admin-five.vercel.app/admin/drivers` | Driver management (drivers addon) | ✅ live |
 | `https://menulink-admin-five.vercel.app/admin/zones` | Delivery zone management (delivery_zones addon) | ✅ live |
+| `https://menulink-admin-five.vercel.app/admin/reports` | Advanced reports (advanced_reports addon) | ✅ live |
+| `https://menulink-admin-five.vercel.app/admin/pos` | POS sync monitoring (pos_bridge addon) | ✅ live |
+| `https://menulink-admin-five.vercel.app/m/rzrz-bukhari-test` | RzRz test clone (isolated lab) | ✅ live |
 | `https://menulink-admin-five.vercel.app/ops/login` | Platform admin sign-in | ✅ live |
 | `https://menulink-admin-five.vercel.app/ops` | All tenants list | ✅ live |
 | `https://menulink-admin-five.vercel.app/ops/tenants/[id]` | Drill-in: subscription, owners, payments, **design (logo+cover+colors)** | ✅ live |
@@ -70,7 +73,7 @@ The `sb_publishable_*` anon key is intentionally public and committed in `apps/w
 - **Owner email:** `id.menulink@gmail.com`
 - **Dashboard:** https://supabase.com/dashboard/project/dhmjrrsynfvomlzhggvu
 
-### Schema (45 migrations applied)
+### Schema (46 migrations applied)
 
 | Migration | What it does |
 |---|---|
@@ -208,6 +211,8 @@ D:\menulink\
 │       │   │   ├── branches/              ← Branch CRUD (multi_branch addon)
 │       │   │   ├── drivers/               ← Driver CRUD (drivers addon)
 │       │   │   ├── zones/                 ← Delivery zone CRUD (delivery_zones addon)
+│       │   │   ├── reports/               ← Advanced reports (advanced_reports addon)
+│       │   │   ├── pos/                   ← POS sync monitoring (pos_bridge addon)
 │       │   │   └── subscription-banner.tsx
 │       │   └── ops/                       ← Platform admin
 │       │       ├── layout.tsx             ← Dark theme + nav shell
@@ -233,8 +238,8 @@ D:\menulink\
 │           └── migrations/
 │               ├── 0001_init.sql … 0033_freeform_variant_key.sql
 │               ├── 0034_global_ops_addon_catalog.sql … 0036_fix_cancel_trigger_skip.sql
-│               ├── 0037_branch_foundation.sql … 0044_table_pos_workflow.sql
-│               └── 0045_fix_submit_order_session_id.sql  ← latest
+│               ├── 0037_branch_foundation.sql … 0045_fix_submit_order_session_id.sql
+│               └── 0046_rzrz_test_clone.sql  ← latest
 │
 ├── current-state/
 │   └── pwa-starter/                       ← Legacy v6 static PWA (still in repo, now redirects)
@@ -255,6 +260,11 @@ D:\menulink\
 │
 ├── .scripts/
 │   └── extract-koko-images.py             ← One-shot: decoded v6 base64 → real JPEGs
+│
+├── docs/
+│   ├── ai_memory/                         ← POS integration docs (5 files, no secrets)
+│   ├── proof/                             ← Implementation proof files
+│   └── menulink_global_ops_plan_md_files/ ← Global Operations Core plan (11 phases)
 │
 ├── .obsidian/                             ← Empty marker — makes the project an Obsidian vault
 ├── .graph/                                ← graphify knowledge-graph output (run via /graphify)
@@ -850,12 +860,49 @@ Massive infrastructure session: implemented the full Global Operations Core plan
 - All computed client-side from 500 most recent orders — no extra RPCs
 - Playwright-verified on prod with real RzRz data
 
+### POS integration docs (POSDOC-1)
+- 5 files in `docs/ai_memory/` — no secrets, no credentials, no customer data
+- `RZRZ_POS_INTEGRATION_CONTEXT.md` — partnership, Bridge App approach, what's proven, what's remaining
+- `RZRZ_POS_DB_TABLES_AND_WORKFLOWS.md` — 91 POS tables, InsertInvoice XML format, delivery/table workflows, confirmed vs assumed vs unknown
+- `RZRZ_BRIDGE_APP_SKILL.md` — architecture, version history (v2.3–v2.7), item mapping, kitchen print routing, outbox lifecycle
+- `RZRZ_POS_SYNC_MONITORING_SKILL.md` — dashboard tabs, data sources, debugging guide for common issues
+- `RZRZ_POS_SAFETY_GUARDRAILS.md` — tenant protection rules, credential rules, forbidden actions, Arabic text rules
+
+### RzRz test clone (LAB-1)
+- `/m/rzrz-bukhari-test` — isolated POS integration test lab
+- restaurant_id: `c13aa2bf-df82-4c30-810d-f9ea833ed3cc`, slug: `rzrz-bukhari-test`
+- Name: "RzRz Bukhari TEST", tagline: "⚠️ نسخة تجريبية — الطلبات لا تُرسل للمطعم"
+- Dummy WhatsApp: `966500000000` — test orders never reach real restaurant
+- Full menu cloned: 10 categories, 62 items, 88 variants (image URLs by reference)
+- Same owner (`rzrzbukhari@gmail.com`), separate restaurant_id
+- 8 addons enabled (all except `pos_bridge` — POS sync disabled by default)
+- 1 default branch, 6 cancellation reasons, active subscription
+- KO-KO and live RzRz confirmed untouched
+- Migration 0046: `0046_rzrz_test_clone.sql`
+
+### POS sync monitoring dashboard (POSMON-1)
+- `/admin/pos` gated by `pos_bridge` addon, nav item (🔄 نقاط البيع)
+- MenuLink-side data only — no local SQL connection, no Bridge App modification
+- 5 tabs:
+  1. **نظرة عامة** — 6 KPI cards (synced/failed/pending/claimed/success rate/avg duration), "آخر نشاط مزامنة" health banner (active/idle/stale — NOT "heartbeat"), recent failures list
+  2. **صندوق الصادر** — realtime outbox table with status pills, filters, click-to-expand with customer data redacted
+  3. **سجل المزامنة** — sync events table with manual refresh button, operation type Arabic labels
+  4. **إعدادات POS** — read-only settings display (owner cannot edit)
+  5. **ربط الأصناف** — progress bar, mapped/unmapped items (read-only in v1, no inline writes)
+- Proof file: `docs/proof/MENULINK_POS_SYNC_MONITORING_DASHBOARD_V1_PROOF.md`
+
 ### What's NOT done yet (schema exists, no UI)
-- POS sync monitoring dashboard
 - Branch accounting / consolidated reports
 - Admin UI for managing restaurant_admins (roles/permissions)
+- POS item mapping writes (v1 is read-only)
+- Bridge App heartbeat table (BRIDGE-1, future)
+- Delivery workflow monitoring (RZRZ-DELIVERY-1, future)
+- Table workflow monitoring (RZRZ-TABLE-1, future)
 
 ### Pinned for next session
 - **Push delivery debugging** — still unresolved from session 3
 - **Payment gateway (Moyasar)** — automate 499 SAR collection
 - **Samer .NET workflow patch** — re-enable per-type InvoiceType
+- **Bridge App heartbeat** — real health monitoring (BRIDGE-1)
+- **POS item mapping writes** — with validation and audit logging
+- **Test the test clone** — submit orders on `/m/rzrz-bukhari-test`, verify isolation
