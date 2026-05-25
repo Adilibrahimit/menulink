@@ -106,6 +106,16 @@ const en: Record<string, Record<string, string>> = {
     role: "Role",
     active: "Active",
   },
+  delivery: {
+    delivery_zone: "Delivery Zone",
+    radius_km: "Delivery Radius (km)",
+    delivery_fee: "Delivery Fee",
+    min_order: "Minimum Order",
+    estimated_minutes: "Estimated Time (min)",
+    out_of_range: "Delivery is not available for this address",
+    nearest_branch: "Nearest Branch",
+    select_branch: "Select Branch",
+  },
   addon: {
     enabled: "Enabled",
     disabled: "Disabled",

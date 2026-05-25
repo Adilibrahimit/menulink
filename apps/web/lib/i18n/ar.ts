@@ -106,6 +106,16 @@ const ar: Record<string, Record<string, string>> = {
     role: "الصلاحية",
     active: "نشط",
   },
+  delivery: {
+    delivery_zone: "نطاق التوصيل",
+    radius_km: "نطاق التوصيل (كم)",
+    delivery_fee: "رسوم التوصيل",
+    min_order: "الحد الأدنى للطلب",
+    estimated_minutes: "الوقت المتوقع (دقيقة)",
+    out_of_range: "التوصيل غير متاح لهذا العنوان",
+    nearest_branch: "أقرب فرع",
+    select_branch: "اختر الفرع",
+  },
   addon: {
     enabled: "مفعّل",
     disabled: "معطّل",
