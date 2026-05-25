@@ -125,6 +125,31 @@ export type OrderEvent = {
   created_at: string;
 };
 
+export type Branch = {
+  id: string;
+  restaurant_id: string;
+  name_ar: string;
+  name_en: string | null;
+  slug: string;
+  whatsapp: string | null;
+  phone: string | null;
+  address_ar: string | null;
+  address_en: string | null;
+  lat: number | null;
+  lng: number | null;
+  timezone: string;
+  business_day_start: string | null;
+  business_day_end: string | null;
+  supports_delivery: boolean;
+  supports_pickup: boolean;
+  supports_dine_in: boolean;
+  supports_car: boolean;
+  is_default: boolean;
+  is_active: boolean;
+  sort_order: number;
+  created_at: string;
+};
+
 export type RfmRow = {
   customer_id: string;
   restaurant_id: string;
