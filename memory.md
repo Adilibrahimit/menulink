@@ -838,8 +838,19 @@ Massive infrastructure session: implemented the full Global Operations Core plan
 - OrderRow extended with `branch_id`
 - Playwright-verified on prod: dropdown + badge visible for RzRz
 
+### Advanced reports page
+- `/admin/reports` gated by `advanced_reports` addon, nav item (📊 التقارير)
+- Filters: date range (from/to pickers), branch, order type, status
+- Quick presets: اليوم / ٧ أيام / ٣٠ يوم
+- 6 KPI cards: total orders (26), revenue (1476 ر.س), avg order (56.8), delivered, cancelled, cancel rate
+- Breakdown cards with proportional bar charts: by order type (توصيل 19 / استلام 4 / في المطعم 3), by status
+- Branch breakdown (shown when >1 branch), driver breakdown (shown when drivers assigned)
+- Daily trend table with revenue bar visualization (4 days of data)
+- Top 10 items table: ربع شواية بخاري (15 orders) leading
+- All computed client-side from 500 most recent orders — no extra RPCs
+- Playwright-verified on prod with real RzRz data
+
 ### What's NOT done yet (schema exists, no UI)
-- Advanced reports page
 - POS sync monitoring dashboard
 - Branch accounting / consolidated reports
 - Admin UI for managing restaurant_admins (roles/permissions)
@@ -848,4 +859,3 @@ Massive infrastructure session: implemented the full Global Operations Core plan
 - **Push delivery debugging** — still unresolved from session 3
 - **Payment gateway (Moyasar)** — automate 499 SAR collection
 - **Samer .NET workflow patch** — re-enable per-type InvoiceType
-- **Advanced reports** — branch, driver, business day, cancellation reports
