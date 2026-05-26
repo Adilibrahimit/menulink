@@ -21,6 +21,7 @@ export type PublicRestaurant = {
   tagline_ar: string | null;
   primary_color: string;
   background_color: string;
+  display_only_mode?: boolean;
 };
 
 export type PublicVariant = {

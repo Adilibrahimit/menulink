@@ -59,7 +59,7 @@ export default async function TenantDetailPage({
           <h1 className="text-xl font-bold mt-1">{r.name}</h1>
           <p className="text-xs text-neutral-400 font-mono">{r.slug}</p>
         </div>
-        <TenantActions tenantId={r.id} isPublished={r.is_published} isActive={r.is_active} />
+        <TenantActions tenantId={r.id} isPublished={r.is_published} isActive={r.is_active} displayOnlyMode={r.display_only_mode ?? false} />
       </div>
 
       <section className="grid grid-cols-1 md:grid-cols-3 gap-3">

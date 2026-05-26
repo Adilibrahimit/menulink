@@ -54,10 +54,20 @@ export default async function AdminLayout({
     getEnabledAddons(me.restaurant_id),
   ]);
 
-  const visibleNav = NAV.filter((n) => !n.addon || enabledAddons.has(n.addon));
+  const displayOnly = (restaurant as Record<string, unknown> | null)?.display_only_mode === true;
+  const DISPLAY_ONLY_PATHS = new Set(["/admin", "/admin/menu", "/admin/qr", "/admin/info"]);
+  const visibleNav = NAV.filter((n) => {
+    if (displayOnly) return DISPLAY_ONLY_PATHS.has(n.href);
+    return !n.addon || enabledAddons.has(n.addon);
+  });
 
   return (
     <div className="min-h-screen bg-brand-bg" dir="rtl">
+      {displayOnly && (
+        <div className="bg-amber-50 border-b border-amber-200 px-4 py-2 text-center text-sm font-bold text-amber-900">
+          ⚠️ هذا المطعم في وضع العرض فقط. الطلبات معطّلة للعملاء.
+        </div>
+      )}
       <header className="bg-white border-b border-neutral-200 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">

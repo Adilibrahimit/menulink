@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase-server";
 import { hasAddon } from "@/lib/addons";
 import { getTheme, buildCssVars } from "@/lib/themes";
 import MenuExperience from "./menu-experience";
+import DisplayOnlyMenu from "./display-only-menu";
 import PwaBootstrap from "./pwa-bootstrap";
 import CustomerShell from "./customer-shell";
 import type { PublicMenu } from "./types";
@@ -80,6 +81,18 @@ export default async function CustomerMenuPage({
     primary_color: menu.restaurant.primary_color,
     background_color: menu.restaurant.background_color,
   });
+
+  if (menu.restaurant.display_only_mode) {
+    return (
+      <div dir="rtl" style={cssVars} className="min-h-[100dvh]">
+        {theme.fonts.googleUrl && (
+          // eslint-disable-next-line @next/next/no-page-custom-font
+          <link rel="stylesheet" href={theme.fonts.googleUrl} />
+        )}
+        <DisplayOnlyMenu menu={menu} theme={theme} />
+      </div>
+    );
+  }
 
   return (
     <div
