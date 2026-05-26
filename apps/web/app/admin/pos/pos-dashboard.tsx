@@ -613,6 +613,8 @@ function MappingTab({
   const [confirmed, setConfirmed] = useState<Set<string>>(new Set());
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const [mapError, setMapError] = useState<string | null>(null);
+  const [manualInputs, setManualInputs] = useState<Record<string, string>>({});
+  const [manualSaving, setManualSaving] = useState<string | null>(null);
 
   const mappedPosIds = useMemo(() => new Set(localItemMap.map((m) => m.pos_item_id)), [localItemMap]);
   const catalogMap = new Map(posCatalog.map((c) => [c.pos_item_id, c]));
@@ -651,6 +653,44 @@ function MappingTab({
     setLocalUnmapped((prev) => prev.filter((u) => u.id !== s.menuItemId));
     setConfirmed((prev) => new Set([...prev, s.menuItemId]));
     setConfirming(null);
+  }
+
+  async function manualMap(menuItemId: string, menuName: string) {
+    const raw = manualInputs[menuItemId]?.trim();
+    if (!raw) { setMapError("أدخل رقم POS Item ID"); return; }
+    const posItemId = parseInt(raw, 10);
+    if (isNaN(posItemId) || posItemId <= 0) { setMapError("رقم POS Item ID يجب أن يكون رقم صحيح موجب"); return; }
+
+    setManualSaving(menuItemId);
+    setMapError(null);
+    const cat = posCatalog.find((c) => c.pos_item_id === posItemId);
+    const sb = createClient();
+    const { error } = await sb.from("pos_item_map").upsert({
+      restaurant_id: restaurantId,
+      menu_item_id: menuItemId,
+      pos_item_id: posItemId,
+      pos_variant_key: "single",
+      pos_item_name: cat?.pos_item_name ?? null,
+      notes: "manual entry",
+    }, { onConflict: "restaurant_id,menu_item_id,pos_variant_key" });
+
+    if (error) {
+      setMapError(`فشل ربط "${menuName}": ${error.message}`);
+      setManualSaving(null);
+      return;
+    }
+    setLocalItemMap((prev) => [...prev, {
+      restaurant_id: restaurantId,
+      menu_item_id: menuItemId,
+      pos_item_id: posItemId,
+      pos_variant_key: "single",
+      pos_item_name: cat?.pos_item_name ?? null,
+      display_name_override: null,
+      notes: "manual entry",
+    }]);
+    setLocalUnmapped((prev) => prev.filter((u) => u.id !== menuItemId));
+    setManualInputs((prev) => { const next = { ...prev }; delete next[menuItemId]; return next; });
+    setManualSaving(null);
   }
 
   return (
@@ -792,21 +832,52 @@ function MappingTab({
         </div>
       )}
 
-      {/* Unmapped MenuLink items */}
+      {/* Unmapped MenuLink items — manual entry */}
       {localUnmapped.length > 0 && (
         <div className="bg-white border border-neutral-200 rounded-xl p-4">
-          <h3 className="text-sm font-bold mb-3 text-amber-700">⚠️ أصناف MenuLink غير مربوطة ({localUnmapped.length})</h3>
-          <div className="space-y-1">
-            {localUnmapped.map((mi) => (
-              <div key={mi.id} className="flex items-center gap-2 text-xs py-1.5 border-b border-neutral-50 last:border-0">
-                <span className="text-amber-500">●</span>
-                <span className="text-neutral-700 flex-1 min-w-0 truncate">{mi.name_ar}</span>
-                <span className="text-[10px] text-neutral-400 bg-neutral-50 rounded-full px-2 py-0.5">لم يتم تعيين POS ID</span>
-              </div>
-            ))}
+          <h3 className="text-sm font-bold mb-3 text-amber-700">⚠️ أصناف غير مربوطة — ربط يدوي ({localUnmapped.length})</h3>
+          {mapError && (
+            <div className="mb-3 text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-lg px-3 py-2">
+              {mapError}
+            </div>
+          )}
+          <div className="space-y-2">
+            {localUnmapped.map((mi) => {
+              const inputVal = manualInputs[mi.id] ?? "";
+              const previewCat = inputVal ? posCatalog.find((c) => c.pos_item_id === parseInt(inputVal, 10)) : null;
+              return (
+                <div key={mi.id} className="flex items-center gap-2 text-xs py-2 border-b border-neutral-50 last:border-0">
+                  <span className="text-amber-500">●</span>
+                  <span className="text-neutral-700 flex-1 min-w-0 truncate font-semibold">{mi.name_ar}</span>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {previewCat && (
+                      <span className="text-[10px] text-green-600 max-w-[120px] truncate" title={previewCat.pos_item_name ?? ""}>
+                        ← {previewCat.pos_item_name}
+                      </span>
+                    )}
+                    <input
+                      type="number"
+                      placeholder="POS ID"
+                      value={inputVal}
+                      onChange={(e) => setManualInputs((prev) => ({ ...prev, [mi.id]: e.target.value }))}
+                      onKeyDown={(e) => { if (e.key === "Enter") manualMap(mi.id, mi.name_ar); }}
+                      className="w-20 h-8 rounded-lg border border-neutral-200 px-2 text-xs font-mono outline-none focus:border-brand-primary"
+                      dir="ltr"
+                    />
+                    <button
+                      onClick={() => manualMap(mi.id, mi.name_ar)}
+                      disabled={manualSaving === mi.id || !inputVal}
+                      className="h-8 px-2.5 rounded-lg bg-brand-primary text-white text-[10px] font-bold hover:opacity-90 disabled:opacity-40"
+                    >
+                      {manualSaving === mi.id ? "..." : "ربط"}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
           <p className="text-[10px] text-neutral-400 mt-3">
-            تواصل مع فريق الدعم لربط الأصناف المتبقية. الطلبات التي تحتوي على أصناف غير مربوطة لن تُرسل للمطبخ بشكل صحيح.
+            أدخل رقم POS Item ID واضغط "ربط". عند إدخال الرقم سيظهر اسم الصنف في POS للتأكد.
           </p>
         </div>
       )}
