@@ -5,6 +5,7 @@ import { hasAddon } from "@/lib/addons";
 import { getTheme, buildCssVars } from "@/lib/themes";
 import MenuExperience from "./menu-experience";
 import DisplayOnlyMenu from "./display-only-menu";
+import HeritageListMenu from "./heritage-list-menu";
 import PwaBootstrap from "./pwa-bootstrap";
 import CustomerShell from "./customer-shell";
 import type { PublicMenu } from "./types";
@@ -86,13 +87,14 @@ export default async function CustomerMenuPage({
   });
 
   if (menu.restaurant.display_only_mode) {
+    const MenuComponent = theme.menuLayout === "heritage-list" ? HeritageListMenu : DisplayOnlyMenu;
     return (
       <div dir="rtl" style={cssVars} className="min-h-[100dvh]">
         {theme.fonts.googleUrl && (
           // eslint-disable-next-line @next/next/no-page-custom-font
           <link rel="stylesheet" href={theme.fonts.googleUrl} />
         )}
-        <DisplayOnlyMenu menu={menu} theme={theme} />
+        <MenuComponent menu={menu} theme={theme} />
       </div>
     );
   }

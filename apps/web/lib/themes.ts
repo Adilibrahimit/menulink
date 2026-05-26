@@ -17,6 +17,7 @@ export type ThemeConfig = {
   checkoutStyle: "stepper" | "drawer";
   loginFlow: "google-first" | "default";
   posterStyle: "default" | "heritage-emerald";
+  menuLayout: "card-grid" | "heritage-list";
 };
 
 const DEFAULT_THEME: ThemeConfig = {
@@ -36,6 +37,7 @@ const DEFAULT_THEME: ThemeConfig = {
   checkoutStyle: "drawer",
   loginFlow: "default",
   posterStyle: "default",
+  menuLayout: "card-grid",
 };
 
 const RZRZ_THEME: ThemeConfig = {
@@ -71,6 +73,7 @@ const RZRZ_THEME: ThemeConfig = {
   checkoutStyle: "stepper",
   loginFlow: "google-first",
   posterStyle: "default",
+  menuLayout: "card-grid",
 };
 
 const MAZAJ_ALMOSAFER_THEME: ThemeConfig = {
@@ -96,7 +99,7 @@ const MAZAJ_ALMOSAFER_THEME: ThemeConfig = {
     display: "Reem Kufi",
     body: "Tajawal",
     googleUrl:
-      "https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap",
+      "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Reem+Kufi:wght@400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap",
   },
   categoryStyle: "pills",
   menuCardStyle: "default",
@@ -107,6 +110,7 @@ const MAZAJ_ALMOSAFER_THEME: ThemeConfig = {
   checkoutStyle: "drawer",
   loginFlow: "default",
   posterStyle: "heritage-emerald",
+  menuLayout: "heritage-list",
 };
 
 const THEMES: Record<string, ThemeConfig> = {
