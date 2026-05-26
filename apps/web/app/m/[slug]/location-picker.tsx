@@ -3,17 +3,44 @@
 import { useEffect, useRef, useState } from "react";
 import "leaflet/dist/leaflet.css";
 
-// GPS location picker with:
-//   - Explicit "Use my location" button (iOS Safari needs a user gesture;
-//     auto-requesting on mount silently fails on iPhones)
-//   - Permission-denied guidance per-platform (Safari/Chrome instructions)
-//   - Drag-pin fallback that always works
-//   - Map click to drop pin
-//   - Multi-stage invalidateSize so the map renders cleanly inside a
-//     drawer that animates open
-//   - ResizeObserver to recover from any layout shift
-
 type LocationStatus = "idle" | "locating" | "denied" | "unavailable" | "timeout" | "set";
+
+function getBrandColor(): string {
+  if (typeof document === "undefined") return "#6366f1";
+  return getComputedStyle(document.documentElement).getPropertyValue("--brand").trim() || "#6366f1";
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function createBrandIcon(L: any, color: string) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="44" viewBox="0 0 32 44" fill="none">
+    <defs>
+      <filter id="ds" x="0" y="2" width="32" height="44" filterUnits="userSpaceOnUse">
+        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.25"/>
+      </filter>
+    </defs>
+    <g filter="url(#ds)">
+      <path d="M16 2C9.373 2 4 7.373 4 14c0 9 12 24 12 24s12-15 12-24c0-6.627-5.373-12-12-12z" fill="${color}"/>
+      <circle cx="16" cy="14" r="5" fill="white"/>
+    </g>
+  </svg>`;
+  return L.divIcon({
+    html: svg,
+    className: "location-brand-marker",
+    iconSize: [32, 44],
+    iconAnchor: [16, 44],
+    popupAnchor: [0, -44],
+  });
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function createPulseRing(L: any, latlng: [number, number], color: string) {
+  return L.divIcon({
+    html: `<div class="location-pulse-ring" style="--pulse-color:${color}"></div>`,
+    className: "location-pulse-container",
+    iconSize: [60, 60],
+    iconAnchor: [30, 30],
+  });
+}
 
 export default function LocationPicker({
   initial,
@@ -27,6 +54,8 @@ export default function LocationPicker({
   const mapRef = useRef<any>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const markerRef = useRef<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const pulseRef = useRef<any>(null);
   const [status, setStatus] = useState<LocationStatus>(initial ? "set" : "idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -38,61 +67,60 @@ export default function LocationPicker({
       const L = (await import("leaflet")).default;
       if (!mounted || !containerRef.current) return;
 
-      const start = initial ?? { lat: 24.7136, lng: 46.6753 }; // Riyadh fallback
-
-      // Marker-icon webpack bug fix — use CDN-hosted icons
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      delete (L.Icon.Default.prototype as any)._getIconUrl;
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-        iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-        shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-      });
+      const brand = getBrandColor();
+      const start = initial ?? { lat: 24.7136, lng: 46.6753 };
 
       const map = L.map(containerRef.current, {
-        zoomControl: true,
+        zoomControl: false,
         attributionControl: false,
-        scrollWheelZoom: false, // don't fight the drawer's vertical scroll
+        scrollWheelZoom: false,
         touchZoom: true,
         doubleClickZoom: true,
+        zoomAnimation: true,
+        fadeAnimation: true,
+        markerZoomAnimation: true,
       }).setView([start.lat, start.lng], 16);
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-      }).addTo(map);
+      L.control.zoom({ position: "bottomleft" }).addTo(map);
 
+      L.tileLayer(
+        "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+        { maxZoom: 20, subdomains: "abcd" }
+      ).addTo(map);
+
+      const icon = createBrandIcon(L, brand);
       const marker = L.marker([start.lat, start.lng], {
         draggable: true,
         autoPan: true,
+        icon,
+        autoPanPadding: [40, 40],
       }).addTo(map);
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      bounceMarker(marker);
+
       marker.on("dragend", () => {
         const p = marker.getLatLng();
         onChange({ lat: p.lat, lng: p.lng });
         setStatus("set");
+        bounceMarker(marker);
       });
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       map.on("click", (e: any) => {
         marker.setLatLng(e.latlng);
-        map.setView(e.latlng, Math.max(map.getZoom(), 16));
+        map.flyTo(e.latlng, Math.max(map.getZoom(), 16), { duration: 0.5 });
         onChange({ lat: e.latlng.lat, lng: e.latlng.lng });
         setStatus("set");
+        bounceMarker(marker);
       });
 
       mapRef.current = map;
       markerRef.current = marker;
 
-      // Drawer-friendly: invalidate size at multiple checkpoints
-      // (initial mount, mid-animation, end-animation, settled)
       [60, 280, 600, 1200].forEach((ms) => setTimeout(() => map?.invalidateSize(), ms));
 
-      // Catch any later layout shifts (orientation change, drawer resize)
       if (containerRef.current && "ResizeObserver" in window) {
-        observer = new ResizeObserver(() => {
-          map?.invalidateSize();
-        });
+        observer = new ResizeObserver(() => map?.invalidateSize());
         observer.observe(containerRef.current);
       }
     }
@@ -105,9 +133,38 @@ export default function LocationPicker({
       mapRef.current?.remove();
       mapRef.current = null;
       markerRef.current = null;
+      pulseRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function bounceMarker(marker: any) {
+    const el = marker.getElement?.();
+    if (!el) return;
+    el.style.transition = "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)";
+    el.style.transform += " translateY(-12px)";
+    setTimeout(() => {
+      el.style.transform = el.style.transform.replace(" translateY(-12px)", "");
+    }, 300);
+  }
+
+  async function showPulse(lat: number, lng: number) {
+    const L = (await import("leaflet")).default;
+    if (!mapRef.current) return;
+    if (pulseRef.current) {
+      mapRef.current.removeLayer(pulseRef.current);
+    }
+    const brand = getBrandColor();
+    const pulseIcon = createPulseRing(L, [lat, lng], brand);
+    pulseRef.current = L.marker([lat, lng], { icon: pulseIcon, interactive: false }).addTo(mapRef.current);
+    setTimeout(() => {
+      if (pulseRef.current && mapRef.current) {
+        mapRef.current.removeLayer(pulseRef.current);
+        pulseRef.current = null;
+      }
+    }, 2000);
+  }
 
   function requestLocation() {
     if (!("geolocation" in navigator)) {
@@ -124,8 +181,10 @@ export default function LocationPicker({
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
         if (mapRef.current && markerRef.current) {
-          mapRef.current.setView([lat, lng], 17);
+          mapRef.current.flyTo([lat, lng], 17, { duration: 1.2 });
           markerRef.current.setLatLng([lat, lng]);
+          bounceMarker(markerRef.current);
+          showPulse(lat, lng);
         }
         onChange({ lat, lng });
         setStatus("set");
@@ -156,27 +215,84 @@ export default function LocationPicker({
 
   return (
     <div className="space-y-2">
-      {/* Map */}
+      <style>{`
+        .location-brand-marker {
+          background: none !important;
+          border: none !important;
+          filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));
+          transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .location-brand-marker:hover {
+          transform: scale(1.1);
+        }
+        .location-pulse-container {
+          background: none !important;
+          border: none !important;
+        }
+        .location-pulse-ring {
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          background: var(--pulse-color);
+          opacity: 0.35;
+          animation: locPulse 1.5s ease-out forwards;
+        }
+        @keyframes locPulse {
+          0% { transform: scale(0.3); opacity: 0.5; }
+          100% { transform: scale(2.5); opacity: 0; }
+        }
+        .leaflet-control-zoom a {
+          width: 34px !important;
+          height: 34px !important;
+          line-height: 34px !important;
+          font-size: 16px !important;
+          border-radius: 10px !important;
+          background: white !important;
+          color: #374151 !important;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.12) !important;
+          border: none !important;
+          transition: all 0.2s ease !important;
+        }
+        .leaflet-control-zoom a:hover {
+          background: #f9fafb !important;
+          transform: scale(1.05);
+        }
+        .leaflet-control-zoom {
+          border: none !important;
+          border-radius: 12px !important;
+          overflow: hidden;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+        }
+      `}</style>
+
       <div
         ref={containerRef}
-        className="relative h-64 w-full rounded-xl overflow-hidden border border-neutral-200 bg-neutral-100"
+        className="relative h-64 w-full rounded-2xl overflow-hidden border border-neutral-200/60 bg-neutral-100 shadow-lg"
         style={{ touchAction: "manipulation" }}
       >
-        {/* Pinned overlay badge */}
         {isPinned && (
-          <div className="absolute top-2 right-2 z-[400] bg-green-600 text-white text-[11px] font-bold px-2 py-1 rounded-full shadow-md pointer-events-none">
-            ✓ موقع محدد
+          <div className="absolute top-3 right-3 z-[400] bg-green-600/90 backdrop-blur-sm text-white text-[11px] font-bold px-3 py-1.5 rounded-full shadow-lg pointer-events-none flex items-center gap-1.5 animate-[fadeSlideIn_0.3s_ease-out]">
+            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+            موقع محدد
+          </div>
+        )}
+
+        {status === "locating" && (
+          <div className="absolute inset-0 z-[400] bg-black/10 backdrop-blur-[1px] flex items-center justify-center pointer-events-none">
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-5 py-3 shadow-xl flex items-center gap-3">
+              <span className="inline-block w-4 h-4 rounded-full border-2 border-[var(--brand)] border-t-transparent animate-spin"></span>
+              <span className="text-sm font-semibold text-neutral-700">جاري تحديد الموقع...</span>
+            </div>
           </div>
         )}
       </div>
 
-      {/* Primary action: use current location */}
       <div className="flex items-center gap-2">
         <button
           type="button"
           onClick={requestLocation}
           disabled={status === "locating"}
-          className="flex-1 h-11 rounded-xl bg-[var(--brand)] text-white text-sm font-extrabold hover:opacity-90 disabled:opacity-60 active:translate-y-px shadow-sm"
+          className="flex-1 h-11 rounded-xl bg-[var(--brand)] text-white text-sm font-extrabold hover:opacity-90 disabled:opacity-60 active:translate-y-px shadow-sm transition-all duration-200"
         >
           {status === "locating" ? (
             <span className="inline-flex items-center gap-2">
@@ -184,21 +300,19 @@ export default function LocationPicker({
               جاري تحديد موقعك...
             </span>
           ) : isPinned ? (
-            "📍 إعادة تحديد موقعي الحالي"
+            "إعادة تحديد موقعي الحالي"
           ) : (
-            "📍 استخدم موقعي الحالي"
+            "استخدم موقعي الحالي"
           )}
         </button>
       </div>
 
-      {/* Hint */}
       {status === "idle" && (
         <p className="text-[11px] text-neutral-500 leading-relaxed">
-          اضغط الزر أعلاه لتحديد موقعك تلقائياً، أو اسحب الدبوس الأزرق على الخريطة لتعديل الموقع يدوياً.
+          اضغط الزر أعلاه لتحديد موقعك تلقائياً، أو اسحب الدبوس على الخريطة لتعديل الموقع يدوياً.
         </p>
       )}
 
-      {/* Permission denied — platform-specific recovery */}
       {status === "denied" && (
         <div className="bg-amber-50 border border-amber-300 rounded-xl p-3 text-xs leading-relaxed">
           <div className="font-extrabold text-amber-900 mb-1.5 flex items-center gap-1">
@@ -218,13 +332,12 @@ export default function LocationPicker({
               اضغط على 🔒 بجانب الرابط أعلى الصفحة → الموقع → السماح
             </li>
             <li className="pt-1 border-t border-amber-200">
-              💡 أو اسحب الدبوس الأزرق يدوياً على الخريطة لتحديد المكان.
+              💡 أو اسحب الدبوس يدوياً على الخريطة لتحديد المكان.
             </li>
           </ul>
         </div>
       )}
 
-      {/* Other errors */}
       {(status === "unavailable" || status === "timeout") && errorMessage && (
         <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-xs leading-relaxed">
           <div className="font-extrabold text-red-700 mb-1">{errorMessage}</div>
@@ -232,7 +345,6 @@ export default function LocationPicker({
         </div>
       )}
 
-      {/* Pinned confirmation */}
       {isPinned && (
         <p className="text-[11px] text-green-700 font-semibold leading-relaxed flex items-center gap-1">
           <span>✓</span>
