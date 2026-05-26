@@ -107,10 +107,14 @@ skipped   → Manually skipped by ops
 - Does NOT handle ZATCA (POS handles it)
 - Does NOT manage the POS UI (it's headless, writes to DB only)
 
+## MenuLink APIs Ready for Bridge (built session 6, awaiting .NET side)
+
+1. **Heartbeat** — `POST /api/bridge/heartbeat` every 60s with `{ restaurant_id, instance_id, version, machine_name, local_db_name, uptime_seconds, pending_count }`. Table: `bridge_heartbeats`. Dashboard shows online/offline (3-min threshold).
+2. **Invoice status sync** — `GET /api/bridge/invoice-status?restaurant_id=X` returns list of synced `pos_invoice_id`s to check. Bridge queries POS `SELECT IsHold, IsPaid FROM Invoice WHERE InvoiceID IN (...)`, then `POST /api/bridge/invoice-status` with `{ updates: [{ pos_invoice_id, is_hold, is_paid, is_cancelled }] }`. MenuLink updates order status (submitted→confirmed or cancelled).
+3. **POS items catalog** — `pos_items_catalog` table ready. Bridge should sync POS Items table on startup: `INSERT INTO pos_items_catalog (restaurant_id, pos_item_id, pos_item_name, pos_category, price) ... ON CONFLICT DO UPDATE`.
+
 ## Future Enhancements (planned)
 
-1. **Heartbeat reporting** — write to a `bridge_heartbeats` table every 60s with version, machine name, local DB name
-2. **Sync event logging** — write to `pos_sync_events` after each InsertInvoice with duration, result, error details
-3. **Reconciliation** — periodically query POS Invoice table, compare against pos_outbox for discrepancies
-4. **Table operations** — open/append POS tables for dine-in sessions
-5. **Driver assignment** — sync driver info to POS if supported
+1. **Reconciliation** — periodically query POS Invoice table, compare against pos_outbox for discrepancies
+2. **Table operations** — open/append POS tables for dine-in sessions
+3. **Driver assignment** — sync driver info to POS if supported

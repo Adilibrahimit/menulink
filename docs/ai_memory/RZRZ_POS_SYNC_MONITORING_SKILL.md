@@ -75,17 +75,24 @@
 2. Owner or ops needs to find the matching POS ItemID from the POS Items table
 3. Map it via ops panel (v1 is read-only; mapping writes planned for later with validation)
 
-## What v1 Does NOT Show
+## Added in Session 6
 
-- Bridge App version/machine/DB (no heartbeat table yet)
-- POS-side invoice status (only knows MenuLink-side outbox status)
-- Real-time reconciliation (no Bridge→POS query yet)
-- Item mapping writes (read-only for safety)
+- ✅ Bridge App status card (online/offline/never connected, version, machine, uptime)
+- ✅ "معلّقة في POS" KPI card (synced orders still in submitted status)
+- ✅ Item mapping: auto-suggest with Arabic fuzzy matching + manual entry with live POS name preview
+- ✅ POS items catalog (186 items synced on test tenant)
+- ✅ Invoice status sync API (Bridge→MenuLink feedback loop)
+
+## What v1 Still Does NOT Show
+
+- Real-time reconciliation (no Bridge→POS comparison query yet)
+- Delivery lifecycle (driver assignment, cash settlement)
+- Table dining lifecycle (open/close/append)
 
 ## Future Phases
 
 | Phase | What it adds |
 |-------|-------------|
-| BRIDGE-1 | Bridge heartbeat, version display, sync event writing, reconciliation |
 | RZRZ-DELIVERY-1 | Delivery lifecycle monitoring, cash settlement, failure reasons |
 | RZRZ-TABLE-1 | Table open/close lifecycle, pos_table_map, kitchen print verification |
+| RECONCILIATION-1 | Automated MenuLink vs POS invoice comparison |

@@ -65,8 +65,8 @@
 ### POS Sync Monitoring Dashboard:
 - ✅ Read from pos_outbox, pos_sync_events, pos_settings, pos_item_map, pos_table_map
 - ❌ Do NOT connect to local SQL Server from the web app
-- ❌ Do NOT use the word "heartbeat" (no real heartbeat table exists yet)
-- ❌ Use "آخر نشاط مزامنة" (last sync activity) instead
+- ✅ Heartbeat table now exists (`bridge_heartbeats`, migration 0055)
+- ✅ Dashboard shows Bridge App status: online/offline/never connected
 - ❌ Do NOT allow item mapping writes in v1 (read-only)
 - ❌ Do NOT expose customer phone/address in payload viewer — redact
 
@@ -107,7 +107,7 @@
 | Modify KO-KO tenant | Production paying customer |
 | Experiment on live RzRz page | Near-production, real customers |
 | Connect cloud app to local SQL | Architecture violation, security risk |
-| Use "heartbeat" label | Misleading — no real heartbeat exists |
+| ~~Use "heartbeat" label~~ | ~~Now exists — migration 0055~~ |
 | Allow item mapping writes in v1 | Wrong mapping = wrong kitchen prints |
 | Commit destructive rollback SQL | Risk of accidental execution |
 | Fix Arabic based on terminal output | Terminal display may reverse RTL |

@@ -73,14 +73,14 @@
 
 ## المهمة التالية المقترحة
 
-Phase 2 (Next.js + Supabase + multi-tenant + admin + ops + customer PWA v7) **مكتمل**.
+Session 6 shipped all major features. المتبقي:
 
-الخيارات للمرحلة القادمة (تفاصيل في `memory.md` section "What's Next"):
-- **A) POS Integration / RzRz Bridge App** — الـ moat الاستراتيجي. مطعم الأخ هو الـ testbed.
-- **B) Push + Marketing Stack** — OneSignal، broadcast لـ dormant customers من `/admin/customers`.
-- **C) Payment Gateway / Moyasar** — أتمتة جمع ٤٩٩ ريال.
+- **Addon gating** — delivery zones customer-side + notification center behind addons (sellable services)
+- **Bridge App .NET** — heartbeat sender + invoice status poller + POS items catalog sync (APIs ready, .NET code needed)
+- **Payment Gateway / Moyasar** — أتمتة جمع ٤٩٩ ريال
+- **Samer .NET patch** — re-enable per-type InvoiceType in cashier UI
 
-الـ loose ends المتبقية: تسجيل أول دفعة لـ KO-KO، إضافة الـ ٢ tenants المنتظرين، rotation للـ tokens القديمة من chat history.
+قرارات منتج: menu-only mode = OPS-only (المالك ما يقدر يفعّله). delivery zones + notification center = خدمات مدفوعة (addons).
 
 ## اللغة
 

@@ -1,7 +1,7 @@
 # RzRz POS Integration Context
 
 > Master context for any Claude session working on POS integration.
-> Last updated: 2026-05-26 (session 6: test tenant confirmed, F5 menu-only mode shipped)
+> Last updated: 2026-05-26 (session 6 final: all features shipped, heartbeat + invoice sync API built)
 
 ## Partnership Model
 
@@ -27,13 +27,20 @@
 5. Kitchen printers fire correctly when Windows printer name is `KETCHIN` (the typo)
 6. Print routing is data-driven via `ItemPrinters(ItemID, Printer, InvoiceTypeID)` — Bridge App doesn't implement routing
 
+## What's Done (session 6)
+
+1. **POS Sync Monitoring Dashboard** — 5 tabs, realtime outbox, sync events, settings, item mapping with auto-suggest
+2. **Bridge App heartbeat** — `bridge_heartbeats` table + `POST/GET /api/bridge/heartbeat` + dashboard status card
+3. **Invoice status sync** — `POST/GET /api/bridge/invoice-status` for held→confirmed feedback loop
+4. **POS items catalog** — `pos_items_catalog` table, 186 items synced on test tenant
+5. **Auto-suggest mapping** — Arabic fuzzy matching (normalizeAr) + manual entry with live POS name preview
+
 ## What's Remaining
 
-1. **Delivery invoice workflow** — define lifecycle: pending → confirmed → driver assigned → delivered/returned → cash settlement
-2. **Table dining invoice workflow** — define: customer scans QR → MenuLink opens session → Bridge opens POS table → items added → kitchen print → cashier closes/pays
-3. **POS Sync Monitoring Dashboard** — visibility into sync status, failures, item mapping
-4. **Bridge App heartbeat** — real-time health monitoring (future phase)
-5. **Reconciliation** — compare MenuLink orders vs POS invoices for discrepancies
+1. **Bridge App .NET side** — add heartbeat sender (60s timer), invoice status poller, pos_items_catalog sync
+2. **Delivery invoice workflow** — driver assignment sync, cash settlement, cancellation sync
+3. **Table dining invoice workflow** — POS table open/append/close
+4. **Reconciliation** — compare MenuLink orders vs POS invoices for discrepancies
 
 ## RzRz POS Tech Stack
 
