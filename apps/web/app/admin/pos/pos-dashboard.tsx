@@ -157,6 +157,10 @@ export default function PosDashboard({
   const [syncEvents, setSyncEvents] = useState<SyncEventRow[]>(initialSyncEvents);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [localItemMap, setLocalItemMap] = useState<ItemMapRow[]>(itemMap);
+  const [mappingInputs, setMappingInputs] = useState<Record<string, string>>({});
+  const [mappingError, setMappingError] = useState<string | null>(null);
+  const [mappingSaving, setMappingSaving] = useState<string | null>(null);
 
   // Realtime subscription on pos_outbox
   useEffect(() => {
@@ -218,8 +222,42 @@ export default function PosDashboard({
     return outbox.filter((r) => r.status === statusFilter);
   }, [outbox, statusFilter]);
 
-  const mappedIds = new Set(itemMap.map((m) => m.menu_item_id));
+  const mappedIds = new Set(localItemMap.map((m) => m.menu_item_id));
   const unmapped = menuItems.filter((mi) => !mappedIds.has(mi.id));
+
+  async function mapItem(menuItemId: string) {
+    const raw = mappingInputs[menuItemId]?.trim();
+    if (!raw) { setMappingError("أدخل رقم POS Item ID"); return; }
+    const posItemId = parseInt(raw, 10);
+    if (isNaN(posItemId) || posItemId <= 0) { setMappingError("رقم POS Item ID يجب أن يكون رقم صحيح موجب"); return; }
+
+    setMappingError(null);
+    setMappingSaving(menuItemId);
+    const sb = createClient();
+    const { error } = await sb.from("pos_item_map").insert({
+      restaurant_id: restaurantId,
+      menu_item_id: menuItemId,
+      pos_item_id: posItemId,
+      pos_variant_key: null,
+      notes: "mapped from admin POS dashboard",
+    });
+
+    if (error) {
+      setMappingError(error.message);
+      setMappingSaving(null);
+      return;
+    }
+
+    setLocalItemMap((prev) => [...prev, {
+      restaurant_id: restaurantId,
+      menu_item_id: menuItemId,
+      pos_item_id: posItemId,
+      pos_variant_key: null,
+      notes: "mapped from admin POS dashboard",
+    }]);
+    setMappingInputs((prev) => { const next = { ...prev }; delete next[menuItemId]; return next; });
+    setMappingSaving(null);
+  }
 
   async function refreshSyncEvents() {
     const sb = createClient();
@@ -490,21 +528,21 @@ export default function PosDashboard({
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-bold">ربط الأصناف</span>
               <span className="text-xs text-neutral-500">
-                {itemMap.length} من {menuItems.length} صنف مربوط
+                {localItemMap.length} من {menuItems.length} صنف مربوط
               </span>
             </div>
             <div className="h-3 rounded-full bg-neutral-100 overflow-hidden">
               <div
                 className="h-full rounded-full bg-brand-primary/70"
-                style={{ width: `${menuItems.length > 0 ? (itemMap.length / menuItems.length) * 100 : 0}%` }}
+                style={{ width: `${menuItems.length > 0 ? (localItemMap.length / menuItems.length) * 100 : 0}%` }}
               />
             </div>
           </div>
 
           {/* Mapped items */}
-          {itemMap.length > 0 && (
+          {localItemMap.length > 0 && (
             <div className="bg-white border border-neutral-200 rounded-xl p-4">
-              <h3 className="text-sm font-bold mb-3">✅ أصناف مربوطة ({itemMap.length})</h3>
+              <h3 className="text-sm font-bold mb-3">✅ أصناف مربوطة ({localItemMap.length})</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
                   <thead>
@@ -515,7 +553,7 @@ export default function PosDashboard({
                     </tr>
                   </thead>
                   <tbody>
-                    {itemMap.map((m) => {
+                    {localItemMap.map((m) => {
                       const mi = menuItems.find((i) => i.id === m.menu_item_id);
                       return (
                         <tr key={`${m.menu_item_id}-${m.pos_variant_key}`} className="border-b border-neutral-50 last:border-0">
@@ -535,21 +573,42 @@ export default function PosDashboard({
           {unmapped.length > 0 && (
             <div className="bg-white border border-neutral-200 rounded-xl p-4">
               <h3 className="text-sm font-bold mb-3 text-amber-700">⚠️ أصناف غير مربوطة ({unmapped.length})</h3>
-              <ul className="space-y-1">
+              {mappingError && (
+                <p className="text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-lg px-3 py-2 mb-3">
+                  {mappingError}
+                </p>
+              )}
+              <div className="space-y-2">
                 {unmapped.map((mi) => (
-                  <li key={mi.id} className="flex items-center gap-2 text-xs py-1 border-b border-neutral-50 last:border-0">
+                  <div key={mi.id} className="flex items-center gap-2 text-xs py-1.5 border-b border-neutral-50 last:border-0">
                     <span className="text-amber-500">●</span>
-                    <span className="text-neutral-700">{mi.name_ar}</span>
-                  </li>
+                    <span className="text-neutral-700 flex-1 min-w-0 truncate">{mi.name_ar}</span>
+                    <input
+                      type="number"
+                      placeholder="POS ID"
+                      value={mappingInputs[mi.id] ?? ""}
+                      onChange={(e) => setMappingInputs((prev) => ({ ...prev, [mi.id]: e.target.value }))}
+                      onKeyDown={(e) => { if (e.key === "Enter") mapItem(mi.id); }}
+                      className="w-20 h-7 rounded-lg border border-neutral-200 px-2 text-xs font-mono outline-none focus:border-brand-primary"
+                      dir="ltr"
+                    />
+                    <button
+                      onClick={() => mapItem(mi.id)}
+                      disabled={mappingSaving === mi.id}
+                      className="h-7 px-2 rounded-lg bg-brand-primary text-white text-[10px] font-semibold hover:opacity-90 disabled:opacity-50"
+                    >
+                      {mappingSaving === mi.id ? "..." : "ربط"}
+                    </button>
+                  </div>
                 ))}
-              </ul>
+              </div>
               <p className="text-[10px] text-neutral-400 mt-3">
-                ربط الأصناف متاح من لوحة التشغيل فقط. تواصل مع فريق الدعم.
+                أدخل رقم POS Item ID من نظام نقاط البيع واضغط "ربط". تأكد من الرقم الصحيح — ربط خاطئ يرسل أصناف خاطئة للمطبخ.
               </p>
             </div>
           )}
 
-          {itemMap.length === 0 && unmapped.length === 0 && (
+          {localItemMap.length === 0 && unmapped.length === 0 && (
             <div className="bg-white border border-neutral-200 rounded-xl p-6 text-center">
               <div className="text-3xl mb-2">🔗</div>
               <p className="text-sm text-neutral-600">لا توجد أصناف في القائمة.</p>

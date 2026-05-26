@@ -14,7 +14,7 @@
  *  Bump VERSION on any meaningful SW change.
  * ========================================================================= */
 
-const VERSION = "menulink-sw-v1.0.0";
+const VERSION = "menulink-sw-v1.1.0";
 const HTML_CACHE = `menulink-html-${VERSION}`;
 const ASSET_CACHE = `menulink-assets-${VERSION}`;
 
@@ -92,17 +92,24 @@ async function networkFirstHtml(req) {
 // --- Push notifications ---------------------------------------------------
 
 self.addEventListener("push", (event) => {
-  const data = event.data ? event.data.json() : {};
-  const title = data.title || "MenuLink";
-  const options = {
-    body: data.body || "",
-    icon: data.icon || "/menu/koko/hero.jpeg",
-    badge: "/menu/koko/hero.jpeg",
-    data: { url: data.url || "/" },
-    dir: "rtl",
-    lang: "ar",
-  };
-  event.waitUntil(self.registration.showNotification(title, options));
+  try {
+    const data = event.data ? event.data.json() : {};
+    const title = data.title || "MenuLink";
+    const options = {
+      body: data.body || "",
+      icon: data.icon || "/menulink-logo.png",
+      badge: data.badge || "/menulink-logo.png",
+      data: { url: data.url || "/" },
+      dir: "rtl",
+      lang: "ar",
+    };
+    event.waitUntil(self.registration.showNotification(title, options));
+  } catch (err) {
+    console.error("[SW] push handler error:", err);
+    event.waitUntil(
+      self.registration.showNotification("MenuLink", { body: "لديك إشعار جديد" })
+    );
+  }
 });
 
 self.addEventListener("notificationclick", (event) => {
