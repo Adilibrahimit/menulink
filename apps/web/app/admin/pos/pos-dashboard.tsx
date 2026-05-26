@@ -169,6 +169,28 @@ export default function PosDashboard({
   const [syncEvents, setSyncEvents] = useState<SyncEventRow[]>(initialSyncEvents);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [bridge, setBridge] = useState<{
+    online: boolean;
+    last_seen: string | null;
+    version: string | null;
+    machine_name: string | null;
+    uptime_seconds: number | null;
+    pending_count: number | null;
+  } | null>(null);
+
+  useEffect(() => {
+    fetch(`/api/bridge/heartbeat?restaurant_id=${restaurantId}`)
+      .then((r) => r.json())
+      .then((d) => setBridge(d))
+      .catch(() => {});
+    const interval = setInterval(() => {
+      fetch(`/api/bridge/heartbeat?restaurant_id=${restaurantId}`)
+        .then((r) => r.json())
+        .then((d) => setBridge(d))
+        .catch(() => {});
+    }, 60000);
+    return () => clearInterval(interval);
+  }, [restaurantId]);
   const [localItemMap] = useState<ItemMapRow[]>(itemMap);
   const [branchFilter, setBranchFilter] = useState("all");
 
@@ -303,6 +325,38 @@ export default function PosDashboard({
               )}
             </div>
           </div>
+
+          {/* Bridge App status */}
+          {bridge && (
+            <div className={`border rounded-xl p-4 flex items-center gap-3 ${
+              bridge.online
+                ? "bg-green-50 border-green-200"
+                : bridge.last_seen
+                ? "bg-rose-50 border-rose-200"
+                : "bg-neutral-50 border-neutral-200"
+            }`}>
+              <span className="text-2xl">
+                {bridge.online ? "🟢" : bridge.last_seen ? "🔴" : "⚪"}
+              </span>
+              <div className="flex-1">
+                <div className={`text-sm font-bold ${
+                  bridge.online ? "text-green-700" : bridge.last_seen ? "text-rose-700" : "text-neutral-600"
+                }`}>
+                  Bridge App: {bridge.online ? "متصل" : bridge.last_seen ? "غير متصل" : "لم يتصل بعد"}
+                </div>
+                <div className="flex flex-wrap gap-3 mt-1 text-[10px] text-neutral-500">
+                  {bridge.version && <span>الإصدار: {bridge.version}</span>}
+                  {bridge.machine_name && <span>الجهاز: {bridge.machine_name}</span>}
+                  {bridge.uptime_seconds != null && (
+                    <span>وقت التشغيل: {Math.floor(bridge.uptime_seconds / 3600)}س {Math.floor((bridge.uptime_seconds % 3600) / 60)}د</span>
+                  )}
+                  {bridge.last_seen && (
+                    <span>آخر اتصال: {timeAgo(bridge.last_seen)}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Recent failures */}
           {stats.recentFailures.length > 0 && (
