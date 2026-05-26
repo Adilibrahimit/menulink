@@ -1,8 +1,8 @@
 # MenuLink · Project Memory
 
 > **Read this first** when picking up the project in a new session.
-> Last saved: **2026-05-26 (session 6)** — 6 migrations (0048–0053), 19 commits. Massive feature session.
-> Status line: **production SaaS, 5 tenants. Session 6 shipped: team auth (non-owner admins can log in), F5 menu-only mode (display_only_mode flag), F1 real-time order status tracker (customer RLS fix + timeline + Realtime), F2 delivery zone check (map + zone verification + saved addresses + reverse geocoding), F3 order type switcher (sticky pills), F4 POS mapping enhancement (read-only, 3 sections + catalog table), zone map editor (admin Leaflet map with radius + polygon drawing), multi-tier delivery zones (tiered pricing), delivery fee in cart (subtotal + fee breakdown + WhatsApp message), push notification tenant branding, sign-out fix, CartoDB SW passthrough. POS docs updated (5 ai_memory files). Proof files for LAB-1, F5, F1, POSMON-1. Next: in-app notification center (F8), full POS integration test, payment gateway (Moyasar), Samer .NET workflow patch, Bridge App heartbeat.**
+> Last saved: **2026-05-26 (session 6 final)** — 8 migrations (0048–0055), 27 commits. Biggest session ever.
+> Status line: **production SaaS, 5 tenants. Session 6 shipped ALL planned features: team auth, F5 menu-only mode, F1 order status tracker (real-time + timeline), F2 delivery zone check (map + saved addresses + reverse geocoding + multi-tier zones), F3 order type switcher (sticky pills), F4 POS mapping (auto-suggest Arabic fuzzy matching + manual entry + 186 items catalog synced on test tenant), F8 in-app notification center (bell badge + history page), POSMON-1 POS dashboard (5 tabs + realtime), zone map editor (radius + polygon Leaflet Draw), delivery fee in cart + WhatsApp, Bridge App heartbeat (schema + API + dashboard card), invoice status sync API (held→confirmed loop), push branding, sign-out fix, customer order RLS fix. Next: full POS integration test (Bridge App .NET side: heartbeat sender + invoice poller), payment gateway (Moyasar), Samer .NET workflow patch (per-type InvoiceType).**
 
 ---
 
