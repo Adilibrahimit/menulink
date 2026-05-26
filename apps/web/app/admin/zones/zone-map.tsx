@@ -15,6 +15,28 @@ type ZoneMapProps = {
 };
 
 const RIYADH: [number, number] = [24.7136, 46.6753];
+const BRAND_COLOR = "#D32027";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function createBrandIcon(L: any, color: string) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="44" viewBox="0 0 32 44" fill="none">
+    <defs>
+      <filter id="ds" x="0" y="2" width="32" height="44" filterUnits="userSpaceOnUse">
+        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.25"/>
+      </filter>
+    </defs>
+    <g filter="url(#ds)">
+      <path d="M16 2C9.373 2 4 7.373 4 14c0 9 12 24 12 24s12-15 12-24c0-6.627-5.373-12-12-12z" fill="${color}"/>
+      <circle cx="16" cy="14" r="5" fill="white"/>
+    </g>
+  </svg>`;
+  return L.divIcon({
+    html: svg,
+    className: "location-brand-marker",
+    iconSize: [32, 44],
+    iconAnchor: [16, 44],
+  });
+}
 
 export default function ZoneMap({
   branchLat,
@@ -55,15 +77,18 @@ export default function ZoneMap({
         });
 
         L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
-          maxZoom: 19,
+          maxZoom: 20,
+          subdomains: "abcd",
         }).addTo(map);
 
         const drawnItems = new L.FeatureGroup();
         map.addLayer(drawnItems);
         drawnRef.current = drawnItems;
 
+        const icon = createBrandIcon(L, BRAND_COLOR);
+
         if (branchLat && branchLng) {
-          const marker = L.marker([branchLat, branchLng], { draggable: true });
+          const marker = L.marker([branchLat, branchLng], { draggable: true, icon });
           marker.addTo(map);
           marker.on("dragend", () => {
             const pos = marker.getLatLng();
@@ -77,7 +102,7 @@ export default function ZoneMap({
           if (markerRef.current) {
             markerRef.current.setLatLng([lat, lng]);
           } else {
-            const marker = L.marker([lat, lng], { draggable: true });
+            const marker = L.marker([lat, lng], { draggable: true, icon });
             marker.addTo(map);
             marker.on("dragend", () => {
               const pos = marker.getLatLng();
