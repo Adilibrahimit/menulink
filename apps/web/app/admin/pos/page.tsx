@@ -16,6 +16,7 @@ export default async function AdminPosPage() {
     { data: itemMap },
     { data: menuItems },
     { data: branches },
+    { data: posCatalog },
   ] = await Promise.all([
     sb
       .from("pos_outbox")
@@ -36,7 +37,7 @@ export default async function AdminPosPage() {
       .maybeSingle(),
     sb
       .from("pos_item_map")
-      .select("restaurant_id, menu_item_id, pos_item_id, pos_variant_key, notes")
+      .select("restaurant_id, menu_item_id, pos_item_id, pos_variant_key, pos_item_name, display_name_override, notes")
       .eq("restaurant_id", me.restaurant_id),
     sb
       .from("menu_items")
@@ -49,6 +50,10 @@ export default async function AdminPosPage() {
       .eq("restaurant_id", me.restaurant_id)
       .eq("is_active", true)
       .order("sort_order"),
+    sb
+      .from("pos_items_catalog")
+      .select("pos_item_id, pos_item_name, pos_category, price, is_active")
+      .eq("restaurant_id", me.restaurant_id),
   ]);
 
   return (
@@ -65,6 +70,7 @@ export default async function AdminPosPage() {
         itemMap={itemMap ?? []}
         menuItems={(menuItems ?? []) as { id: string; name_ar: string; is_active: boolean }[]}
         branches={(branches ?? []) as { id: string; name_ar: string }[]}
+        posCatalog={(posCatalog ?? []) as { pos_item_id: number; pos_item_name: string | null; pos_category: string | null; price: number | null; is_active: boolean }[]}
       />
     </div>
   );

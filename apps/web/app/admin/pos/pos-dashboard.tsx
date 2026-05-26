@@ -54,7 +54,17 @@ type ItemMapRow = {
   menu_item_id: string;
   pos_item_id: number;
   pos_variant_key: string | null;
+  pos_item_name: string | null;
+  display_name_override: string | null;
   notes: string | null;
+};
+
+type PosCatalogRow = {
+  pos_item_id: number;
+  pos_item_name: string | null;
+  pos_category: string | null;
+  price: number | null;
+  is_active: boolean;
 };
 
 type Props = {
@@ -65,6 +75,7 @@ type Props = {
   itemMap: ItemMapRow[];
   menuItems: { id: string; name_ar: string; is_active: boolean }[];
   branches: { id: string; name_ar: string }[];
+  posCatalog: PosCatalogRow[];
 };
 
 const TABS = [
@@ -151,6 +162,7 @@ export default function PosDashboard({
   itemMap,
   menuItems,
   branches,
+  posCatalog,
 }: Props) {
   const [tab, setTab] = useState<TabKey>("overview");
   const [outbox, setOutbox] = useState<OutboxRow[]>(initialOutbox);
@@ -500,78 +512,162 @@ export default function PosDashboard({
 
       {/* ═══════════════ ITEM MAPPING ═══════════════ */}
       {tab === "mapping" && (
-        <div className="space-y-4">
-          {/* Progress */}
-          <div className="bg-white border border-neutral-200 rounded-xl p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-bold">ربط الأصناف</span>
-              <span className="text-xs text-neutral-500">
-                {localItemMap.length} من {menuItems.length} صنف مربوط
-              </span>
-            </div>
-            <div className="h-3 rounded-full bg-neutral-100 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-brand-primary/70"
-                style={{ width: `${menuItems.length > 0 ? (localItemMap.length / menuItems.length) * 100 : 0}%` }}
-              />
-            </div>
-          </div>
+        <MappingTab
+          itemMap={localItemMap}
+          menuItems={menuItems}
+          posCatalog={posCatalog}
+          unmapped={unmapped}
+        />
+      )}
+    </div>
+  );
+}
 
-          {/* Mapped items */}
-          {localItemMap.length > 0 && (
-            <div className="bg-white border border-neutral-200 rounded-xl p-4">
-              <h3 className="text-sm font-bold mb-3">✅ أصناف مربوطة ({localItemMap.length})</h3>
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs">
-                  <thead>
-                    <tr className="text-neutral-400 border-b border-neutral-100">
-                      <th className="text-right py-2 font-medium">الصنف</th>
-                      <th className="text-center py-2 font-medium w-24">POS Item ID</th>
-                      <th className="text-center py-2 font-medium w-24">Variant</th>
+function MappingTab({
+  itemMap,
+  menuItems,
+  posCatalog,
+  unmapped,
+}: {
+  itemMap: ItemMapRow[];
+  menuItems: { id: string; name_ar: string; is_active: boolean }[];
+  posCatalog: PosCatalogRow[];
+  unmapped: { id: string; name_ar: string }[];
+}) {
+  const catalogMap = new Map(posCatalog.map((c) => [c.pos_item_id, c]));
+  const mappedPosIds = new Set(itemMap.map((m) => m.pos_item_id));
+  const orphanPosItems = posCatalog.filter((c) => !mappedPosIds.has(c.pos_item_id) && c.is_active);
+
+  return (
+    <div className="space-y-4">
+      {/* Progress */}
+      <div className="bg-white border border-neutral-200 rounded-xl p-4">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-bold">ربط الأصناف</span>
+          <span className="text-xs text-neutral-500">
+            {itemMap.length} من {menuItems.length} صنف مربوط
+          </span>
+        </div>
+        <div className="h-3 rounded-full bg-neutral-100 overflow-hidden">
+          <div
+            className="h-full rounded-full bg-brand-primary/70"
+            style={{ width: `${menuItems.length > 0 ? (itemMap.length / menuItems.length) * 100 : 0}%` }}
+          />
+        </div>
+        <div className="flex gap-4 mt-2 text-[10px] text-neutral-400">
+          <span>✅ مربوط: {itemMap.length}</span>
+          <span>⚠️ غير مربوط: {unmapped.length}</span>
+          {orphanPosItems.length > 0 && <span>🔍 أصناف POS بدون ربط: {orphanPosItems.length}</span>}
+        </div>
+      </div>
+
+      {/* Mapped items */}
+      {itemMap.length > 0 && (
+        <div className="bg-white border border-neutral-200 rounded-xl p-4">
+          <h3 className="text-sm font-bold mb-3">✅ أصناف مربوطة ({itemMap.length})</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="text-neutral-400 border-b border-neutral-100">
+                  <th className="text-right py-2 font-medium">صنف MenuLink</th>
+                  <th className="text-right py-2 font-medium">اسم POS</th>
+                  <th className="text-center py-2 font-medium w-20">POS ID</th>
+                  <th className="text-center py-2 font-medium w-20">Variant</th>
+                  <th className="text-center py-2 font-medium w-16">المطابقة</th>
+                </tr>
+              </thead>
+              <tbody>
+                {itemMap.map((m) => {
+                  const mi = menuItems.find((i) => i.id === m.menu_item_id);
+                  const cat = catalogMap.get(m.pos_item_id);
+                  const posName = m.pos_item_name ?? cat?.pos_item_name ?? null;
+                  const menuName = mi?.name_ar ?? "";
+                  const hasMatch = posName != null;
+                  return (
+                    <tr key={`${m.menu_item_id}-${m.pos_variant_key}`} className="border-b border-neutral-50 last:border-0">
+                      <td className="py-2 text-right font-semibold text-neutral-800">{menuName || m.menu_item_id.slice(0, 8)}</td>
+                      <td className="py-2 text-right text-neutral-500">{posName ?? "—"}</td>
+                      <td className="py-2 text-center font-mono text-neutral-600" dir="ltr">{m.pos_item_id}</td>
+                      <td className="py-2 text-center font-mono text-neutral-400" dir="ltr">{m.pos_variant_key ?? "—"}</td>
+                      <td className="py-2 text-center">
+                        {hasMatch ? (
+                          <span className="inline-block w-5 h-5 rounded-full bg-green-100 text-green-700 text-[10px] leading-5 text-center">✓</span>
+                        ) : (
+                          <span className="inline-block w-5 h-5 rounded-full bg-neutral-100 text-neutral-400 text-[10px] leading-5 text-center">?</span>
+                        )}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {localItemMap.map((m) => {
-                      const mi = menuItems.find((i) => i.id === m.menu_item_id);
-                      return (
-                        <tr key={`${m.menu_item_id}-${m.pos_variant_key}`} className="border-b border-neutral-50 last:border-0">
-                          <td className="py-1.5 text-right">{mi?.name_ar ?? m.menu_item_id.slice(0, 8)}</td>
-                          <td className="py-1.5 text-center font-mono" dir="ltr">{m.pos_item_id}</td>
-                          <td className="py-1.5 text-center font-mono" dir="ltr">{m.pos_variant_key ?? "—"}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
-          {/* Unmapped items (read-only) */}
-          {unmapped.length > 0 && (
-            <div className="bg-white border border-neutral-200 rounded-xl p-4">
-              <h3 className="text-sm font-bold mb-3 text-amber-700">⚠️ أصناف غير مربوطة ({unmapped.length})</h3>
-              <div className="space-y-1">
-                {unmapped.map((mi) => (
-                  <div key={mi.id} className="flex items-center gap-2 text-xs py-1.5 border-b border-neutral-50 last:border-0">
-                    <span className="text-amber-500">●</span>
-                    <span className="text-neutral-700 flex-1 min-w-0 truncate">{mi.name_ar}</span>
-                    <span className="text-[10px] text-neutral-400">بدون ربط</span>
-                  </div>
+      {/* Unmapped MenuLink items */}
+      {unmapped.length > 0 && (
+        <div className="bg-white border border-neutral-200 rounded-xl p-4">
+          <h3 className="text-sm font-bold mb-3 text-amber-700">⚠️ أصناف MenuLink غير مربوطة ({unmapped.length})</h3>
+          <div className="space-y-1">
+            {unmapped.map((mi) => (
+              <div key={mi.id} className="flex items-center gap-2 text-xs py-1.5 border-b border-neutral-50 last:border-0">
+                <span className="text-amber-500">●</span>
+                <span className="text-neutral-700 flex-1 min-w-0 truncate">{mi.name_ar}</span>
+                <span className="text-[10px] text-neutral-400 bg-neutral-50 rounded-full px-2 py-0.5">لم يتم تعيين POS ID</span>
+              </div>
+            ))}
+          </div>
+          <p className="text-[10px] text-neutral-400 mt-3">
+            تواصل مع فريق الدعم لربط الأصناف المتبقية. الطلبات التي تحتوي على أصناف غير مربوطة لن تُرسل للمطبخ بشكل صحيح.
+          </p>
+        </div>
+      )}
+
+      {/* Orphan POS items (in POS catalog but not mapped to any MenuLink item) */}
+      {orphanPosItems.length > 0 && (
+        <div className="bg-white border border-neutral-200 rounded-xl p-4">
+          <h3 className="text-sm font-bold mb-3 text-blue-700">🔍 أصناف POS بدون ربط بـ MenuLink ({orphanPosItems.length})</h3>
+          <p className="text-[10px] text-neutral-400 mb-3">
+            هذه الأصناف موجودة في نظام نقاط البيع لكن ليس لها مقابل في قائمة MenuLink.
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="text-neutral-400 border-b border-neutral-100">
+                  <th className="text-center py-2 font-medium w-20">POS ID</th>
+                  <th className="text-right py-2 font-medium">اسم POS</th>
+                  <th className="text-right py-2 font-medium w-20">التصنيف</th>
+                  <th className="text-center py-2 font-medium w-20">السعر</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orphanPosItems.map((c) => (
+                  <tr key={c.pos_item_id} className="border-b border-neutral-50 last:border-0">
+                    <td className="py-1.5 text-center font-mono" dir="ltr">{c.pos_item_id}</td>
+                    <td className="py-1.5 text-right text-neutral-700">{c.pos_item_name ?? "—"}</td>
+                    <td className="py-1.5 text-right text-neutral-400">{c.pos_category ?? "—"}</td>
+                    <td className="py-1.5 text-center font-mono" dir="ltr">{c.price != null ? `${c.price}` : "—"}</td>
+                  </tr>
                 ))}
-              </div>
-              <p className="text-[10px] text-neutral-400 mt-3">
-                تواصل مع فريق الدعم لربط الأصناف المتبقية بنظام نقاط البيع.
-              </p>
-            </div>
-          )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
-          {localItemMap.length === 0 && unmapped.length === 0 && (
-            <div className="bg-white border border-neutral-200 rounded-xl p-6 text-center">
-              <div className="text-3xl mb-2">🔗</div>
-              <p className="text-sm text-neutral-600">لا توجد أصناف في القائمة.</p>
-            </div>
-          )}
+      {posCatalog.length === 0 && (
+        <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 text-center">
+          <p className="text-xs text-neutral-500">
+            📋 لم يتم استيراد قائمة أصناف POS بعد. عند تشغيل Bridge App مع خاصية المزامنة، ستظهر الأصناف هنا تلقائياً.
+          </p>
+        </div>
+      )}
+
+      {itemMap.length === 0 && unmapped.length === 0 && (
+        <div className="bg-white border border-neutral-200 rounded-xl p-6 text-center">
+          <div className="text-3xl mb-2">🔗</div>
+          <p className="text-sm text-neutral-600">لا توجد أصناف في القائمة.</p>
         </div>
       )}
     </div>
