@@ -1,6 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import type { OrderType } from "./types";
+import DeliveryCheckSheet from "./delivery-check-sheet";
+import type { DeliveryContext } from "./order-context";
 
 const ORDER_TYPES: { key: OrderType; icon: string; label: string; desc: string }[] = [
   { key: "delivery", icon: "🚗", label: "توصيل", desc: "نوصلك لباب بيتك" },
@@ -10,14 +13,28 @@ const ORDER_TYPES: { key: OrderType; icon: string; label: string; desc: string }
 ];
 
 export default function OrderTypeGate({
+  restaurantId,
   restaurantName,
   logoUrl,
   onSelect,
+  onDeliveryConfirm,
 }: {
+  restaurantId: string;
   restaurantName: string;
   logoUrl: string | null;
   onSelect: (type: OrderType) => void;
+  onDeliveryConfirm: (d: DeliveryContext) => void;
 }) {
+  const [showDeliveryCheck, setShowDeliveryCheck] = useState(false);
+
+  function handleTap(key: OrderType) {
+    if (key === "delivery") {
+      setShowDeliveryCheck(true);
+      return;
+    }
+    onSelect(key);
+  }
+
   return (
     <div
       className="min-h-[100dvh] flex flex-col items-center justify-center px-6"
@@ -45,7 +62,7 @@ export default function OrderTypeGate({
         {ORDER_TYPES.map((t) => (
           <button
             key={t.key}
-            onClick={() => onSelect(t.key)}
+            onClick={() => handleTap(t.key)}
             className="w-full flex items-center gap-4 rounded-2xl border-2 border-[var(--card-border,#e5e7eb)] bg-[var(--card-bg,#fff)] px-4 py-4 hover:border-[var(--brand)] active:translate-y-px transition-colors"
           >
             <span className="text-3xl">{t.icon}</span>
@@ -62,6 +79,23 @@ export default function OrderTypeGate({
           </button>
         ))}
       </div>
+
+      {showDeliveryCheck && (
+        <DeliveryCheckSheet
+          restaurantId={restaurantId}
+          restaurantName={restaurantName}
+          onConfirm={(d) => {
+            setShowDeliveryCheck(false);
+            onDeliveryConfirm(d);
+            onSelect("delivery");
+          }}
+          onSwitchPickup={() => {
+            setShowDeliveryCheck(false);
+            onSelect("pickup");
+          }}
+          onClose={() => setShowDeliveryCheck(false)}
+        />
+      )}
     </div>
   );
 }

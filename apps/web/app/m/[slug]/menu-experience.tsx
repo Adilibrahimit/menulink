@@ -49,7 +49,7 @@ export default function MenuExperience({
   vapidKey: string;
   branches: PublicBranch[];
 }) {
-  const { orderType, setOrderType, setDelivery } = useOrderContext();
+  const { orderType, setOrderType, delivery, setDelivery } = useOrderContext();
   const [cart, setCart] = useState<Record<string, CartLine>>({});
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [tracking, setTracking] = useState<TrackingState | null>(null);
@@ -225,6 +225,19 @@ export default function MenuExperience({
           style={{ fontFamily: "var(--font-display)" }}
         >
           🪑 أنت تطلب من طاولة {tableLabel}
+        </div>
+      )}
+
+      {/* DELIVERY INFO BANNER */}
+      {orderType === "delivery" && delivery && (
+        <div
+          className="bg-green-50 border-b border-green-200 text-green-800 text-xs font-bold py-2 px-4 flex items-center justify-center gap-3"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          <span>🚗 توصيل · رسوم {toArabicDigits(String(delivery.deliveryFee))} ر.س</span>
+          {delivery.estimatedMinutes && (
+            <span className="text-green-600">· {toArabicDigits(String(delivery.estimatedMinutes))} دقيقة</span>
+          )}
         </div>
       )}
 

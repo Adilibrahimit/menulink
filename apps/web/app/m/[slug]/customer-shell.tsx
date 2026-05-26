@@ -115,9 +115,11 @@ export default function CustomerShell({
   if (googleFirst && !orderType && !tableParam) {
     return (
       <OrderTypeGate
+        restaurantId={menu.restaurant.id}
         restaurantName={menu.restaurant.name}
         logoUrl={menu.restaurant.logo_url}
         onSelect={handleOrderType}
+        onDeliveryConfirm={setDelivery}
       />
     );
   }

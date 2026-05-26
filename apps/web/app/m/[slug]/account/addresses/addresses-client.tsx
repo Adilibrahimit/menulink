@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase-browser";
+
+const LocationPicker = dynamic(() => import("../../location-picker"), { ssr: false });
 
 type Address = {
   id: string;
@@ -41,6 +44,8 @@ export default function AddressesClient({
   const [label, setLabel] = useState<"home" | "office" | "custom">("home");
   const [addressText, setAddressText] = useState("");
   const [details, setDetails] = useState("");
+  const [addrLat, setAddrLat] = useState<number | null>(null);
+  const [addrLng, setAddrLng] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -55,6 +60,8 @@ export default function AddressesClient({
         restaurant_id: restaurantId,
         label,
         address: addressText.trim(),
+        lat: addrLat,
+        lng: addrLng,
         details: details.trim() || null,
         is_default: addresses.length === 0,
       })
@@ -161,6 +168,12 @@ export default function AddressesClient({
               </button>
             ))}
           </div>
+          <div className="h-44 rounded-xl overflow-hidden border border-neutral-200">
+            <LocationPicker
+              initial={addrLat && addrLng ? { lat: addrLat, lng: addrLng } : null}
+              onChange={(loc) => { setAddrLat(loc?.lat ?? null); setAddrLng(loc?.lng ?? null); }}
+            />
+          </div>
           <input
             value={addressText}
             onChange={(e) => setAddressText(e.target.value)}
@@ -183,7 +196,7 @@ export default function AddressesClient({
               {saving ? "..." : "حفظ العنوان"}
             </button>
             <button
-              onClick={() => { setAdding(false); setAddressText(""); setDetails(""); }}
+              onClick={() => { setAdding(false); setAddressText(""); setDetails(""); setAddrLat(null); setAddrLng(null); }}
               className="h-10 px-4 rounded-xl bg-neutral-100 text-neutral-600 text-sm font-bold"
             >
               إلغاء
