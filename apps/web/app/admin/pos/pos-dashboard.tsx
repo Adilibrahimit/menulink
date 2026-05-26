@@ -157,10 +157,8 @@ export default function PosDashboard({
   const [syncEvents, setSyncEvents] = useState<SyncEventRow[]>(initialSyncEvents);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState("all");
-  const [localItemMap, setLocalItemMap] = useState<ItemMapRow[]>(itemMap);
-  const [mappingInputs, setMappingInputs] = useState<Record<string, string>>({});
-  const [mappingError, setMappingError] = useState<string | null>(null);
-  const [mappingSaving, setMappingSaving] = useState<string | null>(null);
+  const [localItemMap] = useState<ItemMapRow[]>(itemMap);
+  const [branchFilter, setBranchFilter] = useState("all");
 
   // Realtime subscription on pos_outbox
   useEffect(() => {
@@ -218,46 +216,14 @@ export default function PosDashboard({
   }, [outbox, syncEvents]);
 
   const filteredOutbox = useMemo(() => {
-    if (statusFilter === "all") return outbox;
-    return outbox.filter((r) => r.status === statusFilter);
-  }, [outbox, statusFilter]);
+    let filtered = outbox;
+    if (statusFilter !== "all") filtered = filtered.filter((r) => r.status === statusFilter);
+    if (branchFilter !== "all") filtered = filtered.filter((r) => r.branch_id === branchFilter);
+    return filtered;
+  }, [outbox, statusFilter, branchFilter]);
 
   const mappedIds = new Set(localItemMap.map((m) => m.menu_item_id));
   const unmapped = menuItems.filter((mi) => !mappedIds.has(mi.id));
-
-  async function mapItem(menuItemId: string) {
-    const raw = mappingInputs[menuItemId]?.trim();
-    if (!raw) { setMappingError("أدخل رقم POS Item ID"); return; }
-    const posItemId = parseInt(raw, 10);
-    if (isNaN(posItemId) || posItemId <= 0) { setMappingError("رقم POS Item ID يجب أن يكون رقم صحيح موجب"); return; }
-
-    setMappingError(null);
-    setMappingSaving(menuItemId);
-    const sb = createClient();
-    const { error } = await sb.from("pos_item_map").insert({
-      restaurant_id: restaurantId,
-      menu_item_id: menuItemId,
-      pos_item_id: posItemId,
-      pos_variant_key: null,
-      notes: "mapped from admin POS dashboard",
-    });
-
-    if (error) {
-      setMappingError(error.message);
-      setMappingSaving(null);
-      return;
-    }
-
-    setLocalItemMap((prev) => [...prev, {
-      restaurant_id: restaurantId,
-      menu_item_id: menuItemId,
-      pos_item_id: posItemId,
-      pos_variant_key: null,
-      notes: "mapped from admin POS dashboard",
-    }]);
-    setMappingInputs((prev) => { const next = { ...prev }; delete next[menuItemId]; return next; });
-    setMappingSaving(null);
-  }
 
   async function refreshSyncEvents() {
     const sb = createClient();
@@ -360,6 +326,18 @@ export default function PosDashboard({
               <option value="failed">فشل</option>
               <option value="skipped">تم تخطيه</option>
             </select>
+            {branches.length > 1 && (
+              <select
+                value={branchFilter}
+                onChange={(e) => setBranchFilter(e.target.value)}
+                className="h-9 px-2 rounded-lg border border-neutral-200 text-xs outline-none focus:border-brand-primary"
+              >
+                <option value="all">كل الفروع</option>
+                {branches.map((b) => (
+                  <option key={b.id} value={b.id}>{b.name_ar}</option>
+                ))}
+              </select>
+            )}
             <span className="text-xs text-neutral-500 self-center">{filteredOutbox.length} سجل</span>
           </div>
 
@@ -569,41 +547,21 @@ export default function PosDashboard({
             </div>
           )}
 
-          {/* Unmapped items */}
+          {/* Unmapped items (read-only) */}
           {unmapped.length > 0 && (
             <div className="bg-white border border-neutral-200 rounded-xl p-4">
               <h3 className="text-sm font-bold mb-3 text-amber-700">⚠️ أصناف غير مربوطة ({unmapped.length})</h3>
-              {mappingError && (
-                <p className="text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-lg px-3 py-2 mb-3">
-                  {mappingError}
-                </p>
-              )}
-              <div className="space-y-2">
+              <div className="space-y-1">
                 {unmapped.map((mi) => (
                   <div key={mi.id} className="flex items-center gap-2 text-xs py-1.5 border-b border-neutral-50 last:border-0">
                     <span className="text-amber-500">●</span>
                     <span className="text-neutral-700 flex-1 min-w-0 truncate">{mi.name_ar}</span>
-                    <input
-                      type="number"
-                      placeholder="POS ID"
-                      value={mappingInputs[mi.id] ?? ""}
-                      onChange={(e) => setMappingInputs((prev) => ({ ...prev, [mi.id]: e.target.value }))}
-                      onKeyDown={(e) => { if (e.key === "Enter") mapItem(mi.id); }}
-                      className="w-20 h-7 rounded-lg border border-neutral-200 px-2 text-xs font-mono outline-none focus:border-brand-primary"
-                      dir="ltr"
-                    />
-                    <button
-                      onClick={() => mapItem(mi.id)}
-                      disabled={mappingSaving === mi.id}
-                      className="h-7 px-2 rounded-lg bg-brand-primary text-white text-[10px] font-semibold hover:opacity-90 disabled:opacity-50"
-                    >
-                      {mappingSaving === mi.id ? "..." : "ربط"}
-                    </button>
+                    <span className="text-[10px] text-neutral-400">بدون ربط</span>
                   </div>
                 ))}
               </div>
               <p className="text-[10px] text-neutral-400 mt-3">
-                أدخل رقم POS Item ID من نظام نقاط البيع واضغط "ربط". تأكد من الرقم الصحيح — ربط خاطئ يرسل أصناف خاطئة للمطبخ.
+                تواصل مع فريق الدعم لربط الأصناف المتبقية بنظام نقاط البيع.
               </p>
             </div>
           )}
