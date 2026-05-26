@@ -17,10 +17,14 @@
 - **Status:** Near-production, real restaurant with real customers
 - **Rule:** Do NOT use `/m/rzrz-bukhari` for testing new features. Do NOT change live RzRz order flow, menu, sync settings, or customer experience
 
-### RzRz Test Clone (SAFE LAB)
-- **slug:** `rzrz-bukhari-test` (to be created in Phase LAB-1)
-- **Status:** Dedicated test/development surface
-- **Rule:** Use this for ALL POS testing, order flow experiments, Bridge App workflows
+### RzRz Test Clone (SAFE LAB — confirmed 2026-05-26)
+- **restaurant_id:** `c13aa2bf-df82-4c30-810d-f9ea833ed3cc`
+- **slug:** `rzrz-bukhari-test`
+- **Status:** Live and functional (LAB-1 PASS, 2026-05-26)
+- **WhatsApp:** 966504744517 (dummy, different from live RzRz)
+- **POS sync:** Enabled (user decision)
+- **display_only_mode:** true (F5 testing)
+- **Rule:** Use this for ALL POS testing, order flow experiments, feature development
 
 ## Credential Rules
 

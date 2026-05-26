@@ -1,7 +1,7 @@
 # RzRz POS Integration Context
 
 > Master context for any Claude session working on POS integration.
-> Last updated: 2026-05-25
+> Last updated: 2026-05-26 (session 6: test tenant confirmed, F5 menu-only mode shipped)
 
 ## Partnership Model
 
@@ -92,5 +92,19 @@
 ## Key Decision: Test Surface
 
 - **`/m/rzrz-bukhari`** is near-production — never use for experiments
-- **`/m/rzrz-bukhari-test`** (to be created) is the dedicated test lab
-- Test tenant has dummy WhatsApp, disabled POS sync, isolated orders
+- **`/m/rzrz-bukhari-test`** — confirmed live as of 2026-05-26 (LAB-1 PASS)
+  - restaurant_id: `c13aa2bf-df82-4c30-810d-f9ea833ed3cc`
+  - Dummy WhatsApp (966504744517), separate from live RzRz
+  - POS sync enabled (user chose to leave it on)
+  - Clearly marked TEST in name and tagline
+  - `display_only_mode = true` (currently testing F5 menu-only mode)
+
+## Current RzRz Problem Summary
+
+The remaining RzRz problem is **workflow, not bridge compatibility:**
+- Delivery invoice INSERT already works (proven 2026-05-20)
+- HoldMode works (proven 2026-05-23)
+- Kitchen print fires correctly
+- The blocker is: per-order-type `InvoiceType` triggers a "Please select Payment type" popup loop in the .NET cashier UI — **only Samer can fix this** (hardcoded in WinForms, not configurable)
+- Workaround: all orders use InvoiceType=1 (Dine-In as neutral), losing per-type kitchen icons
+- The `invoice_type_map` infrastructure is built and ready; flip the map back when Samer patches
