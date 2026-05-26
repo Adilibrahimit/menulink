@@ -168,12 +168,10 @@ export default function AddressesClient({
               </button>
             ))}
           </div>
-          <div className="h-44 rounded-xl overflow-hidden border border-neutral-200">
-            <LocationPicker
-              initial={addrLat && addrLng ? { lat: addrLat, lng: addrLng } : null}
-              onChange={(loc) => { setAddrLat(loc?.lat ?? null); setAddrLng(loc?.lng ?? null); }}
-            />
-          </div>
+          <LocationPicker
+            initial={addrLat && addrLng ? { lat: addrLat, lng: addrLng } : null}
+            onChange={(loc) => { setAddrLat(loc?.lat ?? null); setAddrLng(loc?.lng ?? null); }}
+          />
           <input
             value={addressText}
             onChange={(e) => setAddressText(e.target.value)}

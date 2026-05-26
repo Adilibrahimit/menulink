@@ -153,12 +153,10 @@ export default function DeliveryCheckSheet({
           </div>
         )}
 
-        <div className="h-56 rounded-xl overflow-hidden border border-neutral-200">
-          <LocationPicker
-            initial={null}
-            onChange={(loc) => { setLat(loc?.lat ?? null); setLng(loc?.lng ?? null); setResult(null); }}
-          />
-        </div>
+        <LocationPicker
+          initial={lat && lng ? { lat, lng } : null}
+          onChange={(loc) => { setLat(loc?.lat ?? null); setLng(loc?.lng ?? null); setResult(null); }}
+        />
 
         <input
           type="text"

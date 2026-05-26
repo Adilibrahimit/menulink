@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase-browser";
 import { normalizePhone } from "@/lib/phone";
 import { toArabicDigits } from "@/lib/arabic";
 import LocationPicker from "./location-picker";
-import { usePreselectedOrderType } from "./order-context";
+import { useOrderContext } from "./order-context";
 import SarSymbol from "./sar-symbol";
 import type { PublicMenu, PublicBranch, CartLine, OrderType } from "./types";
 import type { TrackingState } from "./tracking-sheet";
@@ -53,15 +53,18 @@ export default function CartDrawer({
   onCarOrderPlaced: (t: TrackingState) => void;
   onTableOrderPlaced: (sessionId: string) => void;
 }) {
-  const preselected = usePreselectedOrderType();
+  const { orderType: preselected, delivery: deliveryCtx } = useOrderContext();
   const lockedToTable = !!tableLabel;
   const [orderType, setOrderType] = useState<OrderType>(
     lockedToTable ? "dine_in" : preselected ?? "delivery"
   );
+  const deliveryFee = orderType === "delivery" && deliveryCtx ? deliveryCtx.deliveryFee : 0;
   const [name, setName] = useState("");
   const [rawPhone, setRawPhone] = useState("");
-  const [address, setAddress] = useState("");
-  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [address, setAddress] = useState(deliveryCtx?.address ?? "");
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(
+    deliveryCtx ? { lat: deliveryCtx.lat, lng: deliveryCtx.lng } : null
+  );
   const [carPlate, setCarPlate] = useState("");
   const [carColor, setCarColor] = useState("");
   const [notes, setNotes] = useState("");
@@ -186,6 +189,7 @@ export default function CartDrawer({
       sessionId: activeSessionId,
       lines,
       total,
+      deliveryFee,
     };
 
     // For car orders we need the order_id from the RPC so the customer
@@ -257,7 +261,8 @@ export default function CartDrawer({
       `━━━━━━━━━━━━━━━━\n` +
       `🛒 *تفاصيل الطلب (${toArabicDigits(String(lines.length))} أصناف):*\n\n${lineList}\n\n` +
       `━━━━━━━━━━━━━━━━\n` +
-      `💰 *المجموع: ${toArabicDigits(String(total))} ر.س*\n` +
+      (deliveryFee > 0 ? `🚗 *رسوم التوصيل: ${toArabicDigits(deliveryFee.toFixed(2))} ر.س*\n` : "") +
+      `💰 *المجموع: ${toArabicDigits((total + deliveryFee).toFixed(2))} ر.س*\n` +
       (notes ? `📝 *ملاحظات عامة:* ${notes}\n` : "") +
       `━━━━━━━━━━━━━━━━\n` +
       `✅ شكراً لاختياركم *${restaurant.name}* 🙏`;
@@ -588,13 +593,25 @@ export default function CartDrawer({
 
         {lines.length > 0 && (
           <footer className="p-4 border-t border-neutral-200 bg-white">
+            {deliveryFee > 0 && (
+              <div className="flex items-center justify-between mb-1 text-xs text-neutral-500">
+                <span>المجموع الفرعي</span>
+                <span>{toArabicDigits(total.toFixed(2))} <SarSymbol size={11} /></span>
+              </div>
+            )}
+            {deliveryFee > 0 && (
+              <div className="flex items-center justify-between mb-2 text-xs text-neutral-500">
+                <span>🚗 رسوم التوصيل</span>
+                <span>{toArabicDigits(deliveryFee.toFixed(2))} <SarSymbol size={11} /></span>
+              </div>
+            )}
             <div className="flex items-center justify-between mb-3 text-sm">
               <span className="text-neutral-500">المجموع</span>
               <span
                 className="font-extrabold text-xl"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                {toArabicDigits(String(total))} <SarSymbol size={20} />
+                {toArabicDigits((total + deliveryFee).toFixed(2))} <SarSymbol size={20} />
               </span>
             </div>
             {loyaltyPointsPerSar != null && loyaltyPointsPerSar > 0 && rawPhone.trim() && (() => {
@@ -656,6 +673,7 @@ async function persistOrder({
   sessionId,
   lines,
   total,
+  deliveryFee,
 }: {
   restaurantId: string;
   branchId: string | null;
@@ -672,6 +690,7 @@ async function persistOrder({
   sessionId: string | null;
   lines: CartLine[];
   total: number;
+  deliveryFee: number;
 }): Promise<{ orderId: string | null }> {
   const sb = createClient();
   const payload = {
@@ -685,8 +704,8 @@ async function persistOrder({
     order_type: orderType,
     channel: "whatsapp",
     subtotal: total,
-    delivery_fee: 0,
-    total,
+    delivery_fee: deliveryFee,
+    total: total + deliveryFee,
     notes: notes || null,
     car_plate: orderType === "car" ? (carPlate || null) : null,
     car_color: orderType === "car" ? (carColor || null) : null,
