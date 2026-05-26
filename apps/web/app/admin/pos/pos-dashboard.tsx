@@ -517,26 +517,136 @@ export default function PosDashboard({
           menuItems={menuItems}
           posCatalog={posCatalog}
           unmapped={unmapped}
+          restaurantId={restaurantId}
         />
       )}
     </div>
   );
 }
 
+function normalizeAr(s: string): string {
+  return s
+    .replace(/[ً-ٰٟ]/g, "")
+    .replace(/[أإآ]/g, "ا")
+    .replace(/ة/g, "ه")
+    .replace(/ى/g, "ي")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+type Suggestion = {
+  menuItemId: string;
+  menuName: string;
+  posItemId: number;
+  posName: string;
+  posCategory: string | null;
+  posPrice: number | null;
+  confidence: "high" | "medium" | "low";
+};
+
+function findSuggestions(
+  unmapped: { id: string; name_ar: string }[],
+  catalog: PosCatalogRow[],
+  mappedPosIds: Set<number>,
+): Suggestion[] {
+  const available = catalog.filter((c) => !mappedPosIds.has(c.pos_item_id) && c.is_active && c.pos_item_name);
+  const suggestions: Suggestion[] = [];
+
+  for (const mi of unmapped) {
+    const norm = normalizeAr(mi.name_ar);
+    const words = norm.split(" ").filter((w) => w.length > 1);
+    let best: { cat: PosCatalogRow; conf: "high" | "medium" | "low" } | null = null;
+
+    for (const cat of available) {
+      const posNorm = normalizeAr(cat.pos_item_name!);
+      if (norm === posNorm) {
+        best = { cat, conf: "high" };
+        break;
+      }
+      if (posNorm.includes(norm) || norm.includes(posNorm)) {
+        if (!best || best.conf !== "high") best = { cat, conf: "medium" };
+        continue;
+      }
+      const posWords = posNorm.split(" ").filter((w) => w.length > 1);
+      const overlap = words.filter((w) => posWords.some((pw) => pw.includes(w) || w.includes(pw))).length;
+      if (words.length > 0 && overlap / words.length >= 0.5) {
+        if (!best) best = { cat, conf: "low" };
+      }
+    }
+
+    if (best) {
+      suggestions.push({
+        menuItemId: mi.id,
+        menuName: mi.name_ar,
+        posItemId: best.cat.pos_item_id,
+        posName: best.cat.pos_item_name!,
+        posCategory: best.cat.pos_category,
+        posPrice: best.cat.price,
+        confidence: best.conf,
+      });
+    }
+  }
+
+  return suggestions.sort((a, b) => {
+    const order = { high: 0, medium: 1, low: 2 };
+    return order[a.confidence] - order[b.confidence];
+  });
+}
+
 function MappingTab({
-  itemMap,
+  itemMap: initialItemMap,
   menuItems,
   posCatalog,
-  unmapped,
+  unmapped: initialUnmapped,
+  restaurantId,
 }: {
   itemMap: ItemMapRow[];
   menuItems: { id: string; name_ar: string; is_active: boolean }[];
   posCatalog: PosCatalogRow[];
   unmapped: { id: string; name_ar: string }[];
+  restaurantId: string;
 }) {
+  const [localItemMap, setLocalItemMap] = useState(initialItemMap);
+  const [localUnmapped, setLocalUnmapped] = useState(initialUnmapped);
+  const [confirming, setConfirming] = useState<string | null>(null);
+  const [confirmed, setConfirmed] = useState<Set<string>>(new Set());
+  const [dismissed, setDismissed] = useState<Set<string>>(new Set());
+
+  const mappedPosIds = useMemo(() => new Set(localItemMap.map((m) => m.pos_item_id)), [localItemMap]);
   const catalogMap = new Map(posCatalog.map((c) => [c.pos_item_id, c]));
-  const mappedPosIds = new Set(itemMap.map((m) => m.pos_item_id));
   const orphanPosItems = posCatalog.filter((c) => !mappedPosIds.has(c.pos_item_id) && c.is_active);
+  const suggestions = useMemo(
+    () => findSuggestions(localUnmapped, posCatalog, mappedPosIds).filter((s) => !dismissed.has(s.menuItemId)),
+    [localUnmapped, posCatalog, mappedPosIds, dismissed],
+  );
+
+  async function confirmMapping(s: Suggestion) {
+    setConfirming(s.menuItemId);
+    const sb = createClient();
+    const { error } = await sb.from("pos_item_map").insert({
+      restaurant_id: restaurantId,
+      menu_item_id: s.menuItemId,
+      pos_item_id: s.posItemId,
+      pos_variant_key: null,
+      pos_item_name: s.posName,
+      notes: `auto-matched (${s.confidence})`,
+    });
+    if (!error) {
+      setLocalItemMap((prev) => [...prev, {
+        restaurant_id: restaurantId,
+        menu_item_id: s.menuItemId,
+        pos_item_id: s.posItemId,
+        pos_variant_key: null,
+        pos_item_name: s.posName,
+        display_name_override: null,
+        notes: `auto-matched (${s.confidence})`,
+      }]);
+      setLocalUnmapped((prev) => prev.filter((u) => u.id !== s.menuItemId));
+      setConfirmed((prev) => new Set([...prev, s.menuItemId]));
+    }
+    setConfirming(null);
+  }
 
   return (
     <div className="space-y-4">
@@ -545,26 +655,83 @@ function MappingTab({
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-bold">ربط الأصناف</span>
           <span className="text-xs text-neutral-500">
-            {itemMap.length} من {menuItems.length} صنف مربوط
+            {localItemMap.length} من {menuItems.length} صنف مربوط
           </span>
         </div>
         <div className="h-3 rounded-full bg-neutral-100 overflow-hidden">
           <div
             className="h-full rounded-full bg-brand-primary/70"
-            style={{ width: `${menuItems.length > 0 ? (itemMap.length / menuItems.length) * 100 : 0}%` }}
+            style={{ width: `${menuItems.length > 0 ? (localItemMap.length / menuItems.length) * 100 : 0}%` }}
           />
         </div>
         <div className="flex gap-4 mt-2 text-[10px] text-neutral-400">
-          <span>✅ مربوط: {itemMap.length}</span>
-          <span>⚠️ غير مربوط: {unmapped.length}</span>
+          <span>✅ مربوط: {localItemMap.length}</span>
+          <span>⚠️ غير مربوط: {localUnmapped.length}</span>
+          {suggestions.length > 0 && <span>💡 اقتراحات: {suggestions.length}</span>}
           {orphanPosItems.length > 0 && <span>🔍 أصناف POS بدون ربط: {orphanPosItems.length}</span>}
         </div>
       </div>
 
+      {/* Auto-suggest matches */}
+      {suggestions.length > 0 && (
+        <div className="bg-white border-2 border-blue-200 rounded-xl p-4">
+          <h3 className="text-sm font-bold mb-1 text-blue-800">💡 اقتراحات ربط تلقائي ({suggestions.length})</h3>
+          <p className="text-[10px] text-neutral-400 mb-3">
+            تطابقات مقترحة بناءً على تشابه الاسم. راجع كل اقتراح واضغط "تأكيد" أو "تخطي".
+          </p>
+          <div className="space-y-2">
+            {suggestions.map((s) => {
+              const confStyle = {
+                high: { bg: "bg-green-50 border-green-200", badge: "bg-green-100 text-green-700", label: "تطابق عالي" },
+                medium: { bg: "bg-amber-50 border-amber-200", badge: "bg-amber-100 text-amber-700", label: "تطابق متوسط" },
+                low: { bg: "bg-neutral-50 border-neutral-200", badge: "bg-neutral-100 text-neutral-600", label: "تطابق ضعيف" },
+              }[s.confidence];
+              return (
+                <div key={s.menuItemId} className={`border rounded-xl p-3 ${confStyle.bg}`}>
+                  <div className="flex items-start gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${confStyle.badge}`}>{confStyle.label}</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                          <div className="text-[10px] text-neutral-400 mb-0.5">MenuLink</div>
+                          <div className="font-bold text-neutral-800">{s.menuName}</div>
+                        </div>
+                        <div>
+                          <div className="text-[10px] text-neutral-400 mb-0.5">POS (#{s.posItemId})</div>
+                          <div className="font-bold text-neutral-800">{s.posName}</div>
+                          {s.posCategory && <div className="text-[10px] text-neutral-400">{s.posCategory}</div>}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1 shrink-0">
+                      <button
+                        onClick={() => confirmMapping(s)}
+                        disabled={confirming === s.menuItemId}
+                        className="h-8 px-3 rounded-lg bg-green-600 text-white text-[11px] font-bold hover:bg-green-700 disabled:opacity-50"
+                      >
+                        {confirming === s.menuItemId ? "..." : "✓ تأكيد"}
+                      </button>
+                      <button
+                        onClick={() => setDismissed((prev) => new Set([...prev, s.menuItemId]))}
+                        className="h-8 px-3 rounded-lg bg-white border border-neutral-200 text-neutral-500 text-[11px] font-bold hover:bg-neutral-50"
+                      >
+                        تخطي
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Mapped items */}
-      {itemMap.length > 0 && (
+      {localItemMap.length > 0 && (
         <div className="bg-white border border-neutral-200 rounded-xl p-4">
-          <h3 className="text-sm font-bold mb-3">✅ أصناف مربوطة ({itemMap.length})</h3>
+          <h3 className="text-sm font-bold mb-3">✅ أصناف مربوطة ({localItemMap.length})</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
@@ -577,7 +744,7 @@ function MappingTab({
                 </tr>
               </thead>
               <tbody>
-                {itemMap.map((m) => {
+                {localItemMap.map((m) => {
                   const mi = menuItems.find((i) => i.id === m.menu_item_id);
                   const cat = catalogMap.get(m.pos_item_id);
                   const posName = m.pos_item_name ?? cat?.pos_item_name ?? null;
@@ -606,11 +773,11 @@ function MappingTab({
       )}
 
       {/* Unmapped MenuLink items */}
-      {unmapped.length > 0 && (
+      {localUnmapped.length > 0 && (
         <div className="bg-white border border-neutral-200 rounded-xl p-4">
-          <h3 className="text-sm font-bold mb-3 text-amber-700">⚠️ أصناف MenuLink غير مربوطة ({unmapped.length})</h3>
+          <h3 className="text-sm font-bold mb-3 text-amber-700">⚠️ أصناف MenuLink غير مربوطة ({localUnmapped.length})</h3>
           <div className="space-y-1">
-            {unmapped.map((mi) => (
+            {localUnmapped.map((mi) => (
               <div key={mi.id} className="flex items-center gap-2 text-xs py-1.5 border-b border-neutral-50 last:border-0">
                 <span className="text-amber-500">●</span>
                 <span className="text-neutral-700 flex-1 min-w-0 truncate">{mi.name_ar}</span>
@@ -664,7 +831,7 @@ function MappingTab({
         </div>
       )}
 
-      {itemMap.length === 0 && unmapped.length === 0 && (
+      {localItemMap.length === 0 && localUnmapped.length === 0 && (
         <div className="bg-white border border-neutral-200 rounded-xl p-6 text-center">
           <div className="text-3xl mb-2">🔗</div>
           <p className="text-sm text-neutral-600">لا توجد أصناف في القائمة.</p>
