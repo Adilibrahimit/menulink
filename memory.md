@@ -897,18 +897,30 @@ Massive infrastructure session: implemented the full Global Operations Core plan
   5. **ربط الأصناف** — progress bar, mapped/unmapped items (read-only in v1, no inline writes)
 - Proof file: `docs/proof/MENULINK_POS_SYNC_MONITORING_DASHBOARD_V1_PROOF.md`
 
+### Push notification fix (2026-05-26)
+- **Root cause:** SW VERSION never bumped from v1.0.0 — all devices had stale cached service worker without push handler
+- **Fix:** VERSION bumped to v1.1.0 → forces cache invalidation on next visit → push handler activates
+- Hardcoded KO-KO icon paths (`/menu/koko/hero.jpeg`) replaced with `/menulink-logo.png` (works for all tenants)
+- Added try/catch in push event handler with fallback notification on error
+- **Next step:** users need to visit the page once to pick up the new SW, then push should work
+
+### POS item mapping writes (2026-05-26)
+- Unmapped items in POS dashboard mapping tab now have inline POS ID input + "ربط" button
+- Validates: required, positive integer only
+- Inserts to `pos_item_map` on submit, moves item from unmapped to mapped in UI
+- Warning text: "تأكد من الرقم الصحيح — ربط خاطئ يرسل أصناف خاطئة للمطبخ"
+- Error display for duplicate/failed inserts
+
 ### What's NOT done yet (schema exists, no UI)
 - Branch accounting / consolidated reports
 - Admin UI for managing restaurant_admins (roles/permissions)
-- POS item mapping writes (v1 is read-only)
 - Bridge App heartbeat table (BRIDGE-1, future)
 - Delivery workflow monitoring (RZRZ-DELIVERY-1, future)
 - Table workflow monitoring (RZRZ-TABLE-1, future)
 
 ### Pinned for next session
-- **Full POS integration test** — run Bridge App locally against test tenant + local POS DB (RZRZCLIENT). Submit order on `/m/rzrz-bukhari-test` → Bridge picks up from pos_outbox → InsertInvoice on local SQL → verify in POS dashboard
-- **Push delivery debugging** — still unresolved from session 3
+- **Full POS integration test** — run Bridge App locally against test tenant + local POS DB (RZRZCLIENT)
 - **Payment gateway (Moyasar)** — automate 499 SAR collection
 - **Samer .NET workflow patch** — re-enable per-type InvoiceType
 - **Bridge App heartbeat** — real health monitoring (BRIDGE-1)
-- **POS item mapping writes** — with validation and audit logging
+- **Verify push fix** — visit /m/koko on a device, confirm SW updates to v1.1.0, test push delivery
