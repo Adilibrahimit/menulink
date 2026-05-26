@@ -881,6 +881,9 @@ Massive infrastructure session: implemented the full Global Operations Core plan
 - Migration 0046: `0046_rzrz_test_clone.sql`
 - **Test clone verification (2026-05-25):** customer page shows TEST badge, menu loads 62 items, cart works, admin isolated, KO-KO untouched
 - **POS testing strategy:** user has local copy of RzRz POS software + local SQL Server DB (RZRZCLIENT) on his machine — NOT production. Will run POS software locally for full end-to-end Bridge App testing against the test tenant.
+- **POS item mapping (2026-05-26):** 52 of 62 items mapped to POS IDs by slug-matching against live RzRz mappings. All 10 sampled IDs cross-verified against local RZRZCLIENT database — names and IDs match perfectly. 10 items remain unmapped (same as live RzRz — no POS equivalents).
+- **POS settings created:** pos_kind=rzrz, online_customer_id=999, counter_id=1, invoice_type=1, tax=15% inclusive, notes="Test tenant — local POS DB (RZRZCLIENT), not production"
+- **Ready for Bridge App testing:** pos_outbox trigger active (pos_bridge enabled), item mappings in place, POS settings configured. Submit order on `/m/rzrz-bukhari-test` → outbox row created → Bridge App picks up → InsertInvoice on local RZRZCLIENT.
 
 ### Ops team accounts
 - **Platform ops (original):** `id.menulink@gmail.com` / `OpsMenuLink2026!`
