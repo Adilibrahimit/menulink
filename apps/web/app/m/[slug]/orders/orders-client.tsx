@@ -265,6 +265,9 @@ function OrderCard({
             <span className="text-[11px] text-neutral-400">
               {ORDER_TYPE_AR[order.order_type] ?? order.order_type}
             </span>
+            <span className="text-[10px] font-mono text-neutral-300" dir="ltr">
+              #{order.id.slice(0, 8).toUpperCase()}
+            </span>
           </div>
           <div className="text-xs text-neutral-500">
             {dateStr} · {timeStr}
