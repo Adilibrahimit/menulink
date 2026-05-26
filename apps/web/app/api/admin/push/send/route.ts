@@ -54,10 +54,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, sent: 0, failed: 0, reason: "no_subscriptions" });
   }
 
+  const { data: restaurant } = await sb
+    .from("restaurants")
+    .select("slug, name, logo_url")
+    .eq("id", restaurant_id)
+    .single();
+
   const payload = JSON.stringify({
     title,
     body,
-    url: url || `/m/${(await sb.from("restaurants").select("slug").eq("id", restaurant_id).single()).data?.slug || ""}`,
+    url: url || `/m/${restaurant?.slug || ""}`,
+    icon: restaurant?.logo_url || undefined,
+    badge: restaurant?.logo_url || undefined,
   });
 
   let delivered = 0;

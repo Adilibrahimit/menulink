@@ -35,7 +35,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, sent: 0 });
   }
 
-  const payload = JSON.stringify({ title, body: body || "", url: url || "/" });
+  const { data: restaurant } = await sb
+    .from("restaurants")
+    .select("slug, logo_url")
+    .eq("id", restaurant_id)
+    .single();
+
+  const payload = JSON.stringify({
+    title,
+    body: body || "",
+    url: url || `/m/${restaurant?.slug || ""}`,
+    icon: restaurant?.logo_url || undefined,
+    badge: restaurant?.logo_url || undefined,
+  });
   let sent = 0;
 
   await Promise.allSettled(
