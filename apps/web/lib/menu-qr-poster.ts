@@ -134,207 +134,157 @@ async function drawDefaultPoster(
 
 async function drawHeritagePoster(
   ctx: CanvasRenderingContext2D, W: number, H: number,
-  url: string, opts: PosterOpts,
+  url: string, _opts: PosterOpts,
 ) {
-  const { restaurantName, logoUrl, taglineAr, tableLabel } = opts;
-  const emerald = "#0F2D26";
   const gold = "#C9A961";
-  const cream = "#F4E8D4";
-  const cardBg = "#FBF5E8";
+  const darkGreen = "#1B6B4A";
+  const ink = "#1a1a1a";
 
-  // Full emerald background
-  ctx.fillStyle = emerald;
+  // White background
+  ctx.fillStyle = "#FAFAF8";
   ctx.fillRect(0, 0, W, H);
 
-  // Subtle radial gold glow — top-left
-  const g1 = ctx.createRadialGradient(200, 300, 0, 200, 300, 600);
-  g1.addColorStop(0, "rgba(201,169,97,0.08)");
-  g1.addColorStop(1, "rgba(201,169,97,0)");
-  ctx.fillStyle = g1;
-  ctx.fillRect(0, 0, W, H);
+  // --- Palm leaf (green, top center) ---
+  ctx.save();
+  ctx.translate(W / 2 - 10, 80);
+  ctx.scale(1.6, 1.6);
+  drawPalmLeaf(ctx, darkGreen);
+  ctx.restore();
 
-  // Subtle radial gold glow — bottom-right
-  const g2 = ctx.createRadialGradient(880, 1300, 0, 880, 1300, 600);
-  g2.addColorStop(0, "rgba(201,169,97,0.06)");
-  g2.addColorStop(1, "rgba(201,169,97,0)");
-  ctx.fillStyle = g2;
-  ctx.fillRect(0, 0, W, H);
-
-  // Top gold ornament line
-  ctx.strokeStyle = gold;
-  ctx.lineWidth = 2;
-  ctx.globalAlpha = 0.5;
-  ctx.beginPath();
-  ctx.moveTo(W * 0.15, 120);
-  ctx.lineTo(W * 0.85, 120);
-  ctx.stroke();
-  ctx.globalAlpha = 1;
-
-  // Gold diamond center ornament
-  const cx = W / 2;
-  ctx.fillStyle = gold;
-  ctx.globalAlpha = 0.6;
-  ctx.beginPath();
-  ctx.moveTo(cx, 112);
-  ctx.lineTo(cx + 8, 120);
-  ctx.lineTo(cx, 128);
-  ctx.lineTo(cx - 8, 120);
-  ctx.closePath();
-  ctx.fill();
-  ctx.globalAlpha = 1;
-
-  let cursorY = 170;
-
-  // Logo (optional)
-  if (logoUrl) {
-    try {
-      const img = await loadImage(logoUrl);
-      const size = 140;
-      const lx = (W - size) / 2;
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(lx + size / 2, cursorY + size / 2, size / 2, 0, Math.PI * 2);
-      ctx.closePath();
-      ctx.strokeStyle = gold;
-      ctx.lineWidth = 3;
-      ctx.stroke();
-      ctx.clip();
-      ctx.drawImage(img, lx, cursorY, size, size);
-      ctx.restore();
-      cursorY += size + 36;
-    } catch {
-      cursorY += 20;
-    }
-  }
-
-  // Restaurant name in cream
-  ctx.fillStyle = cream;
+  // --- "al musafer" in script font ---
+  ctx.fillStyle = ink;
   ctx.textAlign = "center";
   ctx.textBaseline = "top";
-  ctx.direction = "rtl";
-  ctx.font = `700 72px "Reem Kufi", "Tajawal", system-ui, sans-serif`;
-  ctx.fillText(restaurantName, W / 2, cursorY);
-  cursorY += 96;
+  ctx.direction = "ltr";
+  ctx.font = `italic 400 96px "Dancing Script", "Great Vibes", "Segoe Script", cursive`;
+  ctx.fillText("al musafer", W / 2, 240);
 
-  // Tagline in gold
-  if (taglineAr) {
-    ctx.fillStyle = gold;
-    ctx.font = `500 34px "Tajawal", system-ui, sans-serif`;
-    ctx.fillText(taglineAr, W / 2, cursorY);
-    cursorY += 56;
-  }
+  // --- Gold ornamental frame around QR ---
+  const frameX = 100;
+  const frameY = 420;
+  const frameW = W - 200;
+  const frameH = 780;
+  drawOrnamentalFrame(ctx, frameX, frameY, frameW, frameH, gold);
 
-  // Three gold dots ornament
-  ctx.fillStyle = gold;
-  ctx.globalAlpha = 0.5;
-  for (let i = -1; i <= 1; i++) {
-    ctx.beginPath();
-    ctx.arc(W / 2 + i * 24, cursorY + 10, 4, 0, Math.PI * 2);
-    ctx.fill();
-  }
-  ctx.globalAlpha = 1;
-  cursorY += 40;
-
-  // QR code with heritage colors
+  // --- QR code inside the frame ---
   const qrCanvas = document.createElement("canvas");
   await QRCode.toCanvas(qrCanvas, url, {
     errorCorrectionLevel: "H",
-    margin: 1,
+    margin: 2,
     width: 640,
-    color: { dark: emerald, light: cardBg },
+    color: { dark: "#000000", light: "#FAFAF8" },
   });
-
   const qrSize = 640;
   const qx = (W - qrSize) / 2;
-  const qy = cursorY + 10;
-
-  // Cream background for QR with gold border
-  ctx.fillStyle = cardBg;
-  roundRect(ctx, qx - 32, qy - 32, qrSize + 64, qrSize + 64, 20);
-  ctx.fill();
-  ctx.strokeStyle = gold;
-  ctx.lineWidth = 3;
-  roundRect(ctx, qx - 32, qy - 32, qrSize + 64, qrSize + 64, 20);
-  ctx.stroke();
-
-  // Gold corner bracket accents
-  const bLen = 60;
-  const bOff = 20;
-  ctx.strokeStyle = gold;
-  ctx.lineWidth = 5;
-  ctx.lineCap = "round";
-  // top-left
-  ctx.beginPath();
-  ctx.moveTo(qx - bOff, qy - bOff + bLen);
-  ctx.lineTo(qx - bOff, qy - bOff);
-  ctx.lineTo(qx - bOff + bLen, qy - bOff);
-  ctx.stroke();
-  // top-right
-  ctx.beginPath();
-  ctx.moveTo(qx + qrSize + bOff - bLen, qy - bOff);
-  ctx.lineTo(qx + qrSize + bOff, qy - bOff);
-  ctx.lineTo(qx + qrSize + bOff, qy - bOff + bLen);
-  ctx.stroke();
-  // bottom-left
-  ctx.beginPath();
-  ctx.moveTo(qx - bOff, qy + qrSize + bOff - bLen);
-  ctx.lineTo(qx - bOff, qy + qrSize + bOff);
-  ctx.lineTo(qx - bOff + bLen, qy + qrSize + bOff);
-  ctx.stroke();
-  // bottom-right
-  ctx.beginPath();
-  ctx.moveTo(qx + qrSize + bOff - bLen, qy + qrSize + bOff);
-  ctx.lineTo(qx + qrSize + bOff, qy + qrSize + bOff);
-  ctx.lineTo(qx + qrSize + bOff, qy + qrSize + bOff - bLen);
-  ctx.stroke();
-
+  const qy = frameY + (frameH - qrSize) / 2;
   ctx.drawImage(qrCanvas, qx, qy, qrSize, qrSize);
-  cursorY = qy + qrSize + 80;
 
-  // Table label (if table poster)
-  if (tableLabel) {
-    ctx.fillStyle = cream;
-    ctx.font = `700 48px "Reem Kufi", "Tajawal", system-ui, sans-serif`;
-    ctx.direction = "rtl";
-    ctx.textAlign = "center";
-    ctx.fillText(`طاولة ${tableLabel}`, W / 2, cursorY);
-    cursorY += 64;
-  }
-
-  // CTA in gold
-  ctx.fillStyle = gold;
-  ctx.font = `700 52px "Reem Kufi", "Tajawal", system-ui, sans-serif`;
-  ctx.direction = "rtl";
-  ctx.textAlign = "center";
-  ctx.fillText("امسح لعرض القائمة", W / 2, cursorY);
-  cursorY += 70;
-
-  // URL in cream, small
-  ctx.fillStyle = cream;
-  ctx.globalAlpha = 0.5;
-  ctx.direction = "ltr";
-  ctx.font = `400 22px "Plus Jakarta Sans", system-ui, sans-serif`;
-  ctx.fillText(url.replace(/^https?:\/\//, ""), W / 2, cursorY);
-  ctx.globalAlpha = 1;
-  cursorY += 50;
-
-  // Bottom gold line
+  // --- Gold divider line with diamond below frame ---
+  const divY = frameY + frameH + 80;
   ctx.strokeStyle = gold;
   ctx.lineWidth = 1.5;
-  ctx.globalAlpha = 0.3;
   ctx.beginPath();
-  ctx.moveTo(W * 0.2, H - 80);
-  ctx.lineTo(W * 0.8, H - 80);
+  ctx.moveTo(W * 0.3, divY);
+  ctx.lineTo(W / 2 - 14, divY);
   ctx.stroke();
-  ctx.globalAlpha = 1;
+  ctx.beginPath();
+  ctx.moveTo(W / 2 + 14, divY);
+  ctx.lineTo(W * 0.7, divY);
+  ctx.stroke();
 
-  // "Powered by MenuLink" footer
-  ctx.fillStyle = cream;
-  ctx.globalAlpha = 0.4;
+  // Diamond
+  ctx.fillStyle = gold;
+  ctx.beginPath();
+  ctx.moveTo(W / 2, divY - 7);
+  ctx.lineTo(W / 2 + 7, divY);
+  ctx.lineTo(W / 2, divY + 7);
+  ctx.lineTo(W / 2 - 7, divY);
+  ctx.closePath();
+  ctx.fill();
+
+  // --- "Powered by MenuLink" footer ---
+  ctx.fillStyle = "#888888";
   ctx.direction = "ltr";
-  ctx.font = `400 20px "Plus Jakarta Sans", system-ui, sans-serif`;
-  ctx.fillText("Powered by MenuLink", W / 2, H - 50);
-  ctx.globalAlpha = 1;
+  ctx.textAlign = "center";
+  ctx.font = `400 28px "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif`;
+  ctx.fillText("Powered by MenuLink", W / 2, divY + 50);
+}
+
+function drawPalmLeaf(ctx: CanvasRenderingContext2D, color: string) {
+  ctx.fillStyle = color;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.lineCap = "round";
+
+  // Main stem
+  ctx.beginPath();
+  ctx.moveTo(30, 80);
+  ctx.quadraticCurveTo(32, 40, 35, 0);
+  ctx.stroke();
+
+  // Leaflets — pairs fanning out from the stem
+  const leaves: [number, number, number, number, number, number][] = [
+    [34, 8, 10, -20, -15, -10],
+    [34, 15, 5, -30, -25, -5],
+    [33, 25, 0, -38, -30, 5],
+    [33, 35, -2, -42, -32, 10],
+    [32, 45, 0, -40, -28, 15],
+    [32, 55, 5, -35, -22, 22],
+    [31, 65, 10, -25, -15, 28],
+    [35, 8, 60, -20, 65, -10],
+    [35, 15, 65, -30, 75, -5],
+    [35, 25, 68, -38, 80, 5],
+    [35, 35, 70, -42, 82, 10],
+    [36, 45, 68, -40, 78, 15],
+    [36, 55, 65, -35, 72, 22],
+    [36, 65, 58, -25, 62, 28],
+  ];
+  for (const [sx, sy, cx, cy, ex, ey] of leaves) {
+    ctx.beginPath();
+    ctx.moveTo(sx, sy);
+    ctx.quadraticCurveTo(cx, cy, ex, ey);
+    ctx.quadraticCurveTo(cx + 2, cy + 5, sx, sy + 3);
+    ctx.fill();
+  }
+}
+
+function drawOrnamentalFrame(
+  ctx: CanvasRenderingContext2D,
+  x: number, y: number, w: number, h: number,
+  color: string,
+) {
+  const r = 24;
+  const notch = 20;
+
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+
+  // Top-left corner
+  ctx.moveTo(x + r, y);
+  // Top edge with center notch curve
+  ctx.lineTo(x + w / 2 - notch, y);
+  ctx.quadraticCurveTo(x + w / 2, y - notch / 2, x + w / 2 + notch, y);
+  // Top-right corner
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  // Right edge
+  ctx.lineTo(x + w, y + h - r);
+  // Bottom-right corner
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  // Bottom edge with center notch
+  ctx.lineTo(x + w / 2 + notch, y + h);
+  ctx.quadraticCurveTo(x + w / 2, y + h + notch / 2, x + w / 2 - notch, y + h);
+  // Bottom-left corner
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  // Left edge
+  ctx.lineTo(x, y + r);
+  // Top-left corner close
+  ctx.quadraticCurveTo(x, y, x + r, y);
+
+  ctx.closePath();
+  ctx.stroke();
 }
 
 export function triggerDownload(href: string, filename: string) {
