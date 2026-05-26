@@ -20,6 +20,7 @@ const NAV: NavItem[] = [
   { href: "/admin/menu",      label: "القائمة",  icon: "🍽️", addon: null },
   { href: "/admin/customers", label: "العملاء",  icon: "👤", addon: null },
   { href: "/admin/qr",        label: "رمز QR",   icon: "🔳", addon: null },
+  { href: "/admin/team",      label: "الفريق",   icon: "👥", addon: "branch_admins" },
   { href: "/admin/branches",  label: "الفروع",   icon: "🏢", addon: "multi_branch" },
   { href: "/admin/drivers",   label: "السائقين", icon: "🛵", addon: "drivers" },
   { href: "/admin/zones",     label: "نطاق التوصيل", icon: "📍", addon: "delivery_zones" },
