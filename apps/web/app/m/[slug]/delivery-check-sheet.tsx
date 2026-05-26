@@ -1,11 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase-browser";
 import LocationPicker from "./location-picker";
 import type { DeliveryContext } from "./order-context";
 import { toArabicDigits } from "@/lib/arabic";
 import SarSymbol from "./sar-symbol";
+
+type SavedAddress = {
+  id: string;
+  label: string;
+  address: string;
+  lat: number | null;
+  lng: number | null;
+};
+
+const LABEL_ICON: Record<string, string> = { home: "🏠", office: "🏢", custom: "📍" };
+const LABEL_AR: Record<string, string> = { home: "المنزل", office: "المكتب", custom: "مخصص" };
 
 type FindResult = {
   found: boolean;
@@ -35,6 +46,35 @@ export default function DeliveryCheckSheet({
   const [address, setAddress] = useState("");
   const [checking, setChecking] = useState(false);
   const [result, setResult] = useState<FindResult | null>(null);
+  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
+
+  useEffect(() => {
+    const sb = createClient();
+    sb.auth.getSession().then(({ data: { session } }) => {
+      if (!session?.user) return;
+      sb.from("customers")
+        .select("id")
+        .eq("auth_user_id", session.user.id)
+        .eq("restaurant_id", restaurantId)
+        .maybeSingle()
+        .then(({ data: customer }) => {
+          if (!customer) return;
+          sb.from("customer_addresses")
+            .select("id, label, address, lat, lng")
+            .eq("customer_id", customer.id as string)
+            .order("is_default", { ascending: false })
+            .then(({ data }) => {
+              if (data) setSavedAddresses(data.map((a) => ({
+                id: a.id as string,
+                label: a.label as string,
+                address: a.address as string,
+                lat: a.lat ? Number(a.lat) : null,
+                lng: a.lng ? Number(a.lng) : null,
+              })));
+            });
+        });
+    });
+  }, [restaurantId]);
 
   async function checkZone() {
     if (!lat || !lng) return;
@@ -81,8 +121,37 @@ export default function DeliveryCheckSheet({
         </div>
 
         <p className="text-xs text-neutral-500">
-          حدد موقعك على الخريطة لنتأكد إنك داخل نطاق التوصيل
+          {savedAddresses.length > 0 ? "اختر عنوان محفوظ أو حدد موقعك على الخريطة" : "حدد موقعك على الخريطة لنتأكد إنك داخل نطاق التوصيل"}
         </p>
+
+        {savedAddresses.length > 0 && (
+          <div className="space-y-1.5">
+            {savedAddresses.filter((a) => a.lat && a.lng).map((a) => (
+              <button
+                key={a.id}
+                onClick={() => {
+                  setLat(a.lat!);
+                  setLng(a.lng!);
+                  setAddress(a.address);
+                  setResult(null);
+                }}
+                className={
+                  "w-full flex items-center gap-3 rounded-xl border-2 px-3 py-2.5 text-right transition-colors " +
+                  (lat === a.lat && lng === a.lng
+                    ? "border-[var(--brand)] bg-green-50"
+                    : "border-neutral-200 bg-white hover:border-neutral-300")
+                }
+              >
+                <span className="text-xl">{LABEL_ICON[a.label] ?? "📍"}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs font-bold text-neutral-800">{LABEL_AR[a.label] ?? a.label}</div>
+                  <div className="text-[11px] text-neutral-500 truncate">{a.address}</div>
+                </div>
+                {lat === a.lat && lng === a.lng && <span className="text-green-600 text-sm">✓</span>}
+              </button>
+            ))}
+          </div>
+        )}
 
         <div className="h-56 rounded-xl overflow-hidden border border-neutral-200">
           <LocationPicker
