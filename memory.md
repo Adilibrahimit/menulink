@@ -874,11 +874,17 @@ Massive infrastructure session: implemented the full Global Operations Core plan
 - Name: "RzRz Bukhari TEST", tagline: "⚠️ نسخة تجريبية — الطلبات لا تُرسل للمطعم"
 - Dummy WhatsApp: `966500000000` — test orders never reach real restaurant
 - Full menu cloned: 10 categories, 62 items, 88 variants (image URLs by reference)
-- Same owner (`rzrzbukhari@gmail.com`), separate restaurant_id
-- 8 addons enabled (all except `pos_bridge` — POS sync disabled by default)
+- **Dedicated test owner:** `rzrz.test@menulink.test` / `TestRzRz2026!` (separate from live RzRz owner)
+- **All 9 addons enabled INCLUDING `pos_bridge`** — full POS integration testing enabled
 - 1 default branch, 6 cancellation reasons, active subscription
 - KO-KO and live RzRz confirmed untouched
 - Migration 0046: `0046_rzrz_test_clone.sql`
+- **Test clone verification (2026-05-25):** customer page shows TEST badge, menu loads 62 items, cart works, admin isolated, KO-KO untouched
+- **POS testing strategy:** user has local copy of RzRz POS software + local SQL Server DB (RZRZCLIENT) on his machine — NOT production. Will run POS software locally for full end-to-end Bridge App testing against the test tenant.
+
+### Ops team accounts
+- **Platform ops (original):** `id.menulink@gmail.com` / `OpsMenuLink2026!`
+- **Samer Cefalu (ops):** `samer@menulink.com` / `SamerOps2026!` — added 2026-05-25, can manage all tenants from `/ops`
 
 ### POS sync monitoring dashboard (POSMON-1)
 - `/admin/pos` gated by `pos_bridge` addon, nav item (🔄 نقاط البيع)
@@ -900,9 +906,9 @@ Massive infrastructure session: implemented the full Global Operations Core plan
 - Table workflow monitoring (RZRZ-TABLE-1, future)
 
 ### Pinned for next session
+- **Full POS integration test** — run Bridge App locally against test tenant + local POS DB (RZRZCLIENT). Submit order on `/m/rzrz-bukhari-test` → Bridge picks up from pos_outbox → InsertInvoice on local SQL → verify in POS dashboard
 - **Push delivery debugging** — still unresolved from session 3
 - **Payment gateway (Moyasar)** — automate 499 SAR collection
 - **Samer .NET workflow patch** — re-enable per-type InvoiceType
 - **Bridge App heartbeat** — real health monitoring (BRIDGE-1)
 - **POS item mapping writes** — with validation and audit logging
-- **Test the test clone** — submit orders on `/m/rzrz-bukhari-test`, verify isolation
