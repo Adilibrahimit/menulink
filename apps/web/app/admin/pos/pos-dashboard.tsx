@@ -612,6 +612,7 @@ function MappingTab({
   const [confirming, setConfirming] = useState<string | null>(null);
   const [confirmed, setConfirmed] = useState<Set<string>>(new Set());
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
+  const [mapError, setMapError] = useState<string | null>(null);
 
   const mappedPosIds = useMemo(() => new Set(localItemMap.map((m) => m.pos_item_id)), [localItemMap]);
   const catalogMap = new Map(posCatalog.map((c) => [c.pos_item_id, c]));
@@ -623,28 +624,32 @@ function MappingTab({
 
   async function confirmMapping(s: Suggestion) {
     setConfirming(s.menuItemId);
+    setMapError(null);
     const sb = createClient();
-    const { error } = await sb.from("pos_item_map").insert({
+    const { error } = await sb.from("pos_item_map").upsert({
       restaurant_id: restaurantId,
       menu_item_id: s.menuItemId,
       pos_item_id: s.posItemId,
-      pos_variant_key: null,
+      pos_variant_key: "single",
       pos_item_name: s.posName,
       notes: `auto-matched (${s.confidence})`,
-    });
-    if (!error) {
-      setLocalItemMap((prev) => [...prev, {
-        restaurant_id: restaurantId,
-        menu_item_id: s.menuItemId,
-        pos_item_id: s.posItemId,
-        pos_variant_key: null,
-        pos_item_name: s.posName,
-        display_name_override: null,
-        notes: `auto-matched (${s.confidence})`,
-      }]);
-      setLocalUnmapped((prev) => prev.filter((u) => u.id !== s.menuItemId));
-      setConfirmed((prev) => new Set([...prev, s.menuItemId]));
+    }, { onConflict: "restaurant_id,menu_item_id,pos_variant_key" });
+    if (error) {
+      setMapError(`فشل ربط "${s.menuName}": ${error.message}`);
+      setConfirming(null);
+      return;
     }
+    setLocalItemMap((prev) => [...prev, {
+      restaurant_id: restaurantId,
+      menu_item_id: s.menuItemId,
+      pos_item_id: s.posItemId,
+      pos_variant_key: "single",
+      pos_item_name: s.posName,
+      display_name_override: null,
+      notes: `auto-matched (${s.confidence})`,
+    }]);
+    setLocalUnmapped((prev) => prev.filter((u) => u.id !== s.menuItemId));
+    setConfirmed((prev) => new Set([...prev, s.menuItemId]));
     setConfirming(null);
   }
 
@@ -675,10 +680,25 @@ function MappingTab({
       {/* Auto-suggest matches */}
       {suggestions.length > 0 && (
         <div className="bg-white border-2 border-blue-200 rounded-xl p-4">
-          <h3 className="text-sm font-bold mb-1 text-blue-800">💡 اقتراحات ربط تلقائي ({suggestions.length})</h3>
+          <div className="flex items-center justify-between mb-1">
+            <h3 className="text-sm font-bold text-blue-800">💡 اقتراحات ربط تلقائي ({suggestions.length})</h3>
+            {dismissed.size > 0 && (
+              <button
+                onClick={() => setDismissed(new Set())}
+                className="text-[10px] text-blue-600 hover:text-blue-800 underline"
+              >
+                إظهار المتخطّاة ({dismissed.size})
+              </button>
+            )}
+          </div>
           <p className="text-[10px] text-neutral-400 mb-3">
             تطابقات مقترحة بناءً على تشابه الاسم. راجع كل اقتراح واضغط "تأكيد" أو "تخطي".
           </p>
+          {mapError && (
+            <div className="mb-3 text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-lg px-3 py-2">
+              {mapError}
+            </div>
+          )}
           <div className="space-y-2">
             {suggestions.map((s) => {
               const confStyle = {
