@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase-browser";
 import type { ThemeConfig } from "@/lib/themes";
 import LoginGate from "./login-gate";
 import OrderTypeGate from "./order-type-gate";
-import { OrderTypeProvider } from "./order-context";
+import { OrderTypeProvider, type DeliveryContext } from "./order-context";
 import BottomNav from "./bottom-nav";
 import type { PublicMenu, OrderType } from "./types";
 
@@ -34,6 +34,7 @@ export default function CustomerShell({
 }) {
   const [auth, setAuth] = useState<AuthState>({ kind: "loading" });
   const [orderType, setOrderType] = useState<OrderType | null>(null);
+  const [delivery, setDelivery] = useState<DeliveryContext | null>(null);
   const googleFirst = theme.loginFlow === "google-first";
 
   useEffect(() => {
@@ -81,6 +82,7 @@ export default function CustomerShell({
 
   function handleOrderType(type: OrderType) {
     setOrderType(type);
+    if (type !== "delivery") setDelivery(null);
     try {
       localStorage.setItem(orderTypeKey(menu.restaurant.id), type);
     } catch {}
@@ -121,7 +123,12 @@ export default function CustomerShell({
   }
 
   return (
-    <OrderTypeProvider orderType={orderType}>
+    <OrderTypeProvider
+      orderType={orderType}
+      setOrderType={handleOrderType}
+      delivery={delivery}
+      setDelivery={setDelivery}
+    >
       <div className="pb-16">{children}</div>
       <BottomNav slug={menu.restaurant.slug} navItems={theme.bottomNavItems} />
     </OrderTypeProvider>

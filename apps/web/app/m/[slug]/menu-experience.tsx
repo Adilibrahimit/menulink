@@ -25,6 +25,8 @@ import type { TrackingState } from "./tracking-sheet";
 import TableSessionBar from "./table-session-bar";
 import PushToggle from "./push-toggle";
 import ClosedPopup, { isRestaurantOpen } from "./closed-popup";
+import OrderTypeSwitcher from "./order-type-switcher";
+import { useOrderContext } from "./order-context";
 
 function trackingKey(restaurantId: string) {
   return `menulink:tracking:${restaurantId}`;
@@ -47,6 +49,7 @@ export default function MenuExperience({
   vapidKey: string;
   branches: PublicBranch[];
 }) {
+  const { orderType, setOrderType, setDelivery } = useOrderContext();
   const [cart, setCart] = useState<Record<string, CartLine>>({});
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [tracking, setTracking] = useState<TrackingState | null>(null);
@@ -341,6 +344,16 @@ export default function MenuExperience({
           📍 {menu.restaurant.address_ar}
         </div>
       )}
+
+      <OrderTypeSwitcher
+        restaurantId={menu.restaurant.id}
+        restaurantName={menu.restaurant.name}
+        branches={branches}
+        orderType={orderType}
+        tableLabel={tableLabel}
+        onOrderTypeChange={setOrderType}
+        onDeliveryConfirm={setDelivery}
+      />
 
       <CategoryTabs categories={menu.categories} categoryStyle={theme.categoryStyle} />
 
