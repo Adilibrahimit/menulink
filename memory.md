@@ -914,8 +914,14 @@ Massive infrastructure session: implemented the full Global Operations Core plan
 - Warning text: "تأكد من الرقم الصحيح — ربط خاطئ يرسل أصناف خاطئة للمطبخ"
 - Error display for duplicate/failed inserts
 
+### Branch accounting page (2026-05-26)
+- `/admin/accounting` gated by `branch_accounting` addon, nav item (💰 حسابات الفروع)
+- Consolidated KPIs: total orders, revenue, avg order, delivered, cancelled, cancel rate
+- Per-branch comparison cards: revenue bar, order %, avg order, cancel rate (>10% red), order type breakdown
+- Date range filters with today/7d/30d presets
+- Sorted by revenue descending
+
 ### What's NOT done yet (schema exists, no UI)
-- Branch accounting / consolidated reports
 - Admin UI for managing restaurant_admins (roles/permissions)
 - Bridge App heartbeat table (BRIDGE-1, future)
 - Delivery workflow monitoring (RZRZ-DELIVERY-1, future)
