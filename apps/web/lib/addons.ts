@@ -22,7 +22,8 @@ export type AddonKey =
   | "business_day_numbering"
   | "drivers"
   | "delivery_zones"
-  | "advanced_reports";
+  | "advanced_reports"
+  | "notification_center";
 
 export async function getEnabledAddons(restaurantId: string): Promise<Set<AddonKey>> {
   const sb = createClient();

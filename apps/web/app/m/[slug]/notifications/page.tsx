@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase-server";
+import { hasAddon } from "@/lib/addons";
 import { buildCssVars, getTheme } from "@/lib/themes";
 import NotificationsClient from "./notifications-client";
 
@@ -16,6 +17,7 @@ export default async function CustomerNotificationsPage({
     .eq("slug", params.slug)
     .single();
   if (!restaurant) notFound();
+  if (!(await hasAddon(restaurant.id as string, "notification_center"))) notFound();
 
   const { data: notifications } = await sb
     .from("tenant_notifications")

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
+import { hasAddon } from "@/lib/addons";
 
 export async function GET(
   req: NextRequest,
@@ -14,6 +15,10 @@ export async function GET(
     .single();
 
   if (!restaurant) {
+    return NextResponse.json({ count: 0 });
+  }
+
+  if (!(await hasAddon(restaurant.id as string, "notification_center"))) {
     return NextResponse.json({ count: 0 });
   }
 

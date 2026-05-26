@@ -3,29 +3,32 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
-export default function BottomNav({ slug, navItems = 3 }: { slug: string; navItems?: 3 | 5 }) {
+export default function BottomNav({ slug, navItems = 3, notifCenterEnabled = false }: { slug: string; navItems?: 3 | 5; notifCenterEnabled?: boolean }) {
   const pathname = usePathname();
   const [unread, setUnread] = useState(0);
 
   useEffect(() => {
+    if (!notifCenterEnabled) return;
     const key = `menulink:notif-seen:${slug}`;
     const lastSeen = localStorage.getItem(key);
     fetch(`/m/${slug}/notifications/count${lastSeen ? `?since=${encodeURIComponent(lastSeen)}` : ""}`)
       .then((r) => r.json())
       .then((d) => { if (typeof d.count === "number") setUnread(d.count); })
       .catch(() => {});
-  }, [slug, pathname]);
+  }, [slug, pathname, notifCenterEnabled]);
+
+  const notifTab = { href: `/m/${slug}/notifications`, label: "الإشعارات", icon: "🔔", badge: unread, match: (p: string) => p.startsWith(`/m/${slug}/notifications`) };
 
   const baseTabs = [
     { href: `/m/${slug}`, label: "الرئيسية", icon: "🍽️", badge: 0, match: (p: string) => p === `/m/${slug}` },
-    { href: `/m/${slug}/notifications`, label: "الإشعارات", icon: "🔔", badge: unread, match: (p: string) => p.startsWith(`/m/${slug}/notifications`) },
+    ...(notifCenterEnabled ? [notifTab] : []),
     { href: `/m/${slug}/orders`, label: "طلباتي", icon: "🛒", badge: 0, match: (p: string) => p.startsWith(`/m/${slug}/orders`) },
     { href: `/m/${slug}/account`, label: "الحساب", icon: "👤", badge: 0, match: (p: string) => p.startsWith(`/m/${slug}/account`) },
   ];
 
   const extendedTabs = [
     { href: `/m/${slug}`, label: "الرئيسية", icon: "🍽️", badge: 0, match: (p: string) => p === `/m/${slug}` },
-    { href: `/m/${slug}/notifications`, label: "الإشعارات", icon: "🔔", badge: unread, match: (p: string) => p.startsWith(`/m/${slug}/notifications`) },
+    ...(notifCenterEnabled ? [notifTab] : []),
     { href: `/m/${slug}/orders`, label: "طلباتي", icon: "🛒", badge: 0, match: (p: string) => p.startsWith(`/m/${slug}/orders`) },
     { href: `/m/${slug}/rewards`, label: "المكافآت", icon: "🏆", badge: 0, match: (p: string) => p.startsWith(`/m/${slug}/rewards`) },
     { href: `/m/${slug}/account`, label: "الحساب", icon: "👤", badge: 0, match: (p: string) => p.startsWith(`/m/${slug}/account`) },

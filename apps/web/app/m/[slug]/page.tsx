@@ -57,6 +57,7 @@ export default async function CustomerMenuPage({
   // points" preview once the customer types a phone. Lookup happens here
   // (server) so the client doesn't round-trip on every render.
   const pushEnabled = await hasAddon(menu.restaurant.id, "push_marketing");
+  const notifCenterEnabled = await hasAddon(menu.restaurant.id, "notification_center");
 
   const { data: branchRows } = await sb
     .from("restaurant_branches")
@@ -104,7 +105,7 @@ export default async function CustomerMenuPage({
         // eslint-disable-next-line @next/next/no-page-custom-font
         <link rel="stylesheet" href={theme.fonts.googleUrl} />
       )}
-      <CustomerShell menu={menu} tableParam={tableLabel} theme={theme}>
+      <CustomerShell menu={menu} tableParam={tableLabel} theme={theme} notifCenterEnabled={notifCenterEnabled}>
         <MenuExperience
           menu={menu}
           tableLabel={tableLabel}

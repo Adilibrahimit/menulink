@@ -25,11 +25,13 @@ export default function CustomerShell({
   menu,
   tableParam,
   theme,
+  notifCenterEnabled = false,
   children,
 }: {
   menu: PublicMenu;
   tableParam: string | null;
   theme: ThemeConfig;
+  notifCenterEnabled?: boolean;
   children: React.ReactNode;
 }) {
   const [auth, setAuth] = useState<AuthState>({ kind: "loading" });
@@ -132,7 +134,7 @@ export default function CustomerShell({
       setDelivery={setDelivery}
     >
       <div className="pb-16">{children}</div>
-      <BottomNav slug={menu.restaurant.slug} navItems={theme.bottomNavItems} />
+      <BottomNav slug={menu.restaurant.slug} navItems={theme.bottomNavItems} notifCenterEnabled={notifCenterEnabled} />
     </OrderTypeProvider>
   );
 }
