@@ -1,8 +1,8 @@
 # MenuLink · Project Memory
 
 > **Read this first** when picking up the project in a new session.
-> Last saved: **2026-05-26 (session 6 final)** — 8 migrations (0048–0055), 27 commits. Biggest session ever.
-> Status line: **production SaaS, 5 tenants. Session 6 shipped ALL planned features: team auth, F5 menu-only mode, F1 order status tracker (real-time + timeline), F2 delivery zone check (map + saved addresses + reverse geocoding + multi-tier zones), F3 order type switcher (sticky pills), F4 POS mapping (auto-suggest Arabic fuzzy matching + manual entry + 186 items catalog synced on test tenant), F8 in-app notification center (bell badge + history page), POSMON-1 POS dashboard (5 tabs + realtime), zone map editor (radius + polygon Leaflet Draw), delivery fee in cart + WhatsApp, Bridge App heartbeat (schema + API + dashboard card), invoice status sync API (held→confirmed loop), push branding, sign-out fix, customer order RLS fix. Next: (1) addon gating — delivery zones customer-side, notification center behind new addon; (2) full POS integration test (Bridge App .NET: heartbeat sender + invoice poller + catalog sync); (3) payment gateway (Moyasar); (4) Samer .NET workflow patch (per-type InvoiceType). Product decisions: menu-only mode is OPS-controlled only (not tenant self-service), delivery zones + notification center are sellable addon services.**
+> Last saved: **2026-05-26 (session 7 quick)** — 1 migration (0056), 1 commit. Notification center addon gating shipped.
+> Status line: **production SaaS, 5 tenants. Session 7: notification center now gated behind `notification_center` addon (19 SAR/mo, 14-day trial). Bell icon, notifications page, and count API hidden unless tenant has the addon enabled via OPS. Migration 0056 live. Next: (1) addon gating — delivery zones customer-side still pending; (2) full POS integration test (Bridge App .NET: heartbeat sender + invoice poller + catalog sync); (3) payment gateway (Moyasar); (4) Samer .NET workflow patch (per-type InvoiceType). Product decisions: menu-only mode is OPS-controlled only (not tenant self-service), delivery zones + notification center are sellable addon services.**
 
 ---
 
