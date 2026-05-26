@@ -1,7 +1,7 @@
 "use client";
 
+import { useEffect, useRef, useState, useCallback } from "react";
 import { SLUG_TO_IMG } from "@/lib/koko-images";
-import CategoryTabs from "./category-tabs";
 import type { PublicMenu, PublicMenuItem, PublicCategory } from "./types";
 import type { ThemeConfig } from "@/lib/themes";
 
@@ -12,6 +12,42 @@ export default function HeritageListMenu({
   menu: PublicMenu;
   theme: ThemeConfig;
 }) {
+  const [activeId, setActiveId] = useState<string>(menu.categories[0]?.id ?? "");
+  const pillRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const sections = menu.categories
+      .map((c) => document.getElementById(c.id))
+      .filter(Boolean) as HTMLElement[];
+    if (!sections.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setActiveId(entry.target.id);
+          }
+        }
+      },
+      { rootMargin: "-100px 0px -60% 0px" },
+    );
+
+    sections.forEach((s) => observer.observe(s));
+    return () => observer.disconnect();
+  }, [menu.categories]);
+
+  useEffect(() => {
+    const pill = pillRefs.current[activeId];
+    if (pill) {
+      pill.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    }
+  }, [activeId]);
+
+  const scrollTo = useCallback((id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
+
   return (
     <main
       className="min-h-[100dvh]"
@@ -153,28 +189,34 @@ export default function HeritageListMenu({
         }}
       >
         <div
+          ref={scrollRef}
           className="flex gap-2 px-4 overflow-x-auto"
           style={{ scrollbarWidth: "none" }}
         >
-          {menu.categories.map((cat, idx) => (
-            <button
-              key={cat.id}
-              onClick={() => {
-                document.getElementById(cat.id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-              }}
-              className="shrink-0 px-4 py-[7px] rounded-md text-[13px] whitespace-nowrap transition-all duration-150"
-              style={{
-                fontFamily: "var(--font-display)",
-                fontWeight: 500,
-                letterSpacing: "0.3px",
-                border: "1px solid rgba(201,169,97,0.4)",
-                color: "var(--header-text)",
-                background: "transparent",
-              }}
-            >
-              {cat.name_ar}
-            </button>
-          ))}
+          {menu.categories.map((cat) => {
+            const isActive = activeId === cat.id;
+            return (
+              <button
+                key={cat.id}
+                ref={(el) => { pillRefs.current[cat.id] = el; }}
+                onClick={() => scrollTo(cat.id)}
+                className="shrink-0 px-4 py-[7px] rounded-md text-[13px] whitespace-nowrap transition-all duration-150"
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontWeight: isActive ? 600 : 500,
+                  letterSpacing: "0.3px",
+                  border: isActive
+                    ? "1px solid var(--accent-gold)"
+                    : "1px solid rgba(201,169,97,0.4)",
+                  color: isActive ? "var(--header-bg)" : "var(--header-text)",
+                  background: isActive ? "var(--accent-gold)" : "transparent",
+                  boxShadow: isActive ? "0 2px 8px rgba(201,169,97,0.3)" : "none",
+                }}
+              >
+                {cat.name_ar}
+              </button>
+            );
+          })}
         </div>
       </nav>
 
