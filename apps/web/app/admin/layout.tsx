@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { headers } from "next/headers";
-import { getCurrentUser, requireOwner } from "@/lib/auth";
+import { getCurrentUser, requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase-server";
 import { getEnabledAddons, type AddonKey } from "@/lib/addons";
 import type { Restaurant } from "@/lib/types";
@@ -44,8 +44,8 @@ export default async function AdminLayout({
 
   if (isLogin) return <>{children}</>;
 
-  // Anyone reaching /admin/* (besides /login) must be an owner.
-  const me = await requireOwner();
+  // Anyone reaching /admin/* (besides /login) must be an owner or team admin.
+  const me = await requireAdmin();
 
   // Pull the restaurant the owner manages
   const sb = createClient();

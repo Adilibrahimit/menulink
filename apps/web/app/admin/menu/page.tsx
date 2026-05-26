@@ -1,4 +1,4 @@
-import { requireOwner } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase-server";
 import MenuEditor from "./menu-editor";
 import type { Category, MenuItem, Variant } from "@/lib/types";
@@ -8,7 +8,7 @@ export type CategoryWithItems = Category & {
 };
 
 export default async function MenuPage() {
-  const me = await requireOwner();
+  const me = await requireAdmin();
   const sb = createClient();
 
   // Server-side data fetch — RLS auto-scopes to the owner's restaurant.

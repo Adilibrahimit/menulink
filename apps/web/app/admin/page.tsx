@@ -1,9 +1,9 @@
-import { requireOwner } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase-server";
 import DashboardChart from "./dashboard-chart";
 
 export default async function DashboardPage() {
-  const me = await requireOwner();
+  const me = await requireAdmin();
   const sb = createClient();
 
   const today = new Date();

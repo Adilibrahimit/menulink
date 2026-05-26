@@ -1,10 +1,10 @@
-import { requireOwner } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase-server";
 import { hasAddon } from "@/lib/addons";
 import OrdersLive from "./orders-live";
 
 export default async function OrdersPage() {
-  const me = await requireOwner();
+  const me = await requireAdmin();
   const sb = createClient();
 
   // Pull last 200 to cover several days of today-filter switching without re-fetching.

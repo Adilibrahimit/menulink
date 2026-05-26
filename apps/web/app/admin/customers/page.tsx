@@ -1,4 +1,4 @@
-import { requireOwner } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase-server";
 import { hasAddon } from "@/lib/addons";
 import CustomersTable from "./customers-table";
@@ -54,7 +54,7 @@ const SEGMENT_KPI: {
 ];
 
 export default async function CustomersPage() {
-  const me = await requireOwner();
+  const me = await requireAdmin();
   const sb = createClient();
 
   const [{ data: rfm }, { data: ltv }, excelEnabled, pushEnabled] = await Promise.all([

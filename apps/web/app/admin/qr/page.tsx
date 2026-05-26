@@ -1,9 +1,9 @@
-import { requireOwner } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase-server";
 import MenuQR from "@/components/menu-qr";
 
 export default async function AdminQrPage() {
-  const me = await requireOwner();
+  const me = await requireAdmin();
   const sb = createClient();
 
   const { data: r } = await sb
