@@ -2,6 +2,8 @@
 
 import { useRef, useState } from "react";
 import { createClient } from "@/lib/supabase-browser";
+import UnsplashPicker from "./unsplash-picker";
+import { optimizeImage, fetchAndOptimize } from "./optimize-image";
 
 type Cat = { id: string; name_ar: string };
 
@@ -31,15 +33,17 @@ export default function AddItemModal({
   const [price, setPrice] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [showUnsplash, setShowUnsplash] = useState(false);
+  const [optimizing, setOptimizing] = useState(false);
 
-  function pickImage(f: File | null) {
+  async function pickImage(f: File | null) {
     if (!f) {
       setImageFile(null);
       setImagePreview(null);
       return;
     }
-    if (f.size > 5 * 1024 * 1024) {
-      setErr("حجم الصورة أكبر من 5 ميغا");
+    if (f.size > 10 * 1024 * 1024) {
+      setErr("حجم الصورة أكبر من 10 ميغا");
       return;
     }
     if (!f.type.startsWith("image/")) {
@@ -47,8 +51,30 @@ export default function AddItemModal({
       return;
     }
     setErr(null);
-    setImageFile(f);
-    setImagePreview(URL.createObjectURL(f));
+    setOptimizing(true);
+    try {
+      const optimized = await optimizeImage(f);
+      setImageFile(optimized);
+      setImagePreview(URL.createObjectURL(optimized));
+    } catch {
+      setImageFile(f);
+      setImagePreview(URL.createObjectURL(f));
+    }
+    setOptimizing(false);
+  }
+
+  async function pickFromUnsplash(url: string) {
+    setShowUnsplash(false);
+    setErr(null);
+    setOptimizing(true);
+    try {
+      const optimized = await fetchAndOptimize(url);
+      setImageFile(optimized);
+      setImagePreview(URL.createObjectURL(optimized));
+    } catch {
+      setErr("فشل تحميل الصورة من الإنترنت");
+    }
+    setOptimizing(false);
   }
 
   async function submit(e: React.FormEvent) {
@@ -184,25 +210,46 @@ export default function AddItemModal({
               className="hidden"
               onChange={(e) => pickImage(e.target.files?.[0] ?? null)}
             />
-            <button
-              type="button"
-              onClick={() => fileRef.current?.click()}
-              className="rounded-md bg-neutral-100 hover:bg-neutral-200 text-sm px-3 py-2"
-            >
-              {imageFile ? "تغيير الصورة" : "اختيار صورة"}
-            </button>
-            {imageFile && (
-              <button
-                type="button"
-                onClick={() => pickImage(null)}
-                className="text-xs text-red-700 hover:underline"
-              >
-                إزالة
-              </button>
-            )}
+            <div className="flex flex-col gap-1.5">
+              <div className="flex gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  disabled={optimizing}
+                  className="rounded-md bg-neutral-100 hover:bg-neutral-200 text-xs px-2.5 py-1.5"
+                >
+                  📁 من الجهاز
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowUnsplash(true)}
+                  disabled={optimizing}
+                  className="rounded-md bg-blue-50 hover:bg-blue-100 text-xs px-2.5 py-1.5 text-blue-700"
+                >
+                  🔍 بحث صور
+                </button>
+              </div>
+              {imageFile && (
+                <button
+                  type="button"
+                  onClick={() => pickImage(null)}
+                  className="text-[11px] text-red-600 hover:underline self-start"
+                >
+                  إزالة
+                </button>
+              )}
+            </div>
           </div>
-          <p className="text-[11px] text-neutral-500 mt-1">حد أقصى ٥ ميغا · jpg / png / webp</p>
+          {optimizing && <p className="text-[11px] text-blue-600 mt-1 font-bold">جاري تحسين الصورة...</p>}
+          <p className="text-[11px] text-neutral-500 mt-1">يتم ضغط وتحسين الصور تلقائياً</p>
         </Field>
+
+        {showUnsplash && (
+          <UnsplashPicker
+            onPick={pickFromUnsplash}
+            onClose={() => setShowUnsplash(false)}
+          />
+        )}
 
         <button
           type="button"

@@ -8,6 +8,8 @@ import type { CategoryWithItems } from "./page";
 import AddItemModal from "./add-item-modal";
 import AddCategoryModal from "./add-category-modal";
 import ModifiersPanel from "./modifiers-panel";
+import UnsplashPicker from "./unsplash-picker";
+import { optimizeImage, fetchAndOptimize } from "./optimize-image";
 
 type Toast = { kind: "ok" | "err"; text: string } | null;
 
@@ -26,6 +28,7 @@ export default function MenuEditor({
   const [addItemFor, setAddItemFor] = useState<string | null>(null);
   const [nutritionOpen, setNutritionOpen] = useState<string | null>(null);
   const [modifiersOpen, setModifiersOpen] = useState<string | null>(null);
+  const [unsplashItemId, setUnsplashItemId] = useState<string | null>(null);
 
   function notify(kind: "ok" | "err", text: string) {
     setToast({ kind, text });
@@ -108,23 +111,26 @@ export default function MenuEditor({
     else { notify("ok", "حُذف"); refresh(); }
   }
 
-  // ---- Image upload (Supabase Storage menu-images bucket) ---------------
   async function uploadImage(itemId: string, file: File) {
-    if (file.size > 5 * 1024 * 1024) {
-      notify("err", "حجم الصورة أكبر من 5 ميغا");
+    if (file.size > 10 * 1024 * 1024) {
+      notify("err", "حجم الصورة أكبر من 10 ميغا");
       return;
     }
     if (!file.type.startsWith("image/")) {
       notify("err", "الملف يجب أن يكون صورة");
       return;
     }
-    const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-    // Path: <restaurant_id>/<item_id>-<random>.<ext>  — random keeps caches
-    // honest when the owner replaces an image with the same filename.
-    const path = `${restaurantId}/${itemId}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    notify("ok", "جاري تحسين الصورة...");
+    let optimized: File;
+    try {
+      optimized = await optimizeImage(file);
+    } catch {
+      optimized = file;
+    }
+    const path = `${restaurantId}/${itemId}-${Math.random().toString(36).slice(2, 8)}.webp`;
     const { error: upErr } = await sb.storage
       .from("menu-images")
-      .upload(path, file, { upsert: true, contentType: file.type });
+      .upload(path, optimized, { upsert: true, contentType: optimized.type });
     if (upErr) {
       notify("err", upErr.message);
       return;
@@ -138,8 +144,27 @@ export default function MenuEditor({
       notify("err", updateErr.message);
       return;
     }
-    notify("ok", "صورة محدّثة");
+    notify("ok", "صورة محدّثة ✓");
     refresh();
+  }
+
+  async function uploadFromUnsplash(itemId: string, url: string) {
+    setUnsplashItemId(null);
+    notify("ok", "جاري تحميل وتحسين الصورة...");
+    try {
+      const optimized = await fetchAndOptimize(url);
+      const path = `${restaurantId}/${itemId}-${Math.random().toString(36).slice(2, 8)}.webp`;
+      const { error: upErr } = await sb.storage
+        .from("menu-images")
+        .upload(path, optimized, { upsert: true, contentType: "image/webp" });
+      if (upErr) { notify("err", upErr.message); return; }
+      const { data } = sb.storage.from("menu-images").getPublicUrl(path);
+      await sb.from("menu_items").update({ image_url: data.publicUrl }).eq("id", itemId);
+      notify("ok", "صورة محدّثة ✓");
+      refresh();
+    } catch {
+      notify("err", "فشل تحميل الصورة");
+    }
   }
 
   async function removeImage(itemId: string) {
@@ -317,34 +342,43 @@ export default function MenuEditor({
                     title="خفض"
                   >▼</button>
                 </div>
-                {/* Image thumbnail / upload */}
-                <label className="shrink-0 cursor-pointer group relative w-14 h-14 rounded-lg overflow-hidden bg-neutral-100 border border-neutral-200 hover:border-brand-primary">
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    className="hidden"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      if (f) uploadImage(it.id, f);
-                      e.target.value = "";
-                    }}
-                  />
-                  {it.image_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={it.image_url}
-                      alt={it.name_ar}
-                      className="w-full h-full object-cover"
+                {/* Image thumbnail / upload + search */}
+                <div className="shrink-0 flex flex-col items-center gap-1">
+                  <label className="cursor-pointer group relative w-14 h-14 rounded-lg overflow-hidden bg-neutral-100 border border-neutral-200 hover:border-brand-primary">
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      className="hidden"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) uploadImage(it.id, f);
+                        e.target.value = "";
+                      }}
                     />
-                  ) : (
-                    <span className="w-full h-full flex items-center justify-center text-xl text-neutral-400">
-                      📷
+                    {it.image_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={it.image_url}
+                        alt={it.name_ar}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="w-full h-full flex items-center justify-center text-xl text-neutral-400">
+                        📷
+                      </span>
+                    )}
+                    <span className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center text-white text-[10px] opacity-0 group-hover:opacity-100">
+                      📁
                     </span>
-                  )}
-                  <span className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center text-white text-[10px] opacity-0 group-hover:opacity-100">
-                    تغيير
-                  </span>
-                </label>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setUnsplashItemId(it.id)}
+                    className="text-[9px] text-blue-600 hover:underline"
+                  >
+                    🔍 بحث
+                  </button>
+                </div>
 
                 <div className="flex-1 min-w-[160px]">
                   <div className={`font-medium ${it.is_active ? "" : "text-neutral-400 line-through"}`}>
@@ -532,6 +566,13 @@ export default function MenuEditor({
             notify("ok", msg);
             refresh();
           }}
+        />
+      )}
+
+      {unsplashItemId && (
+        <UnsplashPicker
+          onPick={(url) => uploadFromUnsplash(unsplashItemId, url)}
+          onClose={() => setUnsplashItemId(null)}
         />
       )}
     </div>
