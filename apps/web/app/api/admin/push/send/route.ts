@@ -98,6 +98,15 @@ export async function POST(req: NextRequest) {
     await sb.from("push_subscriptions").delete().in("endpoint", staleEndpoints);
   }
 
+  // Save to in-app notification center
+  await sb.from("tenant_notifications").insert({
+    restaurant_id,
+    title,
+    body,
+    image_url: restaurant?.logo_url || null,
+    url: url || `/m/${restaurant?.slug || ""}`,
+  });
+
   // Record broadcast in history
   await sb.from("push_broadcasts").insert({
     restaurant_id,
