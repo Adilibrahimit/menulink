@@ -136,155 +136,35 @@ async function drawHeritagePoster(
   ctx: CanvasRenderingContext2D, W: number, H: number,
   url: string, _opts: PosterOpts,
 ) {
-  const gold = "#C9A961";
-  const darkGreen = "#1B6B4A";
-  const ink = "#1a1a1a";
+  const templateUrl = "/qr-templates/mazaj-almosafer.png";
+  const templateImg = await loadImage(templateUrl);
 
-  // White background
-  ctx.fillStyle = "#FAFAF8";
-  ctx.fillRect(0, 0, W, H);
+  const tW = templateImg.naturalWidth;
+  const tH = templateImg.naturalHeight;
+  ctx.drawImage(templateImg, 0, 0, W, H);
 
-  // --- Palm leaf (green, top center) ---
-  ctx.save();
-  ctx.translate(W / 2 - 10, 80);
-  ctx.scale(1.6, 1.6);
-  drawPalmLeaf(ctx, darkGreen);
-  ctx.restore();
+  const scaleX = W / tW;
+  const scaleY = H / tH;
 
-  // --- "al musafer" in script font ---
-  ctx.fillStyle = ink;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "top";
-  ctx.direction = "ltr";
-  ctx.font = `italic 400 96px "Dancing Script", "Great Vibes", "Segoe Script", cursive`;
-  ctx.fillText("al musafer", W / 2, 240);
-
-  // --- Gold ornamental frame around QR ---
-  const frameX = 100;
-  const frameY = 420;
-  const frameW = W - 200;
-  const frameH = 780;
-  drawOrnamentalFrame(ctx, frameX, frameY, frameW, frameH, gold);
-
-  // --- QR code inside the frame ---
   const qrCanvas = document.createElement("canvas");
   await QRCode.toCanvas(qrCanvas, url, {
     errorCorrectionLevel: "H",
-    margin: 2,
-    width: 640,
+    margin: 1,
+    width: 700,
     color: { dark: "#000000", light: "#FAFAF8" },
   });
-  const qrSize = 640;
-  const qx = (W - qrSize) / 2;
-  const qy = frameY + (frameH - qrSize) / 2;
-  ctx.drawImage(qrCanvas, qx, qy, qrSize, qrSize);
 
-  // --- Gold divider line with diamond below frame ---
-  const divY = frameY + frameH + 80;
-  ctx.strokeStyle = gold;
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.moveTo(W * 0.3, divY);
-  ctx.lineTo(W / 2 - 14, divY);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(W / 2 + 14, divY);
-  ctx.lineTo(W * 0.7, divY);
-  ctx.stroke();
+  const frameLeft = 141;
+  const frameTop = 482;
+  const frameRight = 914;
+  const frameBottom = 1232;
+  const qrAreaW = frameRight - frameLeft;
+  const qrAreaH = frameBottom - frameTop;
+  const qrSize = Math.min(qrAreaW, qrAreaH);
+  const qrX = frameLeft + (qrAreaW - qrSize) / 2;
+  const qrY = frameTop + (qrAreaH - qrSize) / 2;
 
-  // Diamond
-  ctx.fillStyle = gold;
-  ctx.beginPath();
-  ctx.moveTo(W / 2, divY - 7);
-  ctx.lineTo(W / 2 + 7, divY);
-  ctx.lineTo(W / 2, divY + 7);
-  ctx.lineTo(W / 2 - 7, divY);
-  ctx.closePath();
-  ctx.fill();
-
-  // --- "Powered by MenuLink" footer ---
-  ctx.fillStyle = "#888888";
-  ctx.direction = "ltr";
-  ctx.textAlign = "center";
-  ctx.font = `400 28px "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif`;
-  ctx.fillText("Powered by MenuLink", W / 2, divY + 50);
-}
-
-function drawPalmLeaf(ctx: CanvasRenderingContext2D, color: string) {
-  ctx.fillStyle = color;
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 2;
-  ctx.lineCap = "round";
-
-  // Main stem
-  ctx.beginPath();
-  ctx.moveTo(30, 80);
-  ctx.quadraticCurveTo(32, 40, 35, 0);
-  ctx.stroke();
-
-  // Leaflets — pairs fanning out from the stem
-  const leaves: [number, number, number, number, number, number][] = [
-    [34, 8, 10, -20, -15, -10],
-    [34, 15, 5, -30, -25, -5],
-    [33, 25, 0, -38, -30, 5],
-    [33, 35, -2, -42, -32, 10],
-    [32, 45, 0, -40, -28, 15],
-    [32, 55, 5, -35, -22, 22],
-    [31, 65, 10, -25, -15, 28],
-    [35, 8, 60, -20, 65, -10],
-    [35, 15, 65, -30, 75, -5],
-    [35, 25, 68, -38, 80, 5],
-    [35, 35, 70, -42, 82, 10],
-    [36, 45, 68, -40, 78, 15],
-    [36, 55, 65, -35, 72, 22],
-    [36, 65, 58, -25, 62, 28],
-  ];
-  for (const [sx, sy, cx, cy, ex, ey] of leaves) {
-    ctx.beginPath();
-    ctx.moveTo(sx, sy);
-    ctx.quadraticCurveTo(cx, cy, ex, ey);
-    ctx.quadraticCurveTo(cx + 2, cy + 5, sx, sy + 3);
-    ctx.fill();
-  }
-}
-
-function drawOrnamentalFrame(
-  ctx: CanvasRenderingContext2D,
-  x: number, y: number, w: number, h: number,
-  color: string,
-) {
-  const r = 24;
-  const notch = 20;
-
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-
-  // Top-left corner
-  ctx.moveTo(x + r, y);
-  // Top edge with center notch curve
-  ctx.lineTo(x + w / 2 - notch, y);
-  ctx.quadraticCurveTo(x + w / 2, y - notch / 2, x + w / 2 + notch, y);
-  // Top-right corner
-  ctx.lineTo(x + w - r, y);
-  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-  // Right edge
-  ctx.lineTo(x + w, y + h - r);
-  // Bottom-right corner
-  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-  // Bottom edge with center notch
-  ctx.lineTo(x + w / 2 + notch, y + h);
-  ctx.quadraticCurveTo(x + w / 2, y + h + notch / 2, x + w / 2 - notch, y + h);
-  // Bottom-left corner
-  ctx.lineTo(x + r, y + h);
-  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-  // Left edge
-  ctx.lineTo(x, y + r);
-  // Top-left corner close
-  ctx.quadraticCurveTo(x, y, x + r, y);
-
-  ctx.closePath();
-  ctx.stroke();
+  ctx.drawImage(qrCanvas, qrX * scaleX, qrY * scaleY, qrSize * scaleX, qrSize * scaleY);
 }
 
 export function triggerDownload(href: string, filename: string) {
