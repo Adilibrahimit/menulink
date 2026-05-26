@@ -39,6 +39,10 @@ export default async function CustomerOrdersPage({
       unit_price: number;
       line_total: number;
     }>;
+    events: Array<{
+      new_status: string;
+      created_at: string;
+    }>;
   }> = [];
 
   if (user) {
@@ -63,7 +67,7 @@ export default async function CustomerOrdersPage({
     if (customerId) {
       const { data: rawOrders } = await sb
         .from("orders")
-        .select("id, order_type, status, total, notes, created_at, order_items(item_name, variant, qty, unit_price, line_total)")
+        .select("id, order_type, status, total, notes, created_at, order_items(item_name, variant, qty, unit_price, line_total), order_events(new_status, created_at)")
         .eq("customer_id", customerId)
         .eq("restaurant_id", restaurant.id)
         .order("created_at", { ascending: false })
@@ -82,6 +86,10 @@ export default async function CustomerOrdersPage({
           qty: Number(i.qty ?? 1),
           unit_price: Number(i.unit_price ?? 0),
           line_total: Number(i.line_total ?? 0),
+        })),
+        events: ((o.order_events as Array<Record<string, unknown>>) ?? []).map((e) => ({
+          new_status: e.new_status as string,
+          created_at: e.created_at as string,
         })),
       }));
     }
@@ -110,6 +118,8 @@ export default async function CustomerOrdersPage({
         signedIn={!!user}
         linked={!!customerId}
         orders={orders}
+        customerId={customerId}
+        restaurantId={restaurant.id}
       />
     </div>
   );

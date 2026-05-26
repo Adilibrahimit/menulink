@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase-browser";
 import { toArabicDigits } from "@/lib/arabic";
 import SarSymbol from "../sar-symbol";
+import OrderStatusTracker from "./order-status-tracker";
 
 type OrderItem = {
   item_name: string;
@@ -10,6 +12,11 @@ type OrderItem = {
   qty: number;
   unit_price: number;
   line_total: number;
+};
+
+type OrderEvent = {
+  new_status: string;
+  created_at: string;
 };
 
 type Order = {
@@ -20,6 +27,7 @@ type Order = {
   notes: string | null;
   created_at: string;
   items: OrderItem[];
+  events: OrderEvent[];
 };
 
 const STATUS_AR: Record<string, { label: string; color: string }> = {
@@ -46,15 +54,60 @@ export default function OrdersClient({
   slug,
   signedIn,
   linked,
-  orders,
+  orders: initialOrders,
+  customerId,
+  restaurantId,
 }: {
   slug: string;
   signedIn: boolean;
   linked: boolean;
   orders: Order[];
+  customerId: string | null;
+  restaurantId: string;
 }) {
   const [tab, setTab] = useState<"current" | "previous">("current");
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [orders, setOrders] = useState<Order[]>(initialOrders);
+
+  useEffect(() => {
+    if (!customerId) return;
+    const sb = createClient();
+    const channel = sb
+      .channel(`customer-orders:${customerId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "orders",
+          filter: `customer_id=eq.${customerId}`,
+        },
+        async (payload) => {
+          const updated = payload.new as { id: string; status: string };
+          const { data: freshEvents } = await sb
+            .from("order_events")
+            .select("new_status, created_at")
+            .eq("order_id", updated.id)
+            .order("created_at");
+          setOrders((prev) =>
+            prev.map((o) =>
+              o.id === updated.id
+                ? {
+                    ...o,
+                    status: updated.status,
+                    events: (freshEvents ?? []).map((e) => ({
+                      new_status: e.new_status as string,
+                      created_at: e.created_at as string,
+                    })),
+                  }
+                : o
+            )
+          );
+        }
+      )
+      .subscribe();
+    return () => { sb.removeChannel(channel); };
+  }, [customerId]);
 
   if (!signedIn) {
     return (
@@ -230,6 +283,12 @@ function OrderCard({
 
       {expanded && (
         <div className="border-t border-neutral-100 px-4 py-3 space-y-2">
+          {ACTIVE_STATUSES.has(order.status) && (
+            <OrderStatusTracker status={order.status} events={order.events} />
+          )}
+          {order.status === "cancelled" && (
+            <OrderStatusTracker status={order.status} events={order.events} />
+          )}
           {order.items.map((item, i) => (
             <div key={i} className="flex items-start justify-between gap-2">
               <div className="min-w-0 flex-1">
