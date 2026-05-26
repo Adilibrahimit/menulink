@@ -35,6 +35,7 @@ export default function MenuExperience({
   menu,
   tableLabel,
   loyaltyPointsPerSar,
+  redemptionValueSar,
   theme,
   pushEnabled,
   vapidKey,
@@ -43,6 +44,7 @@ export default function MenuExperience({
   menu: PublicMenu;
   tableLabel: string | null;
   loyaltyPointsPerSar: number | null;
+  redemptionValueSar: number;
   theme: ThemeConfig;
   pushEnabled: boolean;
   vapidKey: string;
@@ -516,6 +518,7 @@ export default function MenuExperience({
           total={total}
           tableLabel={tableLabel}
           loyaltyPointsPerSar={loyaltyPointsPerSar}
+          redemptionValueSar={redemptionValueSar}
           sessionId={tableSessionId}
           onClose={() => setDrawerOpen(false)}
           onAdjust={adjustQty}

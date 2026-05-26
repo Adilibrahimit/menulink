@@ -68,13 +68,15 @@ export default async function CustomerMenuPage({
   const branches = branchRows ?? [];
 
   let loyaltyPointsPerSar: number | null = null;
+  let redemptionValueSar = 0;
   if (await hasAddon(menu.restaurant.id, "loyalty")) {
     const { data: ls } = await sb
       .from("loyalty_settings")
-      .select("enabled, points_per_sar")
+      .select("enabled, points_per_sar, redemption_value_sar")
       .eq("restaurant_id", menu.restaurant.id)
       .maybeSingle();
     if (ls?.enabled) loyaltyPointsPerSar = Number(ls.points_per_sar);
+    if (ls?.enabled) redemptionValueSar = Number(ls.redemption_value_sar) || 0;
   }
 
   const theme = getTheme(params.slug);
@@ -110,6 +112,7 @@ export default async function CustomerMenuPage({
           menu={menu}
           tableLabel={tableLabel}
           loyaltyPointsPerSar={loyaltyPointsPerSar}
+          redemptionValueSar={redemptionValueSar}
           theme={theme}
           pushEnabled={pushEnabled}
           vapidKey={process.env.NEXT_PUBLIC_VAPID_KEY ?? ""}

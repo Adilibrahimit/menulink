@@ -132,7 +132,7 @@ export default function LoyaltySettingsForm({
         </Field>
         <Field
           label="قيمة النقطة عند الاسترداد (ر.س)"
-          hint="مثال: ٠٫١ يعني ١٠ نقاط = ١ ر.س خصم. (تفعّل في المرحلة القادمة)"
+          hint="مثال: ٠٫١ يعني ١٠ نقاط = ١ ر.س خصم. يظهر للعميل زر 'استخدم نقاطك' في السلة."
         >
           <input
             type="number" step="0.001" min="0"

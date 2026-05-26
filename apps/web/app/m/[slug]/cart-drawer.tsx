@@ -33,6 +33,7 @@ export default function CartDrawer({
   total,
   tableLabel,
   loyaltyPointsPerSar,
+  redemptionValueSar,
   sessionId,
   onClose,
   onAdjust,
@@ -46,6 +47,7 @@ export default function CartDrawer({
   total: number;
   tableLabel: string | null;
   loyaltyPointsPerSar: number | null;
+  redemptionValueSar: number;
   sessionId: string | null;
   onClose: () => void;
   onAdjust: (lineId: string, delta: number) => void;
@@ -72,6 +74,9 @@ export default function CartDrawer({
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [prefilled, setPrefilled] = useState(false);
+  const [pointsBalance, setPointsBalance] = useState(0);
+  const [usePoints, setUsePoints] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const hasMultipleBranches = branches.length > 1;
   const defaultBranch = branches.find((b) => b.is_default) ?? branches[0];
@@ -95,13 +100,14 @@ export default function CartDrawer({
       // Signed-in: fetch customer + addresses
       const { data: c } = await sb
         .from("customers")
-        .select("id, name, phone")
+        .select("id, name, phone, loyalty_points_balance")
         .eq("auth_user_id", session.user.id)
         .eq("restaurant_id", restaurant.id)
         .maybeSingle();
       if (c) {
         if (c.name) setName(c.name as string);
         if (c.phone) setRawPhone(c.phone as string);
+        if (c.loyalty_points_balance) setPointsBalance(Number(c.loyalty_points_balance));
         const { data: addrs } = await sb
           .from("customer_addresses")
           .select("id, label, address, lat, lng, details, is_default")
@@ -127,6 +133,14 @@ export default function CartDrawer({
       setPrefilled(true);
     });
   }, [restaurant.id, prefilled]);
+
+  const canRedeem = usePoints && pointsBalance > 0 && redemptionValueSar > 0;
+  const maxRedeemPoints = redemptionValueSar > 0
+    ? Math.min(pointsBalance, Math.floor((total + deliveryFee) / redemptionValueSar))
+    : 0;
+  const redeemPoints = canRedeem ? maxRedeemPoints : 0;
+  const discountAmount = redeemPoints * redemptionValueSar;
+  const finalTotal = total + deliveryFee - discountAmount;
 
   const orderTypeLabel: Record<OrderType, string> = {
     delivery: "توصيل",
@@ -190,25 +204,25 @@ export default function CartDrawer({
       lines,
       total,
       deliveryFee,
+      redeemPoints,
     };
 
-    // For car orders we need the order_id from the RPC so the customer
-    // can tap "I've arrived" later — await persist so we capture it.
-    // For table orders we also await to confirm session link.
-    // Other order types stay fire-and-forget.
+    // Await persist when redeeming points (must confirm deduction before WhatsApp),
+    // car orders (need order_id for tracking), or table orders (session link).
+    // Otherwise fire-and-forget.
     let carOrderId: string | null = null;
-    if (orderType === "car") {
+    const mustAwait = redeemPoints > 0 || orderType === "car" || lockedToTable;
+    if (mustAwait) {
       try {
         const result = await persistOrder(persistArgs);
         carOrderId = result.orderId;
       } catch (err) {
         console.warn("[MenuLink v7] persist failed:", err);
-      }
-    } else if (lockedToTable) {
-      try {
-        await persistOrder(persistArgs);
-      } catch (err) {
-        console.warn("[MenuLink v7] persist failed:", err);
+        if (redeemPoints > 0) {
+          setSubmitError("فشل خصم النقاط. حاول مرة أخرى.");
+          setSubmitting(false);
+          return;
+        }
       }
     } else {
       persistOrder(persistArgs).catch((err) =>
@@ -262,7 +276,8 @@ export default function CartDrawer({
       `🛒 *تفاصيل الطلب (${toArabicDigits(String(lines.length))} أصناف):*\n\n${lineList}\n\n` +
       `━━━━━━━━━━━━━━━━\n` +
       (deliveryFee > 0 ? `🚗 *رسوم التوصيل: ${toArabicDigits(deliveryFee.toFixed(2))} ر.س*\n` : "") +
-      `💰 *المجموع: ${toArabicDigits((total + deliveryFee).toFixed(2))} ر.س*\n` +
+      (discountAmount > 0 ? `🎁 *خصم النقاط:* -${toArabicDigits(discountAmount.toFixed(2))} ر.س (${toArabicDigits(String(redeemPoints))} نقطة)\n` : "") +
+      `💰 *المجموع: ${toArabicDigits(finalTotal.toFixed(2))} ر.س*\n` +
       (notes ? `📝 *ملاحظات عامة:* ${notes}\n` : "") +
       `━━━━━━━━━━━━━━━━\n` +
       `✅ شكراً لاختياركم *${restaurant.name}* 🙏`;
@@ -593,16 +608,22 @@ export default function CartDrawer({
 
         {lines.length > 0 && (
           <footer className="p-4 border-t border-neutral-200 bg-white">
-            {deliveryFee > 0 && (
+            {(deliveryFee > 0 || discountAmount > 0) && (
               <div className="flex items-center justify-between mb-1 text-xs text-neutral-500">
                 <span>المجموع الفرعي</span>
                 <span>{toArabicDigits(total.toFixed(2))} <SarSymbol size={11} /></span>
               </div>
             )}
             {deliveryFee > 0 && (
-              <div className="flex items-center justify-between mb-2 text-xs text-neutral-500">
-                <span>🚗 رسوم التوصيل</span>
+              <div className="flex items-center justify-between mb-1 text-xs text-neutral-500">
+                <span>رسوم التوصيل</span>
                 <span>{toArabicDigits(deliveryFee.toFixed(2))} <SarSymbol size={11} /></span>
+              </div>
+            )}
+            {discountAmount > 0 && (
+              <div className="flex items-center justify-between mb-1 text-xs text-green-700 font-bold">
+                <span>خصم النقاط ({toArabicDigits(String(redeemPoints))} نقطة)</span>
+                <span>-{toArabicDigits(discountAmount.toFixed(2))} <SarSymbol size={11} /></span>
               </div>
             )}
             <div className="flex items-center justify-between mb-3 text-sm">
@@ -611,10 +632,33 @@ export default function CartDrawer({
                 className="font-extrabold text-xl"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                {toArabicDigits((total + deliveryFee).toFixed(2))} <SarSymbol size={20} />
+                {toArabicDigits(finalTotal.toFixed(2))} <SarSymbol size={20} />
               </span>
             </div>
-            {loyaltyPointsPerSar != null && loyaltyPointsPerSar > 0 && rawPhone.trim() && (() => {
+            {/* Points redemption toggle */}
+            {pointsBalance > 0 && redemptionValueSar > 0 && (
+              <button
+                type="button"
+                onClick={() => setUsePoints((p) => !p)}
+                className={
+                  "mb-3 w-full rounded-xl border-2 px-3 py-2.5 flex items-center gap-2 transition-colors " +
+                  (usePoints
+                    ? "border-green-500 bg-green-50"
+                    : "border-neutral-200 bg-white hover:border-neutral-300")
+                }
+              >
+                <span className="text-xl">{usePoints ? "✅" : "🎁"}</span>
+                <span className="flex-1 text-right">
+                  <span className="text-sm font-extrabold text-neutral-900 block" style={{ fontFamily: "var(--font-display)" }}>
+                    {usePoints ? "تم تفعيل خصم النقاط" : "استخدم نقاطك"}
+                  </span>
+                  <span className="text-[11px] text-neutral-500 block mt-0.5">
+                    لديك {toArabicDigits(String(pointsBalance))} نقطة = خصم حتى {toArabicDigits((maxRedeemPoints * redemptionValueSar).toFixed(0))} ر.س
+                  </span>
+                </span>
+              </button>
+            )}
+            {loyaltyPointsPerSar != null && loyaltyPointsPerSar > 0 && rawPhone.trim() && !usePoints && (() => {
               const earn = Math.floor(total * loyaltyPointsPerSar);
               if (earn <= 0) return null;
               return (
@@ -626,7 +670,7 @@ export default function CartDrawer({
                 </div>
               );
             })()}
-            {loyaltyPointsPerSar != null && loyaltyPointsPerSar > 0 && (
+            {loyaltyPointsPerSar != null && loyaltyPointsPerSar > 0 && pointsBalance === 0 && (
               <a
                 href={`/m/${restaurant.slug}/account`}
                 className="mb-3 flex items-center justify-between gap-2 rounded-xl border-2 border-dashed border-neutral-200 px-3 py-2 hover:border-neutral-300 active:translate-y-px"
@@ -640,8 +684,13 @@ export default function CartDrawer({
                 <span className="text-neutral-400 text-sm">←</span>
               </a>
             )}
+            {submitError && (
+              <div className="mb-3 rounded-xl bg-rose-50 border border-rose-200 px-3 py-2 text-xs text-rose-700 font-bold text-center">
+                {submitError}
+              </div>
+            )}
             <button
-              onClick={submit}
+              onClick={() => { setSubmitError(null); submit(); }}
               disabled={submitting}
               className="w-full h-12 rounded-2xl bg-[var(--brand)] text-white font-extrabold text-base hover:opacity-90 disabled:opacity-60 active:translate-y-px shadow-md"
               style={{ fontFamily: "var(--font-display)" }}
@@ -674,6 +723,7 @@ async function persistOrder({
   lines,
   total,
   deliveryFee,
+  redeemPoints,
 }: {
   restaurantId: string;
   branchId: string | null;
@@ -691,6 +741,7 @@ async function persistOrder({
   lines: CartLine[];
   total: number;
   deliveryFee: number;
+  redeemPoints: number;
 }): Promise<{ orderId: string | null }> {
   const sb = createClient();
   const payload = {
@@ -711,6 +762,7 @@ async function persistOrder({
     car_color: orderType === "car" ? (carColor || null) : null,
     table_label: tableLabel || null,
     session_id: sessionId || null,
+    redeem_points: redeemPoints > 0 ? redeemPoints : undefined,
     items: lines.map((l) => {
       let variantText = l.variantLabel || "";
       if (l.modifiers && l.modifiers.length > 0) {
