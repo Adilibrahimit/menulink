@@ -490,8 +490,9 @@ function SignOutButton() {
   async function signOut() {
     setBusy(true);
     const sb = createClient();
-    await sb.auth.signOut();
-    window.location.reload();
+    await sb.auth.signOut({ scope: "global" });
+    localStorage.removeItem("menulink:guest");
+    window.location.href = window.location.pathname;
   }
   return (
     <button

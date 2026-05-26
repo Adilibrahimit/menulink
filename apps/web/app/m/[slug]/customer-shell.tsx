@@ -59,6 +59,8 @@ export default function CustomerShell({
     const { data: { subscription } } = sb.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         setAuth({ kind: "signed_in", userId: session.user.id });
+      } else {
+        setAuth({ kind: "gate" });
       }
     });
     return () => subscription.unsubscribe();
