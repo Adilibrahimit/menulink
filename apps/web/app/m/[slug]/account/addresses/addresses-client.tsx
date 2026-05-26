@@ -171,6 +171,7 @@ export default function AddressesClient({
           <LocationPicker
             initial={addrLat && addrLng ? { lat: addrLat, lng: addrLng } : null}
             onChange={(loc) => { setAddrLat(loc?.lat ?? null); setAddrLng(loc?.lng ?? null); }}
+            onAddressResolved={(a) => setAddressText(a)}
           />
           <input
             value={addressText}

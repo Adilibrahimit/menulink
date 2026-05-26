@@ -42,12 +42,26 @@ function createPulseRing(L: any, latlng: [number, number], color: string) {
   });
 }
 
+async function reverseGeocode(lat: number, lng: number): Promise<string | null> {
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=ar`,
+      { headers: { "User-Agent": "MenuLink/1.0" } }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.display_name ?? null;
+  } catch { return null; }
+}
+
 export default function LocationPicker({
   initial,
   onChange,
+  onAddressResolved,
 }: {
   initial: { lat: number; lng: number } | null;
   onChange: (loc: { lat: number; lng: number } | null) => void;
+  onAddressResolved?: (address: string) => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -103,6 +117,7 @@ export default function LocationPicker({
         onChange({ lat: p.lat, lng: p.lng });
         setStatus("set");
         bounceMarker(marker);
+        if (onAddressResolved) reverseGeocode(p.lat, p.lng).then((a) => { if (a) onAddressResolved(a); });
       });
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -112,6 +127,7 @@ export default function LocationPicker({
         onChange({ lat: e.latlng.lat, lng: e.latlng.lng });
         setStatus("set");
         bounceMarker(marker);
+        if (onAddressResolved) reverseGeocode(e.latlng.lat, e.latlng.lng).then((a) => { if (a) onAddressResolved(a); });
       });
 
       mapRef.current = map;
@@ -188,6 +204,7 @@ export default function LocationPicker({
         }
         onChange({ lat, lng });
         setStatus("set");
+        if (onAddressResolved) reverseGeocode(lat, lng).then((a) => { if (a) onAddressResolved(a); });
       },
       (err) => {
         switch (err.code) {

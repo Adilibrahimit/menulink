@@ -156,6 +156,7 @@ export default function DeliveryCheckSheet({
         <LocationPicker
           initial={lat && lng ? { lat, lng } : null}
           onChange={(loc) => { setLat(loc?.lat ?? null); setLng(loc?.lng ?? null); setResult(null); }}
+          onAddressResolved={(a) => setAddress(a)}
         />
 
         <input
