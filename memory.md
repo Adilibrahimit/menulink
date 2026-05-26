@@ -1,8 +1,8 @@
 # MenuLink · Project Memory
 
 > **Read this first** when picking up the project in a new session.
-> Last saved: **2026-05-26 (session 7 quick)** — 1 migration (0056), 1 commit. Notification center addon gating shipped.
-> Status line: **production SaaS, 5 tenants. Session 7: notification center now gated behind `notification_center` addon (19 SAR/mo, 14-day trial). Bell icon, notifications page, and count API hidden unless tenant has the addon enabled via OPS. Migration 0056 live. Next: (1) addon gating — delivery zones customer-side still pending; (2) full POS integration test (Bridge App .NET: heartbeat sender + invoice poller + catalog sync); (3) payment gateway (Moyasar); (4) Samer .NET workflow patch (per-type InvoiceType). Product decisions: menu-only mode is OPS-controlled only (not tenant self-service), delivery zones + notification center are sellable addon services.**
+> Last saved: **2026-05-26 (session 8)** — 3 commits, 1 migration (0057).
+> Status line: **production SaaS, 5 tenants. Session 8: (1) fixed modifier fallback bug — admin is single source of truth for item modifiers; (2) instant loyalty redemption — customers use points as discount in cart, no admin approval needed (migration 0057: discount_amount + loyalty_points_redeemed on orders, submit_order rewritten with FOR UPDATE lock); (3) Unsplash image search + auto-optimization for admin menu photos (sharp: resize 800px, WebP 80%); (4) push marketing confirmed fully built and live (3 subscribers). Next: delivery zones addon gating, Bridge App .NET phase 2, Moyasar payment gateway, Samer .NET patch (blocked).**
 
 ---
 
@@ -1035,3 +1035,51 @@ Added team management admin page (`/admin/team`), gated by `branch_admins` addon
 - POS settings configured (online_customer_id=999, counter=1, invoice_type=1)
 - pos_bridge enabled — ready for Bridge App integration testing
 - All other addons enabled for full feature testing
+
+---
+
+## 📍 What changed on 2026-05-26 (session 8)
+
+### Migrations applied (0057)
+
+| Migration | Summary |
+|-----------|---------|
+| `0057_instant_loyalty_redemption.sql` | Adds `discount_amount` + `loyalty_points_redeemed` to orders. Rewrites `submit_order` to accept `redeem_points` — validates balance with `FOR UPDATE` lock, server-computes discount (points × `redemption_value_sar`), caps at total, deducts atomically, records ledger entry. |
+
+### Modifier fallback bug fix
+- Removed hardcoded `getItemModifiers()` fallback from `menu-experience.tsx`
+- Admin is now the single source of truth for item modifiers
+- Previously: clearing modifiers in admin had no effect because the customer PWA fell back to keyword-matched rice/extras from `lib/menu-modifiers.ts`
+
+### Instant loyalty redemption (points-as-discount in cart)
+- Cart drawer: "استخدم نقاطك" toggle for signed-in customers with balance > 0
+- One tap applies max discount (points × `redemption_value_sar`, capped at order total)
+- Server-side: `submit_order` validates with `FOR UPDATE` lock, deducts points, records ledger entry
+- RPC awaited when redeeming (no fire-and-forget) — error blocks WhatsApp if deduction fails
+- WhatsApp message: includes "🎁 خصم النقاط: -X ر.س (Y نقطة)" line
+- Admin settings: `redemption_value_sar` hint updated from "coming soon" to active
+- Default conversion: 0.10 = 10 points = 1 SAR discount
+
+### Unsplash image search + auto-optimization
+- Admin menu editor: two options for item photos — "📁 من الجهاز" (device) + "🔍 بحث صور" (Unsplash search)
+- Unsplash search modal: text input, 3×3 grid of results, photographer attribution
+- All uploads auto-optimized server-side via `sharp`: resize max 800px width, compress to WebP 80% quality
+- Typical 2-5MB phone photos reduced to ~50-200KB
+- New API routes: `/api/admin/image/optimize`, `/api/admin/unsplash/search`
+- New components: `unsplash-picker.tsx`, `optimize-image.ts`
+- Unsplash API key (UNSPLASH_ACCESS_KEY) set on .env.local + Vercel
+- `sharp@0.34.5` added as dependency
+
+### Push marketing confirmed live
+- Entire push stack was already built and deployed (sessions 5-7)
+- VAPID keys set on both local and Vercel
+- `push_marketing` addon enabled for KO-KO + RzRz + RzRz-test
+- 3 subscribers already (2 RzRz, 1 RzRz-test, 0 KO-KO)
+- Broadcast UI, auto-push on "ready", notification center — all working
+
+### Pinned for next session
+- **Delivery zones addon gating** — customer-side zone check needs formal `delivery_zones` addon gate
+- **Bridge App .NET Phase 2** — heartbeat sender + invoice status poller + catalog sync (APIs ready)
+- **Payment gateway (Moyasar)** — automate 499 SAR collection
+- **Samer .NET workflow patch** — blocked on Samer modifying cashier UI
+- **Table sessions testing** — feature shipped, needs real QR test
