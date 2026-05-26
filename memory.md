@@ -1,8 +1,8 @@
 # MenuLink · Project Memory
 
 > **Read this first** when picking up the project in a new session.
-> Last saved: **2026-05-26 (session 5)** — 13 migrations (0035–0047), 10 admin UIs, team management page added.
-> Status line: **production SaaS, 5 tenants (4 PAID + 1 test clone). Full Global Operations Core: 12 new tables, 12 addon catalog entries. Admin UIs: branches, drivers, zones, reports, POS sync monitoring (5 tabs + realtime + item mapping writes), branch accounting, team management (CRUD + branch access), orders (driver assign + branch filter + cancel modal). Customer PWA branch picker. Push fix: SW v1.1.0. RzRz test clone at /m/rzrz-bukhari-test (isolated lab, 52 POS mappings verified, pos_settings configured, ready for Bridge App testing). Samer added as ops. 5 POS integration docs. Next: full POS integration test + payment gateway + Bridge App heartbeat + team auth wiring.**
+> Last saved: **2026-05-26 (session 6)** — 6 migrations (0048–0053), 19 commits. Massive feature session.
+> Status line: **production SaaS, 5 tenants. Session 6 shipped: team auth (non-owner admins can log in), F5 menu-only mode (display_only_mode flag), F1 real-time order status tracker (customer RLS fix + timeline + Realtime), F2 delivery zone check (map + zone verification + saved addresses + reverse geocoding), F3 order type switcher (sticky pills), F4 POS mapping enhancement (read-only, 3 sections + catalog table), zone map editor (admin Leaflet map with radius + polygon drawing), multi-tier delivery zones (tiered pricing), delivery fee in cart (subtotal + fee breakdown + WhatsApp message), push notification tenant branding, sign-out fix, CartoDB SW passthrough. POS docs updated (5 ai_memory files). Proof files for LAB-1, F5, F1, POSMON-1. Next: in-app notification center (F8), full POS integration test, payment gateway (Moyasar), Samer .NET workflow patch, Bridge App heartbeat.**
 
 ---
 
