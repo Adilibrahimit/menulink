@@ -441,6 +441,7 @@ function LinkPhoneCard({ slug, userEmail, userName }: { slug: string; userEmail:
       <p className="text-[11px] text-neutral-500 text-center leading-relaxed">
         لا نرسل أي رسائل ترويجية. الرقم يُستخدم فقط لمعرفة طلباتك.
       </p>
+      <SignOutButton />
     </div>
   );
 }

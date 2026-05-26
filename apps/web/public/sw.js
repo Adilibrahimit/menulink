@@ -52,6 +52,7 @@ self.addEventListener("fetch", (event) => {
   if (PASSTHROUGH_HOSTS.has(url.hostname)) return;
   if (url.hostname.endsWith(".supabase.co")) return;
   if (url.hostname.endsWith(".tile.openstreetmap.org")) return;
+  if (url.hostname.endsWith(".basemaps.cartocdn.com")) return;
   if (url.protocol === "tel:") return;
 
   // Only handle our own origin
