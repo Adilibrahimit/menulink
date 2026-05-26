@@ -76,6 +76,7 @@ type Props = {
   menuItems: { id: string; name_ar: string; is_active: boolean }[];
   branches: { id: string; name_ar: string }[];
   posCatalog: PosCatalogRow[];
+  heldInvoiceCount: number;
 };
 
 const TABS = [
@@ -163,6 +164,7 @@ export default function PosDashboard({
   menuItems,
   branches,
   posCatalog,
+  heldInvoiceCount,
 }: Props) {
   const [tab, setTab] = useState<TabKey>("overview");
   const [outbox, setOutbox] = useState<OutboxRow[]>(initialOutbox);
@@ -304,8 +306,8 @@ export default function PosDashboard({
             <KpiCard label="فشل" value={String(stats.failed)} color="rose" />
             <KpiCard label="معلّق" value={String(stats.pending)} color="amber" />
             <KpiCard label="قيد المعالجة" value={String(stats.claimed)} color="blue" />
+            <KpiCard label="معلّقة في POS" value={String(heldInvoiceCount)} color={heldInvoiceCount > 0 ? "amber" : "green"} />
             <KpiCard label="نسبة النجاح" value={stats.synced + stats.failed > 0 ? `${stats.successRate.toFixed(0)}%` : "—"} color="emerald" />
-            <KpiCard label="متوسط المدة" value={stats.avgDuration > 0 ? `${stats.avgDuration.toFixed(0)}ms` : "—"} color="purple" />
           </div>
 
           {/* Sync activity banner */}

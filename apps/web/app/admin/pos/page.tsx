@@ -56,6 +56,20 @@ export default async function AdminPosPage() {
       .eq("restaurant_id", me.restaurant_id),
   ]);
 
+  const syncedOutboxIds = (outbox ?? [])
+    .filter((r: { status: string; order_id: string }) => r.status === "synced")
+    .map((r: { order_id: string }) => r.order_id);
+
+  let heldCount = 0;
+  if (syncedOutboxIds.length > 0) {
+    const { count } = await sb
+      .from("orders")
+      .select("id", { count: "exact", head: true })
+      .in("id", syncedOutboxIds)
+      .eq("status", "submitted");
+    heldCount = count ?? 0;
+  }
+
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-bold">مراقبة نقاط البيع</h1>
@@ -71,6 +85,7 @@ export default async function AdminPosPage() {
         menuItems={(menuItems ?? []) as { id: string; name_ar: string; is_active: boolean }[]}
         branches={(branches ?? []) as { id: string; name_ar: string }[]}
         posCatalog={(posCatalog ?? []) as { pos_item_id: number; pos_item_name: string | null; pos_category: string | null; price: number | null; is_active: boolean }[]}
+        heldInvoiceCount={heldCount}
       />
     </div>
   );
