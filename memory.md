@@ -1,8 +1,8 @@
 # MenuLink · Project Memory
 
 > **Read this first** when picking up the project in a new session.
-> Last saved: **2026-05-26 (session 4 complete)** — 12 migrations (0035–0046), 9 admin UIs, customer PWA branch picker, POS monitoring with item mapping writes, branch accounting, push fix, RzRz test clone fully configured with 52 POS item mappings verified.
-> Status line: **production SaaS, 5 tenants (4 PAID + 1 test clone). Full Global Operations Core: 12 new tables, 12 addon catalog entries. Admin UIs: branches, drivers, zones, reports, POS sync monitoring (5 tabs + realtime + item mapping writes), branch accounting, orders (driver assign + branch filter + cancel modal). Customer PWA branch picker. Push fix: SW v1.1.0. RzRz test clone at /m/rzrz-bukhari-test (isolated lab, 52 POS mappings verified, pos_settings configured, ready for Bridge App testing). Samer added as ops. 5 POS integration docs. Next: full POS integration test + payment gateway + Bridge App heartbeat.**
+> Last saved: **2026-05-26 (session 5)** — 13 migrations (0035–0047), 10 admin UIs, team management page added.
+> Status line: **production SaaS, 5 tenants (4 PAID + 1 test clone). Full Global Operations Core: 12 new tables, 12 addon catalog entries. Admin UIs: branches, drivers, zones, reports, POS sync monitoring (5 tabs + realtime + item mapping writes), branch accounting, team management (CRUD + branch access), orders (driver assign + branch filter + cancel modal). Customer PWA branch picker. Push fix: SW v1.1.0. RzRz test clone at /m/rzrz-bukhari-test (isolated lab, 52 POS mappings verified, pos_settings configured, ready for Bridge App testing). Samer added as ops. 5 POS integration docs. Next: full POS integration test + payment gateway + Bridge App heartbeat + team auth wiring.**
 
 ---
 
@@ -39,6 +39,7 @@ The original v6 static HTML PWA at `menulink-eight.vercel.app` now 302-redirects
 | `https://menulink-admin-five.vercel.app/admin/zones` | Delivery zone management (delivery_zones addon) | ✅ live |
 | `https://menulink-admin-five.vercel.app/admin/reports` | Advanced reports (advanced_reports addon) | ✅ live |
 | `https://menulink-admin-five.vercel.app/admin/pos` | POS sync monitoring (pos_bridge addon) | ✅ live |
+| `https://menulink-admin-five.vercel.app/admin/team` | Team management (branch_admins addon) | ✅ live |
 | `https://menulink-admin-five.vercel.app/m/rzrz-bukhari-test` | RzRz test clone (isolated lab) | ✅ live |
 | `https://menulink-admin-five.vercel.app/ops/login` | Platform admin sign-in | ✅ live |
 | `https://menulink-admin-five.vercel.app/ops` | All tenants list | ✅ live |
@@ -73,7 +74,7 @@ The `sb_publishable_*` anon key is intentionally public and committed in `apps/w
 - **Owner email:** `id.menulink@gmail.com`
 - **Dashboard:** https://supabase.com/dashboard/project/dhmjrrsynfvomlzhggvu
 
-### Schema (46 migrations applied)
+### Schema (47 migrations applied)
 
 | Migration | What it does |
 |---|---|
@@ -85,6 +86,8 @@ The `sb_publishable_*` anon key is intentionally public and committed in `apps/w
 | `0006_ops_helpers.sql` | `get_tenant_owners(uuid)` RPC so ops can see owner emails without direct `auth.users` access. |
 | `0007_menu_images_storage.sql` | Public `menu-images` Storage bucket (5 MB cap, jpeg/png/webp). RLS scoped to `<restaurant_id>/` path. |
 | `0008_fix_rls_and_columns.sql` | **Replaces every JWT-claim-based policy** (broken since 0001 — Supabase nests `app_metadata` claims) with `auth.uid()` + lookup-table policies via `public.owns_restaurant(uuid)` and `public.is_platform_admin()` SECURITY DEFINER helpers. Adds `platform_admin` ops policies on every table (the missing INSERT on `restaurants` was blocking the onboarding wizard). Adds `menu_categories.name_en`, `menu_items.name_en`, `menu_items.description_en`. Rewrites storage RLS with the same auth.uid lookup pattern. |
+
+| `0047_get_restaurant_admins.sql` | `get_restaurant_admins(uuid)` RPC — returns admins + emails + branch_ids[] for the /admin/team page. Callable by owners and ops. |
 
 All migrations live in `apps/web/supabase/migrations/`. Apply locally via `npx supabase db reset` or push to cloud via `supabase db push` (we used the Management API directly in this build).
 
@@ -922,7 +925,7 @@ Massive infrastructure session: implemented the full Global Operations Core plan
 - Sorted by revenue descending
 
 ### What's NOT done yet (schema exists, no UI)
-- Admin UI for managing restaurant_admins (roles/permissions)
+- Team auth wiring — non-owner admins can't log in yet (requireAdmin() + JWT trigger needed)
 - Bridge App heartbeat table (BRIDGE-1, future)
 - Delivery workflow monitoring (RZRZ-DELIVERY-1, future)
 - Table workflow monitoring (RZRZ-TABLE-1, future)
@@ -933,6 +936,26 @@ Massive infrastructure session: implemented the full Global Operations Core plan
 - **Payment gateway (Moyasar)** — automate 499 SAR collection
 - **Samer .NET workflow patch** — re-enable per-type InvoiceType
 - **Bridge App heartbeat** — real health monitoring (BRIDGE-1)
+
+---
+
+## 📍 Session 5 Summary (2026-05-26)
+
+Added team management admin page (`/admin/team`), gated by `branch_admins` addon.
+
+### What was built
+- Migration 0047: `get_restaurant_admins(uuid)` RPC (returns admins + emails + branch access arrays)
+- Server actions: add member (creates auth user via service-role or links existing), edit role/branches, toggle active, remove
+- Client editor: list with role badges, branch chips, add/edit modal with role picker + branch checkboxes, password reveal dialog
+- Nav entry in admin layout (👥 الفريق)
+
+### Scope decisions
+- **Data-only CRUD** — team members can be managed but can't log in yet. Auth wiring (requireAdmin() + JWT trigger for non-owner roles) is a separate follow-up.
+- Roles: branch_manager, cashier, accountant, viewer (owner shown read-only, can't be edited/deleted)
+- Branch access: checkbox multi-select, owners see all branches automatically
+
+### Commit
+- `ff75fbb` — Add team management admin page — CRUD for restaurant_admins with branch access
 
 ---
 
@@ -969,7 +992,7 @@ Massive infrastructure session: implemented the full Global Operations Core plan
 | 23 | Branch accounting page (consolidated KPIs, branch comparison) |
 | + | Multiple memory.md updates throughout |
 
-### New admin pages built this session (9 total)
+### New admin pages built in session 4 (9 total) + session 5 (1)
 
 | Page | Addon gate | What it does |
 |------|-----------|-------------|
@@ -979,6 +1002,7 @@ Massive infrastructure session: implemented the full Global Operations Core plan
 | `/admin/reports` | advanced_reports | KPIs, breakdowns, trends, top items |
 | `/admin/accounting` | branch_accounting | Consolidated + per-branch revenue comparison |
 | `/admin/pos` | pos_bridge | POS sync monitoring (5 tabs, realtime, mapping) |
+| `/admin/team` | branch_admins | Team CRUD: add/edit/deactivate members, role assignment, branch access |
 | `/admin/orders` | — | Enhanced: driver assignment + branch filter + cancel modal |
 
 ### Customer PWA changes
