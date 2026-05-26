@@ -11,6 +11,7 @@ type Props = {
   taglineAr: string | null;
   primaryColor: string;
   tableLabel?: string | null;
+  posterStyle?: "default" | "heritage-emerald";
 };
 
 export default function MenuQR({
@@ -20,6 +21,7 @@ export default function MenuQR({
   taglineAr,
   primaryColor,
   tableLabel,
+  posterStyle,
 }: Props) {
   const previewRef = useRef<HTMLCanvasElement | null>(null);
   const [origin, setOrigin] = useState<string>("");
@@ -93,6 +95,7 @@ export default function MenuQR({
         taglineAr,
         primaryColor,
         tableLabel: tableLabel ?? null,
+        posterStyle,
       });
       triggerDownload(dataUrl, `${fileBase}-poster.png`);
     } finally {

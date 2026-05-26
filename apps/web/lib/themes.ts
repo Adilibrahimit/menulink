@@ -16,6 +16,7 @@ export type ThemeConfig = {
   hasItemDetailSheet: boolean;
   checkoutStyle: "stepper" | "drawer";
   loginFlow: "google-first" | "default";
+  posterStyle: "default" | "heritage-emerald";
 };
 
 const DEFAULT_THEME: ThemeConfig = {
@@ -34,6 +35,7 @@ const DEFAULT_THEME: ThemeConfig = {
   hasItemDetailSheet: false,
   checkoutStyle: "drawer",
   loginFlow: "default",
+  posterStyle: "default",
 };
 
 const RZRZ_THEME: ThemeConfig = {
@@ -68,10 +70,48 @@ const RZRZ_THEME: ThemeConfig = {
   hasItemDetailSheet: true,
   checkoutStyle: "stepper",
   loginFlow: "google-first",
+  posterStyle: "default",
+};
+
+const MAZAJ_ALMOSAFER_THEME: ThemeConfig = {
+  slug: "mazaj-almosafer",
+  cssVars: {
+    "--brand": "#0F2D26",
+    "--bg": "#F4E8D4",
+    "--ink": "#2A1810",
+    "--accent-gold": "#C9A961",
+    "--header-bg": "#0F2D26",
+    "--header-text": "#F4E8D4",
+    "--price-color": "#C9A961",
+    "--card-bg": "#FBF5E8",
+    "--card-border": "#D8C9A8",
+    "--divider": "#D8C9A8",
+    "--text-secondary": "#6B5847",
+    "--calorie-bg": "#FBF5E8",
+    "--calorie-text": "#A0813F",
+    "--cta-bg": "#0F2D26",
+    "--cta-text": "#C9A961",
+  },
+  fonts: {
+    display: "Reem Kufi",
+    body: "Tajawal",
+    googleUrl:
+      "https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap",
+  },
+  categoryStyle: "pills",
+  menuCardStyle: "default",
+  headerStyle: "dark-navy",
+  bottomNavItems: 3,
+  cartBarStyle: "brand-default",
+  hasItemDetailSheet: false,
+  checkoutStyle: "drawer",
+  loginFlow: "default",
+  posterStyle: "heritage-emerald",
 };
 
 const THEMES: Record<string, ThemeConfig> = {
   "rzrz-bukhari": RZRZ_THEME,
+  "mazaj-almosafer": MAZAJ_ALMOSAFER_THEME,
 };
 
 export function getTheme(slug: string): ThemeConfig {

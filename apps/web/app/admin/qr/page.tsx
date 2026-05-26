@@ -1,5 +1,6 @@
 import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase-server";
+import { getTheme } from "@/lib/themes";
 import MenuQR from "@/components/menu-qr";
 
 export default async function AdminQrPage() {
@@ -33,6 +34,7 @@ export default async function AdminQrPage() {
         logoUrl={r.logo_url ?? null}
         taglineAr={r.tagline_ar ?? null}
         primaryColor={r.primary_color ?? "#D32027"}
+        posterStyle={getTheme(r.slug).posterStyle}
       />
     </div>
   );

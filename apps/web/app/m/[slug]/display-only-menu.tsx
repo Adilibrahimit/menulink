@@ -130,13 +130,13 @@ export default function DisplayOnlyMenu({
         {menu.categories.map((cat: PublicCategory) => (
           <section key={cat.id} id={cat.id}>
             <h2
-              className="text-lg font-extrabold text-neutral-900 mb-3"
+              className="text-lg font-extrabold text-[var(--ink,#171717)] mb-3"
               style={{ fontFamily: "var(--font-display)" }}
             >
               {cat.emoji && <span className="ml-1">{cat.emoji}</span>} {cat.name_ar}
             </h2>
             {cat.info_ar && (
-              <p className="text-xs text-neutral-500 -mt-2 mb-3">{cat.info_ar}</p>
+              <p className="text-xs text-[var(--text-secondary,#737373)] -mt-2 mb-3">{cat.info_ar}</p>
             )}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {cat.items.map((item: PublicMenuItem) => (
@@ -156,8 +156,8 @@ function DisplayCard({ item }: { item: PublicMenuItem }) {
   const isHot = item.badges?.some((b) => b.type === "hot");
 
   return (
-    <article className="bg-white rounded-2xl overflow-hidden border border-black/5 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_4px_12px_rgba(0,0,0,0.04)] flex flex-col">
-      <div className="relative aspect-square bg-neutral-100 overflow-hidden">
+    <article className="bg-[var(--card-bg,#fff)] rounded-2xl overflow-hidden border border-[var(--card-border,rgba(0,0,0,0.05))] shadow-[0_1px_3px_rgba(0,0,0,0.05),0_4px_12px_rgba(0,0,0,0.04)] flex flex-col">
+      <div className="relative aspect-square bg-[var(--bg,#f5f5f5)] overflow-hidden">
         {img ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -167,7 +167,7 @@ function DisplayCard({ item }: { item: PublicMenuItem }) {
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-5xl text-neutral-300">
+          <div className="w-full h-full flex items-center justify-center text-5xl text-[var(--text-secondary,#d4d4d4)] opacity-40">
             🍽️
           </div>
         )}
@@ -188,13 +188,13 @@ function DisplayCard({ item }: { item: PublicMenuItem }) {
 
       <div className="p-3 flex flex-col gap-2 flex-1">
         <h3
-          className="font-extrabold text-neutral-900 leading-tight text-[15px]"
+          className="font-extrabold text-[var(--ink,#171717)] leading-tight text-[15px]"
           style={{ fontFamily: "var(--font-display)" }}
         >
           {item.name_ar}
         </h3>
         {item.description_ar && (
-          <p className="text-[11px] text-neutral-500 leading-snug -mt-1 line-clamp-2">
+          <p className="text-[11px] text-[var(--text-secondary,#737373)] leading-snug -mt-1 line-clamp-2">
             {item.description_ar}
           </p>
         )}
@@ -202,7 +202,7 @@ function DisplayCard({ item }: { item: PublicMenuItem }) {
         {(item.calories_kcal || item.sodium_mg || item.caffeine_mg) && (
           <div className="flex flex-wrap items-center gap-1.5 -mt-0.5">
             {item.calories_kcal != null && item.calories_kcal > 0 && (
-              <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200 rounded-full px-1.5 py-0.5 leading-none">
+              <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-[var(--calorie-text,#92400e)] bg-[var(--calorie-bg,#fffbeb)] border border-[var(--calorie-text,#92400e)]/20 rounded-full px-1.5 py-0.5 leading-none">
                 🔥 {toArabicDigits(String(item.calories_kcal))} سعرة
               </span>
             )}
@@ -212,7 +212,7 @@ function DisplayCard({ item }: { item: PublicMenuItem }) {
               </span>
             )}
             {item.caffeine_mg != null && item.caffeine_mg > 0 && (
-              <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-neutral-700 bg-neutral-50 border border-neutral-200 rounded-full px-1.5 py-0.5 leading-none">
+              <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-[var(--text-secondary,#404040)] bg-[var(--bg,#fafafa)] border border-[var(--divider,#e5e5e5)] rounded-full px-1.5 py-0.5 leading-none">
                 ☕ {toArabicDigits(String(item.caffeine_mg))} ملجم
               </span>
             )}
@@ -220,29 +220,38 @@ function DisplayCard({ item }: { item: PublicMenuItem }) {
         )}
 
         {item.allergens && item.allergens.length > 0 && (
-          <p className="text-[9px] text-neutral-500 leading-snug -mt-0.5">
+          <p className="text-[9px] text-[var(--text-secondary,#737373)] leading-snug -mt-0.5">
             ⚠️ {item.allergens.map((k) => ALLERGEN_MAP.get(k)?.label_ar ?? k).join(" · ")}
           </p>
         )}
 
         {/* Prices — static display, no add-to-cart */}
         <div className="mt-auto pt-2 flex flex-wrap gap-1.5">
-          {item.variants.map((v) => (
-            <span
-              key={v.key}
-              className="flex-1 min-w-[88px] inline-flex items-center justify-center gap-1.5 h-9 px-2.5 rounded-full bg-neutral-100 text-neutral-800 text-[11px] font-extrabold"
-            >
-              {v.label && (
-                <span className="text-[10px] font-semibold opacity-70">
-                  {v.label}
-                </span>
-              )}
-              <span className="text-sm font-extrabold">
-                {toArabicDigits(String(v.price))}
+          {item.variants.map((v) =>
+            v.price === 0 && v.label === "اسأل" ? (
+              <span
+                key={v.key}
+                className="flex-1 min-w-[88px] inline-flex items-center justify-center gap-1.5 h-9 px-2.5 rounded-full bg-[var(--accent-gold,#fdc415)]/15 text-[var(--accent-gold,#92400e)] text-[12px] font-bold"
+              >
+                اسأل
               </span>
-              <SarSymbol size={10} className="opacity-60" />
-            </span>
-          ))}
+            ) : (
+              <span
+                key={v.key}
+                className="flex-1 min-w-[88px] inline-flex items-center justify-center gap-1.5 h-9 px-2.5 rounded-full bg-[var(--bg,#f5f5f5)] text-[var(--ink,#262626)] text-[11px] font-extrabold"
+              >
+                {v.label && (
+                  <span className="text-[10px] font-semibold opacity-70">
+                    {v.label}
+                  </span>
+                )}
+                <span className="text-sm font-extrabold">
+                  {toArabicDigits(String(v.price))}
+                </span>
+                <SarSymbol size={10} className="opacity-60" />
+              </span>
+            ),
+          )}
         </div>
       </div>
     </article>

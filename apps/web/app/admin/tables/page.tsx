@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { requireOwner } from "@/lib/auth";
 import { createClient } from "@/lib/supabase-server";
 import { hasAddon } from "@/lib/addons";
+import { getTheme } from "@/lib/themes";
 import TablesEditor from "./tables-editor";
 
 export default async function AdminTablesPage() {
@@ -47,6 +48,7 @@ export default async function AdminTablesPage() {
         taglineAr={r.tagline_ar ?? null}
         primaryColor={r.primary_color ?? "#D32027"}
         initialTables={tables ?? []}
+        posterStyle={getTheme(r.slug).posterStyle}
       />
     </div>
   );

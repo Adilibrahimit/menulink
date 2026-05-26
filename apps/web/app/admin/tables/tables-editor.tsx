@@ -19,6 +19,7 @@ type Props = {
   taglineAr: string | null;
   primaryColor: string;
   initialTables: TableRow[];
+  posterStyle?: "default" | "heritage-emerald";
 };
 
 export default function TablesEditor({
@@ -29,6 +30,7 @@ export default function TablesEditor({
   taglineAr,
   primaryColor,
   initialTables,
+  posterStyle,
 }: Props) {
   const [tables, setTables] = useState<TableRow[]>(initialTables);
   const [newLabel, setNewLabel] = useState("");
@@ -146,6 +148,7 @@ export default function TablesEditor({
         taglineAr,
         primaryColor,
         tableLabel: t.label,
+        posterStyle,
       });
       triggerDownload(dataUrl, `${slug}-table-${slugifyLabel(t.label)}-poster.png`);
     } finally {

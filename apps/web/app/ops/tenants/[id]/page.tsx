@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase-server";
 import TenantActions from "./tenant-actions";
 import DesignForm from "./design-form";
 import MenuQR from "@/components/menu-qr";
+import { getTheme } from "@/lib/themes";
 import AddonManager from "./addon-manager";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -118,6 +119,7 @@ export default async function TenantDetailPage({
           logoUrl={r.logo_url ?? null}
           taglineAr={r.tagline_ar ?? null}
           primaryColor={r.primary_color ?? "#D32027"}
+          posterStyle={getTheme(r.slug).posterStyle}
         />
       </section>
 
