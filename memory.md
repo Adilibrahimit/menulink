@@ -1,8 +1,8 @@
 # MenuLink · Project Memory
 
 > **Read this first** when picking up the project in a new session.
-> Last saved: **2026-05-25 (session 4 final)** — 12 migrations (0035–0046), 7 admin UIs + customer PWA branch picker + POS monitoring dashboard. Full Global Ops Core, POS integration docs, RzRz test clone.
-> Status line: **production SaaS, 5 tenants (4 PAID + 1 test clone). Full Global Operations Core: 12 new tables, 12 addon catalog entries, 7 admin UIs (branches/drivers/zones/reports/pos/orders-driver-assign/orders-branch-filter), customer PWA branch picker, cancel modal. POS sync monitoring dashboard (5 tabs, realtime, read-only mapping). RzRz test clone at /m/rzrz-bukhari-test (isolated lab, dummy WhatsApp, POS disabled). 5 POS integration docs in docs/ai_memory/. submit_order: branch-aware + numbering + session_id. Next: push debugging + payment gateway + Bridge App heartbeat + POS item mapping writes.**
+> Last saved: **2026-05-26 (session 4 complete)** — 12 migrations (0035–0046), 9 admin UIs, customer PWA branch picker, POS monitoring with item mapping writes, branch accounting, push fix, RzRz test clone fully configured with 52 POS item mappings verified.
+> Status line: **production SaaS, 5 tenants (4 PAID + 1 test clone). Full Global Operations Core: 12 new tables, 12 addon catalog entries. Admin UIs: branches, drivers, zones, reports, POS sync monitoring (5 tabs + realtime + item mapping writes), branch accounting, orders (driver assign + branch filter + cancel modal). Customer PWA branch picker. Push fix: SW v1.1.0. RzRz test clone at /m/rzrz-bukhari-test (isolated lab, 52 POS mappings verified, pos_settings configured, ready for Bridge App testing). Samer added as ops. 5 POS integration docs. Next: full POS integration test + payment gateway + Bridge App heartbeat.**
 
 ---
 
@@ -928,8 +928,86 @@ Massive infrastructure session: implemented the full Global Operations Core plan
 - Table workflow monitoring (RZRZ-TABLE-1, future)
 
 ### Pinned for next session
-- **Full POS integration test** — run Bridge App locally against test tenant + local POS DB (RZRZCLIENT)
+- **Full POS integration test** — run Bridge App locally against test tenant + local POS DB (RZRZCLIENT). Test clone is fully ready: 52 item mappings, pos_settings configured, pos_bridge enabled.
+- **Verify push fix** — visit /m/koko on a device, confirm SW updates to v1.1.0, test push delivery
 - **Payment gateway (Moyasar)** — automate 499 SAR collection
 - **Samer .NET workflow patch** — re-enable per-type InvoiceType
 - **Bridge App heartbeat** — real health monitoring (BRIDGE-1)
-- **Verify push fix** — visit /m/koko on a device, confirm SW updates to v1.1.0, test push delivery
+
+---
+
+## 📍 Full Session 4 Summary (2026-05-25 → 2026-05-26)
+
+**Biggest session yet.** 30+ commits across two days. Implemented the entire Global Operations Core plan (phases 3–11), built 9 admin UIs, created the POS integration foundation, and established the test lab.
+
+### Commits (chronological)
+
+| # | What |
+|---|------|
+| 1 | Phase 9A: cancellation foundation (order_reasons, order_events, cancel modal) |
+| 2 | Phase 3: branch foundation (restaurant_branches, auto-seed, submit_order) |
+| 3 | Phase 4: business day numbering (counters, invoice_sequence, daily_order) |
+| 4 | Phase 5: branch admin permissions (roles, branch access) |
+| 5 | Phase 6: delivery routing (service_areas, find_nearest_branch) |
+| 6 | Phase 7: driver workflow (drivers, assignments, cash settlement) |
+| 7 | Phase 8: tables/QR enhancement (bilingual names, QR tokens) |
+| 8 | Phase 10: POS sync events audit trail |
+| 9 | Phase 11: table POS workflow (pos_table_map, session branch support) |
+| 10 | Fix: restore session_id in submit_order (regression from Phase 4) |
+| 11 | Branches admin UI (CRUD, service types, default/active) |
+| 12 | Drivers admin UI (CRUD, branch assignment, type selection) |
+| 13 | Delivery zones admin UI (radius, fees, min order, ETA) |
+| 14 | Branch picker in customer PWA cart drawer |
+| 15 | Driver assignment in admin orders |
+| 16 | Branch filter in admin orders |
+| 17 | Advanced reports page (KPIs, breakdowns, trends, top items) |
+| 18 | POSDOC-1: 5 POS integration docs in docs/ai_memory/ |
+| 19 | LAB-1: RzRz test clone /m/rzrz-bukhari-test |
+| 20 | POSMON-1: POS sync monitoring dashboard (5 tabs, realtime) |
+| 21 | Push notification fix (SW v1.1.0, icon paths, error handling) |
+| 22 | POS item mapping writes (inline POS ID input + validation) |
+| 23 | Branch accounting page (consolidated KPIs, branch comparison) |
+| + | Multiple memory.md updates throughout |
+
+### New admin pages built this session (9 total)
+
+| Page | Addon gate | What it does |
+|------|-----------|-------------|
+| `/admin/branches` | multi_branch | Branch CRUD with bilingual names, service types |
+| `/admin/drivers` | drivers | Driver roster with branch assignment |
+| `/admin/zones` | delivery_zones | Delivery zone radius/fees per branch |
+| `/admin/reports` | advanced_reports | KPIs, breakdowns, trends, top items |
+| `/admin/accounting` | branch_accounting | Consolidated + per-branch revenue comparison |
+| `/admin/pos` | pos_bridge | POS sync monitoring (5 tabs, realtime, mapping) |
+| `/admin/orders` | — | Enhanced: driver assignment + branch filter + cancel modal |
+
+### Customer PWA changes
+
+- Branch picker in cart drawer (multi-branch restaurants only)
+- Branch name in WhatsApp message
+- WhatsApp routed to branch-specific number
+
+### Infrastructure created
+
+- 12 migrations (0035–0046) applied to prod Supabase
+- 12 new tables (branches, counters, admins, service_areas, drivers, assignments, reasons, events, sync_events, table_map, pos_table_map)
+- 5 POS integration docs in docs/ai_memory/
+- RzRz test clone with 52 verified POS item mappings
+- Samer ops account (samer@menulink.com)
+- Test owner account (rzrz.test@menulink.test)
+- Push notification SW fix (v1.0.0 → v1.1.0)
+
+### RzRz multi-branch config
+
+- 2 branches: فرع العزيزية (default) + فرع الملز
+- 1 driver: خالد المطيري (internal, عزيزية)
+- 1 delivery zone: عزيزية 10km, 5 SAR fee, 20 SAR min
+- All addons enabled: multi_branch, drivers, delivery_zones, advanced_reports, branch_accounting, pos_bridge, tables_qr, excel_export, loyalty, push_marketing
+
+### Test tenant (rzrz-bukhari-test)
+
+- Fully isolated: separate restaurant_id, dummy WhatsApp, separate owner account
+- 52 POS item mappings verified against local RZRZCLIENT database
+- POS settings configured (online_customer_id=999, counter=1, invoice_type=1)
+- pos_bridge enabled — ready for Bridge App integration testing
+- All other addons enabled for full feature testing
