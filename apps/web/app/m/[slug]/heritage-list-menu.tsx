@@ -300,95 +300,117 @@ export default function HeritageListMenu({
 
 function HeritageItem({ item }: { item: PublicMenuItem }) {
   const img = item.image_url ?? SLUG_TO_IMG[item.slug] ?? null;
-  const price = item.variants[0]?.price ?? null;
-  const isAsk = price === 0 && item.variants[0]?.label === "اسأل";
   const subtitle = item.description_ar || null;
+  const hasMultipleVariants = item.variants.length > 1;
+  const singleVariant = item.variants[0];
+  const isAsk = singleVariant?.price === 0 && singleVariant?.label === "اسأل";
 
   return (
     <article
-      className="grid items-center gap-2.5 rounded-xl transition-all duration-150"
+      className="rounded-xl transition-all duration-150"
       style={{
-        gridTemplateColumns: "auto 1fr auto",
         padding: "12px 14px",
         background: "var(--card-bg)",
         border: "1px solid transparent",
         boxShadow: "0 2px 8px rgba(42,24,16,0.06), 0 1px 2px rgba(42,24,16,0.04)",
       }}
     >
-      {/* Thumbnail */}
-      <div
-        className="w-14 h-14 rounded-md shrink-0 overflow-hidden grid place-items-center"
-        style={{
-          background: "linear-gradient(135deg, var(--header-bg) 0%, #1A4A3F 100%)",
-        }}
-      >
-        {img ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={img} alt={item.name_ar} loading="lazy" className="w-full h-full object-cover" />
-        ) : (
-          <svg width="28" height="28" viewBox="0 0 32 32" fill="none" style={{ color: "var(--accent-gold)", opacity: 0.6 }}>
-            <ellipse cx="16" cy="16" rx="9" ry="13" stroke="currentColor" strokeWidth="1.8" />
-            <path d="M 16 4 Q 16 16 16 28" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-          </svg>
-        )}
-      </div>
-
-      {/* Name + English subtitle */}
-      <div className="min-w-0">
-        <span
-          className="text-base font-semibold leading-snug inline"
+      <div className="grid items-center gap-2.5" style={{ gridTemplateColumns: "auto 1fr auto" }}>
+        {/* Thumbnail */}
+        <div
+          className="w-14 h-14 rounded-md shrink-0 overflow-hidden grid place-items-center"
           style={{
-            fontFamily: "var(--font-display)",
-            color: "var(--ink)",
+            background: "linear-gradient(135deg, var(--header-bg) 0%, #1A4A3F 100%)",
           }}
         >
-          {item.name_ar}
-        </span>
-        {subtitle && (
+          {img ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={img} alt={item.name_ar} loading="lazy" className="w-full h-full object-cover" />
+          ) : (
+            <svg width="28" height="28" viewBox="0 0 32 32" fill="none" style={{ color: "var(--accent-gold)", opacity: 0.6 }}>
+              <ellipse cx="16" cy="16" rx="9" ry="13" stroke="currentColor" strokeWidth="1.8" />
+              <path d="M 16 4 Q 16 16 16 28" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+          )}
+        </div>
+
+        {/* Name + subtitle */}
+        <div className="min-w-0">
           <span
-            className="block text-xs mt-0.5"
+            className="text-base font-semibold leading-snug inline"
+            style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}
+          >
+            {item.name_ar}
+          </span>
+          {subtitle && (
+            <span
+              className="block text-xs mt-0.5"
+              style={{ fontFamily: "var(--font-body)", color: "var(--text-secondary)", lineHeight: 1.4 }}
+            >
+              {subtitle}
+            </span>
+          )}
+        </div>
+
+        {/* Single price (when only one variant) */}
+        {!hasMultipleVariants && (
+          <div
+            className="whitespace-nowrap"
             style={{
-              fontFamily: "var(--font-body)",
-              color: "var(--text-secondary)",
-              lineHeight: 1.4,
+              fontFamily: "'Cormorant Garamond', Georgia, serif",
+              fontWeight: 600,
+              fontSize: isAsk ? 13 : 22,
+              lineHeight: 1,
+              color: isAsk ? "var(--calorie-text)" : "var(--header-bg)",
             }}
           >
-            {subtitle}
-          </span>
+            {isAsk ? (
+              <span style={{ fontFamily: "var(--font-display)", fontWeight: 500 }}>اسأل</span>
+            ) : singleVariant?.price != null ? (
+              <>
+                {singleVariant.price}
+                <span className="mr-1" style={{ fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 500, color: "var(--calorie-text)", letterSpacing: "0.5px" }}>
+                  ر.س
+                </span>
+              </>
+            ) : null}
+          </div>
         )}
+
+        {/* Empty cell when multiple variants (prices go below) */}
+        {hasMultipleVariants && <div />}
       </div>
 
-      {/* Price */}
-      <div
-        className="whitespace-nowrap"
-        style={{
-          fontFamily: "'Cormorant Garamond', Georgia, serif",
-          fontWeight: 600,
-          fontSize: isAsk ? 13 : 22,
-          lineHeight: 1,
-          color: isAsk ? "var(--calorie-text)" : "var(--header-bg)",
-        }}
-      >
-        {isAsk ? (
-          <span style={{ fontFamily: "var(--font-display)", fontWeight: 500 }}>اسأل</span>
-        ) : price != null ? (
-          <>
-            {price}
+      {/* Multiple variants row */}
+      {hasMultipleVariants && (
+        <div className="flex flex-wrap gap-2 mt-2 mr-[66px]">
+          {item.variants.map((v) => (
             <span
-              className="mr-1"
-              style={{
-                fontFamily: "var(--font-display)",
-                fontSize: 11,
-                fontWeight: 500,
-                color: "var(--calorie-text)",
-                letterSpacing: "0.5px",
-              }}
+              key={v.key}
+              className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[12px] font-semibold"
+              style={{ background: "var(--bg)", color: "var(--ink)" }}
             >
-              ر.س
+              {v.label && <span className="text-[11px] opacity-70">{v.label}</span>}
+              <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 16, fontWeight: 600 }}>
+                {v.price}
+              </span>
+              <span style={{ fontFamily: "var(--font-display)", fontSize: 9, color: "var(--calorie-text)" }}>ر.س</span>
             </span>
-          </>
-        ) : null}
-      </div>
+          ))}
+        </div>
+      )}
+
+      {/* Calorie badge */}
+      {item.calories_kcal != null && item.calories_kcal > 0 && (
+        <div className="mt-1.5 mr-[66px]">
+          <span
+            className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full"
+            style={{ background: "var(--bg)", color: "var(--calorie-text)", border: "1px solid var(--divider)" }}
+          >
+            🔥 {item.calories_kcal} سعرة
+          </span>
+        </div>
+      )}
     </article>
   );
 }
