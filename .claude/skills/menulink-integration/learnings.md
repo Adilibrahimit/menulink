@@ -4,7 +4,7 @@
 >
 > **🆕 Read [`memory.md`](../../../memory.md) at project root for current state.** This file is for *transferable gotchas* — patterns that apply to any tenant, any session.
 >
-> **Last updated:** 2026-05-24 (0029: push_subscriptions nullable customer_id fix)
+> **Last updated:** 2026-05-29 (Mazaj Almosafer onboarding — theming, client-design reproduction, SQL auth-user gotcha, push protection)
 > **Update protocol:** Append new entries under the right section. Keep each entry to 2-4 lines. Tag with confidence level.
 
 ---
@@ -451,6 +451,30 @@ The cashier UI also has Family/Section types (likely 2, but untested today). Eac
 **Triggers:** upsert, PostgREST, RLS, SELECT policy, onConflict, push_subscriptions
 **Triggers:** table session, expiry, reuse window, stale session, dine-in
 **Triggers:** hardcoded config, DB migration, backfill, modifiers_json, owner-editable, ghost config
+
+### LRN-2026-05-29-per-tenant-theming-via-themeconfig (confidence: high) ⭐
+**Context:** Mazaj Almosafer needed a totally distinct look (heritage list layout, custom QR poster) vs the standard card-grid display-only menu. Onboarded as the 6th tenant.
+**Learning:** **Drive per-tenant visual identity through `apps/web/lib/themes.ts` (`ThemeConfig` keyed by slug), never per-tenant `if (slug === ...)` branches scattered in components.** Added two fields this session: `menuLayout: "card-grid" | "heritage-list"` (page.tsx picks the component) and `posterStyle: "default" | "heritage-emerald"` (menu-qr-poster.ts picks the draw fn). Each new field must be added to ALL theme objects (DEFAULT, RZRZ, MAZAJ) or tsc fails. Also: `display-only-menu.tsx` was refactored from hardcoded `neutral-*` Tailwind to CSS variables so any themed tenant renders correctly — do this for any shared customer component.
+**Source:** session:2026-05-29 Mazaj onboarding
+**Triggers:** new tenant look, theme, menuLayout, posterStyle, ThemeConfig, heritage design, display-only styling
+
+### LRN-2026-05-29-reproduce-client-design-dont-reinvent (confidence: high) ⭐⭐ PROCESS
+**Context:** Client supplied a finished HTML menu template + a finished QR poster image. First attempt reused the generic card-grid component and hand-drew an approximate QR poster with canvas paths. User rejected twice ("why a different design", "you changed the logo").
+**Learning:** **When the client provides a design artifact, reproduce THAT exactly — don't substitute an existing component or a "close enough" redraw.** For hard-to-recreate brand assets (illustrations, calligraphy, logos), COMPOSITE the real QR/content onto the original image rather than redrawing it. The winning QR approach: whiteout the QR region of the client's poster → save as `public/qr-templates/<slug>.png` → `drawHeritagePoster()` loads it and draws only the QR into the frame. Pixel-perfect, zero guessing.
+**Source:** session:2026-05-29 Mazaj QR + menu design
+**Triggers:** client design, HTML template, QR poster, reference image, composite vs redraw, brand mark, logo
+
+### LRN-2026-05-29-auth-user-via-sql-needs-empty-string-tokens (confidence: high) ⭐⭐ CRITICAL
+**Context:** Created the Mazaj owner directly in `auth.users` via the Management API SQL endpoint (bcrypt escape hatch, same as RzRz). Login failed with GoTrue 500 "Database error querying schema"; signInWithPassword returned the same.
+**Learning:** **GoTrue chokes when `auth.users` token columns are NULL — they must be empty strings `''`.** A working user (compare to KO-KO) has `confirmation_token=''`, `recovery_token=''`, `email_change=''`, `email_change_token_new=''`, `email_change_token_current=''`, `reauthentication_token=''`, `phone_change=''`, `phone_change_token=''` (all empty string, never NULL), plus `email_verified:true` in `raw_user_meta_data`. Fix is a single UPDATE setting all those to `''`. Always set these on INSERT (not just RETURNING id) and also create the matching `auth.identities` row (provider='email', identity_data with sub+email). Add this to the onboarding playbook for any SQL-created owner.
+**Source:** session:2026-05-29 Mazaj owner login debugging
+**Triggers:** auth.users, GoTrue, Database error querying schema, confirmation_token, null token, signInWithPassword, bcrypt owner, SQL-created user
+
+### LRN-2026-05-29-github-push-protection-blocks-hardcoded-secrets (confidence: high)
+**Context:** Committed `scripts/mazaj-upload-photos.mjs` with the Supabase service_role key + PAT hardcoded. `git push` was rejected by GitHub push protection (GH013).
+**Learning:** **GitHub push protection scans all commits in a push and blocks Supabase keys (`sb_secret_*`, `sbp_*`).** Scripts must read secrets from env (`process.env.SUPABASE_SERVICE_ROLE_KEY` / `SUPABASE_PAT`), never hardcode. Since the secret sat in the committed (but unpushed) commit, fixing the file + a new commit on top is NOT enough — the secret stays in the bad commit and the push still fails. Correct fix: scrub the file, `git add`, then `git commit --amend` (safe here — the commit was local-only) so the secret never enters pushed history. Also gitignore raw asset dumps: the 460MB `docs/clients-menu/ITEMS_PHOTO/` was excluded (photos live in Storage).
+**Source:** session:2026-05-29 commit/push of Mazaj source files
+**Triggers:** push protection, GH013, hardcoded secret, service_role, PAT, git amend, gitignore large binaries
 
 ---
 

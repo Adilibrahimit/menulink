@@ -1,8 +1,8 @@
 # MenuLink · Project Memory
 
 > **Read this first** when picking up the project in a new session.
-> Last saved: **2026-05-26 (session 8)** — 3 commits, 1 migration (0057).
-> Status line: **production SaaS, 5 tenants. Session 8: (1) fixed modifier fallback bug — admin is single source of truth for item modifiers; (2) instant loyalty redemption — customers use points as discount in cart, no admin approval needed (migration 0057: discount_amount + loyalty_points_redeemed on orders, submit_order rewritten with FOR UPDATE lock); (3) Unsplash image search + auto-optimization for admin menu photos (sharp: resize 800px, WebP 80%); (4) push marketing confirmed fully built and live (3 subscribers). Next: delivery zones addon gating, Bridge App .NET phase 2, Moyasar payment gateway, Samer .NET patch (blocked).**
+> Last saved: **2026-05-29 (session 9)** — 1 migration (0058), 6 commits.
+> Status line: **production SaaS, 6 tenants. Session 9: onboarded Mazaj Almosafer (مقهى مزاج المسافر) — 6th tenant, menu-only display mode, Riyadh coffee/dessert/hookah lounge. (1) Migration 0058: 13 categories + 176 items + 176 variants; (2) new heritage list menu design (heritage-list-menu.tsx) matching the client's HTML template, driven by new ThemeConfig fields menuLayout + posterStyle; (3) custom QR poster = real QR composited onto client's exact design image (template in public/qr-templates/); (4) 148/176 photos mapped+uploaded from a 460MB library (gitignored); (5) 103/176 calories imported from the client's printed menu. Owner: mazaj.almosafer@gmail.com / Mazaj2026!. Next: 28 remaining photos, 9 printed-menu items pending approval, Mazaj sub amount TBD; carry-overs: delivery zones gating, Bridge App .NET phase 2, Moyasar, Samer .NET patch.**
 
 ---
 
@@ -1083,3 +1083,45 @@ Added team management admin page (`/admin/team`), gated by `branch_admins` addon
 - **Payment gateway (Moyasar)** — automate 499 SAR collection
 - **Samer .NET workflow patch** — blocked on Samer modifying cashier UI
 - **Table sessions testing** — feature shipped, needs real QR test
+
+---
+
+## 📍 What changed on 2026-05-29 (session 9 — Mazaj Almosafer onboarding)
+
+### Overview
+Onboarded the **6th tenant: مقهى مزاج المسافر (Mazaj Almosafer)** — a Riyadh 24/7 coffee / dessert / hookah lounge, **menu-only display mode** (no ordering). First tenant with a fully distinct visual identity driven by the theme system. Restaurant id `9f19fe0d-e1fd-482d-a9b1-e3c7ec99ef59`, slug `mazaj-almosafer`, live at `/m/mazaj-almosafer`.
+
+### Migration applied (0058)
+| Migration | Summary |
+|-----------|---------|
+| `0058_mazaj_almosafer_tenant.sql` | Idempotent DO block. Creates restaurant (display_only_mode=true, colors #0F2D26/#F4E8D4, tagline قهوة·حلى·شيشة, IG almusaferlounge) + 13 categories + 176 items + 176 variants (data-driven from embedded JSON) + subscription (yearly, pending_payment, amount 0) + default branch. Null-price items get a `single` variant labeled `اسأل` at price 0. |
+
+### Heritage list menu design (matches client's HTML template)
+- New `apps/web/app/m/[slug]/heritage-list-menu.tsx` — reproduces `docs/clients-menu/almosafer/index.html` 1:1: dark emerald hero + dallah SVG + ornamental dividers, cream body with radial-dot texture, list rows (56px thumb + name + serif price), gold scroll-spy category pills (IntersectionObserver), footer. Shows multiple variants as pills + 🔥 calorie badges.
+- `ThemeConfig` gained two fields: `menuLayout: "card-grid" | "heritage-list"` and `posterStyle: "default" | "heritage-emerald"`. `MAZAJ_ALMOSAFER_THEME` registered in `lib/themes.ts` (Reem Kufi + Tajawal + Cormorant Garamond + Dancing Script fonts).
+- `page.tsx` dispatches display-only tenants to HeritageListMenu vs DisplayOnlyMenu by `theme.menuLayout`.
+- Refactored `display-only-menu.tsx` to use CSS variables instead of hardcoded `neutral-*` Tailwind — benefits all themed display-only tenants.
+
+### Custom QR poster
+- Winning approach: composite the **real QR onto the client's exact design image** (palm leaf + "al musafer" script + gold ornamental frame), NOT redraw with canvas. Blank template committed at `apps/web/public/qr-templates/mazaj-almosafer.png`; `drawHeritagePoster()` in `lib/menu-qr-poster.ts` loads it and draws the QR into the frame region. Gated by `posterStyle: "heritage-emerald"`, threaded through `menu-qr.tsx` + admin/qr + admin/tables + ops tenant pages.
+- Print-ready poster: `docs/clients-menu/almosafer/mazaj-almosafer-qr-poster.png`.
+
+### Photos
+- 148/176 items mapped from the **460MB photo library** at `docs/clients-menu/ITEMS_PHOTO/` (now gitignored — photos live in Storage). Optimized to WebP via sharp, uploaded to `menu-images/<rid>/menu/<slug>.webp`. 28 unmapped = mostly branded bottles (Pepsi/Sprite/Red Bull/Holsten) not in the library. Upload script: `scripts/mazaj-upload-photos.mjs` (secrets read from env, not hardcoded).
+
+### Calorie import (from client's printed menu)
+- Source: printed-menu photos in `docs/clients-menu/almosafer/Kal/`. **103/176 items now have `calories_kcal`.** Mojitos are per-base (7UP 140, Sprite 160, Code Red 130, Red Bull 120). Shisha (56) has no calories on the print. Full mapping in `docs/clients-menu/almosafer/mazaj-calorie-mapping.xlsx`.
+- كيكة ماربل set to **160** (print value) — overrode an earlier owner-entered 500, confirmed by user.
+- Owner-set values preserved for items not on the print (كيكة عسل 718, لافا مولتن 544, بودينج 612, مكسرات 800, + 2 new dessert items).
+
+### Owner account
+- `mazaj.almosafer@gmail.com` / `Mazaj2026!` (placeholder email until client provides real one). **Gotcha hit:** creating an auth user via raw SQL with NULL token columns caused GoTrue "Database error querying schema" on login — fixed by setting `confirmation_token`/`recovery_token`/`email_change*`/etc. to `''` (empty string, not NULL) + `email_verified:true` in raw_user_meta_data. See learnings.md.
+
+### 9 printed-menu items NOT in DB (pending owner approval, not added)
+تونا، كروسان جبن، كروسان زعتر، كاليتا، ايس دريب، لاتيه بارد، سقنتشر بارد، قهوه سعودية، كبوس. Also note printed prices differ from DB for sandwiches (25 vs 15) and several drinks — left unchanged.
+
+### Pinned for next session
+- **Mazaj remaining photos** — 28 items still on coffee-bean placeholder (mostly branded bottles); owner can add via /admin/menu (Unsplash search or device upload)
+- **Mazaj new items** — 9 printed-menu items above await owner's go-ahead to add
+- **Mazaj subscription amount** — currently 0/pending_payment, price TBD with client
+- Carry-overs: delivery zones addon gating · Bridge App .NET Phase 2 · Moyasar · Samer .NET patch
