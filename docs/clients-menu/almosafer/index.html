@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0F2D26" />
+  <meta name="description" content="مقهى مزاج المسافر — قهوة، حلى، شيشة" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <title>مقهى مزاج المسافر · القائمة</title>
+
+  <!-- ثلاث عوائل خطوط متكاملة:
+       Reem Kufi: عناوين عربية بروح المخطوطات الكوفية، يعطي ثقل وأناقة
+       Tajawal: نصوص عربية حديثة ناعمة، يقرأ بسهولة على الجوال
+       Cormorant Garamond: أرقام لاتينية سيريفية، يعطي إحساس "قائمة فاخرة مطبوعة" -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;500;600;700&family=Tajawal:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+
+  <!-- شعار افتراضي: دلة قهوة عربية بسيطة كـ favicon. SVG inline بدون ملف خارجي -->
+  <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%230F2D26"/><path d="M 30 35 Q 30 25 40 25 L 55 25 Q 60 25 60 30 L 60 32 L 70 38 L 65 42 L 60 40 L 60 55 Q 60 70 50 75 L 35 75 Q 25 70 25 55 L 25 40 Q 25 35 30 35 Z" fill="none" stroke="%23C9A961" stroke-width="2.5" stroke-linejoin="round"/></svg>' />
+
+  <style>
+    /* ============================================================
+       متغيرات التصميم — كل القيم القابلة للتخصيص في مكان واحد
+       غيّر هنا فقط لتعديل العلامة التجارية بدون لمس بقية الكود
+       ============================================================ */
+    :root {
+      /* لوحة الألوان: مستوحاة من ثقافة القهوة العربية التقليدية
+         - الأخضر العميق: لون دلة القهوة النحاسية المؤكسدة
+         - الكريم: ورق المخطوطات العربية القديمة
+         - الذهب النحاسي: لمعة الفنجال في الإضاءة الخفيفة */
+      --color-bg-dark: #0F2D26;          /* أخضر زمردي عميق - للهيرو والشريط العلوي */
+      --color-bg-dark-soft: #1A4A3F;     /* أخضر أفتح - للـ overlays والـ pills النشطة */
+      --color-bg: #F4E8D4;               /* الكريم الأساسي - خلفية القائمة */
+      --color-bg-card: #FBF5E8;          /* كريم أفتح - خلفية الكروت */
+      --color-accent: #C9A961;           /* الذهب النحاسي - تفاصيل وأكسنت */
+      --color-accent-dark: #A0813F;      /* ذهب أعمق - للنصوص فوق الكريم */
+      --color-text: #2A1810;             /* بني داكن دافئ - النص الأساسي */
+      --color-text-muted: #6B5847;       /* بني متوسط - الوصف والثانوي */
+      --color-line: #D8C9A8;             /* لون الخطوط المنقطة في الكروت */
+
+      /* أبعاد الإطارات والمسافات */
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+
+      /* ظلال — ناعمة وعميقة لإحساس "ورق ثقيل" */
+      --shadow-card: 0 2px 8px rgba(42, 24, 16, 0.06), 0 1px 2px rgba(42, 24, 16, 0.04);
+      --shadow-card-hover: 0 8px 24px rgba(42, 24, 16, 0.1);
+
+      /* انتقالات معايرة */
+      --t-fast: 180ms ease;
+      --t-base: 320ms cubic-bezier(0.4, 0, 0.2, 1);
+
+      /* الخطوط */
+      --font-display: 'Reem Kufi', 'Tahoma', sans-serif;
+      --font-body: 'Tajawal', 'Cairo', 'Tahoma', sans-serif;
+      --font-serif: 'Cormorant Garamond', Georgia, serif;
+    }
+
+    /* ============================================================
+       Reset مبسط
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+      scroll-behavior: smooth;
+      /* scroll-padding يحجز مساحة للناف الثابت عند القفز لقسم */
+      scroll-padding-top: 130px;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.55;
+      min-height: 100dvh;
+      /* خلفية بنقش هندسي عربي خفيف جداً — يعطي texture بدون أن يشتت */
+      background-image:
+        radial-gradient(circle at 50% 50%, rgba(201, 169, 97, 0.04) 1px, transparent 1px),
+        radial-gradient(circle at 0% 0%, rgba(201, 169, 97, 0.025) 1px, transparent 1px);
+      background-size: 32px 32px, 24px 24px;
+      background-position: 0 0, 16px 16px;
+    }
+
+    img { max-width: 100%; display: block; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+    /* ============================================================
+       الهيرو — خلفية خضراء عميقة، يحدد هوية المكان فور فتح القائمة
+       ============================================================ */
+    .hero {
+      background: var(--color-bg-dark);
+      color: var(--color-bg);
+      padding: 32px 24px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      /* النص يعلو فوق الزخارف */
+      isolation: isolate;
+    }
+
+    /* زخرفة هندسية — دائرتان شبه شفافتين تعطيان عمق دون أن تكونا واضحتين */
+    .hero::before,
+    .hero::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(201, 169, 97, 0.12) 0%, transparent 70%);
+      z-index: -1;
+      pointer-events: none;
+    }
+    .hero::before { top: -100px; right: -80px; width: 280px; height: 280px; }
+    .hero::after { bottom: -120px; left: -60px; width: 240px; height: 240px; }
+
+    /* خط ذهبي رفيع تحت الهيرو يفصله بصرياً عن القائمة */
+    .hero {
+      border-bottom: 1px solid var(--color-accent);
+      box-shadow: 0 4px 12px rgba(15, 45, 38, 0.15);
+    }
+
+    /* الشعار: دلة قهوة عربية مرسومة بـ SVG، باللون الذهبي */
+    .brand-mark {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 14px;
+      color: var(--color-accent);
+    }
+
+    .brand-name {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 28px;
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+      color: var(--color-bg);
+    }
+
+    /* خط زخرفي بين الاسم والشعار، مكون من خطين رفيعين ونقطة ذهبية */
+    .brand-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 10px auto 12px;
+      max-width: 220px;
+    }
+    .brand-divider::before,
+    .brand-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--color-accent);
+      opacity: 0.5;
+    }
+    .brand-divider__dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.15);
+    }
+
+    .brand-tagline {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 14px;
+      color: var(--color-accent);
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    .brand-tagline-ar {
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 13px;
+      color: var(--color-bg);
+      opacity: 0.75;
+    }
+
+    /* معلومات سريعة تحت الهيرو: ساعات العمل، كبار فقط، عدد التصنيفات */
+    .hero-info {
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(201, 169, 97, 0.2);
+    }
+
+    .hero-info__item {
+      text-align: center;
+    }
+
+    .hero-info__value {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      font-size: 18px;
+      color: var(--color-accent);
+      line-height: 1;
+    }
+
+    .hero-info__label {
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--color-bg);
+      opacity: 0.7;
+      margin-top: 4px;
+      text-transform: uppercase;
+    }
+
+    /* ============================================================
+       شريط الفئات الأفقي الثابت
+       ============================================================ */
+    .categories-nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--color-bg-dark);
+      border-bottom: 1px solid var(--color-accent);
+      padding: 12px 0;
+      transition: box-shadow var(--t-base);
+    }
+
+    .categories-nav.scrolled {
+      box-shadow: 0 4px 16px rgba(15, 45, 38, 0.25);
+    }
+
+    .categories-scroll {
+      display: flex;
+      gap: 8px;
+      padding: 0 16px;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .categories-scroll::-webkit-scrollbar { display: none; }
+
+    /* كل pill: حدود ذهبية رفيعة فوق خلفية خضراء */
+    .category-pill {
+      flex-shrink: 0;
+      padding: 7px 16px;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      border: 1px solid rgba(201, 169, 97, 0.4);
+      color: var(--color-bg);
+      font-family: var(--font-display);
+      font-weight: 500;
+      font-size: 13px;
+      white-space: nowrap;
+      letter-spacing: 0.3px;
+      transition: all var(--t-fast);
+    }
+
+    .category-pill:hover {
+      border-color: var(--color-accent);
+      background: rgba(201, 169, 97, 0.1);
+    }
+
+    /* الـ pill النشط: مملوء بالذهب، نص داكن، ظل خفيف */
+    .category-pill.active {
+      background: var(--color-accent);
+      border-color: var(--color-accent);
+      color: var(--color-bg-dark);
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(201, 169, 97, 0.3);
+    }
+
+    /* ============================================================
+       أقسام القائمة
+       ============================================================ */
+    .menu-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 0 60px;
+    }
+
+    .menu-section {
+      padding: 32px 20px 8px;
+      scroll-margin-top: 80px;
+    }
+
+    /* رأس القسم: زخرفة عربية تقليدية - خط منقط + نقطة + اسم القسم + نقطة + خط منقط
+       تشبه التنسيق الذي تجده في القوائم المطبوعة للمطاعم الفاخرة */
+    .section-header {
+      text-align: center;
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 24px;
+      color: var(--color-bg-dark);
+      display: inline-block;
+      padding: 0 20px;
+      background: var(--color-bg);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* خط زخرفي طولي خلف العنوان */
+    .section-header::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 10%;
+      left: 10%;
+      height: 1px;
+      background: var(--color-accent);
+      opacity: 0.4;
+      z-index: 0;
+    }
+
+    .section-title-en {
+      display: block;
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 13px;
+      color: var(--color-accent-dark);
+      letter-spacing: 1.5px;
+      margin-top: 6px;
+      text-transform: uppercase;
+    }
+
+    /* رمز زخرفي أسفل العنوان: ثلاث نقاط ذهبية */
+    .section-ornament {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      margin-top: 12px;
+    }
+    .section-ornament::before,
+    .section-ornament::after {
+      content: '';
+      width: 20px; height: 1px;
+      background: var(--color-accent);
+      opacity: 0.5;
+    }
+    .section-ornament__dot {
+      width: 4px; height: 4px;
+      background: var(--color-accent);
+      border-radius: 50%;
+    }
+
+    /* ============================================================
+       كروت الأصناف — أسلوب "القائمة المطبوعة الراقية"
+       اسم الصنف يميناً، خط منقط، سعر يساراً (بخط سيريفي)
+       ============================================================ */
+    .items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .item {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: baseline;
+      gap: 10px;
+      padding: 12px 14px;
+      background: var(--color-bg-card);
+      border-radius: var(--radius-md);
+      border: 1px solid transparent;
+      box-shadow: var(--shadow-card);
+      transition: all var(--t-fast);
+      position: relative;
+    }
+
+    .item:hover {
+      border-color: var(--color-accent);
+      box-shadow: var(--shadow-card-hover);
+      transform: translateY(-1px);
+    }
+
+    /* صورة مصغرة اختيارية على اليمين (في RTL = البداية) */
+    .item__thumb {
+      width: 56px;
+      height: 56px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--color-bg-dark) 0%, var(--color-bg-dark-soft) 100%);
+      flex-shrink: 0;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      position: relative;
+    }
+
+    .item__thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* البديل عندما لا توجد صورة — حبة قهوة ذهبية مرسومة بـ SVG
+       (لاحظ: هذا أفضل من حرف لأن الكثير من أسماء الأصناف عربية والحروف العربية المنفردة لا تظهر جميلة) */
+    .item__thumb-placeholder {
+      color: var(--color-accent);
+      opacity: 0.6;
+    }
+
+    /* محتوى الصنف: الاسم العربي + الإنجليزي */
+    .item__content {
+      min-width: 0;
+      position: relative;
+      /* الخط المنقط يمتد من النهاية الفعلية للاسم حتى السعر
+         هذا ما يعطي إحساس "القائمة المطبوعة" — نستخدم flex مع decoration */
+    }
+
+    .item__name {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--color-text);
+      line-height: 1.3;
+      display: inline;
+      /* خلفية لإخفاء الخط المنقط خلف الاسم */
+      background: var(--color-bg-card);
+      padding-left: 6px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .item__name-en {
+      display: block;
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 12px;
+      color: var(--color-text-muted);
+      direction: ltr;
+      text-align: right;
+      margin-top: 2px;
+      letter-spacing: 0.3px;
+    }
+
+    /* الخط المنقط الذي يربط الاسم بالسعر — السحر الذي يعطي إحساس القائمة المطبوعة */
+    .item__leader {
+      flex: 1;
+      border-bottom: 1.5px dotted var(--color-line);
+      margin: 0 4px;
+      height: 11px;
+      min-width: 20px;
+      opacity: 0.7;
+    }
+
+    /* السعر بخط سيريفي لاتيني للإحساس الراقي */
+    .item__price {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      font-size: 22px;
+      color: var(--color-bg-dark);
+      line-height: 1;
+      background: var(--color-bg-card);
+      padding-right: 6px;
+      position: relative;
+      z-index: 1;
+      white-space: nowrap;
+    }
+
+    .item__price-currency {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--color-accent-dark);
+      margin-right: 3px;
+      letter-spacing: 0.5px;
+    }
+
+    /* الأصناف بدون سعر محدد: "اسأل" بدلاً من السعر */
+    .item__price--ask {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-style: normal;
+      color: var(--color-accent-dark);
+      font-weight: 500;
+    }
+
+    /* ============================================================
+       الفوتر — معلومات الكافيه وساعات العمل
+       ============================================================ */
+    .footer {
+      background: var(--color-bg-dark);
+      color: var(--color-bg);
+      padding: 40px 24px 32px;
+      text-align: center;
+      border-top: 1px solid var(--color-accent);
+      margin-top: 40px;
+    }
+
+    .footer__ornament {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .footer__ornament::before,
+    .footer__ornament::after {
+      content: '';
+      width: 30px; height: 1px;
+      background: var(--color-accent);
+      opacity: 0.5;
+    }
+    .footer__ornament-icon {
+      color: var(--color-accent);
+      font-size: 14px;
+    }
+
+    .footer__name {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 20px;
+      margin-bottom: 6px;
+    }
+
+    .footer__tagline {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 13px;
+      color: var(--color-accent);
+      margin-bottom: 24px;
+      letter-spacing: 0.5px;
+    }
+
+    .footer__hours {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+      padding: 18px 0;
+      border-top: 1px solid rgba(201, 169, 97, 0.2);
+      border-bottom: 1px solid rgba(201, 169, 97, 0.2);
+    }
+
+    .footer__hour-item {
+      text-align: center;
+    }
+
+    .footer__hour-label {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      color: var(--color-accent);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .footer__hour-value {
+      font-family: var(--font-display);
+      font-weight: 500;
+      font-size: 14px;
+      color: var(--color-bg);
+    }
+
+    .footer__powered {
+      font-size: 11px;
+      color: var(--color-bg);
+      opacity: 0.6;
+      margin-top: 16px;
+    }
+
+    .footer__powered a {
+      color: var(--color-accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    /* ============================================================
+       شريط أدوات صغير ثابت في الأسفل: تبديل اللغة + زر العودة للأعلى
+       ============================================================ */
+    .floating-tools {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 40;
+    }
+
+    .floating-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--color-bg-dark);
+      color: var(--color-accent);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 4px 12px rgba(15, 45, 38, 0.25);
+      transition: all var(--t-fast);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .floating-btn:hover {
+      transform: scale(1.05);
+      background: var(--color-bg-dark-soft);
+    }
+
+    .floating-btn.up {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--t-base), transform var(--t-fast);
+    }
+    .floating-btn.up.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ============================================================
+       أنيميشن تدريجي عند تحميل الصفحة
+       ============================================================ */
+    .menu-section {
+      animation: fadeUp var(--t-base) backwards;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .menu-section:nth-child(1) { animation-delay: 40ms; }
+    .menu-section:nth-child(2) { animation-delay: 80ms; }
+    .menu-section:nth-child(3) { animation-delay: 120ms; }
+    .menu-section:nth-child(4) { animation-delay: 160ms; }
+    .menu-section:nth-child(5) { animation-delay: 200ms; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ============================================================
+       شاشات أكبر: تظهر الأصناف في عمودين للاستفادة من المساحة
+       ============================================================ */
+    @media (min-width: 720px) {
+      .items-list { 
+        display: grid; 
+        grid-template-columns: 1fr 1fr; 
+        gap: 12px 20px; 
+      }
+      .hero { padding: 48px 24px 56px; }
+      .brand-name { font-size: 36px; }
+      .brand-mark { width: 64px; height: 64px; }
+    }
+
+    /* ============================================================
+       وضع الإنجليزي (إذا فعّله المستخدم)
+       ============================================================ */
+    html[lang="en"] {
+      direction: ltr;
+    }
+    html[lang="en"] .item__name-en {
+      direction: ltr;
+      text-align: left;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ============================================================
+       الهيرو
+       ============================================================ -->
+  <header class="hero">
+    <!-- شعار افتراضي: دلة قهوة عربية ذهبية. استبدل بـ <img src="./images/logo.png" /> عند توفر شعار العميل -->
+    <svg class="brand-mark" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- جسم الدلة -->
+      <path d="M 30 35 Q 30 25 40 25 L 55 25 Q 60 25 60 30 L 60 32 L 75 40 L 70 44 L 60 41 L 60 58 Q 60 75 50 80 L 35 80 Q 22 75 22 58 L 22 40 Q 22 35 30 35 Z"
+            stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" />
+      <!-- المقبض -->
+      <path d="M 60 45 Q 72 48 72 55 Q 72 62 60 65"
+            stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" />
+      <!-- بخار يتصاعد -->
+      <path d="M 38 18 Q 36 14 38 10 M 44 18 Q 42 14 44 10 M 50 18 Q 48 14 50 10"
+            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.6" />
+    </svg>
+
+    <h1 class="brand-name">مقهى مزاج المسافر</h1>
+
+    <div class="brand-divider">
+      <span class="brand-divider__dot"></span>
+    </div>
+
+    <div class="brand-tagline">Coffee · Dessert · Hookah</div>
+    <div class="brand-tagline-ar">قهوة · حلى · شيشة</div>
+
+    <div class="hero-info">
+      <div class="hero-info__item">
+        <div class="hero-info__value">24/7</div>
+        <div class="hero-info__label">Open</div>
+      </div>
+      <div class="hero-info__item">
+        <div class="hero-info__value">13</div>
+        <div class="hero-info__label">Categories</div>
+      </div>
+      <div class="hero-info__item">
+        <div class="hero-info__value">+18</div>
+        <div class="hero-info__label">Adults</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       شريط الفئات (يُولّد بـ JS من البيانات)
+       ============================================================ -->
+  <nav class="categories-nav" id="categories-nav" aria-label="تصنيفات القائمة">
+    <div class="categories-scroll" id="categories-scroll" role="tablist"></div>
+  </nav>
+
+  <!-- ============================================================
+       المحتوى الرئيسي (يُولّد بـ JS)
+       ============================================================ -->
+  <main class="menu-container" id="menu-main"></main>
+
+  <!-- ============================================================
+       الفوتر
+       ============================================================ -->
+  <footer class="footer">
+    <div class="footer__ornament">
+      <span class="footer__ornament-icon">✧</span>
+    </div>
+
+    <div class="footer__name">مقهى مزاج المسافر</div>
+    <div class="footer__tagline">Making memories, one cup at a time</div>
+
+    <div class="footer__hours">
+      <div class="footer__hour-item">
+        <div class="footer__hour-label">Hours</div>
+        <div class="footer__hour-value">٢٤ ساعة</div>
+      </div>
+      <div class="footer__hour-item">
+        <div class="footer__hour-label">Location</div>
+        <div class="footer__hour-value">الرياض</div>
+      </div>
+      <div class="footer__hour-item">
+        <div class="footer__hour-label">Entry</div>
+        <div class="footer__hour-value">كبار +18</div>
+      </div>
+    </div>
+
+    <div class="footer__powered">
+      Powered by <a href="https://menulink.app" target="_blank" rel="noopener">MenuLink</a>
+    </div>
+  </footer>
+
+  <!-- أدوات عائمة: تبديل اللغة وزر العودة للأعلى -->
+  <div class="floating-tools">
+    <button class="floating-btn" id="lang-btn" aria-label="Switch language">EN</button>
+    <button class="floating-btn up" id="scroll-top" aria-label="العودة للأعلى">↑</button>
+  </div>
+
+  <script>
+    /*
+     * ============================================================
+     * بيانات العلامة التجارية — غيّر هنا لكل عميل جديد
+     * ============================================================
+     */
+    const BRAND = {
+      nameAr: 'مقهى مزاج المسافر',
+      nameEn: 'Mazaj Al-Musafer Cafe',
+      taglineAr: 'قهوة · حلى · شيشة',
+      taglineEn: 'Coffee · Dessert · Hookah',
+      footerAr: 'صناعة الذكريات، فنجاناً فنجاناً',
+      footerEn: 'Making memories, one cup at a time'
+    };
+
+    /*
+     * ============================================================
+     * بيانات القائمة — 176 صنف في 13 تصنيف
+     * ============================================================
+     */
+    const MENU = {"categories":[{"ar":"المشروبات الساخنة","en":"Hot Drinks"},{"ar":"المشروبات باردة","en":"Cold Drinks"},{"ar":"عصائر طبيعية","en":"juices"},{"ar":"المشروبات","en":"Drinks"},{"ar":"موهيتو سفن اب","en":"Mojito 7UP"},{"ar":"موهيتو سبرايت","en":"Mojito Sprite"},{"ar":"موهيتو كود رد","en":"Mojito Code Red"},{"ar":"موهيتو رد بول","en":"Mojito Red Bull"},{"ar":"ساندويش","en":"Sandwich"},{"ar":"حلى","en":"Desert"},{"ar":"شيشة صباحي","en":"Shisha AM"},{"ar":"شيشة مسائي","en":"Shisha PM"},{"ar":"تجديد رأس 39","en":"Shisha 39"}],"items":[{"price":null,"category_ar":"المشروبات الساخنة","category_en":"Hot Drinks","name_ar":"قهوة عربي","name_en":"","slug":"qhwa-arby"},{"price":15,"category_ar":"المشروبات الساخنة","category_en":"Hot Drinks","name_ar":"امريكانو","name_en":"Americano","slug":"americano"},{"price":18,"category_ar":"المشروبات الساخنة","category_en":"Hot Drinks","name_ar":"كابتشينو","name_en":"Cappuccino","slug":"cappuccino"},{"price":22,"category_ar":"المشروبات الساخنة","category_en":"Hot Drinks","name_ar":"كيمكس","name_en":"Chemex","slug":"chemex"},{"price":10,"category_ar":"المشروبات الساخنة","category_en":"Hot Drinks","name_ar":"قهوة اليوم","name_en":"Coffee Day","slug":"coffee-day"},{"price":15,"category_ar":"المشروبات الساخنة","category_en":"Hot Drinks","name_ar":"كورتادو","name_en":"Cortado","slug":"cortado"},{"price":12,"category_ar":"المشروبات الساخنة","category_en":"Hot Drinks","name_ar":"اسبريسو دبل","name_en":"Espresso Double","slug":"espresso-double"},{"price":8,"category_ar":"المشروبات الساخنة","category_en":"Hot Drinks","name_ar":"اسبريسو سنقل","name_en":"Espresso Single","slug":"espresso-single"},{"price":16,"category_ar":"المشروبات الساخنة","category_en":"Hot Drinks","name_ar":"فلات وايت","name_en":"Flat White","slug":"flat-white"},{"price":5,"category_ar":"المشروبات الساخنة","category_en":"Hot Drinks","name_ar":"زنجبيل","name_en":"Ginger Tea","slug":"ginger-tea"},{"price":5,"category_ar":"المشروبات الساخنة","category_en":"Hot Drinks","name_ar":"شاي اخضر","name_en":"Green Tea","slug":"green-tea"},{"price":28,"category_ar":"المشروبات الساخنة","category_en":"Hot Drinks","name_ar":"هوت شوكليت","name_en":"Hot Chocolate","slug":"hot-chocolate"},{"price":17,"category_ar":"المشروبات الساخنة","category_en":"Hot Drinks","name_ar":"لاتيه","name_en":"Latte","slug":"latte"},{"price":5,"category_ar":"المشروبات الساخنة","category_en":"Hot Drinks","name_ar":"شاي نعناع","name_en":"Mint Tea","slug":"mint-tea"},{"price":22,"category_ar":"المشروبات الساخنة","category_en":"Hot Drinks","name_ar":"بستاثيو","name_en":"Pestachio","slug":"pestachio"},{"price":5,"category_ar":"المشروبات الساخنة","category_en":"Hot Drinks","name_ar":"شاي احمر","name_en":"Red Tea","slug":"red-tea"},{"price":49,"category_ar":"المشروبات الساخنة","category_en":"Hot Drinks","name_ar":"سيجنتشر 49","name_en":"Signature 49","slug":"signature-49"},{"price":18,"category_ar":"المشروبات الساخنة","category_en":"Hot Drinks","name_ar":"سبانيش لاتيه","name_en":"Spanish Latte","slug":"spanish-latte"},{"price":5,"category_ar":"المشروبات الساخنة","category_en":"Hot Drinks","name_ar":"طائفي","name_en":"Taifi","slug":"taifi"},{"price":20,"category_ar":"المشروبات الساخنة","category_en":"Hot Drinks","name_ar":"براد شاي اخضر","name_en":"Tea Pot Green","slug":"tea-pot-green"},{"price":20,"category_ar":"المشروبات الساخنة","category_en":"Hot Drinks","name_ar":"براد شاي احمر","name_en":"Tea Pot Red","slug":"tea-pot-red"},{"price":10,"category_ar":"المشروبات الساخنة","category_en":"Hot Drinks","name_ar":"قهوه تركي","name_en":"Turkish Coffee","slug":"turkish-coffee"},{"price":16,"category_ar":"المشروبات الساخنة","category_en":"Hot Drinks","name_ar":"في ٦٠","name_en":"V60","slug":"v60"},{"price":22,"category_ar":"المشروبات الساخنة","category_en":"Hot Drinks","name_ar":"وايت موكا","name_en":"White Mocha","slug":"white-mocha"},{"price":18,"category_ar":"المشروبات باردة","category_en":"Cold Drinks","name_ar":"ايس في 60","name_en":"Iced  V60","slug":"iced-v60"},{"price":16,"category_ar":"المشروبات باردة","category_en":"Cold Drinks","name_ar":"ايس امريكانو","name_en":"Iced Americano","slug":"iced-americano"},{"price":18,"category_ar":"المشروبات باردة","category_en":"Cold Drinks","name_ar":"ايس لاتيه","name_en":"Iced Latte","slug":"iced-latte"},{"price":20,"category_ar":"المشروبات باردة","category_en":"Cold Drinks","name_ar":"ايس موكا","name_en":"Iced Mocha","slug":"iced-mocha"},{"price":20,"category_ar":"المشروبات باردة","category_en":"Cold Drinks","name_ar":"ايس سبانيش لاتيه","name_en":"Iced Spanish Latte","slug":"iced-spanish-latte"},{"price":25,"category_ar":"المشروبات باردة","category_en":"Cold Drinks","name_ar":"بيستاشو لاتيه","name_en":"Pistachio Latte","slug":"pistachio-latte"},{"price":18,"category_ar":"عصائر طبيعية","category_en":"juices","name_ar":"عصير بطيخ","name_en":"","slug":"asyr-btykh"},{"price":18,"category_ar":"عصائر طبيعية","category_en":"juices","name_ar":"عصير برتقال","name_en":"","slug":"asyr-brtqal"},{"price":18,"category_ar":"عصائر طبيعية","category_en":"juices","name_ar":"عصير ليمون نعناع","name_en":"","slug":"asyr-lymwn-nanaa"},{"price":20,"category_ar":"عصائر طبيعية","category_en":"juices","name_ar":"عصير طبيعي 20","name_en":"","slug":"asyr-tbyay-20"},{"price":5,"category_ar":"المشروبات","category_en":"Drinks","name_ar":"سفن اب دايت","name_en":"7 UP Diet","slug":"7-up-diet"},{"price":5,"category_ar":"المشروبات","category_en":"Drinks","name_ar":"سفن اب","name_en":"7 Up","slug":"7-up"},{"price":10,"category_ar":"المشروبات","category_en":"Drinks","name_ar":"كود ريد","name_en":"Code Red","slug":"code-red"},{"price":5,"category_ar":"المشروبات","category_en":"Drinks","name_ar":"كولا دايت","name_en":"Cola Diet","slug":"cola-diet"},{"price":10,"category_ar":"المشروبات","category_en":"Drinks","name_ar":"هولستن تفاح","name_en":"Houlsten Apple","slug":"houlsten-apple"},{"price":10,"category_ar":"المشروبات","category_en":"Drinks","name_ar":"هولستن شعير","name_en":"Houlsten Barley","slug":"houlsten-barley"},{"price":10,"category_ar":"المشروبات","category_en":"Drinks","name_ar":"هولستن عنب اسود","name_en":"Houlsten Black Grape","slug":"houlsten-black-grape"},{"price":10,"category_ar":"المشروبات","category_en":"Drinks","name_ar":"هولستن ليمون نعناع","name_en":"Houlsten Lemon Mint","slug":"houlsten-lemon-mint"},{"price":10,"category_ar":"المشروبات","category_en":"Drinks","name_ar":"هولستن فراولة","name_en":"Houlsten Strawberry","slug":"houlsten-strawberry"},{"price":10,"category_ar":"المشروبات","category_en":"Drinks","name_ar":"هولستن توت بري","name_en":"Houlsten Wild Berry","slug":"houlsten-wild-berry"},{"price":8,"category_ar":"المشروبات","category_en":"Drinks","name_ar":"ايس تي مشكل","name_en":"Ice Tea Mix","slug":"ice-tea-mix"},{"price":5,"category_ar":"المشروبات","category_en":"Drinks","name_ar":"ميريندا برقال","name_en":"Orange Miranda","slug":"orange-miranda"},{"price":8,"category_ar":"المشروبات","category_en":"Drinks","name_ar":"ايس تي خوخ","name_en":"Peach Iced Tea","slug":"peach-iced-tea"},{"price":5,"category_ar":"المشروبات","category_en":"Drinks","name_ar":"بيبسي","name_en":"Pepsi","slug":"pepsi"},{"price":3,"category_ar":"المشروبات","category_en":"Drinks","name_ar":"مياه عاديه","name_en":"Plain Water","slug":"plain-water"},{"price":15,"category_ar":"المشروبات","category_en":"Drinks","name_ar":"ريد بول","name_en":"Red Bull","slug":"red-bull"},{"price":10,"category_ar":"المشروبات","category_en":"Drinks","name_ar":"مياه غازية","name_en":"Sparkling water","slug":"sparkling-water"},{"price":5,"category_ar":"المشروبات","category_en":"Drinks","name_ar":"سبرايت","name_en":"Sprite","slug":"sprite"},{"price":15,"category_ar":"موهيتو سفن اب","category_en":"Mojito 7UP","name_ar":"موهيتو سفن اب توت أسود","name_en":"Mojito 7UP Blackberry","slug":"mojito-7up-blackberry"},{"price":15,"category_ar":"موهيتو سفن اب","category_en":"Mojito 7UP","name_ar":"موهيتو سفن اب بلو","name_en":"Mojito 7UP Blueberry","slug":"mojito-7up-blueberry"},{"price":15,"category_ar":"موهيتو سفن اب","category_en":"Mojito 7UP","name_ar":"موهيتو سفن اب ليمون","name_en":"Mojito 7UP Lemon","slug":"mojito-7up-lemon"},{"price":15,"category_ar":"موهيتو سفن اب","category_en":"Mojito 7UP","name_ar":"موهيتو سفن اب مكس بيري","name_en":"Mojito 7UP Mixed Berry","slug":"mojito-7up-mixed-berry"},{"price":15,"category_ar":"موهيتو سفن اب","category_en":"Mojito 7UP","name_ar":"موهيتو سفن اب باشن فروت","name_en":"Mojito 7UP Passion Fruit","slug":"mojito-7up-passion-fruit"},{"price":15,"category_ar":"موهيتو سفن اب","category_en":"Mojito 7UP","name_ar":"موهيتو سفن اب خوخ","name_en":"Mojito 7UP Peach","slug":"mojito-7up-peach"},{"price":15,"category_ar":"موهيتو سفن اب","category_en":"Mojito 7UP","name_ar":"موهيتو سفن اب رمان","name_en":"Mojito 7UP Pomegranate","slug":"mojito-7up-pomegranate"},{"price":15,"category_ar":"موهيتو سفن اب","category_en":"Mojito 7UP","name_ar":"موهيتو سفن اب توت أحمر","name_en":"Mojito 7UP Raspberry","slug":"mojito-7up-raspberry"},{"price":15,"category_ar":"موهيتو سفن اب","category_en":"Mojito 7UP","name_ar":"موهيتو سفن اب فراولة","name_en":"Mojito 7UP Strawberry","slug":"mojito-7up-strawberry"},{"price":15,"category_ar":"موهيتو سفن اب","category_en":"Mojito 7UP","name_ar":"موهيتو سفن اب بطيخ","name_en":"Mojito 7UP Watermelon","slug":"mojito-7up-watermelon"},{"price":15,"category_ar":"موهيتو سبرايت","category_en":"Mojito Sprite","name_ar":"موهيتو سبرايت توت أسود","name_en":"Mojito Sprite Blackberry","slug":"mojito-sprite-blackberry"},{"price":15,"category_ar":"موهيتو سبرايت","category_en":"Mojito Sprite","name_ar":"موهيتو سبرايت بلو","name_en":"Mojito Sprite Blueberry","slug":"mojito-sprite-blueberry"},{"price":15,"category_ar":"موهيتو سبرايت","category_en":"Mojito Sprite","name_ar":"موهيتو سبرايت ليمون","name_en":"Mojito Sprite Lemon","slug":"mojito-sprite-lemon"},{"price":15,"category_ar":"موهيتو سبرايت","category_en":"Mojito Sprite","name_ar":"موهيتو سبرايت مكس بيري","name_en":"Mojito Sprite Mixed Berry","slug":"mojito-sprite-mixed-berry"},{"price":15,"category_ar":"موهيتو سبرايت","category_en":"Mojito Sprite","name_ar":"موهيتو سبرايت باشن فروت","name_en":"Mojito Sprite Passion Fruit","slug":"mojito-sprite-passion-fruit"},{"price":15,"category_ar":"موهيتو سبرايت","category_en":"Mojito Sprite","name_ar":"موهيتو سبرايت خوخ","name_en":"Mojito Sprite Peach","slug":"mojito-sprite-peach"},{"price":15,"category_ar":"موهيتو سبرايت","category_en":"Mojito Sprite","name_ar":"موهيتو سبرايت رمان","name_en":"Mojito Sprite Pomegranate","slug":"mojito-sprite-pomegranate"},{"price":15,"category_ar":"موهيتو سبرايت","category_en":"Mojito Sprite","name_ar":"موهيتو سبرايت توت أحمر","name_en":"Mojito Sprite Raspberry","slug":"mojito-sprite-raspberry"},{"price":15,"category_ar":"موهيتو سبرايت","category_en":"Mojito Sprite","name_ar":"موهيتو سبرايت فراولة","name_en":"Mojito Sprite Strawberry","slug":"mojito-sprite-strawberry"},{"price":15,"category_ar":"موهيتو سبرايت","category_en":"Mojito Sprite","name_ar":"موهيتو سبرايت بطيخ","name_en":"Mojito Sprite Watermelon","slug":"mojito-sprite-watermelon"},{"price":18,"category_ar":"موهيتو كود رد","category_en":"Mojito Code Red","name_ar":"موهيتو كود رد توت أسود","name_en":"Mojito Code Red Blackberry","slug":"mojito-code-red-blackberry"},{"price":18,"category_ar":"موهيتو كود رد","category_en":"Mojito Code Red","name_ar":"موهيتو كود رد بلو","name_en":"Mojito Code Red Blueberry","slug":"mojito-code-red-blueberry"},{"price":18,"category_ar":"موهيتو كود رد","category_en":"Mojito Code Red","name_ar":"موهيتو كود رد ليمون","name_en":"Mojito Code Red Lemon","slug":"mojito-code-red-lemon"},{"price":18,"category_ar":"موهيتو كود رد","category_en":"Mojito Code Red","name_ar":"موهيتو كود رد مكس بيري","name_en":"Mojito Code Red Mixed Berry","slug":"mojito-code-red-mixed-berry"},{"price":18,"category_ar":"موهيتو كود رد","category_en":"Mojito Code Red","name_ar":"موهيتو كود رد باشن فروت","name_en":"Mojito Code Red Passion Fruit","slug":"mojito-code-red-passion-fruit"},{"price":18,"category_ar":"موهيتو كود رد","category_en":"Mojito Code Red","name_ar":"موهيتو كود رد خوخ","name_en":"Mojito Code Red Peach","slug":"mojito-code-red-peach"},{"price":18,"category_ar":"موهيتو كود رد","category_en":"Mojito Code Red","name_ar":"موهيتو كود رد رمان","name_en":"Mojito Code Red Pomegranate","slug":"mojito-code-red-pomegranate"},{"price":18,"category_ar":"موهيتو كود رد","category_en":"Mojito Code Red","name_ar":"موهيتو كود رد توت أحمر","name_en":"Mojito Code Red Raspberry","slug":"mojito-code-red-raspberry"},{"price":18,"category_ar":"موهيتو كود رد","category_en":"Mojito Code Red","name_ar":"موهيتو كود رد فراولة","name_en":"Mojito Code Red Strawberry","slug":"mojito-code-red-strawberry"},{"price":18,"category_ar":"موهيتو كود رد","category_en":"Mojito Code Red","name_ar":"موهيتو كود رد بطيخ","name_en":"Mojito Code Red Watermelon","slug":"mojito-code-red-watermelon"},{"price":22,"category_ar":"موهيتو رد بول","category_en":"Mojito Red Bull","name_ar":"موهيتو رد بول توت أسود","name_en":"Mojito Red Bull Blackberry","slug":"mojito-red-bull-blackberry"},{"price":22,"category_ar":"موهيتو رد بول","category_en":"Mojito Red Bull","name_ar":"موهيتو رد بول بلو","name_en":"Mojito Red Bull Blueberry","slug":"mojito-red-bull-blueberry"},{"price":22,"category_ar":"موهيتو رد بول","category_en":"Mojito Red Bull","name_ar":"موهيتو رد بول ليمون","name_en":"Mojito Red Bull Lemon","slug":"mojito-red-bull-lemon"},{"price":22,"category_ar":"موهيتو رد بول","category_en":"Mojito Red Bull","name_ar":"موهيتو رد بول مكس بيري","name_en":"Mojito Red Bull Mixed Berry","slug":"mojito-red-bull-mixed-berry"},{"price":22,"category_ar":"موهيتو رد بول","category_en":"Mojito Red Bull","name_ar":"موهيتو رد بول باشن فروت","name_en":"Mojito Red Bull Passion Fruit","slug":"mojito-red-bull-passion-fruit"},{"price":22,"category_ar":"موهيتو رد بول","category_en":"Mojito Red Bull","name_ar":"موهيتو رد بول خوخ","name_en":"Mojito Red Bull Peach","slug":"mojito-red-bull-peach"},{"price":22,"category_ar":"موهيتو رد بول","category_en":"Mojito Red Bull","name_ar":"موهيتو رد بول رمان","name_en":"Mojito Red Bull Pomegranate","slug":"mojito-red-bull-pomegranate"},{"price":22,"category_ar":"موهيتو رد بول","category_en":"Mojito Red Bull","name_ar":"موهيتو رد بول توت أحمر","name_en":"Mojito Red Bull Raspberry","slug":"mojito-red-bull-raspberry"},{"price":22,"category_ar":"موهيتو رد بول","category_en":"Mojito Red Bull","name_ar":"موهيتو رد بول فراولة","name_en":"Mojito Red Bull Strawberry","slug":"mojito-red-bull-strawberry"},{"price":22,"category_ar":"موهيتو رد بول","category_en":"Mojito Red Bull","name_ar":"موهيتو رد بول بطيخ","name_en":"Mojito Red Bull Watermelon","slug":"mojito-red-bull-watermelon"},{"price":15,"category_ar":"ساندويش","category_en":"Sandwich","name_ar":"سيزار دجاج","name_en":"Ceaser Chicken","slug":"ceaser-chicken"},{"price":15,"category_ar":"ساندويش","category_en":"Sandwich","name_ar":"فاهيتا","name_en":"Fajita","slug":"fajita"},{"price":15,"category_ar":"ساندويش","category_en":"Sandwich","name_ar":"حلومي","name_en":"Halloumi","slug":"halloumi"},{"price":15,"category_ar":"ساندويش","category_en":"Sandwich","name_ar":"ماكسيكان","name_en":"Mexican","slug":"mexican"},{"price":15,"category_ar":"ساندويش","category_en":"Sandwich","name_ar":"شاورما دجاج","name_en":"Shawarma Chicken","slug":"shawarma-chicken"},{"price":18,"category_ar":"حلى","category_en":"Desert","name_ar":"تراميسو","name_en":"","slug":"tramysw"},{"price":18,"category_ar":"حلى","category_en":"Desert","name_ar":"بودق شوكليت","name_en":"","slug":"bwdq-shwklyt"},{"price":18,"category_ar":"حلى","category_en":"Desert","name_ar":"كيك كراميل","name_en":"","slug":"kyk-kramyl"},{"price":18,"category_ar":"حلى","category_en":"Desert","name_ar":"لافا مولتن كيك","name_en":"","slug":"lafa-mwltn-kyk"},{"price":18,"category_ar":"حلى","category_en":"Desert","name_ar":"كيكة عسل","name_en":"","slug":"kyka-asl"},{"price":18,"category_ar":"حلى","category_en":"Desert","name_ar":"بودينج الشوكولاته بالبندق","name_en":"","slug":"bwdynj-alshwkwlath-balbndq"},{"price":18,"category_ar":"حلى","category_en":"Desert","name_ar":"أولكر كيك","name_en":"","slug":"awlkr-kyk"},{"price":18,"category_ar":"حلى","category_en":"Desert","name_ar":"كرانشي شوكليت روز بيري","name_en":"","slug":"kranshy-shwklyt-rwz-byry"},{"price":18,"category_ar":"حلى","category_en":"Desert","name_ar":"كرانشي شوكليت","name_en":"","slug":"kranshy-shwklyt"},{"price":10,"category_ar":"حلى","category_en":"Desert","name_ar":"بسبوسة","name_en":"","slug":"bsbwsa"},{"price":null,"category_ar":"حلى","category_en":"Desert","name_ar":"كيكة الليمون","name_en":"","slug":"kyka-allymwn"},{"price":10,"category_ar":"حلى","category_en":"Desert","name_ar":"کیكة ماربل","name_en":"","slug":"کیka-marbl"},{"price":10,"category_ar":"حلى","category_en":"Desert","name_ar":"کلاودي كيك","name_en":"","slug":"کlawdy-kyk"},{"price":null,"category_ar":"حلى","category_en":"Desert","name_ar":"لايرز كيك","name_en":"","slug":"layrz-kyk"},{"price":null,"category_ar":"حلى","category_en":"Desert","name_ar":"سان سباستيان","name_en":"","slug":"san-sbastyan"},{"price":null,"category_ar":"حلى","category_en":"Desert","name_ar":"بسبوسه","name_en":"Basbousa","slug":"basbousa"},{"price":null,"category_ar":"حلى","category_en":"Desert","name_ar":"تشيز كيك","name_en":"Cheesecake","slug":"cheesecake"},{"price":18,"category_ar":"حلى","category_en":"Desert","name_ar":"كيك تشوكليت","name_en":"Chocolate Cake","slug":"chocolate-cake"},{"price":10,"category_ar":"حلى","category_en":"Desert","name_ar":"مكسرات 10 ريال","name_en":"nuts 10 Sr","slug":"nuts-10-sr"},{"price":15,"category_ar":"حلى","category_en":"Desert","name_ar":"مكسرات 15 ريال","name_en":"nuts 15 Sr","slug":"nuts-15-sr"},{"price":null,"category_ar":"حلى","category_en":"Desert","name_ar":"كيكة بيستاشيو","name_en":"Pistachio Cake","slug":"pistachio-cake"},{"price":null,"category_ar":"حلى","category_en":"Desert","name_ar":"رد فيلفت","name_en":"Red Velvet","slug":"red-velvet"},{"price":null,"category_ar":"حلى","category_en":"Desert","name_ar":"سان سبستيان","name_en":"San Sabastian","slug":"san-sabastian"},{"price":55,"category_ar":"شيشة صباحي","category_en":"Shisha AM","name_ar":"تفاحتين مكس","name_en":"Almosfaer Mix","slug":"almosfaer-mix"},{"price":55,"category_ar":"شيشة صباحي","category_en":"Shisha AM","name_ar":"كاندي","name_en":"Candy","slug":"candy"},{"price":55,"category_ar":"شيشة صباحي","category_en":"Shisha AM","name_ar":"تفاحتين فاخر","name_en":"Double Apple Premium","slug":"double-apple-premium"},{"price":55,"category_ar":"شيشة صباحي","category_en":"Shisha AM","name_ar":"تفاحتين نخلة","name_en":"Double Apples Palm","slug":"double-apples-palm"},{"price":55,"category_ar":"شيشة صباحي","category_en":"Shisha AM","name_ar":"علكة فاخر","name_en":"Gum Premium","slug":"gum-premium"},{"price":55,"category_ar":"شيشة صباحي","category_en":"Shisha AM","name_ar":"مزايا علكة قرفة","name_en":"Mazaya Cinnamon Gum","slug":"mazaya-cinnamon-gum"},{"price":55,"category_ar":"شيشة صباحي","category_en":"Shisha AM","name_ar":"شمام مزايا","name_en":"Melon Mzaya","slug":"melon-mzaya"},{"price":55,"category_ar":"شيشة صباحي","category_en":"Shisha AM","name_ar":"بلوبيري فاخر","name_en":"Premium Blueberry","slug":"premium-blueberry"},{"price":55,"category_ar":"شيشة صباحي","category_en":"Shisha AM","name_ar":"عنب توت فاخر","name_en":"Premium Grape Berry","slug":"premium-grape-berry"},{"price":55,"category_ar":"شيشة صباحي","category_en":"Shisha AM","name_ar":"عنب نعناع فاخر","name_en":"Premium Grape Mint","slug":"premium-grape-mint"},{"price":55,"category_ar":"شيشة صباحي","category_en":"Shisha AM","name_ar":"عنب فاخر","name_en":"Premium Grape","slug":"premium-grape"},{"price":55,"category_ar":"شيشة صباحي","category_en":"Shisha AM","name_ar":"ليمون نعناع فاخر","name_en":"Premium Lemon Mint","slug":"premium-lemon-mint"},{"price":55,"category_ar":"شيشة صباحي","category_en":"Shisha AM","name_ar":"نعناع فاخر","name_en":"Premium Mint","slug":"premium-mint"},{"price":55,"category_ar":"شيشة صباحي","category_en":"Shisha AM","name_ar":"علكة مستكه فاخر","name_en":"Premium Musk Gum","slug":"premium-musk-gum"},{"price":55,"category_ar":"شيشة صباحي","category_en":"Shisha AM","name_ar":"بطيخ فاخر","name_en":"Premium Watermelon","slug":"premium-watermelon"},{"price":55,"category_ar":"شيشة صباحي","category_en":"Shisha AM","name_ar":"روبي كراش","name_en":"Ruby Crush","slug":"ruby-crush"},{"price":120,"category_ar":"شيشة صباحي","category_en":"Shisha AM","name_ar":"3 شيشة","name_en":"SHISHA 3","slug":"shisha-3"},{"price":49,"category_ar":"شيشة صباحي","category_en":"Shisha AM","name_ar":"49شيشة","name_en":"SHISHA 49","slug":"shisha-49"},{"price":55,"category_ar":"شيشة صباحي","category_en":"Shisha AM","name_ar":"فراولة فاخر","name_en":"Strawberry Premium","slug":"strawberry-premium"},{"price":55,"category_ar":"شيشة صباحي","category_en":"Shisha AM","name_ar":"بطيخ نعناع فاخر","name_en":"Watermelon Mint Premium","slug":"watermelon-mint-premium"},{"price":60,"category_ar":"شيشة مسائي","category_en":"Shisha PM","name_ar":"تفاحتين مكس","name_en":"Almosfaer Mix","slug":"almosfaer-mix-shisha-pm"},{"price":60,"category_ar":"شيشة مسائي","category_en":"Shisha PM","name_ar":"كاندي","name_en":"Candy","slug":"candy-shisha-pm"},{"price":60,"category_ar":"شيشة مسائي","category_en":"Shisha PM","name_ar":"تفاحتين فاخر","name_en":"Double Apple Premium","slug":"double-apple-premium-shisha-pm"},{"price":60,"category_ar":"شيشة مسائي","category_en":"Shisha PM","name_ar":"تفاحتين نخلة","name_en":"Double Apples Palm","slug":"double-apples-palm-shisha-pm"},{"price":60,"category_ar":"شيشة مسائي","category_en":"Shisha PM","name_ar":"علكة فاخر","name_en":"Gum Premium","slug":"gum-premium-shisha-pm"},{"price":60,"category_ar":"شيشة مسائي","category_en":"Shisha PM","name_ar":"مزايا علكة قرفة","name_en":"Mazaya Cinnamon Gum","slug":"mazaya-cinnamon-gum-shisha-pm"},{"price":60,"category_ar":"شيشة مسائي","category_en":"Shisha PM","name_ar":"شمام مزايا","name_en":"Melon Mzaya","slug":"melon-mzaya-shisha-pm"},{"price":60,"category_ar":"شيشة مسائي","category_en":"Shisha PM","name_ar":"بلوبيري فاخر","name_en":"Premium Blueberry","slug":"premium-blueberry-shisha-pm"},{"price":60,"category_ar":"شيشة مسائي","category_en":"Shisha PM","name_ar":"عنب توت فاخر","name_en":"Premium Grape Berry","slug":"premium-grape-berry-shisha-pm"},{"price":60,"category_ar":"شيشة مسائي","category_en":"Shisha PM","name_ar":"عنب نعناع فاخر","name_en":"Premium Grape Mint","slug":"premium-grape-mint-shisha-pm"},{"price":60,"category_ar":"شيشة مسائي","category_en":"Shisha PM","name_ar":"عنب فاخر","name_en":"Premium Grape","slug":"premium-grape-shisha-pm"},{"price":60,"category_ar":"شيشة مسائي","category_en":"Shisha PM","name_ar":"ليمون نعناع فاخر","name_en":"Premium Lemon Mint","slug":"premium-lemon-mint-shisha-pm"},{"price":60,"category_ar":"شيشة مسائي","category_en":"Shisha PM","name_ar":"نعناع فاخر","name_en":"Premium Mint","slug":"premium-mint-shisha-pm"},{"price":60,"category_ar":"شيشة مسائي","category_en":"Shisha PM","name_ar":"علكة مستكه فاخر","name_en":"Premium Musk Gum","slug":"premium-musk-gum-shisha-pm"},{"price":60,"category_ar":"شيشة مسائي","category_en":"Shisha PM","name_ar":"بطيخ فاخر","name_en":"Premium Watermelon","slug":"premium-watermelon-shisha-pm"},{"price":60,"category_ar":"شيشة مسائي","category_en":"Shisha PM","name_ar":"روبي كراش","name_en":"Ruby Crush","slug":"ruby-crush-shisha-pm"},{"price":60,"category_ar":"شيشة مسائي","category_en":"Shisha PM","name_ar":"فراولة فاخر","name_en":"Strawberry Premium","slug":"strawberry-premium-shisha-pm"},{"price":60,"category_ar":"شيشة مسائي","category_en":"Shisha PM","name_ar":"بطيخ نعناع فاخر","name_en":"Watermelon Mint Premium","slug":"watermelon-mint-premium-shisha-pm"},{"price":39,"category_ar":"تجديد رأس 39","category_en":"Shisha 39","name_ar":"تجديد رأس تفاحتين مكس","name_en":"Almosfaer Mix","slug":"almosfaer-mix-shisha-39"},{"price":39,"category_ar":"تجديد رأس 39","category_en":"Shisha 39","name_ar":"تجديد رأس كاندي","name_en":"Candy","slug":"candy-shisha-39"},{"price":39,"category_ar":"تجديد رأس 39","category_en":"Shisha 39","name_ar":"تجديد رأس تفاحتين فاخر","name_en":"Double Apple Premium","slug":"double-apple-premium-shisha-39"},{"price":39,"category_ar":"تجديد رأس 39","category_en":"Shisha 39","name_ar":"تجديد رأس تفاحتين نخلة","name_en":"Double Apples Palm","slug":"double-apples-palm-shisha-39"},{"price":39,"category_ar":"تجديد رأس 39","category_en":"Shisha 39","name_ar":"تجديد رأس علكة فاخر","name_en":"Gum Premium","slug":"gum-premium-shisha-39"},{"price":39,"category_ar":"تجديد رأس 39","category_en":"Shisha 39","name_ar":"تجديد رأس مزايا علكة قرفة","name_en":"Mazaya Cinnamon Gum","slug":"mazaya-cinnamon-gum-shisha-39"},{"price":39,"category_ar":"تجديد رأس 39","category_en":"Shisha 39","name_ar":"تجديد رأس شمام مزايا","name_en":"Melon Mzaya","slug":"melon-mzaya-shisha-39"},{"price":39,"category_ar":"تجديد رأس 39","category_en":"Shisha 39","name_ar":"تجديد رأس بلوبيري فاخر","name_en":"Premium Blueberry","slug":"premium-blueberry-shisha-39"},{"price":39,"category_ar":"تجديد رأس 39","category_en":"Shisha 39","name_ar":"تجديد رأس عنب توت فاخر","name_en":"Premium Grape Berry","slug":"premium-grape-berry-shisha-39"},{"price":39,"category_ar":"تجديد رأس 39","category_en":"Shisha 39","name_ar":"تجديد رأس عنب نعناع فاخر","name_en":"Premium Grape Mint","slug":"premium-grape-mint-shisha-39"},{"price":39,"category_ar":"تجديد رأس 39","category_en":"Shisha 39","name_ar":"تجديد رأس عنب فاخر","name_en":"Premium Grape","slug":"premium-grape-shisha-39"},{"price":39,"category_ar":"تجديد رأس 39","category_en":"Shisha 39","name_ar":"تجديد رأس ليمون نعناع فاخر","name_en":"Premium Lemon Mint","slug":"premium-lemon-mint-shisha-39"},{"price":39,"category_ar":"تجديد رأس 39","category_en":"Shisha 39","name_ar":"نتجديد رأس عناع فاخر","name_en":"Premium Mint","slug":"premium-mint-shisha-39"},{"price":39,"category_ar":"تجديد رأس 39","category_en":"Shisha 39","name_ar":"تجديد رأس علكة مستكه فاخر","name_en":"Premium Musk Gum","slug":"premium-musk-gum-shisha-39"},{"price":39,"category_ar":"تجديد رأس 39","category_en":"Shisha 39","name_ar":"تجديد رأس بطيخ فاخر","name_en":"Premium Watermelon","slug":"premium-watermelon-shisha-39"},{"price":39,"category_ar":"تجديد رأس 39","category_en":"Shisha 39","name_ar":"تجديد رأس روبي كراش","name_en":"Ruby Crush","slug":"ruby-crush-shisha-39"},{"price":39,"category_ar":"تجديد رأس 39","category_en":"Shisha 39","name_ar":"تجديد رأس فراولة فاخر","name_en":"Strawberry Premium","slug":"strawberry-premium-shisha-39"},{"price":39,"category_ar":"تجديد رأس 39","category_en":"Shisha 39","name_ar":"تجديد رأس بطيخ نعناع فاخر","name_en":"Watermelon Mint Premium","slug":"watermelon-mint-premium-shisha-39"}]};
+
+    /*
+     * ============================================================
+     * منطق اللغة — افتراضي عربي
+     * ============================================================
+     */
+    let currentLang = 'ar';
+
+    function applyLanguage() {
+      document.documentElement.lang = currentLang;
+      document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+      document.getElementById('lang-btn').textContent = currentLang === 'ar' ? 'EN' : 'ع';
+      render();
+    }
+
+    /*
+     * ============================================================
+     * بناء شريط الفئات + الأقسام
+     * ============================================================
+     */
+    function render() {
+      renderPills();
+      renderSections();
+    }
+
+    function renderPills() {
+      const scroll = document.getElementById('categories-scroll');
+      scroll.innerHTML = '';
+      MENU.categories.forEach((cat, idx) => {
+        const pill = document.createElement('button');
+        pill.className = 'category-pill' + (idx === 0 ? ' active' : '');
+        pill.setAttribute('role', 'tab');
+        pill.textContent = currentLang === 'ar' ? cat.ar : (cat.en || cat.ar);
+        pill.dataset.target = 'cat-' + idx;
+        pill.addEventListener('click', () => {
+          document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
+          document.getElementById('cat-' + idx).scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        scroll.appendChild(pill);
+      });
+    }
+
+    function renderSections() {
+      const main = document.getElementById('menu-main');
+      main.innerHTML = '';
+
+      MENU.categories.forEach((cat, idx) => {
+        const items = MENU.items.filter(it => it.category_ar === cat.ar);
+        if (items.length === 0) return;
+
+        const section = document.createElement('section');
+        section.className = 'menu-section';
+        section.id = 'cat-' + idx;
+
+        // رأس القسم بالزخرفة العربية
+        const header = document.createElement('div');
+        header.className = 'section-header';
+        header.innerHTML =
+          '<div>' +
+            '<span class="section-title">' +
+              (currentLang === 'ar' ? cat.ar : (cat.en || cat.ar)) +
+            '</span>' +
+          '</div>' +
+          (cat.en && currentLang === 'ar' ? '<div class="section-title-en">' + cat.en + '</div>' : '') +
+          '<div class="section-ornament">' +
+            '<span class="section-ornament__dot"></span>' +
+          '</div>';
+        section.appendChild(header);
+
+        // قائمة الأصناف
+        const list = document.createElement('div');
+        list.className = 'items-list';
+
+        items.forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'item';
+
+          // الصورة المصغرة — تحاول التحميل، وإذا فشلت تظهر حبة قهوة SVG
+          const thumb = document.createElement('div');
+          thumb.className = 'item__thumb';
+          const img = document.createElement('img');
+          img.src = './images/' + item.slug + '.jpg';
+          img.alt = item.name_ar;
+          img.loading = 'lazy';
+          img.onerror = () => {
+            // البديل: حبة قهوة ذهبية مرسومة — تناسب طابع الكافيه
+            thumb.innerHTML = 
+              '<svg class="item__thumb-placeholder" width="28" height="28" viewBox="0 0 32 32" fill="none">' +
+                '<ellipse cx="16" cy="16" rx="9" ry="13" stroke="currentColor" stroke-width="1.8" />' +
+                '<path d="M 16 4 Q 16 16 16 28" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />' +
+              '</svg>';
+          };
+          thumb.appendChild(img);
+
+          // المحتوى: اسم الصنف
+          const content = document.createElement('div');
+          content.className = 'item__content';
+          const displayName = currentLang === 'ar' ? item.name_ar : (item.name_en || item.name_ar);
+          const secondaryName = currentLang === 'ar' ? item.name_en : '';
+          content.innerHTML = 
+            '<span class="item__name">' + displayName + '</span>' +
+            (secondaryName ? '<div class="item__name-en">' + secondaryName + '</div>' : '');
+
+          // السعر — أو "اسأل" إذا كان -1 (تحولناه لـ null أثناء التنظيف)
+          const price = document.createElement('div');
+          price.className = 'item__price';
+          if (item.price === null || item.price === undefined) {
+            price.innerHTML = '<span class="item__price--ask">' + (currentLang === 'ar' ? 'اسأل' : 'Ask') + '</span>';
+          } else {
+            price.innerHTML = 
+              item.price +
+              '<span class="item__price-currency">' + (currentLang === 'ar' ? 'ر.س' : 'SAR') + '</span>';
+          }
+
+          card.appendChild(thumb);
+          card.appendChild(content);
+          card.appendChild(price);
+          list.appendChild(card);
+        });
+
+        section.appendChild(list);
+        main.appendChild(section);
+      });
+    }
+
+    /*
+     * ============================================================
+     * تأثير الـ shadow على الناف عند التمرير + إظهار زر العودة للأعلى
+     * ============================================================
+     */
+    const navEl = document.getElementById('categories-nav');
+    const scrollTopBtn = document.getElementById('scroll-top');
+
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 100) {
+        navEl.classList.add('scrolled');
+        scrollTopBtn.classList.add('visible');
+      } else {
+        navEl.classList.remove('scrolled');
+        scrollTopBtn.classList.remove('visible');
+      }
+    });
+
+    /*
+     * ============================================================
+     * تحديد الفئة النشطة تلقائياً بناء على ما يقرأه المستخدم
+     * ============================================================
+     */
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          document.querySelectorAll('.category-pill').forEach(p => {
+            p.classList.toggle('active', p.dataset.target === entry.target.id);
+          });
+          // اجعل الـ pill النشط ظاهراً في شريط الفئات
+          const activePill = document.querySelector('.category-pill.active');
+          if (activePill) {
+            activePill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+          }
+        }
+      });
+    }, { rootMargin: '-100px 0px -60% 0px' });
+
+    /*
+     * ============================================================
+     * الأزرار العائمة
+     * ============================================================
+     */
+    document.getElementById('lang-btn').addEventListener('click', () => {
+      currentLang = currentLang === 'ar' ? 'en' : 'ar';
+      applyLanguage();
+    });
+
+    scrollTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    /*
+     * ============================================================
+     * بدء التشغيل
+     * ============================================================
+     */
+    applyLanguage();
+    setTimeout(() => {
+      document.querySelectorAll('.menu-section').forEach(s => observer.observe(s));
+    }, 100);
+  </script>
+</body>
+</html>
