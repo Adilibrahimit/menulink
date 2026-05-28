@@ -83,6 +83,7 @@ grep -r "@/lib/design" apps/web/app      # regression guard
 npx tsc --noEmit                          # full-project type-check
 npm run build                             # next build
 # static SQL self-consistency greps on the migration
+# POST .../projects/<ref>/database/query  # apply migration via Management API PAT, then verify
 ```
 
 ## Results
@@ -97,6 +98,10 @@ npm run build                             # next build
 - `npm run lint` → **not run**: the repo has no ESLint config (`next lint` offers to scaffold
   one). Scaffolding would be an unrelated modification; type safety is covered by
   `tsc --noEmit` + `next build`.
+- **Migration applied to live Supabase** (project `dhmjrrsynfvomlzhggvu`) via the Management
+  API PAT, then verified in-DB: `tables_present=13`, `rls_enabled=13`, `policies=26`,
+  seeds = 5 brand + 2 page + 2 print + 5 qr = **14**, with Arabic `name_ar` values stored
+  intact (UTF-8). Pre-apply check confirmed none of the 13 tables existed (clean apply).
 
 ## Guardrails verified
 
@@ -108,9 +113,6 @@ npm run build                             # next build
 
 ## Known limitations
 
-- **Migration not applied to the live Supabase project** this session (authored only; user
-  reviews/applies). Acceptance items "Migration applies / Tables exist in Supabase / RLS
-  enabled in DB" are pending that apply.
 - `lib/design/*` helpers are **unwired** — exported but imported by no route (DS-3 wires the
   resolver into `/m/[slug]`).
 - RLS **write** access is **ops-only** in DS-1 (no tenant self-service writes yet).
