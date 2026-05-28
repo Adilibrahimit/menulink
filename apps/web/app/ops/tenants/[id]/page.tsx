@@ -81,7 +81,12 @@ export default async function TenantDetailPage({
       <section className="bg-neutral-900 border border-neutral-800 rounded-xl p-4">
         <div className="flex items-center justify-between mb-3 gap-2">
           <h2 className="font-semibold">التصميم البصري</h2>
-          <span className="text-[10px] text-neutral-500">ops-only · المالك لا يرى هذه الحقول</span>
+          <div className="flex items-center gap-3">
+            <Link href={`/ops/tenants/${r.id}/design`} className="text-xs text-neutral-300 hover:text-white underline">
+              استوديو التصميم →
+            </Link>
+            <span className="text-[10px] text-neutral-500">ops-only · المالك لا يرى هذه الحقول</span>
+          </div>
         </div>
         <DesignForm
           initial={{
