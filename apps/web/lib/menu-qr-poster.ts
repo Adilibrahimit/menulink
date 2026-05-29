@@ -15,11 +15,14 @@ export type PosterOpts = {
   primaryColor: string;
   tableLabel?: string | null;
   posterStyle?: "default" | "heritage-emerald";
+  qrUrl?: string;
 };
 
 export async function generatePosterDataUrl(opts: PosterOpts): Promise<{ dataUrl: string; url: string }> {
   const origin = typeof window !== "undefined" ? window.location.origin : "";
-  const url = opts.tableLabel
+  const url = opts.qrUrl
+    ? opts.qrUrl
+    : opts.tableLabel
     ? `${origin}/m/${opts.slug}?table=${encodeURIComponent(opts.tableLabel)}`
     : `${origin}/m/${opts.slug}`;
 
