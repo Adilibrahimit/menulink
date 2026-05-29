@@ -5,9 +5,14 @@ import { useRouter } from "next/navigation";
 import QRCode from "qrcode";
 import { generatePosterDataUrl, triggerDownload } from "@/lib/menu-qr-poster";
 import { createQrCode } from "./qr-actions";
+import { recordQrExport } from "./export-actions";
 
 type Template = { id: string; key: string; name_ar: string };
 type QrLinkRow = { id: string; code: string; target_type: string; is_active: boolean };
+type QrExportRow = {
+  id: string; qr_link_id: string; file_url: string | null;
+  data_hash: string | null; status: string; rendered_at: string | null;
+};
 type QrProfileRow = { id: string; name_ar: string; purpose: string; links: QrLinkRow[] };
 type Restaurant = {
   id: string; slug: string; name: string;
@@ -20,8 +25,11 @@ const PURPOSE_AR: Record<string, string> = {
 };
 
 export default function QrTab({
-  restaurant, templates, qrProfiles,
-}: { restaurant: Restaurant; templates: Template[]; qrProfiles: QrProfileRow[] }) {
+  restaurant, templates, qrProfiles, qrExports, fingerprint,
+}: {
+  restaurant: Restaurant; templates: Template[]; qrProfiles: QrProfileRow[];
+  qrExports: QrExportRow[]; fingerprint: string;
+}) {
   const router = useRouter();
   const [templateId, setTemplateId] = useState(templates[0]?.id ?? "");
   const [nameAr, setNameAr] = useState("");
@@ -89,7 +97,14 @@ export default function QrTab({
       <div className="space-y-3">
         {qrProfiles.length === 0 && <p className="text-sm text-neutral-500">لا توجد رموز QR بعد.</p>}
         {qrProfiles.flatMap((p) => p.links.map((l) => (
-          <QrLinkCard key={l.id} restaurant={restaurant} profileName={p.name_ar} link={l} />
+          <QrLinkCard
+            key={l.id}
+            restaurant={restaurant}
+            profileName={p.name_ar}
+            link={l}
+            qrExports={qrExports.filter((e) => e.qr_link_id === l.id)}
+            fingerprint={fingerprint}
+          />
         )))}
       </div>
     </div>
@@ -97,8 +112,12 @@ export default function QrTab({
 }
 
 function QrLinkCard({
-  restaurant, profileName, link,
-}: { restaurant: Restaurant; profileName: string; link: QrLinkRow }) {
+  restaurant, profileName, link, qrExports, fingerprint,
+}: {
+  restaurant: Restaurant; profileName: string; link: QrLinkRow;
+  qrExports: QrExportRow[]; fingerprint: string;
+}) {
+  const router = useRouter();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [origin, setOrigin] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
@@ -135,6 +154,18 @@ function QrLinkCard({
     } finally { setBusy(null); }
   }
 
+  async function saveExport() {
+    if (!url) return;
+    setBusy("save");
+    try {
+      const d = await QRCode.toDataURL(url, { errorCorrectionLevel: "H", margin: 2, width: 1024 });
+      const res = await recordQrExport({
+        restaurantId: restaurant.id, slug: restaurant.slug, qrLinkId: link.id, pngDataUrl: d,
+      });
+      if (!res.error) router.refresh();
+    } finally { setBusy(null); }
+  }
+
   return (
     <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-4 flex flex-col sm:flex-row gap-4 items-center">
       <canvas ref={canvasRef} className="rounded-lg bg-white p-1 shrink-0" />
@@ -148,7 +179,27 @@ function QrLinkCard({
             className="text-xs rounded bg-neutral-800 border border-neutral-700 px-2 py-1 hover:bg-neutral-700 disabled:opacity-60">QR PNG</button>
           <button onClick={() => dl("svg")} disabled={busy !== null}
             className="text-xs rounded bg-neutral-800 border border-neutral-700 px-2 py-1 hover:bg-neutral-700 disabled:opacity-60">QR SVG</button>
+          <button onClick={saveExport} disabled={busy !== null}
+            className="text-xs rounded bg-neutral-800 border border-neutral-700 px-2 py-1 hover:bg-neutral-700 disabled:opacity-60">{busy === "save" ? "..." : "💾 حفظ نسخة"}</button>
         </div>
+        {qrExports.length > 0 && (
+          <div className="mt-3 space-y-1 text-[11px]">
+            {qrExports.map((e) => {
+              const outdated = !!fingerprint && e.data_hash !== fingerprint;
+              return (
+                <div key={e.id} className="flex items-center gap-2 justify-center sm:justify-start text-neutral-400">
+                  {e.file_url
+                    ? <a href={e.file_url} target="_blank" rel="noreferrer" className="underline hover:text-neutral-200">تحميل</a>
+                    : <span>—</span>}
+                  <span className="font-mono" dir="ltr">{e.rendered_at ? new Date(e.rendered_at).toLocaleDateString("ar") : ""}</span>
+                  {outdated
+                    ? <span className="rounded bg-amber-900/50 border border-amber-800 text-amber-300 px-1">قديم — تغيّرت البيانات</span>
+                    : <span className="rounded bg-green-900/40 border border-green-800 text-green-300 px-1">محدّث</span>}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

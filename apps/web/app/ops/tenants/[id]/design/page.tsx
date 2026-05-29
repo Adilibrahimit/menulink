@@ -29,7 +29,7 @@ export default async function DesignStudioPage({
   const sb = createClient();
   const active = TABS.some((t) => t.key === searchParams.tab) ? searchParams.tab! : "overview";
 
-  const [{ data: r }, { data: profiles }, { data: brandTemplates }, { data: pageTemplates }, { data: qrProfiles }, { data: qrTemplates }, { data: promotions }] =
+  const [{ data: r }, { data: profiles }, { data: brandTemplates }, { data: pageTemplates }, { data: qrProfiles }, { data: qrTemplates }, { data: promotions }, { data: qrExports }] =
     await Promise.all([
       sb.from("restaurants")
         .select("id, slug, name, logo_url, cover_image_url, primary_color, background_color, tagline_ar")
@@ -55,9 +55,14 @@ export default async function DesignStudioPage({
         .select("id, title_ar, subtitle_ar, badge_text_ar, priority, is_active, show_on_menu_home, starts_at, ends_at")
         .eq("restaurant_id", params.id)
         .order("priority", { ascending: false }).order("created_at", { ascending: false }),
+      sb.from("qr_exports")
+        .select("id, qr_link_id, file_url, data_hash, status, rendered_at")
+        .eq("restaurant_id", params.id)
+        .order("rendered_at", { ascending: false }),
     ]);
 
   if (!r) notFound();
+  const { data: fingerprint } = await sb.rpc("get_export_fingerprint", { p_slug: r.slug });
   const rows = profiles ?? [];
   const draft = rows.find((p: any) => p.status === "draft") ?? null;
 
@@ -101,7 +106,7 @@ export default async function DesignStudioPage({
         )}
         {active === "versions" && <VersionsTab restaurantId={r.id} profiles={rows as any} />}
         {active === "qr" && (
-          <QrTab restaurant={r as any} templates={(qrTemplates ?? []) as any} qrProfiles={(qrProfiles ?? []) as any} />
+          <QrTab restaurant={r as any} templates={(qrTemplates ?? []) as any} qrProfiles={(qrProfiles ?? []) as any} qrExports={(qrExports ?? []) as any} fingerprint={(fingerprint as string) ?? ""} />
         )}
         {active === "promos" && <PromosTab restaurantId={r.id} promotions={(promotions ?? []) as any} />}
       </div>
