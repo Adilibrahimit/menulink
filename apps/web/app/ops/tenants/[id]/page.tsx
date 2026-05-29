@@ -85,6 +85,9 @@ export default async function TenantDetailPage({
             <Link href={`/ops/tenants/${r.id}/design`} className="text-xs text-neutral-300 hover:text-white underline">
               استوديو التصميم →
             </Link>
+            <a href={`/print/${r.slug}/a4`} target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-300 hover:text-white underline">
+              🖨️ طباعة المنيو
+            </a>
             <span className="text-[10px] text-neutral-500">ops-only · المالك لا يرى هذه الحقول</span>
           </div>
         </div>
