@@ -7,6 +7,7 @@ import BrandIdentityTab from "./brand-identity-tab";
 import MenuPageTab from "./menu-page-tab";
 import VersionsTab from "./versions-tab";
 import QrTab from "./qr-tab";
+import PromosTab from "./promos-tab";
 
 const TABS = [
   { key: "overview", label: "نظرة عامة" },
@@ -14,6 +15,7 @@ const TABS = [
   { key: "menu", label: "قالب القائمة" },
   { key: "versions", label: "الإصدارات" },
   { key: "qr", label: "رموز QR" },
+  { key: "promos", label: "العروض" },
 ] as const;
 
 export default async function DesignStudioPage({
@@ -27,7 +29,7 @@ export default async function DesignStudioPage({
   const sb = createClient();
   const active = TABS.some((t) => t.key === searchParams.tab) ? searchParams.tab! : "overview";
 
-  const [{ data: r }, { data: profiles }, { data: brandTemplates }, { data: pageTemplates }, { data: qrProfiles }, { data: qrTemplates }] =
+  const [{ data: r }, { data: profiles }, { data: brandTemplates }, { data: pageTemplates }, { data: qrProfiles }, { data: qrTemplates }, { data: promotions }] =
     await Promise.all([
       sb.from("restaurants")
         .select("id, slug, name, logo_url, cover_image_url, primary_color, background_color, tagline_ar")
@@ -49,6 +51,10 @@ export default async function DesignStudioPage({
       sb.from("qr_design_templates")
         .select("id, key, name_ar")
         .eq("is_active", true).order("key", { ascending: true }),
+      sb.from("promotions")
+        .select("id, title_ar, subtitle_ar, badge_text_ar, priority, is_active, show_on_menu_home, starts_at, ends_at")
+        .eq("restaurant_id", params.id)
+        .order("priority", { ascending: false }).order("created_at", { ascending: false }),
     ]);
 
   if (!r) notFound();
@@ -97,6 +103,7 @@ export default async function DesignStudioPage({
         {active === "qr" && (
           <QrTab restaurant={r as any} templates={(qrTemplates ?? []) as any} qrProfiles={(qrProfiles ?? []) as any} />
         )}
+        {active === "promos" && <PromosTab restaurantId={r.id} promotions={(promotions ?? []) as any} />}
       </div>
     </div>
   );
