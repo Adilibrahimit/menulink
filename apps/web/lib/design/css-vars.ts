@@ -21,8 +21,16 @@ export function tokensToCssVars(tokens: DesignTokens): Record<string, string> {
   set("--header-bg", c.primary);
   set("--cta-bg", c.primary);
   const t = tokens?.typography;
-  if (t?.heading?.trim()) vars["--font-display"] = `${t.heading}, system-ui, sans-serif`;
-  if (t?.body?.trim()) vars["--font-body"] = `${t.body}, system-ui, sans-serif`;
+  // Latin display face (e.g. Cormorant Garamond) goes FIRST so Latin glyphs use
+  // it while Arabic falls through to the Arabic face (e.g. Tajawal). A Latin-only
+  // serif has no Arabic glyphs, so this ordering is required, not cosmetic.
+  const latin = t?.latin?.trim();
+  const stack = (primary: string) =>
+    latin && latin.toLowerCase() !== primary.toLowerCase()
+      ? `${latin}, ${primary}, system-ui, sans-serif`
+      : `${primary}, system-ui, sans-serif`;
+  if (t?.heading?.trim()) vars["--font-display"] = stack(t.heading);
+  if (t?.body?.trim()) vars["--font-body"] = stack(t.body);
   return vars;
 }
 
@@ -30,7 +38,7 @@ export function tokensToCssVars(tokens: DesignTokens): Record<string, string> {
 const SKIP_FONTS = new Set(["geist", "system-ui", "sans-serif", "serif", "monospace", "inherit"]);
 
 export function googleFontsUrl(tokens: DesignTokens): string | null {
-  const raw = [tokens?.typography?.heading, tokens?.typography?.body];
+  const raw = [tokens?.typography?.heading, tokens?.typography?.body, tokens?.typography?.latin];
   const names = Array.from(
     new Set(
       raw
