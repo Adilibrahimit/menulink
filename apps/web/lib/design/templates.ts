@@ -65,8 +65,8 @@ export const BRAND_TEMPLATE_DEFAULTS: Record<
     tier: "premium",
     businessType: "restaurant-cafe-lounge",
     tokens: {
-      colors: { background: "#0F0E0D", surface: "#1C1A17", surfaceSoft: "#25221D", primary: "#C8A15A", accent: "#6B1E1E", text: "#F3EBDD", muted: "#A79A86", line: "#4A3821" },
-      typography: { heading: "Tajawal", body: "Cairo", latin: "Geist" },
+      colors: { background: "#0F0E0D", surface: "#1C1A17", surfaceSoft: "#25221D", primary: "#C8A15A", accent: "#6B1E1E", secondaryBrown: "#3A3026", secondaryGreen: "#183A2F", text: "#F3EBDD", muted: "#A79A86", line: "#4A3821" },
+      typography: { heading: "Tajawal", body: "Tajawal", latin: "Cormorant Garamond" },
       mood: "premium-lounge",
       radius: { card: "22px", button: "16px" },
     },
