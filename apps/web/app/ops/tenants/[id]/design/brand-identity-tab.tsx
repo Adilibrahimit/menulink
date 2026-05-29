@@ -35,16 +35,18 @@ export default function BrandIdentityTab({
     [brandTemplates, templateId],
   );
 
-  const seed = (): DesignTokens =>
-    prefillBrandTokens(selected?.default_tokens_json, {
+  const seedFor = (id: string): DesignTokens => {
+    const tpl = brandTemplates.find((t) => t.id === id) ?? null;
+    return prefillBrandTokens(tpl?.default_tokens_json, {
       primary_color: restaurant.primary_color,
       background_color: restaurant.background_color,
     });
+  };
 
   const [tokens, setTokens] = useState<DesignTokens>(
     draft?.brand_tokens_json && Object.keys(draft.brand_tokens_json).length
       ? (draft.brand_tokens_json as DesignTokens)
-      : seed(),
+      : seedFor(templateId),
   );
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
@@ -58,8 +60,12 @@ export default function BrandIdentityTab({
     setTokens((t) => ({ ...t, colors: { ...t.colors, [key]: value } }));
   }
   function resetFromLive() {
-    setTokens(seed());
+    setTokens(seedFor(templateId));
     setMsg({ kind: "ok", text: "تمت إعادة التهيئة من الهوية الحالية" });
+  }
+  function changeTemplate(id: string) {
+    setTemplateId(id);
+    setTokens(seedFor(id));
   }
 
   async function persist(publish: boolean) {
@@ -107,7 +113,7 @@ export default function BrandIdentityTab({
         <span className="block text-xs text-neutral-400 mb-1">قالب الهوية</span>
         <select
           value={templateId}
-          onChange={(e) => { setTemplateId(e.target.value); }}
+          onChange={(e) => changeTemplate(e.target.value)}
           className="w-full rounded-md bg-neutral-800 border border-neutral-700 text-neutral-100 px-3 py-2 outline-none focus:border-neutral-400"
         >
           {brandTemplates.map((t) => (
