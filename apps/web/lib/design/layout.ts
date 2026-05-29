@@ -8,8 +8,8 @@ export function resolveThemeLayout(base: ThemeConfig, config: unknown): ThemeCon
   const out: ThemeConfig = { ...base };
   if (c.menuLayout === "card-grid" || c.menuLayout === "heritage-list") out.menuLayout = c.menuLayout;
   if (c.categoryStyle === "pills" || c.categoryStyle === "tabs") out.categoryStyle = c.categoryStyle;
-  if (c.menuCardStyle === "stitch-navy" || c.menuCardStyle === "default") out.menuCardStyle = c.menuCardStyle;
-  if (c.headerStyle === "dark-navy" || c.headerStyle === "brand-filled") out.headerStyle = c.headerStyle;
+  if (c.menuCardStyle === "stitch-navy" || c.menuCardStyle === "default" || c.menuCardStyle === "premium-lounge") out.menuCardStyle = c.menuCardStyle;
+  if (c.headerStyle === "dark-navy" || c.headerStyle === "brand-filled" || c.headerStyle === "velora-hero") out.headerStyle = c.headerStyle;
   if (c.cartBarStyle === "gold-navy" || c.cartBarStyle === "brand-default") out.cartBarStyle = c.cartBarStyle;
   if (typeof c.hasItemDetailSheet === "boolean") out.hasItemDetailSheet = c.hasItemDetailSheet;
   if (c.bottomNavItems === 3 || c.bottomNavItems === 5) out.bottomNavItems = c.bottomNavItems;
