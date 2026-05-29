@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-browser";
+import { DESIGN_LIBRARY } from "@/lib/design-library";
 
 type DesignFields = {
   id: string;
@@ -12,6 +13,8 @@ type DesignFields = {
   cover_image_url: string | null;
   primary_color: string;
   background_color: string;
+  menu_design_key: string | null;
+  display_only_mode: boolean;
 };
 
 export default function DesignForm({ initial }: { initial: DesignFields }) {
@@ -24,6 +27,7 @@ export default function DesignForm({ initial }: { initial: DesignFields }) {
     cover_image_url: initial.cover_image_url ?? "",
     primary_color: initial.primary_color,
     background_color: initial.background_color,
+    menu_design_key: initial.menu_design_key ?? "",
   });
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
@@ -50,6 +54,7 @@ export default function DesignForm({ initial }: { initial: DesignFields }) {
         cover_image_url: form.cover_image_url || null,
         primary_color: form.primary_color,
         background_color: form.background_color,
+        menu_design_key: form.menu_design_key || null,
       })
       .eq("id", initial.id);
     setSaving(false);
@@ -130,6 +135,32 @@ export default function DesignForm({ initial }: { initial: DesignFields }) {
         <ColorField label="Primary color" value={form.primary_color} onChange={(v) => set("primary_color", v)} />
         <ColorField label="Background color" value={form.background_color} onChange={(v) => set("background_color", v)} />
       </div>
+
+      <label className="block">
+        <span className="block text-xs text-neutral-400 mb-1">تصميم القائمة (Design Library)</span>
+        <select
+          value={form.menu_design_key}
+          onChange={(e) => set("menu_design_key", e.target.value)}
+          className="w-full rounded-md bg-neutral-800 border border-neutral-700 text-neutral-100 px-3 py-2 outline-none focus:border-neutral-400"
+        >
+          <option value="">افتراضي (حسب إعداد العميل)</option>
+          {DESIGN_LIBRARY.map((d) => {
+            // Ordering layouts (premium-epicurean) are incompatible with
+            // display-only tenants — those render via DisplayOnlyMenu, so a
+            // dark ordering design would produce a broken page. Disable it.
+            const incompatible = initial.display_only_mode && d.theme.menuLayout === "premium-epicurean";
+            return (
+              <option key={d.key} value={d.key} disabled={incompatible}>
+                {d.name_ar}
+                {incompatible ? " (غير متاح لوضع العرض فقط)" : ""}
+              </option>
+            );
+          })}
+        </select>
+        <p className="text-[10px] text-neutral-600 mt-1">
+          يطبّق تصميماً جاهزاً من المكتبة على قائمة العميل. «افتراضي» = السلوك الحالي حسب العميل.
+        </p>
+      </label>
 
       <button
         type="submit"

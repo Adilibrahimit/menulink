@@ -17,7 +17,7 @@ export type ThemeConfig = {
   checkoutStyle: "stepper" | "drawer";
   loginFlow: "google-first" | "default";
   posterStyle: "default" | "heritage-emerald";
-  menuLayout: "card-grid" | "heritage-list";
+  menuLayout: "card-grid" | "heritage-list" | "premium-epicurean";
 };
 
 const DEFAULT_THEME: ThemeConfig = {
@@ -40,7 +40,7 @@ const DEFAULT_THEME: ThemeConfig = {
   menuLayout: "card-grid",
 };
 
-const RZRZ_THEME: ThemeConfig = {
+export const RZRZ_THEME: ThemeConfig = {
   slug: "rzrz-bukhari",
   cssVars: {
     "--brand": "#00143d",
@@ -76,7 +76,7 @@ const RZRZ_THEME: ThemeConfig = {
   menuLayout: "card-grid",
 };
 
-const MAZAJ_ALMOSAFER_THEME: ThemeConfig = {
+export const MAZAJ_ALMOSAFER_THEME: ThemeConfig = {
   slug: "mazaj-almosafer",
   cssVars: {
     "--brand": "#0F2D26",

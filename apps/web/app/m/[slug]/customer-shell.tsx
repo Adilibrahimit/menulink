@@ -93,7 +93,10 @@ export default function CustomerShell({
   if (auth.kind === "loading") {
     return (
       <div className="min-h-[100dvh] flex items-center justify-center" style={{ background: "var(--bg)" }}>
-        <div className="w-8 h-8 border-3 border-neutral-200 border-t-neutral-500 rounded-full animate-spin" />
+        <div
+          className="w-8 h-8 border-3 border-neutral-200 border-t-neutral-500 rounded-full animate-spin"
+          style={theme.menuLayout === "premium-epicurean" ? { borderColor: "rgba(230,195,131,0.2)", borderTopColor: "var(--accent-gold)" } : undefined}
+        />
       </div>
     );
   }
@@ -110,6 +113,7 @@ export default function CustomerShell({
         }}
         tableParam={tableParam}
         onGuest={handleGuest}
+        premium={theme.menuLayout === "premium-epicurean"}
       />
     );
   }
@@ -134,7 +138,7 @@ export default function CustomerShell({
       setDelivery={setDelivery}
     >
       <div className="pb-16">{children}</div>
-      <BottomNav slug={menu.restaurant.slug} navItems={theme.bottomNavItems} notifCenterEnabled={notifCenterEnabled} />
+      <BottomNav slug={menu.restaurant.slug} navItems={theme.bottomNavItems} notifCenterEnabled={notifCenterEnabled} variant={theme.menuLayout === "premium-epicurean" ? "premium" : "light"} />
     </OrderTypeProvider>
   );
 }

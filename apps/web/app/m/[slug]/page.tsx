@@ -7,6 +7,7 @@ import { resolveDesignTokens } from "@/lib/design/resolver";
 import type { ResolveDesignTokensInput } from "@/lib/design/resolver";
 import { tokensToCssVars, googleFontsUrl } from "@/lib/design/css-vars";
 import { resolveThemeLayout } from "@/lib/design/layout";
+import { getDesign, cssVarsForTheme } from "@/lib/design-library";
 import type { CSSProperties } from "react";
 import MenuExperience from "./menu-experience";
 import DisplayOnlyMenu from "./display-only-menu";
@@ -108,6 +109,25 @@ export default async function CustomerMenuPage({
 
   // DS-3B-1: a published profile's menu-page-template can override theme layout flags.
   theme = resolveThemeLayout(theme, (design as { menu_layout_config?: unknown } | null)?.menu_layout_config);
+
+  // DS-9: design library. If ops assigned a menu_design_key (0069), that
+  // library design is authoritative — it overrides theme + tokens + fonts,
+  // decoupling the design from the slug. NULL key → everything above stands,
+  // so existing tenants render identically. Read uses the anon RLS policy
+  // (0019); get_public_menu is untouched.
+  const { data: rDesign } = await sb
+    .from("restaurants")
+    .select("menu_design_key")
+    .eq("id", menu.restaurant.id)
+    .maybeSingle();
+  const libraryEntry = getDesign(
+    (rDesign as { menu_design_key?: string | null } | null)?.menu_design_key,
+  );
+  if (libraryEntry) {
+    theme = libraryEntry.theme;
+    cssVars = cssVarsForTheme(libraryEntry.theme);
+    profileFontsUrl = null; // fonts come from theme.fonts.googleUrl below
+  }
 
   if (menu.restaurant.display_only_mode) {
     const MenuComponent = theme.menuLayout === "heritage-list" ? HeritageListMenu : DisplayOnlyMenu;
