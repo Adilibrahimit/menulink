@@ -17,12 +17,22 @@ export default function LoginGate({
   tableParam,
   onGuest,
   googleOnly = false,
+  premium = false,
 }: {
   restaurant: Restaurant;
   tableParam: string | null;
   onGuest: (phone: string, name: string) => void;
   googleOnly?: boolean;
+  premium?: boolean;
 }) {
+  // Premium dark/gold overrides. Inline styles beat the Tailwind light utility
+  // classes (which stay in place), so the default light gate is byte-identical
+  // when premium=false (style === undefined).
+  const sLight = (s: React.CSSProperties) => (premium ? s : undefined);
+  const sInput = sLight({ background: "var(--surface-deep, #0f0e0a)", borderColor: "var(--card-border)", color: "var(--ink)" });
+  const sNeutralBtn = sLight({ background: "var(--surface-elevated)", borderColor: "var(--card-border)", color: "var(--ink)" });
+  const sSecondary = sLight({ color: "var(--text-secondary)" });
+  const sBorder = sLight({ background: "var(--card-border)" });
   const [mode, setMode] = useState<"choose" | "guest">("choose");
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
@@ -73,11 +83,11 @@ export default function LoginGate({
 
       <h1
         className="text-2xl font-extrabold text-neutral-900 mb-1"
-        style={{ fontFamily: "var(--font-display)" }}
+        style={{ fontFamily: "var(--font-display)", ...(premium ? { color: "var(--accent-gold)" } : {}) }}
       >
         {restaurant.name}
       </h1>
-      <p className="text-sm text-neutral-500 mb-8">
+      <p className="text-sm text-neutral-500 mb-8" style={sSecondary}>
         {googleOnly ? "سجّل بحساب Google للمتابعة" : "أهلاً بك! ادخل لتجربة أفضل"}
       </p>
 
@@ -87,6 +97,7 @@ export default function LoginGate({
             onClick={signInWithGoogle}
             disabled={busy}
             className="w-full h-14 rounded-2xl bg-white border-2 border-neutral-200 flex items-center justify-center gap-3 text-base font-bold text-neutral-800 hover:border-neutral-300 active:translate-y-px shadow-sm disabled:opacity-50"
+            style={sNeutralBtn}
           >
             <GoogleIcon />
             {busy ? "..." : "الدخول بحساب Google"}
@@ -104,21 +115,22 @@ export default function LoginGate({
             onClick={signInWithGoogle}
             disabled={busy}
             className="w-full h-12 rounded-2xl bg-white border-2 border-neutral-200 flex items-center justify-center gap-3 text-sm font-bold text-neutral-800 hover:border-neutral-300 active:translate-y-px shadow-sm disabled:opacity-50"
+            style={sNeutralBtn}
           >
             <GoogleIcon />
             {busy ? "..." : "الدخول بحساب Google"}
           </button>
 
           <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-neutral-200" />
-            <span className="text-xs text-neutral-400">{"أو"}</span>
-            <div className="flex-1 h-px bg-neutral-200" />
+            <div className="flex-1 h-px bg-neutral-200" style={sBorder} />
+            <span className="text-xs text-neutral-400" style={sSecondary}>{"أو"}</span>
+            <div className="flex-1 h-px bg-neutral-200" style={sBorder} />
           </div>
 
           <button
             onClick={() => setMode("guest")}
             className="w-full h-12 rounded-2xl border-2 border-neutral-200 bg-neutral-50 text-sm font-bold text-neutral-700 hover:border-neutral-300 active:translate-y-px"
-            style={{ fontFamily: "var(--font-display)" }}
+            style={{ fontFamily: "var(--font-display)", ...(premium ? { background: "transparent", borderColor: "var(--accent-gold)", color: "var(--accent-gold)" } : {}) }}
           >
             {"متابعة كزائر"}
           </button>
@@ -131,7 +143,7 @@ export default function LoginGate({
         </div>
       ) : (
         <div className="w-full max-w-sm space-y-4">
-          <p className="text-sm text-neutral-600 font-bold" style={{ fontFamily: "var(--font-display)" }}>
+          <p className="text-sm text-neutral-600 font-bold" style={{ fontFamily: "var(--font-display)", ...(premium ? { color: "var(--ink)" } : {}) }}>
             {"أدخل بياناتك للمتابعة"}
           </p>
 
@@ -140,10 +152,11 @@ export default function LoginGate({
             onChange={(e) => setName(e.target.value)}
             placeholder={"الاسم (اختياري)"}
             className="w-full h-11 px-4 rounded-xl border border-neutral-200 outline-none focus:border-[var(--brand)] text-sm"
+            style={sInput}
           />
 
           <div className="flex gap-2">
-            <span className="h-11 px-3 rounded-xl border border-neutral-200 flex items-center text-sm text-neutral-500 bg-neutral-50 shrink-0">
+            <span className="h-11 px-3 rounded-xl border border-neutral-200 flex items-center text-sm text-neutral-500 bg-neutral-50 shrink-0" style={sInput}>
               966+
             </span>
             <input
@@ -152,6 +165,7 @@ export default function LoginGate({
               placeholder="5X XXX XXXX"
               type="tel"
               className="flex-1 h-11 px-4 rounded-xl border border-neutral-200 outline-none focus:border-[var(--brand)] text-sm"
+              style={sInput}
               dir="ltr"
             />
           </div>
@@ -160,7 +174,7 @@ export default function LoginGate({
             onClick={handleGuest}
             disabled={!phone.trim()}
             className="w-full h-12 rounded-2xl text-white font-extrabold disabled:opacity-50 active:translate-y-px shadow-md"
-            style={{ background: "var(--brand)", fontFamily: "var(--font-display)" }}
+            style={{ background: "var(--brand)", fontFamily: "var(--font-display)", ...(premium ? { background: "var(--cta-bg)", color: "var(--cta-text, #412d00)" } : {}) }}
           >
             {"متابعة"}
           </button>
@@ -168,6 +182,7 @@ export default function LoginGate({
           <button
             onClick={() => setMode("choose")}
             className="w-full h-10 rounded-xl text-sm text-neutral-500 hover:text-neutral-700"
+            style={sSecondary}
           >
             {"← رجوع"}
           </button>
@@ -175,7 +190,7 @@ export default function LoginGate({
       )}
 
       {/* Terms footer */}
-      <p className="mt-8 text-[11px] text-neutral-400 text-center leading-snug max-w-xs">
+      <p className="mt-8 text-[11px] text-neutral-400 text-center leading-snug max-w-xs" style={sSecondary}>
         {"بالمتابعة أنت توافق على"}{" "}
         <a href={`/m/${restaurant.slug}/terms`} className="underline">
           {"الشروط والأحكام"}

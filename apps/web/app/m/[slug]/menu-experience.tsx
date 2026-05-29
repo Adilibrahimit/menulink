@@ -17,10 +17,12 @@ import type {
 import type { PublicModifierConfig } from "./types";
 import CategoryTabs from "./category-tabs";
 import MenuItemCard from "./menu-item";
+import PremiumEpicureanMenu from "./premium-epicurean-menu";
 import VeloraHero from "./velora-hero";
 import PromotionsRail from "./promotions-rail";
 import ItemCustomizerSheet from "./item-customizer-sheet";
 import CartDrawer from "./cart-drawer";
+import PremiumCheckoutFlow from "./premium-checkout-flow";
 import TrackingSheet from "./tracking-sheet";
 import type { TrackingState } from "./tracking-sheet";
 import TableSessionBar from "./table-session-bar";
@@ -215,12 +217,54 @@ export default function MenuExperience({
   }
 
   const hasCover = !!menu.restaurant.cover_image_url;
+  const isPremium = theme.menuLayout === "premium-epicurean";
+  // Premium tenants get the dark/gold full-page Selections+Checkout flow; all
+  // others keep the light CartDrawer. Identical prop signatures.
+  const CartComponent = isPremium ? PremiumCheckoutFlow : CartDrawer;
 
   return (
     <main
       className="bg-[var(--bg)] text-[var(--ink)] pb-28"
       style={{ fontFamily: "var(--font-body)" }}
     >
+      {isPremium ? (
+        <PremiumEpicureanMenu
+          menu={menu}
+          theme={theme}
+          onAdd={(item, v) => addToCartSimple(item, v)}
+          pushToggle={
+            <PushToggle
+              restaurantId={menu.restaurant.id}
+              customerId={null}
+              vapidKey={vapidKey}
+              enabled={pushEnabled}
+            />
+          }
+          controlsSlot={
+            <>
+              {tableLabel && (
+                <div
+                  className="bg-amber-400 text-amber-950 text-sm font-extrabold py-2 px-4 text-center rounded-xl mb-3"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  🪑 أنت تطلب من طاولة {tableLabel}
+                </div>
+              )}
+              <OrderTypeSwitcher
+                restaurantId={menu.restaurant.id}
+                restaurantName={menu.restaurant.name}
+                branches={branches}
+                orderType={orderType}
+                tableLabel={tableLabel}
+                onOrderTypeChange={setOrderType}
+                onDeliveryConfirm={setDelivery}
+              />
+            </>
+          }
+          promotionsSlot={<PromotionsRail slug={menu.restaurant.slug} />}
+        />
+      ) : (
+      <>
       {/* TABLE BANNER — only when the customer arrived via a table QR */}
       {tableLabel && (
         <div
@@ -459,6 +503,8 @@ export default function MenuExperience({
           </p>
         </div>
       </footer>
+      </>
+      )}
 
       {/* STICKY BOTTOM CART BAR — only when cart has items */}
       {count > 0 && (
@@ -516,9 +562,9 @@ export default function MenuExperience({
         </button>
       )}
 
-      {/* CART DRAWER */}
+      {/* CART DRAWER (light) / PREMIUM CHECKOUT FLOW (dark, full-page) */}
       {drawerOpen && (
-        <CartDrawer
+        <CartComponent
           restaurant={menu.restaurant}
           branches={branches}
           lines={lines}

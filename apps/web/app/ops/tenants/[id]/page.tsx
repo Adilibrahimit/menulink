@@ -100,6 +100,8 @@ export default async function TenantDetailPage({
             cover_image_url: r.cover_image_url,
             primary_color: r.primary_color,
             background_color: r.background_color,
+            menu_design_key: r.menu_design_key ?? null,
+            display_only_mode: !!r.display_only_mode,
           }}
         />
       </section>

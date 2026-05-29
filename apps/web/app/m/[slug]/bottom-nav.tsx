@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
-export default function BottomNav({ slug, navItems = 3, notifCenterEnabled = false }: { slug: string; navItems?: 3 | 5; notifCenterEnabled?: boolean }) {
+export default function BottomNav({ slug, navItems = 3, notifCenterEnabled = false, variant = "light" }: { slug: string; navItems?: 3 | 5; notifCenterEnabled?: boolean; variant?: "light" | "premium" }) {
   const pathname = usePathname();
+  const isPremium = variant === "premium";
   const [unread, setUnread] = useState(0);
 
   useEffect(() => {
@@ -38,7 +39,20 @@ export default function BottomNav({ slug, navItems = 3, notifCenterEnabled = fal
 
   return (
     <nav
-      className="fixed bottom-0 inset-x-0 z-30 bg-white border-t border-neutral-200 shadow-[0_-2px_8px_rgba(0,0,0,0.06)]"
+      className={
+        "fixed bottom-0 inset-x-0 z-30 " +
+        (isPremium ? "" : "bg-white border-t border-neutral-200 shadow-[0_-2px_8px_rgba(0,0,0,0.06)]")
+      }
+      style={
+        isPremium
+          ? {
+              background: "rgba(20,19,15,0.92)",
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
+              borderTop: "1px solid var(--card-border)",
+            }
+          : undefined
+      }
       dir="rtl"
     >
       <div className="flex items-center justify-around h-14 max-w-lg mx-auto">
@@ -48,9 +62,11 @@ export default function BottomNav({ slug, navItems = 3, notifCenterEnabled = fal
             <a
               key={tab.href}
               href={tab.href}
-              className={`relative flex flex-col items-center gap-0.5 min-w-[64px] py-1 ${
-                active ? "text-[var(--brand)]" : "text-neutral-400"
-              }`}
+              className={
+                "relative flex flex-col items-center gap-0.5 min-w-[64px] py-1 " +
+                (isPremium ? "" : active ? "text-[var(--brand)]" : "text-neutral-400")
+              }
+              style={isPremium ? { color: active ? "var(--accent-gold)" : "var(--text-secondary)" } : undefined}
             >
               <span className="text-lg relative">
                 {tab.icon}

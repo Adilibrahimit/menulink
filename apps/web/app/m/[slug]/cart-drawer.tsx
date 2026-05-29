@@ -7,6 +7,7 @@ import { toArabicDigits } from "@/lib/arabic";
 import LocationPicker from "./location-picker";
 import { useOrderContext } from "./order-context";
 import SarSymbol from "./sar-symbol";
+import { runCheckout, type OrderComposeInput } from "./checkout-core";
 import type { PublicMenu, PublicBranch, CartLine, OrderType } from "./types";
 import type { TrackingState } from "./tracking-sheet";
 
@@ -166,132 +167,37 @@ export default function CartDrawer({
       }
     }
     setSubmitting(true);
-    const phone = normalizePhone(rawPhone);
-    const plate = carPlate.trim();
-    const color = carColor.trim();
 
-    // For table orders: open or reuse a session
-    let activeSessionId = sessionId;
-    if (lockedToTable) {
-      try {
-        const sb = createClient();
-        const { data } = await sb.rpc("open_table_session", {
-          p_restaurant_id: restaurant.id,
-          p_table_label: tableLabel ?? "",
-          p_customer_name: name || null,
-          p_customer_phone: phone || null,
-        });
-        if (data) activeSessionId = data as string;
-      } catch (err) {
-        console.warn("[MenuLink v7] session open failed:", err);
-      }
-    }
-
-    const persistArgs = {
-      restaurantId: restaurant.id,
-      branchId: selectedBranchId || null,
-      phone,
-      name,
-      address: orderType === "delivery" ? address : "",
-      lat: orderType === "delivery" ? location?.lat ?? null : null,
-      lng: orderType === "delivery" ? location?.lng ?? null : null,
-      notes,
-      orderType,
-      carPlate: orderType === "car" ? plate : "",
-      carColor: orderType === "car" ? color : "",
-      tableLabel: lockedToTable ? (tableLabel ?? "") : "",
-      sessionId: activeSessionId,
+    const input: OrderComposeInput = {
+      restaurant,
+      branches,
+      selectedBranchId,
+      hasMultipleBranches,
       lines,
-      total,
+      orderType,
+      name,
+      rawPhone,
+      phone: normalizePhone(rawPhone),
+      address,
+      location,
+      carPlate: carPlate.trim(),
+      carColor: carColor.trim(),
+      notes,
+      tableLabel: lockedToTable ? (tableLabel ?? "") : "",
+      lockedToTable,
+      sessionId,
+      subtotal: total,
       deliveryFee,
       redeemPoints,
+      discountAmount,
+      finalTotal,
     };
 
-    // Await persist when redeeming points (must confirm deduction before WhatsApp),
-    // car orders (need order_id for tracking), or table orders (session link).
-    // Otherwise fire-and-forget.
-    let carOrderId: string | null = null;
-    const mustAwait = redeemPoints > 0 || orderType === "car" || lockedToTable;
-    if (mustAwait) {
-      try {
-        const result = await persistOrder(persistArgs);
-        carOrderId = result.orderId;
-      } catch (err) {
-        console.warn("[MenuLink v7] persist failed:", err);
-        if (redeemPoints > 0) {
-          setSubmitError("فشل خصم النقاط. حاول مرة أخرى.");
-          setSubmitting(false);
-          return;
-        }
-      }
-    } else {
-      persistOrder(persistArgs).catch((err) =>
-        console.warn("[MenuLink v7] persist failed:", err),
-      );
-    }
-
-    const orderNum = Date.now().toString(36).toUpperCase().slice(-6);
-
-    const lineList = lines
-      .map((l, i) => {
-        const v = l.variantLabel ? ` (${l.variantLabel})` : "";
-        let line = `🍽️ ${toArabicDigits(String(i + 1))}. *${l.itemName}*${v}`;
-        line += `\n   📊 الكمية: ${toArabicDigits(String(l.qty))} × ${toArabicDigits(String(l.price))} = *${toArabicDigits(String(l.price * l.qty))} ر.س*`;
-        if (l.modifiers && l.modifiers.length > 0) {
-          for (const m of l.modifiers) {
-            line += `\n   ➕ ${m.groupLabel}: ${m.selected.join("، ")}`;
-          }
-        }
-        if (l.itemNote) {
-          line += `\n   📝 ملاحظة: _${l.itemNote}_`;
-        }
-        return line;
-      })
-      .join("\n\n");
-
-    const mapsLink =
-      orderType === "delivery" && location
-        ? `https://www.google.com/maps?q=${location.lat},${location.lng}`
-        : null;
-
-    const selectedBranch = branches.find((b) => b.id === selectedBranchId);
-    const branchLine = hasMultipleBranches && selectedBranch
-      ? `🏢 *الفرع:* ${selectedBranch.name_ar}\n`
-      : "";
-
-    const msg =
-      `🌟 *طلب جديد · ${restaurant.name}* 🌟\n` +
-      `🔖 *رقم الطلب:* #${orderNum}\n` +
-      `━━━━━━━━━━━━━━━━\n` +
-      branchLine +
-      (lockedToTable ? `🪑 *الطاولة:* ${tableLabel}\n` : "") +
-      `📦 *نوع الطلب:* ${orderTypeLabel[orderType]}\n` +
-      `👤 *الاسم:* ${name || "—"}\n` +
-      `📞 *الجوال:* ${rawPhone || "—"}\n` +
-      (orderType === "delivery" && address ? `📍 *العنوان:* ${address}\n` : "") +
-      (mapsLink ? `🗺️ *الموقع:* ${mapsLink}\n` : "") +
-      (orderType === "car" && plate ? `🚗 *رقم اللوحة:* ${plate}\n` : "") +
-      (orderType === "car" && color ? `🎨 *لون السيارة:* ${color}\n` : "") +
-      `━━━━━━━━━━━━━━━━\n` +
-      `🛒 *تفاصيل الطلب (${toArabicDigits(String(lines.length))} أصناف):*\n\n${lineList}\n\n` +
-      `━━━━━━━━━━━━━━━━\n` +
-      (deliveryFee > 0 ? `🚗 *رسوم التوصيل: ${toArabicDigits(deliveryFee.toFixed(2))} ر.س*\n` : "") +
-      (discountAmount > 0 ? `🎁 *خصم النقاط:* -${toArabicDigits(discountAmount.toFixed(2))} ر.س (${toArabicDigits(String(redeemPoints))} نقطة)\n` : "") +
-      `💰 *المجموع: ${toArabicDigits(finalTotal.toFixed(2))} ر.س*\n` +
-      (notes ? `📝 *ملاحظات عامة:* ${notes}\n` : "") +
-      `━━━━━━━━━━━━━━━━\n` +
-      `✅ شكراً لاختياركم *${restaurant.name}* 🙏`;
-
-    const branchWa = selectedBranch?.whatsapp;
-    const waNumber = String(branchWa || restaurant.whatsapp_phone).replace(/\D/g, "");
-    window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`, "_blank");
-
-    if (orderType === "car" && carOrderId) {
-      onCarOrderPlaced({ orderId: carOrderId, plate, color, arrived: false });
-    }
-
-    if (lockedToTable && activeSessionId) {
-      onTableOrderPlaced(activeSessionId);
+    const result = await runCheckout(input, { onCarOrderPlaced, onTableOrderPlaced });
+    if (!result.ok && result.error === "points") {
+      setSubmitError("فشل خصم النقاط. حاول مرة أخرى.");
+      setSubmitting(false);
+      return;
     }
 
     setSubmitting(false);
@@ -702,91 +608,4 @@ export default function CartDrawer({
       </div>
     </div>
   );
-}
-
-/* ---------------- helpers ---------------- */
-
-async function persistOrder({
-  restaurantId,
-  branchId,
-  phone,
-  name,
-  address,
-  lat,
-  lng,
-  notes,
-  orderType,
-  carPlate,
-  carColor,
-  tableLabel,
-  sessionId,
-  lines,
-  total,
-  deliveryFee,
-  redeemPoints,
-}: {
-  restaurantId: string;
-  branchId: string | null;
-  phone: string;
-  name: string;
-  address: string;
-  lat: number | null;
-  lng: number | null;
-  notes: string;
-  orderType: OrderType;
-  carPlate: string;
-  carColor: string;
-  tableLabel: string;
-  sessionId: string | null;
-  lines: CartLine[];
-  total: number;
-  deliveryFee: number;
-  redeemPoints: number;
-}): Promise<{ orderId: string | null }> {
-  const sb = createClient();
-  const payload = {
-    restaurant_id: restaurantId,
-    branch_id: branchId || null,
-    phone,
-    name: name || null,
-    address: orderType === "delivery" ? (address || null) : null,
-    lat,
-    lng,
-    order_type: orderType,
-    channel: "whatsapp",
-    subtotal: total,
-    delivery_fee: deliveryFee,
-    total: total + deliveryFee,
-    notes: notes || null,
-    car_plate: orderType === "car" ? (carPlate || null) : null,
-    car_color: orderType === "car" ? (carColor || null) : null,
-    table_label: tableLabel || null,
-    session_id: sessionId || null,
-    redeem_points: redeemPoints > 0 ? redeemPoints : undefined,
-    items: lines.map((l) => {
-      let variantText = l.variantLabel || "";
-      if (l.modifiers && l.modifiers.length > 0) {
-        const modSummary = l.modifiers.map((m) => m.selected.join("، ")).join(" · ");
-        variantText = variantText ? `${variantText} · ${modSummary}` : modSummary;
-      }
-      if (l.itemNote) {
-        variantText = variantText
-          ? `${variantText} · ملاحظة: ${l.itemNote}`
-          : `ملاحظة: ${l.itemNote}`;
-      }
-      return {
-        item_id: l.itemId,
-        variant_key: l.variantKey,
-        item_name: l.itemName,
-        variant: variantText || l.variantLabel,
-        qty: l.qty,
-        unit_price: l.price,
-        line_total: l.price * l.qty,
-      };
-    }),
-  };
-  const { data, error } = await sb.rpc("submit_order", { p_order: payload });
-  if (error) throw error;
-  const orderId = (data as { order_id?: string } | null)?.order_id ?? null;
-  return { orderId };
 }
