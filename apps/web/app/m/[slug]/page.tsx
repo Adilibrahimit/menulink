@@ -3,6 +3,10 @@ import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase-server";
 import { hasAddon } from "@/lib/addons";
 import { getTheme, buildCssVars } from "@/lib/themes";
+import { resolveDesignTokens } from "@/lib/design/resolver";
+import type { ResolveDesignTokensInput } from "@/lib/design/resolver";
+import { tokensToCssVars, googleFontsUrl } from "@/lib/design/css-vars";
+import type { CSSProperties } from "react";
 import MenuExperience from "./menu-experience";
 import DisplayOnlyMenu from "./display-only-menu";
 import HeritageListMenu from "./heritage-list-menu";
@@ -81,10 +85,25 @@ export default async function CustomerMenuPage({
   }
 
   const theme = getTheme(params.slug);
-  const cssVars = buildCssVars(params.slug, {
+  const baseCssVars = buildCssVars(params.slug, {
     primary_color: menu.restaurant.primary_color,
     background_color: menu.restaurant.background_color,
   });
+
+  // DS-3: apply a published design profile's palette + fonts (colors/fonts only;
+  // layout/behavior stay from getTheme). Falls back to today's vars when none.
+  const { data: design } = await sb.rpc("get_published_design", { p_slug: params.slug });
+  let cssVars: CSSProperties = baseCssVars;
+  let profileFontsUrl: string | null = null;
+  if (design) {
+    const d = design as { template_tokens?: unknown; profile_tokens?: unknown };
+    const resolved = resolveDesignTokens({
+      templateTokens: d.template_tokens as ResolveDesignTokensInput["templateTokens"],
+      profileTokens: d.profile_tokens as ResolveDesignTokensInput["profileTokens"],
+    });
+    cssVars = { ...(baseCssVars as Record<string, string>), ...tokensToCssVars(resolved) } as CSSProperties;
+    profileFontsUrl = googleFontsUrl(resolved);
+  }
 
   if (menu.restaurant.display_only_mode) {
     const MenuComponent = theme.menuLayout === "heritage-list" ? HeritageListMenu : DisplayOnlyMenu;
@@ -93,6 +112,10 @@ export default async function CustomerMenuPage({
         {theme.fonts.googleUrl && (
           // eslint-disable-next-line @next/next/no-page-custom-font
           <link rel="stylesheet" href={theme.fonts.googleUrl} />
+        )}
+        {profileFontsUrl && (
+          // eslint-disable-next-line @next/next/no-page-custom-font
+          <link rel="stylesheet" href={profileFontsUrl} />
         )}
         <MenuComponent menu={menu} theme={theme} />
       </div>
@@ -108,6 +131,10 @@ export default async function CustomerMenuPage({
       {theme.fonts.googleUrl && (
         // eslint-disable-next-line @next/next/no-page-custom-font
         <link rel="stylesheet" href={theme.fonts.googleUrl} />
+      )}
+      {profileFontsUrl && (
+        // eslint-disable-next-line @next/next/no-page-custom-font
+        <link rel="stylesheet" href={profileFontsUrl} />
       )}
       <CustomerShell menu={menu} tableParam={tableLabel} theme={theme} notifCenterEnabled={notifCenterEnabled}>
         <MenuExperience
