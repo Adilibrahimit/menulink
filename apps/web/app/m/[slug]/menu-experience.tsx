@@ -17,6 +17,7 @@ import type {
 import type { PublicModifierConfig } from "./types";
 import CategoryTabs from "./category-tabs";
 import MenuItemCard from "./menu-item";
+import VeloraHero from "./velora-hero";
 import ItemCustomizerSheet from "./item-customizer-sheet";
 import CartDrawer from "./cart-drawer";
 import TrackingSheet from "./tracking-sheet";
@@ -253,7 +254,9 @@ export default function MenuExperience({
             enabled={pushEnabled}
           />
         </div>
-        {theme.headerStyle === "dark-navy" ? (
+        {theme.headerStyle === "velora-hero" ? (
+          <VeloraHero menu={menu} />
+        ) : theme.headerStyle === "dark-navy" ? (
           <div className="bg-[var(--header-bg)] px-5 pt-8 pb-6">
             <div className="flex items-start gap-3">
               {menu.restaurant.logo_url && (
