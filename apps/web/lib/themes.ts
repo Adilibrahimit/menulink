@@ -9,8 +9,8 @@ export type ThemeConfig = {
     googleUrl: string | null;
   };
   categoryStyle: "pills" | "tabs";
-  menuCardStyle: "stitch-navy" | "default";
-  headerStyle: "dark-navy" | "brand-filled";
+  menuCardStyle: "stitch-navy" | "default" | "premium-lounge";
+  headerStyle: "dark-navy" | "brand-filled" | "velora-hero";
   bottomNavItems: 3 | 5;
   cartBarStyle: "gold-navy" | "brand-default";
   hasItemDetailSheet: boolean;
