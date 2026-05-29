@@ -68,6 +68,12 @@ A docs/proofs/DS-7-export-mgmt.md
 
 ## Known limitations
 
+- **Storage upload not runtime-verified.** The clone test inserted a `qr_exports` row with a *fake*
+  `file_url`, so it verified the fingerprint RPC, the outdated logic, the `qr_exports` columns, and
+  the bucket's public-read config — but **not** the live `base64 → adminClient.upload → getPublicUrl`
+  chain inside `recordQrExport` (that path is verified only by `tsc`). It's additive + ops-only and
+  no production tenant has QR links that auto-trigger it, so the first ops "💾 حفظ نسخة" click in
+  prod is its real smoke test.
 - Save creates a **new** export row each time (no dedupe / no "regenerate-in-place"). Outdated rows
   are flagged but not auto-pruned. No `print_exports` (full-menu PDF) storage. Server-side Chromium
   rendering deferred (above).
