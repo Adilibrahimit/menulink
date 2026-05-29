@@ -18,6 +18,7 @@ import type { PublicModifierConfig } from "./types";
 import CategoryTabs from "./category-tabs";
 import MenuItemCard from "./menu-item";
 import VeloraHero from "./velora-hero";
+import PromotionsRail from "./promotions-rail";
 import ItemCustomizerSheet from "./item-customizer-sheet";
 import CartDrawer from "./cart-drawer";
 import TrackingSheet from "./tracking-sheet";
@@ -380,6 +381,8 @@ export default function MenuExperience({
           <span>جميع الأسعار شاملة ضريبة القيمة المضافة</span>
         </div>
       </div>
+
+      <PromotionsRail slug={menu.restaurant.slug} />
 
       {/* MENU SECTIONS — 2-col grid on mobile, 3 on sm, 4 on lg */}
       <div className="px-4 mt-5 space-y-8">
