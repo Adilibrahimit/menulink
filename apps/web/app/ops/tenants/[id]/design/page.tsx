@@ -6,12 +6,14 @@ import OverviewTab from "./overview-tab";
 import BrandIdentityTab from "./brand-identity-tab";
 import MenuPageTab from "./menu-page-tab";
 import VersionsTab from "./versions-tab";
+import QrTab from "./qr-tab";
 
 const TABS = [
   { key: "overview", label: "نظرة عامة" },
   { key: "brand", label: "الهوية البصرية" },
   { key: "menu", label: "قالب القائمة" },
   { key: "versions", label: "الإصدارات" },
+  { key: "qr", label: "رموز QR" },
 ] as const;
 
 export default async function DesignStudioPage({
@@ -25,10 +27,10 @@ export default async function DesignStudioPage({
   const sb = createClient();
   const active = TABS.some((t) => t.key === searchParams.tab) ? searchParams.tab! : "overview";
 
-  const [{ data: r }, { data: profiles }, { data: brandTemplates }, { data: pageTemplates }] =
+  const [{ data: r }, { data: profiles }, { data: brandTemplates }, { data: pageTemplates }, { data: qrProfiles }, { data: qrTemplates }] =
     await Promise.all([
       sb.from("restaurants")
-        .select("id, slug, name, logo_url, cover_image_url, primary_color, background_color")
+        .select("id, slug, name, logo_url, cover_image_url, primary_color, background_color, tagline_ar")
         .eq("id", params.id).single(),
       sb.from("restaurant_design_profiles")
         .select("*, brand:brand_identity_templates(key,name_ar), page:menu_page_templates(key,name_ar)")
@@ -39,6 +41,13 @@ export default async function DesignStudioPage({
         .eq("is_active", true).order("tier", { ascending: true }),
       sb.from("menu_page_templates")
         .select("id, key, name_ar, layout_type, supported_business_types")
+        .eq("is_active", true).order("key", { ascending: true }),
+      sb.from("restaurant_qr_profiles")
+        .select("id, name_ar, purpose, links:qr_links(id, code, target_type, is_active)")
+        .eq("restaurant_id", params.id)
+        .order("created_at", { ascending: false }),
+      sb.from("qr_design_templates")
+        .select("id, key, name_ar")
         .eq("is_active", true).order("key", { ascending: true }),
     ]);
 
@@ -85,6 +94,9 @@ export default async function DesignStudioPage({
           <MenuPageTab draft={draft as any} pageTemplates={(pageTemplates ?? []) as any} />
         )}
         {active === "versions" && <VersionsTab restaurantId={r.id} profiles={rows as any} />}
+        {active === "qr" && (
+          <QrTab restaurant={r as any} templates={(qrTemplates ?? []) as any} qrProfiles={(qrProfiles ?? []) as any} />
+        )}
       </div>
     </div>
   );
