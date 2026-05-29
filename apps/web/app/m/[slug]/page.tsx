@@ -6,6 +6,7 @@ import { getTheme, buildCssVars } from "@/lib/themes";
 import { resolveDesignTokens } from "@/lib/design/resolver";
 import type { ResolveDesignTokensInput } from "@/lib/design/resolver";
 import { tokensToCssVars, googleFontsUrl } from "@/lib/design/css-vars";
+import { resolveThemeLayout } from "@/lib/design/layout";
 import type { CSSProperties } from "react";
 import MenuExperience from "./menu-experience";
 import DisplayOnlyMenu from "./display-only-menu";
@@ -84,7 +85,7 @@ export default async function CustomerMenuPage({
     if (ls?.enabled) redemptionValueSar = Number(ls.redemption_value_sar) || 0;
   }
 
-  const theme = getTheme(params.slug);
+  let theme = getTheme(params.slug);
   const baseCssVars = buildCssVars(params.slug, {
     primary_color: menu.restaurant.primary_color,
     background_color: menu.restaurant.background_color,
@@ -104,6 +105,9 @@ export default async function CustomerMenuPage({
     cssVars = { ...(baseCssVars as Record<string, string>), ...tokensToCssVars(resolved) } as CSSProperties;
     profileFontsUrl = googleFontsUrl(resolved);
   }
+
+  // DS-3B-1: a published profile's menu-page-template can override theme layout flags.
+  theme = resolveThemeLayout(theme, (design as { menu_layout_config?: unknown } | null)?.menu_layout_config);
 
   if (menu.restaurant.display_only_mode) {
     const MenuComponent = theme.menuLayout === "heritage-list" ? HeritageListMenu : DisplayOnlyMenu;
