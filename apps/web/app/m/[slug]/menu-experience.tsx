@@ -402,6 +402,7 @@ export default function MenuExperience({
                 <MenuItemCard
                   key={item.id}
                   item={item}
+                  premium={theme.menuCardStyle === "premium-lounge"}
                   hasDetailSheet={theme.hasItemDetailSheet}
                   onAdd={(v) =>
                     theme.hasItemDetailSheet

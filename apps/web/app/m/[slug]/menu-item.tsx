@@ -16,15 +16,76 @@ export default function MenuItemCard({
   hasDetailSheet,
   onAdd,
   onTapCard,
+  premium,
 }: {
   item: PublicMenuItem;
   hasDetailSheet?: boolean;
   onAdd: (variant: PublicVariant) => void;
   onTapCard?: () => void;
+  premium?: boolean;
 }) {
   const img = item.image_url ?? SLUG_TO_IMG[item.slug] ?? null;
   const isPremium = item.badges?.some((b) => b.type === "premium");
   const isHot = item.badges?.some((b) => b.type === "hot");
+
+  if (premium) {
+    return (
+      <article
+        className={
+          "bg-[var(--card-bg,#1C1A17)] rounded-2xl overflow-hidden border border-[var(--accent-gold,#C8A15A)]/25 flex flex-col group" +
+          (hasDetailSheet ? " cursor-pointer" : "")
+        }
+        onClick={hasDetailSheet ? onTapCard : undefined}
+      >
+        <div className="relative aspect-[4/3] bg-black/30 overflow-hidden">
+          {img ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={img}
+              alt={item.name_ar}
+              loading="lazy"
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-5xl text-white/20">🍽️</div>
+          )}
+          <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black/50 to-transparent pointer-events-none" />
+        </div>
+        <div className="p-3 flex flex-col gap-2 flex-1">
+          <h3 className="text-[var(--ink,#F3EBDD)] leading-tight text-[16px]" style={{ fontFamily: "var(--font-display)" }}>
+            {item.name_ar}
+          </h3>
+          {item.description_ar && (
+            <p className="text-[11px] leading-snug -mt-1 line-clamp-2 text-[var(--ink,#F3EBDD)] opacity-60" style={{ fontFamily: "var(--font-body)" }}>
+              {item.description_ar}
+            </p>
+          )}
+          {item.calories_kcal != null && item.calories_kcal > 0 && (
+            <span className="inline-flex w-fit items-center gap-0.5 text-[10px] text-[var(--accent-gold,#C8A15A)] border border-[var(--accent-gold,#C8A15A)]/30 rounded-full px-1.5 py-0.5 leading-none">
+              🔥 {toArabicDigits(String(item.calories_kcal))} سعرة
+            </span>
+          )}
+          <div className="mt-auto pt-2 flex flex-wrap gap-1.5">
+            {item.variants.map((v) => (
+              <button
+                key={v.key}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAdd(v);
+                }}
+                className="flex-1 min-w-[88px] inline-flex items-center justify-center gap-1.5 h-9 px-2.5 rounded-full border border-[var(--accent-gold,#C8A15A)]/60 text-[var(--accent-gold,#C8A15A)] text-[11px] font-semibold active:translate-y-px hover:bg-[var(--accent-gold,#C8A15A)]/10"
+                aria-label={`أضف ${item.name_ar}${v.label ? ` ${v.label}` : ""}`}
+              >
+                {v.label && <span className="text-[10px] opacity-85">{v.label}</span>}
+                <span className="text-sm">{toArabicDigits(String(v.price))}</span>
+                <SarSymbol size={10} className="opacity-80" />
+              </button>
+            ))}
+          </div>
+        </div>
+      </article>
+    );
+  }
 
   return (
     <article
