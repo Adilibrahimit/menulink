@@ -19,6 +19,8 @@ data-driven so it works for **any** tenant from live MenuLink menu data.
 |---|---|
 | `apps/web/app/print/[slug]/[size]/menu-poster.tsx` | **New.** `MenuPoster` component + `curate()` / `buildSections()` / `posterHasPhotos()`. Token-driven (dark/gold for premium-epicurean, light/brand otherwise). |
 | `apps/web/app/print/[slug]/[size]/page.tsx` | Import `MenuPoster, { posterHasPhotos }`; add a `params.size === "poster" && posterHasPhotos(menu)` branch that renders the poster (with a no-print PrintButton). Otherwise falls through to the existing A4/A3 menu. |
+| `apps/web/app/ops/tenants/[id]/design/outputs-tab.tsx` | **New.** "المخرجات" tab body — open-in-new-tab links for the A4 menu, A3 menu, and **A4 poster** (`/print/<slug>/<size>`). Pure links, no client state. |
+| `apps/web/app/ops/tenants/[id]/design/page.tsx` | Register the 7th `outputs` tab (`المخرجات`) and render `<OutputsTab slug={r.slug} />`. |
 
 No migration, no new dependency, no schema change, no POS change. Purely additive
 on top of the existing `get_public_menu(slug)` RPC.
@@ -83,9 +85,15 @@ npm run build             # production build (Vercel parity)
 - Like the rest of the print route, this is a browser **print-to-PDF** surface;
   server-side PDF rendering remains deferred (consistent with DS-5/DS-7 scope).
 
+## Ops surface
+
+The design studio gains a **"المخرجات" (Outputs) tab** listing the three
+print-ready outputs — القائمة A4, القائمة A3, and **بوستر A4** — each opening
+`/print/<slug>/<size>` in a new tab (browser print-to-PDF). This is the first
+in-app entry point for the poster (previously reachable only by URL); the A4
+menu was also linked from the tenant page header.
+
 ## Next recommended phase
 
 - Optional: ops "signature dish / offer" override fields so the poster's hero and
   offer can be curated by hand instead of price-ranked.
-- Optional: wire a "بوستر A4" download/preview button into the ops Outputs tab
-  alongside the existing A4/A3 menu exports.
