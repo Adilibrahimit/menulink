@@ -6,6 +6,7 @@ import { toArabicDigits } from "@/lib/arabic";
 import { ALLERGEN_MAP } from "@/lib/allergens";
 import { SLUG_TO_IMG } from "@/lib/koko-images";
 import { resolvePrintTokens } from "@/lib/print-design";
+import MenuPoster, { posterHasPhotos } from "./menu-poster";
 import PrintButton from "./print-button";
 
 export const dynamic = "force-dynamic";
@@ -59,6 +60,21 @@ export default async function PrintMenuPage({ params }: { params: { slug: string
     type: "svg", margin: 0, errorCorrectionLevel: "M",
     color: { dark: "#111111", light: "#ffffff" }, // QR always dark-on-light (readability)
   });
+
+  // size=poster -> single-page curated "signature" poster (luxe-framed). The
+  // poster is photo-forward; with no usable photos we fall through to the
+  // standard A4 menu below rather than render an empty frame.
+  if (params.size === "poster" && posterHasPhotos(menu)) {
+    return (
+      <>
+        <style>{`@media print{.no-print{display:none!important;}}`}</style>
+        <div className="no-print" style={{ position: "fixed", top: 10, insetInlineEnd: 10, zIndex: 50 }}>
+          <PrintButton />
+        </div>
+        <MenuPoster menu={menu} t={t} qrSvg={qrSvg} />
+      </>
+    );
+  }
 
   // Hero spotlight = first item that has a photo (data-driven, no invented copy).
   let featured: PItem | null = null;
