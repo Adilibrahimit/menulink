@@ -34,7 +34,7 @@ export default async function DesignStudioPage({
   const [{ data: r }, { data: profiles }, { data: brandTemplates }, { data: pageTemplates }, { data: qrProfiles }, { data: qrTemplates }, { data: promotions }, { data: qrExports }] =
     await Promise.all([
       sb.from("restaurants")
-        .select("id, slug, name, logo_url, cover_image_url, primary_color, background_color, tagline_ar")
+        .select("id, slug, name, logo_url, cover_image_url, primary_color, background_color, tagline_ar, poster_hero_item_id, poster_offer_item_id")
         .eq("id", params.id).single(),
       sb.from("restaurant_design_profiles")
         .select("*, brand:brand_identity_templates(key,name_ar), page:menu_page_templates(key,name_ar)")
@@ -65,6 +65,16 @@ export default async function DesignStudioPage({
 
   if (!r) notFound();
   const { data: fingerprint } = await sb.rpc("get_export_fingerprint", { p_slug: r.slug });
+
+  // Poster hero/offer pickers (DS-12) list photo-bearing items only — same
+  // get_public_menu source the poster renders from, so options always match.
+  const { data: menuData } = await sb.rpc("get_public_menu", { p_slug: r.slug });
+  const posterItems = (((menuData as { categories?: any[] } | null)?.categories) ?? [])
+    .flatMap((c: any) =>
+      (c.items ?? [])
+        .filter((it: any) => it.image_url)
+        .map((it: any) => ({ id: it.id as string, name_ar: it.name_ar as string, category_ar: c.name_ar as string })),
+    );
   const rows = profiles ?? [];
   const draft = rows.find((p: any) => p.status === "draft") ?? null;
 
@@ -111,7 +121,15 @@ export default async function DesignStudioPage({
           <QrTab restaurant={r as any} templates={(qrTemplates ?? []) as any} qrProfiles={(qrProfiles ?? []) as any} qrExports={(qrExports ?? []) as any} fingerprint={(fingerprint as string) ?? ""} />
         )}
         {active === "promos" && <PromosTab restaurantId={r.id} promotions={(promotions ?? []) as any} />}
-        {active === "outputs" && <OutputsTab slug={r.slug} />}
+        {active === "outputs" && (
+          <OutputsTab
+            tenantId={r.id}
+            slug={r.slug}
+            heroItemId={(r as any).poster_hero_item_id ?? null}
+            offerItemId={(r as any).poster_offer_item_id ?? null}
+            posterItems={posterItems}
+          />
+        )}
       </div>
     </div>
   );
