@@ -69,6 +69,113 @@ const PREMIUM_EPICUREAN_THEME: ThemeConfig = {
   menuLayout: "premium-epicurean",
 };
 
+// "RzRz Signature" — warm "Ember & Charcoal" heritage design for a Bukhari
+// (rice + grilled chicken) restaurant. Espresso/charcoal canvas (#18110D, every
+// surface step carries a red-brown undertone) with a single BRASS #C9A24B for
+// chrome (section headers, hairlines, chips, variant outlines) and a restricted
+// EMBER #D17A2E reserved for the price, the CTA fill, and the wordmark. Amiri
+// (display) + Tajawal (body). Rendered by rzrz-signature-menu.tsx — hot dishes
+// carry featherweight CSS steam on hover and the hero hosts the one Remotion
+// signature-dish spotlight. Visibly distinct from premium-epicurean.
+const RZRZ_SIGNATURE_THEME: ThemeConfig = {
+  slug: "rzrz-signature",
+  cssVars: {
+    "--brand": "#D17A2E",
+    "--bg": "#18110D",
+    "--ink": "#F4E9D8",
+    "--accent-gold": "#C9A24B",
+    "--header-bg": "#18110D",
+    "--header-text": "#F4E9D8",
+    "--price-color": "#D17A2E",
+    "--card-bg": "#2A1E16",
+    "--card-border": "rgba(154,135,111,0.14)",
+    "--divider": "rgba(154,135,111,0.16)",
+    "--text-secondary": "#C9B8A3",
+    "--calorie-bg": "rgba(201,162,75,0.08)",
+    "--calorie-text": "#C9A24B",
+    "--cta-bg": "#D17A2E",
+    "--cta-text": "#18110D",
+    "--surface-elevated": "#34271D",
+    "--surface-deep": "#211711",
+    "--on-primary": "#18110D",
+    // signature-only extras (ember accents + steam tint consumed by the layout/CSS)
+    "--ember": "#D17A2E",
+    "--ember-hover": "#E0883B",
+    "--ember-glow": "rgba(214,138,74,0.30)",
+    "--header-glass": "rgba(24,18,13,0.82)",
+    "--steam-tint": "rgba(255,248,236,0.92)",
+  },
+  fonts: {
+    display: "Amiri",
+    body: "Tajawal",
+    googleUrl:
+      "https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap",
+  },
+  categoryStyle: "pills",
+  menuCardStyle: "signature",
+  headerStyle: "dark-navy",
+  bottomNavItems: 3,
+  cartBarStyle: "gold-navy",
+  hasItemDetailSheet: false,
+  checkoutStyle: "drawer",
+  loginFlow: "default",
+  posterStyle: "default",
+  menuLayout: "rzrz-signature",
+};
+
+// "Delivery Modern" — a clean, premium food-delivery-app language (Cava / Uber
+// Eats lineage) on a WARM-STONE light canvas with KO-KO red as a controlled
+// accent. Distinctive type: Changa (display) + Readex Pro (body/UI), not the
+// generic system stack. Rendered by koko-delivery-menu.tsx with a crafted inline
+// SVG icon set (zero emojis), a swipeable featured rail, an icon category rail,
+// popular-cards + list-rows rhythm, and a spring-in cart pill. Light flow → uses
+// the standard CartDrawer + ItemCustomizerSheet (no dark checkout).
+const DELIVERY_MODERN_THEME: ThemeConfig = {
+  slug: "delivery-modern",
+  cssVars: {
+    "--brand": "#D32027",
+    "--bg": "#F6F4EF",
+    "--ink": "#181410",
+    "--accent-gold": "#D32027",
+    "--header-bg": "#FFFFFF",
+    "--header-text": "#181410",
+    "--price-color": "#181410",
+    "--card-bg": "#FFFFFF",
+    "--card-border": "rgba(24,20,16,0.07)",
+    "--divider": "rgba(24,20,16,0.07)",
+    "--text-secondary": "#78716A",
+    "--calorie-bg": "rgba(211,32,39,0.06)",
+    "--calorie-text": "#B0161C",
+    "--cta-bg": "#D32027",
+    "--cta-text": "#FFFFFF",
+    "--surface-elevated": "#FFFFFF",
+    // delivery-modern extras (consumed by koko-delivery-menu.tsx + globals.css)
+    "--brand-strong": "#B0161C",
+    "--accent-soft": "rgba(211,32,39,0.08)",
+    "--app-glass": "rgba(246,244,239,0.80)",
+    "--ring": "rgba(24,20,16,0.10)",
+    "--shadow-card": "0 1px 2px rgba(24,20,16,0.05), 0 8px 22px rgba(24,20,16,0.06)",
+    "--shadow-pill": "0 10px 30px rgba(211,32,39,0.34)",
+    "--shadow-float": "0 14px 40px rgba(24,20,16,0.16)",
+  },
+  fonts: {
+    display: "Changa",
+    body: "Readex Pro",
+    googleUrl:
+      "https://fonts.googleapis.com/css2?family=Changa:wght@500;600;700;800&family=Readex+Pro:wght@300;400;500;600;700&display=swap",
+  },
+  categoryStyle: "pills",
+  menuCardStyle: "default",
+  headerStyle: "brand-filled",
+  bottomNavItems: 5,
+  cartBarStyle: "brand-default",
+  hasItemDetailSheet: true,
+  checkoutStyle: "drawer",
+  loginFlow: "default",
+  posterStyle: "default",
+  menuLayout: "delivery-modern",
+};
+
 // "KO-KO Fast-food" — the default card-grid layout baked with KO-KO's bold red
 // brand on cream. Mirrors what buildCssVars() produces for the default theme
 // using KO-KO's DB colors (primary #D32027, background #FAF6EE), so the look is
@@ -118,6 +225,20 @@ export const DESIGN_LIBRARY: DesignLibraryEntry[] = [
     name_ar: "بريميوم — تجربة فاخرة",
     description_ar: "تصميم داكن ذهبي خمس نجوم، صور كبيرة لكل طبق (Epicurean).",
     theme: PREMIUM_EPICUREAN_THEME,
+  },
+  {
+    key: "rzrz-signature",
+    name_ar: "توقيع رزرز — جمر وفحم",
+    description_ar:
+      "تراثي داكن دافئ (جمر/برونز) مع بخار حيّ على الأطباق الساخنة وفيديو توقيع للطبق المميز.",
+    theme: RZRZ_SIGNATURE_THEME,
+  },
+  {
+    key: "delivery-modern",
+    name_ar: "تطبيق توصيل حديث",
+    description_ar:
+      "نمط تطبيقات التوصيل (Cava/Uber Eats): قاعدة فاتحة دافئة، أيقونات SVG، شريط أطباق مميزة، صفوف قائمة، وحركات راقية.",
+    theme: DELIVERY_MODERN_THEME,
   },
   {
     key: "koko-fastfood",

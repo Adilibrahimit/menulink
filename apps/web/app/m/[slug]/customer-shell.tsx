@@ -38,6 +38,10 @@ export default function CustomerShell({
   const [orderType, setOrderType] = useState<OrderType | null>(null);
   const [delivery, setDelivery] = useState<DeliveryContext | null>(null);
   const googleFirst = theme.loginFlow === "google-first";
+  // Dark full-page ordering layouts (premium-epicurean + rzrz-signature) share
+  // the same dark shell treatment: brass spinner, premium login gate, premium nav.
+  const darkOrdering =
+    theme.menuLayout === "premium-epicurean" || theme.menuLayout === "rzrz-signature";
 
   useEffect(() => {
     const sb = createClient();
@@ -95,7 +99,7 @@ export default function CustomerShell({
       <div className="min-h-[100dvh] flex items-center justify-center" style={{ background: "var(--bg)" }}>
         <div
           className="w-8 h-8 border-3 border-neutral-200 border-t-neutral-500 rounded-full animate-spin"
-          style={theme.menuLayout === "premium-epicurean" ? { borderColor: "rgba(230,195,131,0.2)", borderTopColor: "var(--accent-gold)" } : undefined}
+          style={darkOrdering ? { borderColor: "rgba(230,195,131,0.2)", borderTopColor: "var(--accent-gold)" } : undefined}
         />
       </div>
     );
@@ -113,7 +117,7 @@ export default function CustomerShell({
         }}
         tableParam={tableParam}
         onGuest={handleGuest}
-        premium={theme.menuLayout === "premium-epicurean"}
+        premium={darkOrdering}
       />
     );
   }
@@ -138,7 +142,7 @@ export default function CustomerShell({
       setDelivery={setDelivery}
     >
       <div className="pb-16">{children}</div>
-      <BottomNav slug={menu.restaurant.slug} navItems={theme.bottomNavItems} notifCenterEnabled={notifCenterEnabled} variant={theme.menuLayout === "premium-epicurean" ? "premium" : "light"} />
+      <BottomNav slug={menu.restaurant.slug} navItems={theme.bottomNavItems} notifCenterEnabled={notifCenterEnabled} variant={darkOrdering ? "premium" : "light"} svgIcons={theme.menuLayout === "delivery-modern"} />
     </OrderTypeProvider>
   );
 }

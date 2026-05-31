@@ -18,6 +18,9 @@ import type { PublicModifierConfig } from "./types";
 import CategoryTabs from "./category-tabs";
 import MenuItemCard from "./menu-item";
 import PremiumEpicureanMenu from "./premium-epicurean-menu";
+import RzrzSignatureMenu from "./rzrz-signature-menu";
+import KokoDeliveryMenu from "./koko-delivery-menu";
+import { OrderTypeIcon } from "./icons";
 import VeloraHero from "./velora-hero";
 import PromotionsRail from "./promotions-rail";
 import ItemCustomizerSheet from "./item-customizer-sheet";
@@ -44,6 +47,7 @@ export default function MenuExperience({
   pushEnabled,
   vapidKey,
   branches,
+  signatureItem,
 }: {
   menu: PublicMenu;
   tableLabel: string | null;
@@ -53,6 +57,7 @@ export default function MenuExperience({
   pushEnabled: boolean;
   vapidKey: string;
   branches: PublicBranch[];
+  signatureItem?: PublicMenuItem | null;
 }) {
   const { orderType, setOrderType, delivery, setDelivery } = useOrderContext();
   const [cart, setCart] = useState<Record<string, CartLine>>({});
@@ -217,52 +222,95 @@ export default function MenuExperience({
   }
 
   const hasCover = !!menu.restaurant.cover_image_url;
-  const isPremium = theme.menuLayout === "premium-epicurean";
-  // Premium tenants get the dark/gold full-page Selections+Checkout flow; all
-  // others keep the light CartDrawer. Identical prop signatures.
+  const isSignature = theme.menuLayout === "rzrz-signature";
+  const isDelivery = theme.menuLayout === "delivery-modern";
+  const isPremium = theme.menuLayout === "premium-epicurean" || isSignature;
+  // Full-page browse layouts (premium/signature dark + delivery-modern light) all
+  // take the same premiumMenuProps; only premium/signature use the dark checkout.
+  const isFullPage = isPremium || isDelivery;
+  // Premium/signature tenants get the dark full-page Selections+Checkout flow;
+  // all others (incl. delivery-modern) keep the light CartDrawer. Same signatures.
   const CartComponent = isPremium ? PremiumCheckoutFlow : CartDrawer;
+  // Shared props for the dark full-page browse layouts. Only rzrz-signature also
+  // receives the pinned signatureItem (premium-epicurean has no such prop).
+  const premiumMenuProps = {
+    menu,
+    theme,
+    onAdd: (item: PublicMenuItem, v: PublicVariant) => addToCartSimple(item, v),
+    pushToggle: (
+      <PushToggle
+        restaurantId={menu.restaurant.id}
+        customerId={null}
+        vapidKey={vapidKey}
+        enabled={pushEnabled}
+      />
+    ),
+    controlsSlot: (
+      <>
+        {tableLabel && (
+          <div
+            className="bg-amber-400 text-amber-950 text-sm font-extrabold py-2 px-4 text-center rounded-xl mb-3"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            🪑 أنت تطلب من طاولة {tableLabel}
+          </div>
+        )}
+        <OrderTypeSwitcher
+          restaurantId={menu.restaurant.id}
+          restaurantName={menu.restaurant.name}
+          branches={branches}
+          orderType={orderType}
+          tableLabel={tableLabel}
+          onOrderTypeChange={setOrderType}
+          onDeliveryConfirm={setDelivery}
+        />
+      </>
+    ),
+    promotionsSlot: <PromotionsRail slug={menu.restaurant.slug} />,
+  };
 
   return (
     <main
       className="bg-[var(--bg)] text-[var(--ink)] pb-28"
       style={{ fontFamily: "var(--font-body)" }}
     >
-      {isPremium ? (
-        <PremiumEpicureanMenu
-          menu={menu}
-          theme={theme}
-          onAdd={(item, v) => addToCartSimple(item, v)}
-          pushToggle={
-            <PushToggle
-              restaurantId={menu.restaurant.id}
-              customerId={null}
-              vapidKey={vapidKey}
-              enabled={pushEnabled}
-            />
-          }
-          controlsSlot={
-            <>
-              {tableLabel && (
-                <div
-                  className="bg-amber-400 text-amber-950 text-sm font-extrabold py-2 px-4 text-center rounded-xl mb-3"
-                  style={{ fontFamily: "var(--font-display)" }}
-                >
-                  🪑 أنت تطلب من طاولة {tableLabel}
-                </div>
-              )}
-              <OrderTypeSwitcher
-                restaurantId={menu.restaurant.id}
-                restaurantName={menu.restaurant.name}
-                branches={branches}
-                orderType={orderType}
-                tableLabel={tableLabel}
-                onOrderTypeChange={setOrderType}
-                onDeliveryConfirm={setDelivery}
-              />
-            </>
-          }
-          promotionsSlot={<PromotionsRail slug={menu.restaurant.slug} />}
-        />
+      {isFullPage ? (
+        isDelivery ? (
+          <KokoDeliveryMenu
+            {...premiumMenuProps}
+            controlsSlot={
+              <div className="space-y-2">
+                {tableLabel && (
+                  <div
+                    className="text-[13px] font-bold py-2.5 px-4 text-center rounded-xl"
+                    style={{ background: "var(--accent-soft)", color: "var(--brand-strong)", fontFamily: "var(--font-display)" }}
+                  >
+                    أنت تطلب من طاولة {tableLabel}
+                  </div>
+                )}
+                <OrderTypeSwitcher
+                  restaurantId={menu.restaurant.id}
+                  restaurantName={menu.restaurant.name}
+                  branches={branches}
+                  orderType={orderType}
+                  tableLabel={tableLabel}
+                  onOrderTypeChange={setOrderType}
+                  onDeliveryConfirm={setDelivery}
+                  plain
+                  renderIcon={(k) => <OrderTypeIcon type={k} />}
+                />
+              </div>
+            }
+            onOpen={(item, v, c) => openCustomizer(item, v, c)}
+            cartCount={count}
+            cartTotal={total}
+            onOpenCart={() => setDrawerOpen(true)}
+          />
+        ) : isSignature ? (
+          <RzrzSignatureMenu {...premiumMenuProps} signatureItem={signatureItem} />
+        ) : (
+          <PremiumEpicureanMenu {...premiumMenuProps} />
+        )
       ) : (
       <>
       {/* TABLE BANNER — only when the customer arrived via a table QR */}
@@ -506,8 +554,9 @@ export default function MenuExperience({
       </>
       )}
 
-      {/* STICKY BOTTOM CART BAR — only when cart has items */}
-      {count > 0 && (
+      {/* STICKY BOTTOM CART BAR — only when cart has items. delivery-modern
+          renders its own crafted cart pill inside KokoDeliveryMenu. */}
+      {count > 0 && !isDelivery && (
         <button
           onClick={() => setDrawerOpen(true)}
           className={

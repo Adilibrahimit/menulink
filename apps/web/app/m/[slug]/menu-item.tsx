@@ -4,6 +4,7 @@ import { SLUG_TO_IMG } from "@/lib/koko-images";
 import { ALLERGEN_MAP } from "@/lib/allergens";
 import { toArabicDigits } from "@/lib/arabic";
 import SarSymbol from "./sar-symbol";
+import { SteamCss } from "./steam-overlay";
 import type { PublicMenuItem, PublicVariant } from "./types";
 
 // Stitch "Vibrant Poultry" card. Image fills the top of the card, square
@@ -17,12 +18,14 @@ export default function MenuItemCard({
   onAdd,
   onTapCard,
   premium,
+  steam,
 }: {
   item: PublicMenuItem;
   hasDetailSheet?: boolean;
   onAdd: (variant: PublicVariant) => void;
   onTapCard?: () => void;
   premium?: boolean;
+  steam?: boolean;
 }) {
   const img = item.image_url ?? SLUG_TO_IMG[item.slug] ?? null;
   const isPremium = item.badges?.some((b) => b.type === "premium");
@@ -37,7 +40,7 @@ export default function MenuItemCard({
         }
         onClick={hasDetailSheet ? onTapCard : undefined}
       >
-        <div className="relative aspect-[4/3] bg-black/30 overflow-hidden">
+        <div className="relative aspect-[4/3] bg-black/30 overflow-hidden isolate">
           {img ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -49,6 +52,9 @@ export default function MenuItemCard({
           ) : (
             <div className="w-full h-full flex items-center justify-center text-5xl text-white/20">🍽️</div>
           )}
+          {/* Always-on realistic steam on hot dishes (signature design) — visible
+              on mobile too, not just hover. Smoke filter gives organic edges. */}
+          {steam && isHot && img && <SteamCss mode="always" smoke count={2} />}
           <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black/50 to-transparent pointer-events-none" />
         </div>
         <div className="p-3 flex flex-col gap-2 flex-1">

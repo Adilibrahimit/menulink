@@ -14,7 +14,7 @@ import DisplayOnlyMenu from "./display-only-menu";
 import HeritageListMenu from "./heritage-list-menu";
 import PwaBootstrap from "./pwa-bootstrap";
 import CustomerShell from "./customer-shell";
-import type { PublicMenu } from "./types";
+import type { PublicMenu, PublicMenuItem } from "./types";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const sb = createClient();
@@ -117,16 +117,32 @@ export default async function CustomerMenuPage({
   // (0019); get_public_menu is untouched.
   const { data: rDesign } = await sb
     .from("restaurants")
-    .select("menu_design_key")
+    .select("menu_design_key, poster_hero_item_id")
     .eq("id", menu.restaurant.id)
     .maybeSingle();
-  const libraryEntry = getDesign(
-    (rDesign as { menu_design_key?: string | null } | null)?.menu_design_key,
-  );
+  const designRow = rDesign as {
+    menu_design_key?: string | null;
+    poster_hero_item_id?: string | null;
+  } | null;
+  const libraryEntry = getDesign(designRow?.menu_design_key);
   if (libraryEntry) {
     theme = libraryEntry.theme;
     cssVars = cssVarsForTheme(libraryEntry.theme);
     profileFontsUrl = null; // fonts come from theme.fonts.googleUrl below
+  }
+
+  // Signature/hero dish for the rzrz-signature layout: the ops-pinned
+  // poster_hero_item_id (DS-12, migration 0070), re-validated against the live
+  // menu (same guard the print poster uses). NULL/stale → layout heuristic.
+  let signatureItem: PublicMenuItem | null = null;
+  if (designRow?.poster_hero_item_id) {
+    for (const c of menu.categories) {
+      const found = c.items.find((i) => i.id === designRow.poster_hero_item_id);
+      if (found) {
+        signatureItem = found;
+        break;
+      }
+    }
   }
 
   if (menu.restaurant.display_only_mode) {
@@ -170,6 +186,7 @@ export default async function CustomerMenuPage({
           pushEnabled={pushEnabled}
           vapidKey={process.env.NEXT_PUBLIC_VAPID_KEY ?? ""}
           branches={branches}
+          signatureItem={signatureItem}
         />
         <PwaBootstrap />
       </CustomerShell>
