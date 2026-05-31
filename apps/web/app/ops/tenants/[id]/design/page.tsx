@@ -8,6 +8,7 @@ import MenuPageTab from "./menu-page-tab";
 import VersionsTab from "./versions-tab";
 import QrTab from "./qr-tab";
 import PromosTab from "./promos-tab";
+import OutputsTab from "./outputs-tab";
 
 const TABS = [
   { key: "overview", label: "نظرة عامة" },
@@ -16,6 +17,7 @@ const TABS = [
   { key: "versions", label: "الإصدارات" },
   { key: "qr", label: "رموز QR" },
   { key: "promos", label: "العروض" },
+  { key: "outputs", label: "المخرجات" },
 ] as const;
 
 export default async function DesignStudioPage({
@@ -109,6 +111,7 @@ export default async function DesignStudioPage({
           <QrTab restaurant={r as any} templates={(qrTemplates ?? []) as any} qrProfiles={(qrProfiles ?? []) as any} qrExports={(qrExports ?? []) as any} fingerprint={(fingerprint as string) ?? ""} />
         )}
         {active === "promos" && <PromosTab restaurantId={r.id} promotions={(promotions ?? []) as any} />}
+        {active === "outputs" && <OutputsTab slug={r.slug} />}
       </div>
     </div>
   );
