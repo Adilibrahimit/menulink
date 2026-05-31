@@ -45,12 +45,17 @@ export default async function PrintMenuPage({ params }: { params: { slug: string
   const r = menu.restaurant;
 
   // Design-aware palette: premium-epicurean -> dark/gold, else light brand.
+  // Poster hero/offer overrides (DS-12) ride on the same anon restaurants read.
   const { data: rDesign } = await sb
-    .from("restaurants").select("menu_design_key").eq("slug", params.slug).maybeSingle();
-  const t = resolvePrintTokens(
-    (rDesign as { menu_design_key?: string | null } | null)?.menu_design_key,
-    r.primary_color,
-  );
+    .from("restaurants")
+    .select("menu_design_key, poster_hero_item_id, poster_offer_item_id")
+    .eq("slug", params.slug).maybeSingle();
+  const design = rDesign as {
+    menu_design_key?: string | null;
+    poster_hero_item_id?: string | null;
+    poster_offer_item_id?: string | null;
+  } | null;
+  const t = resolvePrintTokens(design?.menu_design_key, r.primary_color);
 
   // Order QR -> the live customer menu (host-derived so it works on any domain).
   const host = headers().get("host") ?? "menulink-admin-five.vercel.app";
@@ -71,7 +76,13 @@ export default async function PrintMenuPage({ params }: { params: { slug: string
         <div className="no-print" style={{ position: "fixed", top: 10, insetInlineEnd: 10, zIndex: 50 }}>
           <PrintButton />
         </div>
-        <MenuPoster menu={menu} t={t} qrSvg={qrSvg} />
+        <MenuPoster
+          menu={menu}
+          t={t}
+          qrSvg={qrSvg}
+          heroItemId={design?.poster_hero_item_id}
+          offerItemId={design?.poster_offer_item_id}
+        />
       </>
     );
   }

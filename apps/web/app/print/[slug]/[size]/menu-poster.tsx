@@ -59,17 +59,35 @@ export function posterHasPhotos(menu: PMenu): boolean {
   return menu.categories.some((c) => c.items.some(imgFor));
 }
 
-// Generic curation: hero = priciest item with a photo; offer = priciest in a
-// different category; then up to 4 sections of the remaining photo items. The
-// strict pass prefers >=2 items per section; if that yields fewer than 2
-// sections (sparse menu) a lenient pass allows single-item sections so the
-// poster is never half-empty. Works for any tenant.
-function curate(menu: PMenu) {
+type Placed = { it: PItem; cat: PCategory };
+
+// Ops can pin a hero/offer item id (restaurants.poster_hero_item_id /
+// poster_offer_item_id, DS-12). A pin is honored only if that item is still in
+// the menu AND has a usable photo (the poster is photo-forward); otherwise it
+// degrades silently to the price-rank pick below — a deactivated or photo-less
+// pin never produces a broken slot.
+type Overrides = { heroId?: string | null; offerId?: string | null };
+
+// Generic curation: hero = pinned item (if valid) else priciest item with a
+// photo; offer = pinned (if valid) else priciest in a different category; then
+// up to 4 sections of the remaining photo items. The strict pass prefers >=2
+// items per section; if that yields fewer than 2 sections (sparse menu) a
+// lenient pass allows single-item sections so the poster is never half-empty.
+// Works for any tenant.
+function curate(menu: PMenu, overrides: Overrides = {}) {
   const cats = menu.categories.filter((c) => c.items.some(imgFor));
-  const photoItems = cats.flatMap((c) => c.items.filter(imgFor).map((it) => ({ it, cat: c })));
+  const photoItems: Placed[] = cats.flatMap((c) => c.items.filter(imgFor).map((it) => ({ it, cat: c })));
   const byPrice = [...photoItems].sort((a, b) => (priceOf(b.it) ?? 0) - (priceOf(a.it) ?? 0));
-  const hero = byPrice[0];
-  const offer = byPrice.find((x) => x.it.id !== hero?.it.id && x.cat.id !== hero?.cat.id) ?? byPrice[1];
+
+  // A pin resolves only to a photo-bearing menu item; null otherwise.
+  const pinned = (id: string | null | undefined) =>
+    id ? photoItems.find((x) => x.it.id === id) ?? null : null;
+
+  const hero = pinned(overrides.heroId) ?? byPrice[0];
+  const offer =
+    pinned(overrides.offerId) ??
+    byPrice.find((x) => x.it.id !== hero?.it.id && x.cat.id !== hero?.cat.id) ??
+    byPrice.find((x) => x.it.id !== hero?.it.id);
   const heroOffer = [hero?.it.id, offer?.it.id].filter(Boolean) as string[];
 
   let sections = buildSections(cats, new Set(heroOffer), 2);
@@ -79,9 +97,14 @@ function curate(menu: PMenu) {
   return { hero: hero ? toPick(hero.it) : null, offer: offer ? toPick(offer.it) : null, sections, nav };
 }
 
-export default function MenuPoster({ menu, t, qrSvg }: { menu: PMenu; t: PrintTokens; qrSvg: string }) {
+export default function MenuPoster({
+  menu, t, qrSvg, heroItemId, offerItemId,
+}: {
+  menu: PMenu; t: PrintTokens; qrSvg: string;
+  heroItemId?: string | null; offerItemId?: string | null;
+}) {
   const r = menu.restaurant;
-  const { hero, offer, sections, nav } = curate(menu);
+  const { hero, offer, sections, nav } = curate(menu, { heroId: heroItemId, offerId: offerItemId });
   const goldDeep = t.isDark ? "#d8b15a" : t.accent;
 
   const css = `
