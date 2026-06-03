@@ -2,7 +2,7 @@
 
 > **Read this first** when picking up the project in a new session.
 > Last saved: **2026-05-29 (session 9)** — 1 migration (0058), 6 commits.
-> Status line: **production SaaS, 6 tenants. Session 9: onboarded Mazaj Almosafer (مقهى مزاج المسافر) — 6th tenant, menu-only display mode, Riyadh coffee/dessert/hookah lounge. (1) Migration 0058: 13 categories + 176 items + 176 variants; (2) new heritage list menu design (heritage-list-menu.tsx) matching the client's HTML template, driven by new ThemeConfig fields menuLayout + posterStyle; (3) custom QR poster = real QR composited onto client's exact design image (template in public/qr-templates/); (4) 148/176 photos mapped+uploaded from a 460MB library (gitignored); (5) 103/176 calories imported from the client's printed menu. Owner: mazaj.almosafer@gmail.com / Mazaj2026!. Next: 28 remaining photos, 9 printed-menu items pending approval, Mazaj sub amount TBD; carry-overs: delivery zones gating, Bridge App .NET phase 2, Moyasar, Samer .NET patch.**
+> Status line: **production SaaS, 6 tenants. Session 9: onboarded Mazaj Almosafer (مقهى مزاج المسافر) — 6th tenant, menu-only display mode, Riyadh coffee/dessert/hookah lounge. (1) Migration 0058: 13 categories + 176 items + 176 variants; (2) new heritage list menu design (heritage-list-menu.tsx) matching the client's HTML template, driven by new ThemeConfig fields menuLayout + posterStyle; (3) custom QR poster = real QR composited onto client's exact design image (template in public/qr-templates/); (4) 148/176 photos mapped+uploaded from a 460MB library (gitignored); (5) 103/176 calories imported from the client's printed menu. Owner: mazaj.almosafer@gmail.com / Mazaj2026!. Next: 28 remaining photos, 9 printed-menu items pending approval, Mazaj billing reconciled 2026-06-03 (2-branch deal 1500 setup + 500 renewal/branch, both paid = 3000 SAR, sub active; branch 2 delivery pending client menu+info); carry-overs: delivery zones gating, Bridge App .NET phase 2, Moyasar, Samer .NET patch.**
 
 ---
 
@@ -266,8 +266,7 @@ D:\menulink\
 │
 ├── docs/
 │   ├── ai_memory/                         ← POS integration docs (5 files, no secrets)
-│   ├── proof/                             ← Implementation proof files
-│   └── menulink_global_ops_plan_md_files/ ← Global Operations Core plan (11 phases)
+│   └── proof/                             ← Implementation proof files
 │
 ├── .obsidian/                             ← Empty marker — makes the project an Obsidian vault
 ├── .graph/                                ← graphify knowledge-graph output (run via /graphify)
@@ -372,7 +371,7 @@ These were debated and resolved during the build. Don't relitigate without stron
 8. **Vercel's `vercel.json` rejects unknown root keys** like `_comment`. Don't add comments in vercel.json — use git commit messages.
 9. **MCP Supabase / Vercel servers are bound to whichever account the MCP was set up with**, NOT the account the user references in chat. Bypass via the REST API + their access token.
 10. **Supabase JWT claims from `raw_app_meta_data` are nested under `app_metadata`, NOT top-level.** `auth.jwt() ->> 'restaurant_id'` always returns NULL — that broke every authenticated RLS check from 0001 until **0008** fixed it by switching to `auth.uid()` + `restaurant_owners` / `platform_admins` lookups via `public.owns_restaurant(uuid)` and `public.is_platform_admin()` SECURITY DEFINER helpers. **Never write RLS that reads JWT-nested claims as top-level.**
-11. **Postgres views default to `security_invoker=false`, which bypasses RLS on underlying tables.** `v_revenue_daily` was leaking cross-tenant data until 0008-era dashboard fix added explicit `.eq("restaurant_id", me.restaurant_id)`. Always scope view queries explicitly, OR add `security_invoker=true` to the view.
+11. **Postgres views default to `security_invoker=false`, which bypasses RLS on underlying tables.** The 6 analytics views (`v_customer_rfm`/`ltv`, `v_dormant_customers`, `v_top_items_*`, `v_revenue_daily`) leaked cross-tenant data — the app's `.eq("restaurant_id", me.restaurant_id)` was the *only* guard, and they were even granted to `anon` — until **0071** fixed it: each view now self-filters with `where has_restaurant_access(restaurant_id) or is_platform_admin()`, and `anon` SELECT was revoked. App-level `.eq()` is now defense-in-depth, not the only guard. For any new view: self-filter it OR set `security_invoker=true`. (See `docs/auth-rls-bridge-trace.md`.)
 12. **Silent `catch {}` hides DB constraint failures.** `push_subscriptions.customer_id NOT NULL` broke every anonymous push subscription since launch — the PWA's `catch {}` swallowed the error. Always log errors even in "expected failure" catch blocks. Fixed in 0029.
 
 ---
@@ -736,7 +735,7 @@ These won't block anything but are worth knowing about:
 ## 📍 What changed on 2026-05-25 (session 4 — Global Operations Core)
 
 ### Overview
-Massive infrastructure session: implemented the full Global Operations Core plan (phases 3–11) from `docs/menulink_global_ops_plan_md_files/`. 11 new migrations applied to prod, 3 admin UIs built and deployed. RzRz configured as the multi-branch pilot with 2 branches, 1 driver, and 1 delivery zone.
+Massive infrastructure session: implemented the full Global Operations Core plan (phases 3–11) (source plan files since removed). 11 new migrations applied to prod, 3 admin UIs built and deployed. RzRz configured as the multi-branch pilot with 2 branches, 1 driver, and 1 delivery zone.
 
 ### Migrations applied (0034–0045)
 
@@ -1123,5 +1122,5 @@ Onboarded the **6th tenant: مقهى مزاج المسافر (Mazaj Almosafer)**
 ### Pinned for next session
 - **Mazaj remaining photos** — 28 items still on coffee-bean placeholder (mostly branded bottles); owner can add via /admin/menu (Unsplash search or device upload)
 - **Mazaj new items** — 9 printed-menu items above await owner's go-ahead to add
-- **Mazaj subscription amount** — currently 0/pending_payment, price TBD with client
+- **Mazaj subscription — RESOLVED 2026-06-03:** 2-branch menu-only QR deal — **1500 SAR setup + 500 renewal per branch**. **Both branches paid (3000 SAR total).** Subscription now `active`, `amount_sar`=1000 (renewal 500×2), period → 2027-05-26; 2 payment rows logged on sub `79aa1379-fd8f-45c8-b095-937472477077` (method `bank_transfer`). **Branch 2 menu delivery still PENDING** — waiting on client's original menu + second-branch info. (Live `/m/mazaj-almosafer` page untouched.)
 - Carry-overs: delivery zones addon gating · Bridge App .NET Phase 2 · Moyasar · Samer .NET patch
