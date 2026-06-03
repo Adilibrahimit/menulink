@@ -89,3 +89,20 @@ The host is also Windows-Service-aware via `AddWindowsService` — it will detec
 4. Start the Bridge App on a Windows host with access to the POS DB.
 
 Once enabled, every new MenuLink order will be enqueued by the trigger, claimed by the Bridge App, and inserted into the POS within seconds.
+
+## Security model (post-0071)
+
+Migration `0071_harden_tenant_isolation` tightened the surface this app uses. The
+contract the Bridge App must honour:
+
+- **`pos_outbox_claim` / `pos_outbox_mark_synced` / `pos_outbox_mark_failed` are
+  `service_role`-only.** EXECUTE was revoked from `anon`/`authenticated` (previously any
+  signed-in user could claim or mutate any tenant's queue). The bridge already uses the
+  **service_role key**, so it is unaffected — but a future caller without that key cannot
+  reach these RPCs. Keep the service-role key server-side; never ship it to a browser.
+- **`bridge_heartbeats` insert is now owner-scoped.** The `/api/bridge/heartbeat` route
+  runs under the caller's user session, so its insert must be for a restaurant that
+  session owns (`owns_restaurant` / `is_platform_admin`). A bridge writing heartbeats
+  directly via the service_role key bypasses RLS and is unaffected.
+
+See `docs/auth-rls-bridge-trace.md` for the full trace and rationale.
