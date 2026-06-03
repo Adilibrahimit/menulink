@@ -2,7 +2,7 @@
 
 > **Read this first** when picking up the project in a new session.
 > Last saved: **2026-05-29 (session 9)** — 1 migration (0058), 6 commits.
-> Status line: **production SaaS, 6 tenants. Session 9: onboarded Mazaj Almosafer (مقهى مزاج المسافر) — 6th tenant, menu-only display mode, Riyadh coffee/dessert/hookah lounge. (1) Migration 0058: 13 categories + 176 items + 176 variants; (2) new heritage list menu design (heritage-list-menu.tsx) matching the client's HTML template, driven by new ThemeConfig fields menuLayout + posterStyle; (3) custom QR poster = real QR composited onto client's exact design image (template in public/qr-templates/); (4) 148/176 photos mapped+uploaded from a 460MB library (gitignored); (5) 103/176 calories imported from the client's printed menu. Owner: mazaj.almosafer@gmail.com / Mazaj2026!. Next: 28 remaining photos, 9 printed-menu items pending approval, Mazaj sub amount TBD; carry-overs: delivery zones gating, Bridge App .NET phase 2, Moyasar, Samer .NET patch.**
+> Status line: **production SaaS, 6 tenants. Session 9: onboarded Mazaj Almosafer (مقهى مزاج المسافر) — 6th tenant, menu-only display mode, Riyadh coffee/dessert/hookah lounge. (1) Migration 0058: 13 categories + 176 items + 176 variants; (2) new heritage list menu design (heritage-list-menu.tsx) matching the client's HTML template, driven by new ThemeConfig fields menuLayout + posterStyle; (3) custom QR poster = real QR composited onto client's exact design image (template in public/qr-templates/); (4) 148/176 photos mapped+uploaded from a 460MB library (gitignored); (5) 103/176 calories imported from the client's printed menu. Owner: mazaj.almosafer@gmail.com / Mazaj2026!. Next: 28 remaining photos, 9 printed-menu items pending approval, Mazaj billing reconciled 2026-06-03 (2-branch deal 1500 setup + 500 renewal/branch, both paid = 3000 SAR, sub active; branch 2 delivery pending client menu+info); carry-overs: delivery zones gating, Bridge App .NET phase 2, Moyasar, Samer .NET patch.**
 
 ---
 
@@ -266,8 +266,7 @@ D:\menulink\
 │
 ├── docs/
 │   ├── ai_memory/                         ← POS integration docs (5 files, no secrets)
-│   ├── proof/                             ← Implementation proof files
-│   └── menulink_global_ops_plan_md_files/ ← Global Operations Core plan (11 phases)
+│   └── proof/                             ← Implementation proof files
 │
 ├── .obsidian/                             ← Empty marker — makes the project an Obsidian vault
 ├── .graph/                                ← graphify knowledge-graph output (run via /graphify)
@@ -736,7 +735,7 @@ These won't block anything but are worth knowing about:
 ## 📍 What changed on 2026-05-25 (session 4 — Global Operations Core)
 
 ### Overview
-Massive infrastructure session: implemented the full Global Operations Core plan (phases 3–11) from `docs/menulink_global_ops_plan_md_files/`. 11 new migrations applied to prod, 3 admin UIs built and deployed. RzRz configured as the multi-branch pilot with 2 branches, 1 driver, and 1 delivery zone.
+Massive infrastructure session: implemented the full Global Operations Core plan (phases 3–11) (source plan files since removed). 11 new migrations applied to prod, 3 admin UIs built and deployed. RzRz configured as the multi-branch pilot with 2 branches, 1 driver, and 1 delivery zone.
 
 ### Migrations applied (0034–0045)
 
@@ -1123,5 +1122,5 @@ Onboarded the **6th tenant: مقهى مزاج المسافر (Mazaj Almosafer)**
 ### Pinned for next session
 - **Mazaj remaining photos** — 28 items still on coffee-bean placeholder (mostly branded bottles); owner can add via /admin/menu (Unsplash search or device upload)
 - **Mazaj new items** — 9 printed-menu items above await owner's go-ahead to add
-- **Mazaj subscription amount** — currently 0/pending_payment, price TBD with client
+- **Mazaj subscription — RESOLVED 2026-06-03:** 2-branch menu-only QR deal — **1500 SAR setup + 500 renewal per branch**. **Both branches paid (3000 SAR total).** Subscription now `active`, `amount_sar`=1000 (renewal 500×2), period → 2027-05-26; 2 payment rows logged on sub `79aa1379-fd8f-45c8-b095-937472477077` (method `bank_transfer`). **Branch 2 menu delivery still PENDING** — waiting on client's original menu + second-branch info. (Live `/m/mazaj-almosafer` page untouched.)
 - Carry-overs: delivery zones addon gating · Bridge App .NET Phase 2 · Moyasar · Samer .NET patch
