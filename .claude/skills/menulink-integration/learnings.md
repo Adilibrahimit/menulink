@@ -4,7 +4,7 @@
 >
 > **🆕 Read [`memory.md`](../../../memory.md) at project root for current state.** This file is for *transferable gotchas* — patterns that apply to any tenant, any session.
 >
-> **Last updated:** 2026-05-29 (Mazaj Almosafer onboarding — theming, client-design reproduction, SQL auth-user gotcha, push protection)
+> **Last updated:** 2026-06-03 (restaurants↔Auth&RLS trace + migration 0071 tenant-isolation hardening — see LRN-2026-06-03-rls-bridge-trace-gaps)
 > **Update protocol:** Append new entries under the right section. Keep each entry to 2-4 lines. Tag with confidence level.
 
 ---
@@ -522,6 +522,16 @@ The cashier UI also has Family/Section types (likely 2, but untested today). Eac
 **Learning:** Two-prong fix: (1) add explicit `platform_admin` ALL policies on every table ops touches (restaurants, menu_*, customers, orders, payments, subscriptions) using the `is_platform_admin()` helper; (2) for ops actions specifically, prefer the **service_role admin client** — `requireOps()` is the auth gate, and bypassing RLS for ops is safer and simpler than chasing per-table policies.  
 **Source:** session:2026-05-19  
 **Triggers:** ops, platform_admin, service_role, RLS INSERT, cookie client
+
+### LRN-2026-06-03-rls-bridge-trace-gaps (confidence: high) ⚠️ CRITICAL — fixed in 0071
+**Context:** A full `restaurants`↔Auth&RLS trace (graph + adversarial sweep; see `docs/auth-rls-bridge-trace.md`) found 0008 fixed all TABLE RLS but left escape hatches open as of 0070. Correction to LRN-2026-05-19: it said the view leak was fixed "until 0008" — wrong. The analytics views (`v_customer_rfm/ltv/dormant/top_items_*/revenue_daily`, 0002) were STILL `security_invoker=false` and GRANTed to anon+authenticated, so any authenticated user could read another tenant by passing its id to `.eq()`. The app's `.eq()` was the only boundary.  
+**Learning:** Recurring anti-patterns, all fixed in migration `0071_harden_tenant_isolation`:  
+(1) **Views leak across tenants** unless `security_invoker=true` OR they self-filter. 0071 wraps each with `where has_restaurant_access(restaurant_id) or is_platform_admin()` — preserves owner+team-admin access AND blocks cross-tenant. NB: flipping to `security_invoker=true` alone would have broken team admins, who lack `owns_restaurant` on customers/orders (those tables are owner-only RLS).  
+(2) **SECURITY DEFINER RPCs granted to `authenticated` with no internal check** = any signed-in user can act on any tenant (`pos_outbox_claim/mark_*`). Fix = an internal `owns_restaurant()` check OR, when the only caller is the **service_role** Bridge App, revoke from authenticated + grant to service_role. DON'T add an `auth.uid()` check to a service_role-only RPC — service_role has no `auth.uid()` and would be wrongly rejected.  
+(3) **Pre-0008 RPCs still reading `auth.jwt()->>'role'`** survived the 0008 sweep (`get_tenant_owners`, 0006). After any RLS refactor, grep `auth.jwt(` to catch survivors.  
+(4) **SECURITY DEFINER RPCs taking a client `restaurant_id`** must validate `is_active` at minimum (`submit_order` does; `open_table_session`/`auto_link_customer` didn't).  
+**Source:** session:2026-06-03 (trace + advisor)  
+**Triggers:** RLS, security_invoker, views, pos_outbox, service_role, get_tenant_owners, SECURITY DEFINER, cross-tenant leak, 0071, bridge auth
 
 ---
 
