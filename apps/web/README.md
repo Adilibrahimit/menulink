@@ -93,7 +93,7 @@ npm run dev    # http://localhost:3000
 
 ## Database
 
-33 migrations in `apps/web/supabase/migrations/` (0001–0033). All applied to cloud.
+71 migrations in `apps/web/supabase/migrations/` (0001–0071). All applied to cloud.
 
 Key tables (26 total): `restaurants`, `menu_categories`, `menu_items`, `menu_item_variants`, `customers`, `orders`, `order_items`, `subscriptions`, `payments`, `push_subscriptions`, `push_broadcasts`, `table_sessions`, `restaurant_tables`, `loyalty_settings`, `loyalty_rewards`, `loyalty_transactions`, `loyalty_redemptions`, `addon_catalog`, `subscription_addons`, `pos_outbox`, `pos_item_map`, `pos_settings`, `restaurant_owners`, `platform_admins`, `customer_addresses`, `customer_tags`.
 
