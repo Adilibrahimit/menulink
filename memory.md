@@ -1,8 +1,8 @@
 # MenuLink · Project Memory
 
 > **Read this first** when picking up the project in a new session.
-> Last saved: **2026-05-29 (session 9)** — 1 migration (0058), 6 commits.
-> Status line: **production SaaS, 6 tenants. Session 9: onboarded Mazaj Almosafer (مقهى مزاج المسافر) — 6th tenant, menu-only display mode, Riyadh coffee/dessert/hookah lounge. (1) Migration 0058: 13 categories + 176 items + 176 variants; (2) new heritage list menu design (heritage-list-menu.tsx) matching the client's HTML template, driven by new ThemeConfig fields menuLayout + posterStyle; (3) custom QR poster = real QR composited onto client's exact design image (template in public/qr-templates/); (4) 148/176 photos mapped+uploaded from a 460MB library (gitignored); (5) 103/176 calories imported from the client's printed menu. Owner: mazaj.almosafer@gmail.com / Mazaj2026!. Next: 28 remaining photos, 9 printed-menu items pending approval, Mazaj billing reconciled 2026-06-03 (2-branch deal 1500 setup + 500 renewal/branch, both paid = 3000 SAR, sub active; branch 2 delivery pending client menu+info); carry-overs: delivery zones gating, Bridge App .NET phase 2, Moyasar, Samer .NET patch.**
+> Last saved: **2026-06-05 (session 10)** — Mazaj menu overhaul; 0 migrations (all via Management API), 1 deploy (PR #22 → main).
+> Status line: **production SaaS, 6 tenants. Session 10 (2026-06-05) — Mazaj Almosafer menu overhaul (all live): (1) calories now 100% — every food/drink item has calories (120/176; the 56 shisha intentionally blank); (2) new item عصير مانجا (18 SAR, 111 kcal); (3) menu redesigned — heritage-list rows → a 2-col image-on-top card grid (md:3) with bigger square photos + the official SAMA Saudi Riyal symbol (U+20C1) replacing the ر.س text; scoped to heritage-list-menu.tsx (Mazaj only), shipped via PR #22 → main (merge afe7995), verified live; (4) photos: 5 sandwiches + Ulker (owner allora shots), mango (Unsplash), قهوة سعودية authentic dallah (Wikimedia Commons CC0); (5) مكسرات consolidated to one item/one size (10 SAR, 800 kcal); (6) قهوة عربي → قهوة سعودية. Data changes via the Management API (live immediately, no migration). The local rzrz-signature-steam branch's signature-menu WIP was stashed and restored UNTOUCHED throughout. Pending: قهوة سعودي vs سعودية spelling, add كيك انجليزي ماريل?, Mazaj branch-2 menu. (Session 9 details below at "What changed on 2026-05-29".)**
 
 ---
 
@@ -1124,3 +1124,48 @@ Onboarded the **6th tenant: مقهى مزاج المسافر (Mazaj Almosafer)**
 - **Mazaj new items** — 9 printed-menu items above await owner's go-ahead to add
 - **Mazaj subscription — RESOLVED 2026-06-03:** 2-branch menu-only QR deal — **1500 SAR setup + 500 renewal per branch**. **Both branches paid (3000 SAR total).** Subscription now `active`, `amount_sar`=1000 (renewal 500×2), period → 2027-05-26; 2 payment rows logged on sub `79aa1379-fd8f-45c8-b095-937472477077` (method `bank_transfer`). **Branch 2 menu delivery still PENDING** — waiting on client's original menu + second-branch info. (Live `/m/mazaj-almosafer` page untouched.)
 - Carry-overs: delivery zones addon gating · Bridge App .NET Phase 2 · Moyasar · Samer .NET patch
+
+---
+
+## 📍 What changed on 2026-06-05 (session 10 — Mazaj Almosafer menu overhaul)
+
+### Overview
+Full menu pass on **Mazaj Almosafer** (`/m/mazaj-almosafer`, rid `9f19fe0d-e1fd-482d-a9b1-e3c7ec99ef59`). Owner streamed calorie values + photos in chat; all **data changes applied via the Management API** (no migration — live immediately). One **code** change shipped to production via PR #22.
+
+### Calories — now 100% complete
+- Every food/drink item has `calories_kcal`: **120/176** populated, the **56 shisha items intentionally blank** (no calories on the printed menu; smoking).
+- Filled this session: juices (بطيخ 114, برتقال 112, ليمون نعناع 108), espresso (سنقل 11, دبل 22), ايسكريم شوكلت فانيليا 562, أولكر كيك 434, سيزار دجاج 209, شاورما دجاج 350.
+- **Owner-delegated estimates** ("حط سعرات تقريبية"): زنجبيل 30, طائفي 30, سيجنتشر ٤٩ 280, عصير طبيعي ٢٠ 120, كيك كراميل 380, تشيز كيك 400, كيك تشوكليت 410, كيكة بيستاشيو 420, رد فيلفت 410.
+
+### New item
+- **عصير مانجا (Mango Juice)** added to عصائر طبيعية — 18 SAR (single), 111 kcal, slug `asyr-manja`, photo sourced from Unsplash. (Note: distinct from the existing `عصير طبيعي 20`.)
+
+### Photos replaced (owner-provided + sourced)
+- **5 sandwiches** → owner's "allora"-brand packaged shots, uploaded to `menu-images/<rid>/menu/<slug>.webp` (`mexican`, `halloumi`, `fajita`, `shawarma-chicken`, `ceaser-chicken`; Caesar reused its path so its URL got a `?v=2` cache-bust).
+- **أولكر كيك** → owner photo (`olker-cake.webp`).
+- **عصير مانجا** → Unsplash (mango juice).
+- **قهوة سعودية** → authentic Saudi **dallah** (`qhwa-saudi.webp`) from **Wikimedia Commons, CC0** (no attribution required) — deliberately chose CC0 over a prettier CC BY-SA image so the live commercial menu carries zero licensing obligation. Source helper: `scripts/fetch-commons.mjs`.
+- Owner photos live in `C:\Users\USER\OneDrive\Pictures\menulink\mazaj-almosafer\` (named by item in Arabic).
+
+### مكسرات consolidated (user-approved)
+- Was two items + a double size. Now **one item "مكسرات"** — 10 SAR, single size, 800 kcal. Deleted the duplicate `مكسرات 15 ريال` row + removed the `مكسرات_كبير` variant. (The whole-row delete was blocked by the auto-mode classifier first; re-ran after explicit "اعتمد المكسرات".)
+
+### Rename
+- **قهوة عربي → قهوة سعودية** (name_en "Saudi Coffee") + the new dallah photo above. ⚠️ Owner wrote "قهوة سعودي"; kept the grammatically-correct **قهوة سعودية** pending confirmation.
+
+### Menu redesign — deployed (PR #22 → main, merge `afe7995`)
+- `apps/web/app/m/[slug]/heritage-list-menu.tsx`: list rows → **2-col image-on-top card grid** (`grid-cols-2 md:grid-cols-3`), **larger square photos** (was a 56px side thumbnail), and the **official SAMA Saudi Riyal symbol (U+20C1)** via the existing `sar-symbol.tsx` replacing the `ر.س` text. **Scoped to the heritage-list layout → Mazaj only.**
+- **Deploy hygiene:** the current branch `rzrz-signature-steam` is ahead of main with unrelated DS-13 signature WIP that must NOT ship. Isolated the one heritage commit onto a clean `origin/main` base (`mazaj-deploy`, cherry-pick), verified with a full `next build` (real gate; first run OOM'd locally → `NODE_OPTIONS=--max-old-space-size=6144`; then caught the untracked `featured-rail.tsx` orphan polluting the local build — set aside, rebuilt green), PR #22 → merged → **verified on the live URL**. The signature WIP was stashed and **restored UNTOUCHED**.
+
+### New reusable scripts (committed to rzrz-signature-steam)
+`scripts/upload-one-photo.mjs`, `upload-mazaj-sandwiches.mjs`, `fetch-unsplash-candidates.mjs`, `fetch-commons.mjs` (Wikimedia Commons API sourcing), `preview-mazaj.mjs` (Playwright screenshots of local OR live via arg). All read secrets from `.env.local`, none hardcoded.
+
+### Learnings captured (in learnings.md)
+- `LRN-2026-06-05-pasted-images-not-accessible` — pasted images in the IDE are locked `.tmp` blobs you can't upload; have the owner drop real files in a folder (or send via Telegram).
+- `LRN-2026-06-05-lookup-before-write-menu-edits` — never apply a menu edit by name blindly; look the item up first (مانجا/ماريل didn't exist, espresso single≠double, two مكسرات items, typed cal ≠ package label).
+
+### Pinned for next session
+- **قهوة سعودي vs سعودية** — confirm spelling (currently سعودية, grammatically correct).
+- **كيك انجليزي ماريل** — owner-described new item (English marble cake, 10 SAR, ~500 kcal, photo at `ITEMS_PHOTO/كيك انجليزي ماريل.jpeg`) — NOT added yet, awaiting go-ahead.
+- **Mazaj branch-2 menu** — still pending client's original menu + second-branch info (billing already settled, see session 9).
+- `rzrz-signature-steam` still holds the DS-13 signature-menu WIP (koko-delivery + rzrz-signature + design-library, uncommitted) — design tests ONLY on `rzrz-bukhari-test`.
