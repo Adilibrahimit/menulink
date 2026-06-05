@@ -145,10 +145,14 @@ export default function DesignForm({ initial }: { initial: DesignFields }) {
         >
           <option value="">افتراضي (حسب إعداد العميل)</option>
           {DESIGN_LIBRARY.map((d) => {
-            // Ordering layouts (premium-epicurean) are incompatible with
-            // display-only tenants — those render via DisplayOnlyMenu, so a
-            // dark ordering design would produce a broken page. Disable it.
-            const incompatible = initial.display_only_mode && d.theme.menuLayout === "premium-epicurean";
+            // Dark ordering layouts (premium-epicurean, rzrz-signature) are
+            // incompatible with display-only tenants — those render via
+            // DisplayOnlyMenu, so a dark ordering design would produce a broken
+            // page. Disable them.
+            const incompatible =
+              initial.display_only_mode &&
+              (d.theme.menuLayout === "premium-epicurean" ||
+                d.theme.menuLayout === "rzrz-signature");
             return (
               <option key={d.key} value={d.key} disabled={incompatible}>
                 {d.name_ar}

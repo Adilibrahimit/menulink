@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { NavIcon } from "./icons";
 
-export default function BottomNav({ slug, navItems = 3, notifCenterEnabled = false, variant = "light" }: { slug: string; navItems?: 3 | 5; notifCenterEnabled?: boolean; variant?: "light" | "premium" }) {
+export default function BottomNav({ slug, navItems = 3, notifCenterEnabled = false, variant = "light", svgIcons = false }: { slug: string; navItems?: 3 | 5; notifCenterEnabled?: boolean; variant?: "light" | "premium"; svgIcons?: boolean }) {
   const pathname = usePathname();
   const isPremium = variant === "premium";
   const [unread, setUnread] = useState(0);
@@ -18,21 +19,21 @@ export default function BottomNav({ slug, navItems = 3, notifCenterEnabled = fal
       .catch(() => {});
   }, [slug, pathname, notifCenterEnabled]);
 
-  const notifTab = { href: `/m/${slug}/notifications`, label: "الإشعارات", icon: "🔔", badge: unread, match: (p: string) => p.startsWith(`/m/${slug}/notifications`) };
+  const notifTab = { href: `/m/${slug}/notifications`, label: "الإشعارات", icon: "🔔", nav: "notif", badge: unread, match: (p: string) => p.startsWith(`/m/${slug}/notifications`) };
 
   const baseTabs = [
-    { href: `/m/${slug}`, label: "الرئيسية", icon: "🍽️", badge: 0, match: (p: string) => p === `/m/${slug}` },
+    { href: `/m/${slug}`, label: "الرئيسية", icon: "🍽️", nav: "home", badge: 0, match: (p: string) => p === `/m/${slug}` },
     ...(notifCenterEnabled ? [notifTab] : []),
-    { href: `/m/${slug}/orders`, label: "طلباتي", icon: "🛒", badge: 0, match: (p: string) => p.startsWith(`/m/${slug}/orders`) },
-    { href: `/m/${slug}/account`, label: "الحساب", icon: "👤", badge: 0, match: (p: string) => p.startsWith(`/m/${slug}/account`) },
+    { href: `/m/${slug}/orders`, label: "طلباتي", icon: "🛒", nav: "orders", badge: 0, match: (p: string) => p.startsWith(`/m/${slug}/orders`) },
+    { href: `/m/${slug}/account`, label: "الحساب", icon: "👤", nav: "account", badge: 0, match: (p: string) => p.startsWith(`/m/${slug}/account`) },
   ];
 
   const extendedTabs = [
-    { href: `/m/${slug}`, label: "الرئيسية", icon: "🍽️", badge: 0, match: (p: string) => p === `/m/${slug}` },
+    { href: `/m/${slug}`, label: "الرئيسية", icon: "🍽️", nav: "home", badge: 0, match: (p: string) => p === `/m/${slug}` },
     ...(notifCenterEnabled ? [notifTab] : []),
-    { href: `/m/${slug}/orders`, label: "طلباتي", icon: "🛒", badge: 0, match: (p: string) => p.startsWith(`/m/${slug}/orders`) },
-    { href: `/m/${slug}/rewards`, label: "المكافآت", icon: "🏆", badge: 0, match: (p: string) => p.startsWith(`/m/${slug}/rewards`) },
-    { href: `/m/${slug}/account`, label: "الحساب", icon: "👤", badge: 0, match: (p: string) => p.startsWith(`/m/${slug}/account`) },
+    { href: `/m/${slug}/orders`, label: "طلباتي", icon: "🛒", nav: "orders", badge: 0, match: (p: string) => p.startsWith(`/m/${slug}/orders`) },
+    { href: `/m/${slug}/rewards`, label: "المكافآت", icon: "🏆", nav: "rewards", badge: 0, match: (p: string) => p.startsWith(`/m/${slug}/rewards`) },
+    { href: `/m/${slug}/account`, label: "الحساب", icon: "👤", nav: "account", badge: 0, match: (p: string) => p.startsWith(`/m/${slug}/account`) },
   ];
 
   const tabs = navItems === 5 ? extendedTabs : baseTabs;
@@ -68,8 +69,8 @@ export default function BottomNav({ slug, navItems = 3, notifCenterEnabled = fal
               }
               style={isPremium ? { color: active ? "var(--accent-gold)" : "var(--text-secondary)" } : undefined}
             >
-              <span className="text-lg relative">
-                {tab.icon}
+              <span className="text-lg relative inline-flex items-center justify-center">
+                {svgIcons ? <NavIcon k={tab.nav} size={22} /> : tab.icon}
                 {tab.badge > 0 && (
                   <span className="absolute -top-1 -right-2 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center">
                     {tab.badge > 9 ? "9+" : tab.badge}

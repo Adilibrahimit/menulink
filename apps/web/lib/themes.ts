@@ -9,7 +9,7 @@ export type ThemeConfig = {
     googleUrl: string | null;
   };
   categoryStyle: "pills" | "tabs";
-  menuCardStyle: "stitch-navy" | "default" | "premium-lounge";
+  menuCardStyle: "stitch-navy" | "default" | "premium-lounge" | "signature";
   headerStyle: "dark-navy" | "brand-filled" | "velora-hero";
   bottomNavItems: 3 | 5;
   cartBarStyle: "gold-navy" | "brand-default";
@@ -17,7 +17,7 @@ export type ThemeConfig = {
   checkoutStyle: "stepper" | "drawer";
   loginFlow: "google-first" | "default";
   posterStyle: "default" | "heritage-emerald";
-  menuLayout: "card-grid" | "heritage-list" | "premium-epicurean";
+  menuLayout: "card-grid" | "heritage-list" | "premium-epicurean" | "rzrz-signature" | "delivery-modern";
 };
 
 const DEFAULT_THEME: ThemeConfig = {
