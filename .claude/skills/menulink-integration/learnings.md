@@ -476,6 +476,18 @@ The cashier UI also has Family/Section types (likely 2, but untested today). Eac
 **Source:** session:2026-05-29 commit/push of Mazaj source files
 **Triggers:** push protection, GH013, hardcoded secret, service_role, PAT, git amend, gitignore large binaries
 
+### LRN-2026-06-05-pasted-images-not-accessible (confidence: high) ⚠️ WORKFLOW
+**Context:** Bulk Mazaj menu update — owner sent 5 sandwich photos by pasting them into the Claude Code (VSCode) chat. The IDE saves pasted images as **locked `.tmp` blobs** in `%TEMP%` (held open by the extension), so they can't be read or copied — there is no file to optimize + upload to Storage.
+**Learning:** **You cannot upload an image that was only pasted into the IDE chat — you get the pixels, not a file.** Ask the owner to drop the real files in a folder (e.g. `OneDrive\Pictures\menulink\<tenant>`, each named by item in Arabic) OR send via the Telegram bot (arrives with `image_path`). Then: map filename→item by reading each, `sharp().resize({width:800}).webp({quality:80})`, upload to `<rid>/menu/<slug>.webp` with the **legacy service-role JWT** + `x-upsert:true`, and UPDATE `image_url`. **If you overwrite an existing storage path, append `?v=N` to the image_url to bust the CDN/browser cache.** Reusable scripts: `scripts/upload-one-photo.mjs`, `scripts/upload-mazaj-sandwiches.mjs`, `scripts/fetch-unsplash-candidates.mjs`.
+**Source:** session:2026-06-05 Mazaj calorie+photo update
+**Triggers:** pasted image, .tmp locked, VSCode paste, image upload, Storage, x-upsert, cache bust, sandwich photos
+
+### LRN-2026-06-05-lookup-before-write-menu-edits (confidence: high) ⭐ PROCESS
+**Context:** Owner streamed calorie/price edits by item name. Several didn't map 1:1: `عصير مانجا` and `كيك انجليزي ماريل` didn't exist (new items), "اسبريسو" was ambiguous (single vs double — different values), and there were TWO `مكسرات` items (10-ريال already complete, 15-ريال a likely duplicate). Owner-typed calories also differed from the allora package-label numbers.
+**Learning:** **Never apply a menu edit by name blindly — look the item up in the DB first (id, current cal, current price) and resolve every mismatch with the owner before writing.** Mismatch categories: (1) item doesn't exist → confirm "add new?"; (2) name matches 2 rows → ask which; (3) duplicate items; (4) typed value ≠ on-package label → use the owner's typed value (they chose "I'll send the values"); (5) absurd value (shawarma "35") → flag as typo. Apply only the unambiguous ones immediately with a readback; queue the rest as explicit confirms.
+**Source:** session:2026-06-05 Mazaj calorie+photo update
+**Triggers:** menu edit, lookup before write, item name mismatch, new item, duplicate, ambiguous variant, calorie label vs typed
+
 ---
 
 ## ❌ What Has Failed (Avoid These)
