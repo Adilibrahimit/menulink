@@ -1,0 +1,20 @@
+{
+  "name": "whatsapp-invoice-gateway",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared Cloudflare Worker + D1 status gateway for restaurant WhatsApp invoice delivery (BG-4). Status only — no invoice files, no Meta send tokens.",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "deploy": "wrangler deploy",
+    "migrate:local": "wrangler d1 migrations apply whatsapp_invoice_gateway --local",
+    "migrate:remote": "wrangler d1 migrations apply whatsapp_invoice_gateway --remote"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250109.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0",
+    "wrangler": "^4.0.0"
+  }
+}

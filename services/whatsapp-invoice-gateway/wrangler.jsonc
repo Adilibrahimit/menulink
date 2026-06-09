@@ -1,0 +1,25 @@
+{
+  // Cloudflare Worker config for the shared WhatsApp invoice STATUS gateway (BG-4).
+  // Secrets (NOT here): META_APP_SECRET, WEBHOOK_VERIFY_TOKEN  → set via `wrangler secret put`.
+  "name": "whatsapp-invoice-gateway",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-01-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "whatsapp_invoice_gateway",
+      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "triggers": {
+    // retention cleanup — daily 03:10 UTC
+    "crons": ["10 3 * * *"]
+  },
+  "vars": {
+    "WINDOW_HOURS": "24",
+    "AUTH_SKEW_SECONDS": "120"
+  }
+}
