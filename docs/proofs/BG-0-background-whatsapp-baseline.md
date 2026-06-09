@@ -81,12 +81,21 @@ None triggered. Clone identity confirmed; binaries intact; payment idempotent **
 test pending — correction #5)**; ZATCA Phase-2 reuse path exists. The render-parity hard stop belongs to
 **BG-1** (not evaluated here by design).
 
+## Duplicate-payment runtime test — PASSED (2026-06-09, user-assisted on clone)
+Method: read-only XE trace `rzrz_trace` running; user performed ONE anonymous cash sale and **double-tapped
+موافق** on `frmPayment`; verified via DB + trace; trace session dropped afterward.
+- New sale **BillNo 33931** / InvoiceID `9C89D502-2B04-421D-92E6-F7D6AE4A34C7` → **exactly 1** `PaymentDetails`
+  row (Invoice 33930→33931 = +1; PaymentDetails 34255→34256 = +1). No duplicate.
+- Trace: `InsertPaymentDetails` fired **once** (`@CounterID=6,@PaidAmount=40.00`); `InsertInvoice` once. ⇒ the
+  runtime **`_paymentPersisted` UI guard blocked the second tap** before any second DB call.
+- **Residual (honest):** because the UI guard fired first, the sproc's own UPSERT backstop was not exercised
+  *in isolation* this run; it remains script-level (`…2.InsertPaymentDetails.sql`, `IF NOT EXISTS…ELSE UPDATE`).
+  The operational guarantee (a cashier double-tap cannot create a second payment) IS runtime-verified.
+
 ## Verdict
-**BG-0 PARTIAL — duplicate-payment runtime test outstanding** (downgraded from PASS per Codex review
-correction #5). Baseline binaries/hashes re-verified; Helper/PNG tests 56/56·14/14 fresh; dedicated branch
-created; architecture/safety/test/rollback/Cloudflare docs written **and corrected** for the five Codex
-findings (ECDSA auth, reconcile-rollback + single-active-transport, `/window` lookup, webhook-before-register
-reconciliation, idempotency runtime-unverified). **Remaining BG-0 closure item:** run the clone
-duplicate-payment runtime test (rapid double-click + repeated Enter → exactly one `PaymentDetails` row per
-`InvoiceID`); only then upgrade to **PASS — READY FOR BG-1**. Live UI smokes remain NOT VERIFIED but do not
-block BG-1 (headless render spike). **BG-1 not started.**
+**BG-0 PASS — READY FOR BG-1** (upgraded from PARTIAL; Codex correction #5 closed by the runtime test above).
+Baseline binaries/hashes re-verified; Helper/PNG tests 56/56·14/14 fresh; dedicated branch created;
+architecture/safety/test/rollback/Cloudflare docs written **and corrected** for all five Codex findings
+(ECDSA auth, reconcile-rollback + single-active-transport, `/window` lookup, webhook-before-register
+reconciliation, idempotency now runtime-verified). Other live UI smokes (Pay&Send/+Send happy-path) remain
+NOT VERIFIED but do not block BG-1 (headless render spike). **BG-1 not started.**
