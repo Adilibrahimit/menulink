@@ -24,6 +24,9 @@
     <PackageReference Include="QuestPDF" Version="2025.7.0" />
     <PackageReference Include="QRCoder" Version="1.6.0" />
 
+    <!-- BG-2: Bridge-owned durable outbox (SQLite, WAL) -->
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0" />
+
     <!-- Windows printing (Bridge App is Windows-only) -->
     <PackageReference Include="System.Drawing.Common" Version="9.0.0" />
 

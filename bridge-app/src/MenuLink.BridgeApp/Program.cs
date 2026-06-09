@@ -35,6 +35,8 @@ builder.Configuration
 //   dotnet run -- render-invoice <InvoiceID> [ar|en|bi] [outDir]
 if (args.Length >= 1 && args[0].Equals("render-invoice", StringComparison.OrdinalIgnoreCase))
     return MenuLink.BridgeApp.DigitalInvoice.RenderSpikeCommand.Run(args, builder.Configuration);
+if (args.Length >= 1 && args[0].Equals("bg2-selftest", StringComparison.OrdinalIgnoreCase))
+    return MenuLink.BridgeApp.DigitalInvoice.Bg2SelfTestCommand.Run(args);
 
 // Serilog from configuration
 Log.Logger = new LoggerConfiguration()
