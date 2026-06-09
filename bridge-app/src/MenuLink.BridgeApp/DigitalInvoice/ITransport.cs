@@ -1,11 +1,13 @@
 namespace MenuLink.BridgeApp.DigitalInvoice;
 
 /// <summary>Result of a delivery attempt.</summary>
-public sealed record SendResult(bool Accepted, string? MetaMessageId, bool Permanent, string? Error)
+public sealed record SendResult(bool Accepted, string? MetaMessageId, bool Permanent, string? Error, bool Blocked = false)
 {
     public static SendResult Ok(string id) => new(true, id, false, null);
     public static SendResult Transient(string err) => new(false, null, false, err);
     public static SendResult Fatal(string err) => new(false, null, true, err);
+    /// <summary>Cost policy blocked the send (out-of-window + paid templates disabled). Durable, no retry.</summary>
+    public static SendResult BlockedByPolicy(string err) => new(false, null, false, err, true);
 }
 
 /// <summary>

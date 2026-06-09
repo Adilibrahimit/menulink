@@ -29,10 +29,12 @@ public sealed class SenderPipeline
             catch (Exception ex) { res = SendResult.Transient(ex.Message); }
 
             _outbox.RecordAttempt(job.JobId, attemptNo, _transport.GetType().Name,
-                res.Accepted ? "accepted" : (res.Permanent ? "fatal" : "transient"), res.Error);
+                res.Accepted ? "accepted" : res.Blocked ? "blocked" : (res.Permanent ? "fatal" : "transient"), res.Error);
 
             if (res.Accepted)
                 _outbox.MarkStatus(job.JobId, JobStatus.AcceptedByMeta, metaMessageId: res.MetaMessageId);
+            else if (res.Blocked)
+                _outbox.MarkStatus(job.JobId, JobStatus.BlockedByPolicy, error: res.Error);
             else if (res.Permanent)
                 _outbox.MarkStatus(job.JobId, JobStatus.FailedPermanent, error: res.Error);
             else if (attemptNo >= _maxAttempts)

@@ -27,6 +27,9 @@
     <!-- BG-2: Bridge-owned durable outbox (SQLite, WAL) -->
     <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0" />
 
+    <!-- BG-3: Windows DPAPI for per-installation Meta token at rest -->
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.0" />
+
     <!-- Windows printing (Bridge App is Windows-only) -->
     <PackageReference Include="System.Drawing.Common" Version="9.0.0" />
 

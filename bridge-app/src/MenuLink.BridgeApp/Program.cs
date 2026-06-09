@@ -37,6 +37,8 @@ if (args.Length >= 1 && args[0].Equals("render-invoice", StringComparison.Ordina
     return MenuLink.BridgeApp.DigitalInvoice.RenderSpikeCommand.Run(args, builder.Configuration);
 if (args.Length >= 1 && args[0].Equals("bg2-selftest", StringComparison.OrdinalIgnoreCase))
     return MenuLink.BridgeApp.DigitalInvoice.Bg2SelfTestCommand.Run(args);
+if (args.Length >= 1 && args[0].Equals("bg3-selftest", StringComparison.OrdinalIgnoreCase))
+    return MenuLink.BridgeApp.DigitalInvoice.Meta.Bg3SelfTestCommand.Run();
 
 // Serilog from configuration
 Log.Logger = new LoggerConfiguration()
