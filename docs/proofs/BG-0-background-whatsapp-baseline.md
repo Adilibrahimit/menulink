@@ -36,9 +36,11 @@
 - Patch `Patcher.cs`: field **`_paymentPersisted`** only (44); reset false in `frmPayment_Load` (62); entry
   guard `Brfalse` (99); set true after `InsertPaymentDetails` (109); 1D send block before `Guid.Empty` (174).
   `_payInProgress` / `_saleFinalized` / `_paymentCommitted` = absent.
-- Idempotency: `InsertPaymentDetails` UPSERT — `if not exists (select InvoiceID from PaymentDetails where
-  InvoiceID=@InvoiceID) … insert … else update PaymentDetails …` (`…SCREPIT\2025\3\…\2.InsertPaymentDetails.sql:130/132/179`).
-  Live sproc is `WITH ENCRYPTION` (definition NULL via `sys.sql_modules`) → script is authoritative source.
+- Idempotency: the **script** shows `InsertPaymentDetails` UPSERT — `if not exists (select InvoiceID from
+  PaymentDetails where InvoiceID=@InvoiceID) … insert … else update PaymentDetails …`
+  (`…SCREPIT\2025\3\…\2.InsertPaymentDetails.sql:130/132/179`). Live sproc is `WITH ENCRYPTION` (definition
+  NULL via `sys.sql_modules`). **This is script-level only; deployed runtime idempotency is NOT VERIFIED**
+  (Codex correction #5) until the clone duplicate-payment runtime test runs.
 
 ## Files created (this phase)
 - `docs/digital-invoice-background/CURRENT_STATE.md`, `ARCHITECTURE.md`, `IMPLEMENTATION_PLAN.md`,
@@ -75,10 +77,16 @@ flow (which BG-6 replaces) and are **not** prerequisites for BG-1 (headless rend
 operate session before the BG-6 cutover / BG-8 pilot.
 
 ## Hard-stop findings
-None triggered. Clone identity confirmed; binaries intact; payment idempotent; ZATCA Phase-2 reuse path
-exists. The render-parity hard stop belongs to **BG-1** (not evaluated here by design).
+None triggered. Clone identity confirmed; binaries intact; payment idempotent **at script level (runtime
+test pending — correction #5)**; ZATCA Phase-2 reuse path exists. The render-parity hard stop belongs to
+**BG-1** (not evaluated here by design).
 
 ## Verdict
-**BG-0 PASS — READY FOR BG-1.** Baseline revalidated with fresh evidence, dedicated branch created, and
-architecture/safety/test/rollback/Cloudflare docs written. Outstanding live UI smokes are clearly marked
-NOT VERIFIED and do not block BG-1. **BG-1 not started** (awaiting approval).
+**BG-0 PARTIAL — duplicate-payment runtime test outstanding** (downgraded from PASS per Codex review
+correction #5). Baseline binaries/hashes re-verified; Helper/PNG tests 56/56·14/14 fresh; dedicated branch
+created; architecture/safety/test/rollback/Cloudflare docs written **and corrected** for the five Codex
+findings (ECDSA auth, reconcile-rollback + single-active-transport, `/window` lookup, webhook-before-register
+reconciliation, idempotency runtime-unverified). **Remaining BG-0 closure item:** run the clone
+duplicate-payment runtime test (rapid double-click + repeated Enter → exactly one `PaymentDetails` row per
+`InvoiceID`); only then upgrade to **PASS — READY FOR BG-1**. Live UI smokes remain NOT VERIFIED but do not
+block BG-1 (headless render spike). **BG-1 not started.**

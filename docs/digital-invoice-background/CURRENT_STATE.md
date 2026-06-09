@@ -32,7 +32,7 @@ Patch `Patcher.cs` (Branch `frmPayment` only; Server EXE untouched):
 - Adds **only** `_paymentPersisted` (44).
 - Reset `=false` in `frmPayment_Load` (62); **entry guard** `if (_paymentPersisted) return` (`Brfalse`, 99); **set `=true` immediately after `InsertPaymentDetails`** (109); 1D send block injected **before `Sales.InvoiceID = Guid.Empty`** (174). `_payInProgress` / `_saleFinalized` / `_paymentCommitted` = **not implemented**.
 
-Payment idempotency: `InsertPaymentDetails` is **UPSERT on InvoiceID** — `if not exists (select InvoiceID from PaymentDetails where InvoiceID=@InvoiceID) insert … else update PaymentDetails … ` (script `…SCREPIT\2025\3\…\2.InsertPaymentDetails.sql:130/132/179`). Live sproc is `WITH ENCRYPTION` (definition not readable via `sys.sql_modules`); script is authoritative.
+Payment idempotency: the script shows **UPSERT on InvoiceID** — `if not exists (select InvoiceID from PaymentDetails where InvoiceID=@InvoiceID) insert … else update PaymentDetails … ` (script `…SCREPIT\2025\3\…\2.InsertPaymentDetails.sql:130/132/179`). **This is script-level evidence only.** The **live** sproc is `WITH ENCRYPTION` (definition not readable via `sys.sql_modules`) and the runtime duplicate-payment test has not been run, so deployed idempotency is **NOT VERIFIED** (per Codex review correction #5) — pending the BG-0 clone duplicate-payment runtime test.
 
 Post-persist order (decompiled `frmPayment.btnSave_Click`): `InsertPaymentDetails` → `InsertPointDetails` (dead: PointOfSalePercent=0) → kitchen print (always) → customer receipt (skipped iff SendOnly) → `SyncToGoogleApi` (conditional) → **send hook** → `Sales.InvoiceID=Guid.Empty` (~4178) → table updates / Close / navigation.
 
