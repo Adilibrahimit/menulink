@@ -191,6 +191,36 @@ ORDER BY created_at LIMIT @n;";
             r.GetInt32(8), r.IsDBNull(9) ? null : r.GetString(9));
     }
 
+    // ---- BG-5: status-sync support ----
+    public string? GetServiceState(string key) { lock (_gate) return GetState(key); }
+    public void SetServiceState(string key, string value) { lock (_gate) SetState(key, value); }
+
+    public string? FindJobIdByMeta(string metaMessageId)
+    {
+        lock (_gate)
+        {
+            using var c = _cn.CreateCommand();
+            c.CommandText = "SELECT job_id FROM send_jobs WHERE meta_message_id=@m LIMIT 1;";
+            Bind(c, ("@m", metaMessageId));
+            return c.ExecuteScalar() as string;
+        }
+    }
+
+    /// <summary>Apply a status learned from the gateway (webhook-sourced) WITHOUT touching attempts.</summary>
+    public void ApplyRemoteStatus(string jobId, JobStatus status, string? error = null)
+    {
+        lock (_gate)
+            Exec("UPDATE send_jobs SET status=@s, last_error=COALESCE(@e,last_error), updated_at=@now WHERE job_id=@id;",
+                ("@s", status.ToString()), ("@e", (object?)error ?? DBNull.Value), ("@now", Now()), ("@id", jobId));
+    }
+
+    public void RecordStatusEvent(string metaMessageId, string eventType, int rank, string? eventTs)
+    {
+        lock (_gate)
+            Exec("INSERT INTO status_events(meta_message_id,event_type,status_rank,event_ts,received_at) VALUES(@m,@t,@r,@ts,@now);",
+                ("@m", metaMessageId), ("@t", eventType), ("@r", rank), ("@ts", (object?)eventTs ?? DBNull.Value), ("@now", Now()));
+    }
+
     // ---- helpers ----
     private void SetState(string k, string v) => Exec("INSERT INTO service_state(key,value) VALUES(@k,@v) ON CONFLICT(key) DO UPDATE SET value=@v;", ("@k", k), ("@v", v));
     private string? GetState(string k)

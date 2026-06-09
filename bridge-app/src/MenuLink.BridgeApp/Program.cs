@@ -39,6 +39,8 @@ if (args.Length >= 1 && args[0].Equals("bg2-selftest", StringComparison.OrdinalI
     return MenuLink.BridgeApp.DigitalInvoice.Bg2SelfTestCommand.Run(args);
 if (args.Length >= 1 && args[0].Equals("bg3-selftest", StringComparison.OrdinalIgnoreCase))
     return MenuLink.BridgeApp.DigitalInvoice.Meta.Bg3SelfTestCommand.Run();
+if (args.Length >= 1 && args[0].Equals("bg5-selftest", StringComparison.OrdinalIgnoreCase))
+    return MenuLink.BridgeApp.DigitalInvoice.Gateway.Bg5SelfTestCommand.Run();
 
 // Serilog from configuration
 Log.Logger = new LoggerConfiguration()
@@ -60,6 +62,15 @@ builder.Services.AddSingleton<IPosAdapter, RzrzPosAdapter>();
 // HttpClient factory + Supabase REST wrapper
 builder.Services.AddHttpClient<SupabaseService>();
 builder.Services.AddHostedService<Worker>();
+
+// BG-5/6: co-hosted digital-invoice sender (self-disabling unless DigitalInvoice:Enabled=true).
+builder.Services.AddSingleton(_ =>
+{
+    var o = new MenuLink.BridgeApp.DigitalInvoice.DigitalInvoiceOptions();
+    builder.Configuration.GetSection("DigitalInvoice").Bind(o);
+    return o;
+});
+builder.Services.AddHostedService<MenuLink.BridgeApp.DigitalInvoice.DigitalInvoiceSenderWorker>();
 
 // Windows Service support — picked up automatically when running under SCM
 builder.Services.AddWindowsService(opts =>

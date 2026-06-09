@@ -10,10 +10,14 @@ public sealed class SenderPipeline
     private readonly IInvoiceTransport _transport;
     private readonly Func<ClaimedJob, byte[]> _render;
     private readonly int _maxAttempts;
+    private readonly Func<ClaimedJob, string, CancellationToken, Task>? _onAccepted;
     private readonly Random _rng = new(12345); // fixed seed → deterministic tests; jitter only
 
-    public SenderPipeline(SqliteOutbox outbox, IInvoiceTransport transport, Func<ClaimedJob, byte[]> render, int maxAttempts = 5)
-    { _outbox = outbox; _transport = transport; _render = render; _maxAttempts = maxAttempts; }
+    /// <param name="onAccepted">optional: invoked with (job, metaMessageId) when Meta accepts — used to
+    /// register the local↔meta mapping at the gateway (Codex #4). Best-effort; failures are swallowed.</param>
+    public SenderPipeline(SqliteOutbox outbox, IInvoiceTransport transport, Func<ClaimedJob, byte[]> render,
+        int maxAttempts = 5, Func<ClaimedJob, string, CancellationToken, Task>? onAccepted = null)
+    { _outbox = outbox; _transport = transport; _render = render; _maxAttempts = maxAttempts; _onAccepted = onAccepted; }
 
     public async Task<int> ProcessDueAsync(int batch, CancellationToken ct)
     {
@@ -32,7 +36,11 @@ public sealed class SenderPipeline
                 res.Accepted ? "accepted" : res.Blocked ? "blocked" : (res.Permanent ? "fatal" : "transient"), res.Error);
 
             if (res.Accepted)
+            {
                 _outbox.MarkStatus(job.JobId, JobStatus.AcceptedByMeta, metaMessageId: res.MetaMessageId);
+                if (_onAccepted is not null && res.MetaMessageId is not null)
+                    try { await _onAccepted(job, res.MetaMessageId, ct); } catch { /* gateway will reconcile on next register / restart */ }
+            }
             else if (res.Blocked)
                 _outbox.MarkStatus(job.JobId, JobStatus.BlockedByPolicy, error: res.Error);
             else if (res.Permanent)
