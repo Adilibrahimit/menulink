@@ -26,8 +26,15 @@ export async function verifyInstallationRequest(env: Env, repo: Repo, req: Reque
 
   if (await repo.nonceSeen(nonce)) return { ok: false, error: "nonce replay" };
 
+  // Bind the signature to this exact endpoint (method + path + canonical query) to prevent
+  // cross-endpoint signature replay. The Bridge signer builds the identical canonical string.
+  const u = new URL(req.url);
+  const canonicalQuery = [...u.searchParams.entries()]
+    .sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0))
+    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+    .join("&");
   const bodyHash = await sha256Hex(rawBody);
-  const message = `${id}\n${ts}\n${nonce}\n${bodyHash}`;
+  const message = `${req.method}\n${u.pathname}\n${canonicalQuery}\n${id}\n${ts}\n${nonce}\n${bodyHash}`;
   if (!(await verifyEcdsaP256(inst.publicKey, message, sig))) return { ok: false, error: "bad signature" };
 
   // accept → burn the nonce (replay protection) and refresh last-seen

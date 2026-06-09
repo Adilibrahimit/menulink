@@ -79,20 +79,31 @@ export class Repo {
     return next;
   }
 
-  /** Idempotent mapping register + reconcile orphan status (Codex #4). */
+  /**
+   * Idempotent mapping register + reconcile orphan status (Codex #4).
+   * Tenant-scoped: a meta_message_id already owned by ANOTHER tenant is rejected (no cross-tenant takeover).
+   * Returns false on a cross-tenant attempt so the caller can 403.
+   */
   async registerMapping(m: {
     tenantId: string; installationId: string; localJobId: string; invoiceIdHash: string;
     metaMessageId: string; phoneNumberId: string;
-  }): Promise<void> {
+  }): Promise<boolean> {
+    const existing = await this.db.prepare(
+      `SELECT tenant_id AS tenantId FROM message_mappings WHERE meta_message_id=?`
+    ).bind(m.metaMessageId).first<{ tenantId: string }>();
+    if (existing && existing.tenantId !== m.tenantId) return false; // cross-tenant takeover refused
+
     await this.db.prepare(
       `INSERT INTO message_mappings(tenant_id, installation_id, local_job_id, invoice_id_hash, meta_message_id, phone_number_id, created_at)
        VALUES(?,?,?,?,?,?,?)
-       ON CONFLICT(meta_message_id) DO UPDATE SET installation_id=excluded.installation_id, local_job_id=excluded.local_job_id`
+       ON CONFLICT(meta_message_id) DO UPDATE SET installation_id=excluded.installation_id, local_job_id=excluded.local_job_id
+       WHERE message_mappings.tenant_id = excluded.tenant_id`
     ).bind(m.tenantId, m.installationId, m.localJobId, m.invoiceIdHash, m.metaMessageId, m.phoneNumberId, nowIso()).run();
-    // reconcile: attach installation to any status already recorded for this message
+    // reconcile: attach installation only to THIS tenant's already-recorded status
     await this.db.prepare(
-      `UPDATE message_status SET installation_id=?, updated_at=? WHERE meta_message_id=? AND (installation_id IS NULL OR installation_id='')`
-    ).bind(m.installationId, nowIso(), m.metaMessageId).run();
+      `UPDATE message_status SET installation_id=?, updated_at=? WHERE meta_message_id=? AND tenant_id=? AND (installation_id IS NULL OR installation_id='')`
+    ).bind(m.installationId, nowIso(), m.metaMessageId, m.tenantId).run();
+    return true;
   }
 
   async upsertWindow(tenantId: string, pnid: string | null, cwh: string, lastMsgAtIso: string, expiresAtIso: string): Promise<void> {

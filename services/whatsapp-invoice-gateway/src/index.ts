@@ -94,11 +94,12 @@ async function handleRegister(req: Request, env: Env): Promise<Response> {
   if (!auth.ok) return json({ error: auth.error }, 401);
   const m = JSON.parse(raw);
   if (m.tenantId && m.tenantId !== auth.tenantId) return json({ error: "tenant mismatch" }, 403);
-  await repo.registerMapping({
+  const ok = await repo.registerMapping({
     tenantId: auth.tenantId!, installationId: auth.installationId!,
     localJobId: String(m.localJobId ?? ""), invoiceIdHash: String(m.invoiceIdHash ?? ""),
     metaMessageId: String(m.metaMessageId ?? ""), phoneNumberId: String(m.phoneNumberId ?? ""),
   });
+  if (!ok) return json({ error: "cross-tenant mapping refused" }, 403);
   return json({ ok: true });
 }
 
