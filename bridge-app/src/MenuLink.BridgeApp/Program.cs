@@ -41,6 +41,17 @@ if (args.Length >= 1 && args[0].Equals("bg3-selftest", StringComparison.OrdinalI
     return MenuLink.BridgeApp.DigitalInvoice.Meta.Bg3SelfTestCommand.Run();
 if (args.Length >= 1 && args[0].Equals("bg5-selftest", StringComparison.OrdinalIgnoreCase))
     return MenuLink.BridgeApp.DigitalInvoice.Gateway.Bg5SelfTestCommand.Run();
+if (args.Length >= 2 && args[0].Equals("import-spool", StringComparison.OrdinalIgnoreCase))
+{
+    using var ob = new MenuLink.BridgeApp.DigitalInvoice.SqliteOutbox(
+        args.Length >= 3 ? args[2] : System.IO.Path.Combine(System.IO.Path.GetTempPath(), "bg6-import", "ob.db"));
+    var imp = new MenuLink.BridgeApp.DigitalInvoice.SpoolImporter(args[1], ob);
+    var res = imp.Sweep();
+    Console.WriteLine($"import: {res}");
+    foreach (var j in ob.ClaimDue(10))
+        Console.WriteLine($"  job invoiceId={j.InvoiceId} bill={j.BillNo} phone={j.CustomerPhone} lang={j.Language} mode={j.CompletionMode}");
+    return res.Imported > 0 ? 0 : 1;
+}
 
 // Serilog from configuration
 Log.Logger = new LoggerConfiguration()
