@@ -31,6 +31,11 @@ builder.Configuration
     .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables(prefix: "MENULINK_BRIDGE_");
 
+// BG-1 render spike CLI (early exit — does NOT start the service):
+//   dotnet run -- render-invoice <InvoiceID> [ar|en|bi] [outDir]
+if (args.Length >= 1 && args[0].Equals("render-invoice", StringComparison.OrdinalIgnoreCase))
+    return MenuLink.BridgeApp.DigitalInvoice.RenderSpikeCommand.Run(args, builder.Configuration);
+
 // Serilog from configuration
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)

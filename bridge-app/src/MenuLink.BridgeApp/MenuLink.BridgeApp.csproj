@@ -20,6 +20,10 @@
     <!-- SQL Server client for the POS DB -->
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
 
+    <!-- BG-1: headless invoice rendering (QuestPDF uses SkiaSharp+HarfBuzz → Arabic RTL shaping) + ZATCA QR -->
+    <PackageReference Include="QuestPDF" Version="2025.7.0" />
+    <PackageReference Include="QRCoder" Version="1.6.0" />
+
     <!-- Windows printing (Bridge App is Windows-only) -->
     <PackageReference Include="System.Drawing.Common" Version="9.0.0" />
 
