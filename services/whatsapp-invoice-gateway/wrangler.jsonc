@@ -10,7 +10,7 @@
     {
       "binding": "DB",
       "database_name": "whatsapp_invoice_gateway",
-      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "database_id": "a6a0f92a-386a-4693-b560-b01f32a0728d",
       "migrations_dir": "migrations"
     }
   ],

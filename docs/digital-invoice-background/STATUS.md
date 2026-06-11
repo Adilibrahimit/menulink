@@ -29,9 +29,15 @@
 5. **Idempotency runtime-verified:** clone dup-payment runtime test PASS (BG-0); + cross-tenant takeover
    fixed (a9db748).
 
-## Remaining external gates (only YOU can do — see GO_LIVE_RUNBOOK.md)
-- Meta WhatsApp Cloud API token + approved utility template (business verification).
-- Cloudflare account: deploy Worker + create D1 + set secrets + seed tenant/installation rows.
+## Remaining external gates (see GO_LIVE_RUNBOOK.md)
+- Meta — **Coexistence decided 2026-06-11** (client keeps own number; SA supported; needs WhatsApp Business
+  app ≥2.24.17 + number active ≥7d on it). One-time MenuLink Tech-Provider setup: business verification
+  (2–5 business days) → app review (video evidence) → permanent System-User token + `invoice_ready` template.
+  Pilot can run with the Meta app in dev mode (tester role) before app review completes.
+- Cloudflare — ✅ 2026-06-11 (acct `id.menulink@gmail.com`): D1 `a6a0f92a-386a-4693-b560-b01f32a0728d` (EEUR)
+  created + `0001_init` migrated; Worker uploaded; secrets set (WEBHOOK_VERIFY_TOKEN real → gitignored
+  `.dev.vars`; META_APP_SECRET placeholder, rotate when Meta app exists). LEFT: register workers.dev
+  subdomain (interactive) → re-deploy → seed tenant/installation rows.
 - A real till + number for the BG-8 pilot (clone-tested first).
 
 ## Self-test commands (all green, no external deps)

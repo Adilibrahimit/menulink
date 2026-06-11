@@ -10,9 +10,12 @@
    - `npm run migrate:remote` (applies `migrations/0001_init.sql`).
    - `wrangler secret put META_APP_SECRET` ; `wrangler secret put WEBHOOK_VERIFY_TOKEN`.
    - `wrangler deploy` → note the Worker URL.
+   - *Status 2026-06-11: D1 created + migrated; secrets set (META_APP_SECRET = placeholder); deploy pending
+     one-time workers.dev subdomain registration (interactive).*
 2. **Meta** (see `docs/whatsapp-cloud-api-onboarding.md`): WABA + phone number; **business verification**;
    permanent token (System User); approve utility template `invoice_ready` (document header); decide
-   existing-number-Coexistence vs dedicated number.
+   existing-number-Coexistence vs dedicated number. → **DECIDED 2026-06-11: Coexistence** (embedded signup;
+   client keeps own number; WhatsApp Business app ≥2.24.17, number ≥7d active; SA supported).
 3. **D1 seed** (per tenant/branch):
    - `tenants(tenant_id, restaurant_name, allow_paid_template, window_salt)` — generate a random `window_salt`.
    - `phone_numbers(phone_number_id → tenant_id)`.
