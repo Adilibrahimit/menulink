@@ -43,7 +43,9 @@ public static class RenderSpikeCommand
                 ThermalWidthMm = int.TryParse(config["DigitalInvoice:Company:ThermalWidthMm"], out var w) ? w : 80,
             };
 
-            var model = new InvoiceDataLoader(conn).Load(invoiceId, lang, company);
+            var loader = new InvoiceDataLoader(conn);
+            company = loader.LoadCompany(company);   // BG-1 parity: real header + logo from GeneralSettings
+            var model = loader.Load(invoiceId, lang, company);
             var renderer = new InvoicePdfRenderer();
             byte[] pdf = renderer.RenderPdf(model);
             byte[] png = renderer.RenderPng(model);

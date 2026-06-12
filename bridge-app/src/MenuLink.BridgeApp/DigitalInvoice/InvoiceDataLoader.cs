@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.Data.SqlClient;
 
 namespace MenuLink.BridgeApp.DigitalInvoice;
@@ -6,6 +7,7 @@ namespace MenuLink.BridgeApp.DigitalInvoice;
 /// Loads an immutable InvoiceRenderModel from the local POS DB by InvoiceID, using the same
 /// sproc the POS print path uses: dbo.GetItemsForPrintInvoice(@InvoiceID,@Language).
 /// One row per line item; header columns repeat on each row. Column set verified on the clone.
+/// LoadCompany() pulls the receipt header + logo from dbo.GeneralSettings for POS render-parity.
 /// </summary>
 public sealed class InvoiceDataLoader
 {
@@ -53,6 +55,7 @@ public sealed class InvoiceDataLoader
                 model.TobaccoVatPercent = M(r, cols, "TobaccoVatPercent");
                 model.Cash = M(r, cols, "Cash");
                 model.Card = M(r, cols, "Card");
+                model.InvoiceType = (int)L(r, cols, "InvoiceType");
                 model.PersistedQr = SN(r, cols, "QR");
                 header = true;
             }
@@ -76,8 +79,98 @@ public sealed class InvoiceDataLoader
         }
 
         if (!header) throw new InvalidOperationException($"No invoice rows for {invoiceId} (does it exist on this DB?)");
+
+        // POS receipt summary fields (not always in the print sproc): derive locally.
+        model.Received = model.Cash + model.Card;
+        model.Remaining = Math.Max(0m, model.TotalInclVat - model.Received);
+        model.PrintedBy = model.UserName;
+        if (!cols.Contains("InvoiceType")) model.InvoiceType = LoadInvoiceType(invoiceId);
         return model;
     }
+
+    /// <summary>Pull the receipt header + logo from dbo.GeneralSettings (POS print-time source of truth).
+    /// DB values win; the passed <paramref name="fallback"/> (config) fills any blanks.</summary>
+    public CompanyProfile LoadCompany(CompanyProfile fallback)
+    {
+        var c = new CompanyProfile
+        {
+            ThermalWidthMm = fallback.ThermalWidthMm,
+            VatPercent = fallback.VatPercent,
+            NameEn = fallback.NameEn, NameAr = fallback.NameAr,
+            AddressEn = fallback.AddressEn, AddressAr = fallback.AddressAr,
+            Address2En = fallback.Address2En, Address2Ar = fallback.Address2Ar,
+            VatNumber = fallback.VatNumber, Phone = fallback.Phone,
+            CurrencyEn = fallback.CurrencyEn, CurrencyAr = fallback.CurrencyAr,
+            ThanksEn = fallback.ThanksEn, ThanksAr = fallback.ThanksAr,
+            LogoPath = fallback.LogoPath,
+        };
+        try
+        {
+            using var cn = new SqlConnection(_connectionString);
+            cn.Open();
+            using var cmd = cn.CreateCommand();
+            cmd.CommandText =
+                "SELECT TOP 1 Company,Company_A,Address,Address_A,Address1,Address1_A,Phone,Phone_A," +
+                "Thanks,Thanks_A,CurrencyE,CurrencyA,TaxReg,Tax,CompanyLogo_A FROM dbo.GeneralSettings";
+            using var r = cmd.ExecuteReader();
+            if (r.Read())
+            {
+                string GS(string n) { int i = r.GetOrdinal(n); return i < 0 || r.IsDBNull(i) ? "" : r.GetValue(i)?.ToString()?.Trim() ?? ""; }
+                c.NameEn   = Pick(GS("Company"),    c.NameEn);
+                c.NameAr   = Pick(GS("Company_A"),  c.NameAr);
+                c.AddressEn = Pick(GS("Address"),   c.AddressEn);
+                c.AddressAr = Pick(GS("Address_A"), c.AddressAr);
+                c.Address2En = Pick(GS("Address1"),   c.Address2En);
+                c.Address2Ar = Pick(GS("Address1_A"), c.Address2Ar);
+                c.Phone    = Pick(GS("Phone_A"), Pick(GS("Phone"), c.Phone));
+                c.ThanksEn = Pick(GS("Thanks"),   c.ThanksEn);
+                c.ThanksAr = Pick(GS("Thanks_A"), c.ThanksAr);
+                c.CurrencyEn = Pick(GS("CurrencyE"), c.CurrencyEn);
+                c.CurrencyAr = Pick(GS("CurrencyA"), c.CurrencyAr);
+                c.VatNumber  = Pick(GS("TaxReg"),    c.VatNumber);
+                if (decimal.TryParse(GS("Tax"), NumberStyles.Any, CultureInfo.InvariantCulture, out var tx) && tx > 0) c.VatPercent = tx;
+
+                int li = r.GetOrdinal("CompanyLogo_A");
+                if (li >= 0 && !r.IsDBNull(li) && r.GetValue(li) is byte[] raw && raw.Length > 0)
+                    c.LogoBytes = NormalizePng(raw);
+            }
+        }
+        catch { /* keep config fallback on any GeneralSettings read error */ }
+        return c;
+    }
+
+    private int LoadInvoiceType(Guid invoiceId)
+    {
+        try
+        {
+            using var cn = new SqlConnection(_connectionString);
+            cn.Open();
+            using var cmd = cn.CreateCommand();
+            cmd.CommandText = "SELECT TOP 1 InvoiceType FROM dbo.Invoice WHERE InvoiceID=@id";
+            cmd.Parameters.AddWithValue("@id", invoiceId);
+            var o = cmd.ExecuteScalar();
+            return o == null || o == DBNull.Value ? 0 : Convert.ToInt32(o);
+        }
+        catch { return 0; }
+    }
+
+    /// <summary>Re-encode the POS logo blob (BMP/JPG/PNG) to PNG so QuestPDF always reads it.</summary>
+    private static byte[]? NormalizePng(byte[] raw)
+    {
+        if (raw.Length == 0) return null;
+        if (!OperatingSystem.IsWindows()) return raw;
+        try
+        {
+            using var ms = new MemoryStream(raw);
+            using var img = System.Drawing.Image.FromStream(ms);
+            using var o = new MemoryStream();
+            img.Save(o, System.Drawing.Imaging.ImageFormat.Png);
+            return o.ToArray();
+        }
+        catch { return raw; }
+    }
+
+    private static string Pick(string dbVal, string fallback) => string.IsNullOrWhiteSpace(dbVal) ? fallback : dbVal;
 
     // ---- safe column getters (tolerate missing columns / nulls) ----
     private static int Ord(SqlDataReader r, HashSet<string> cols, string c) => cols.Contains(c) ? r.GetOrdinal(c) : -1;
