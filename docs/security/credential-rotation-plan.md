@@ -51,5 +51,8 @@ each with reason; redact when next safely editable:
 - `.claude/skills/menulink-integration/references/rzrz-deep-dive.md` (1 hit) — same: unrelated
   WIP (+50 lines) entangled with the cred line.
 - `.claude/skills/menulink-integration/SKILL.md` (dirty) — unrelated WIP.
-- `apps/web/README.md` (3 hits), `bridge-app/README.md` — protected runtime paths, outside the
-  Phase-3b allowed-file set.
+
+Protected-README pass (done):
+- `apps/web/README.md` — ☑ redacted (3 owner/ops/test passwords → `<OWNER_TEST_PASSWORD>`).
+- `bridge-app/README.md` — ☑ verified clean: no literal secret (only an `sb_secret_...` format
+  placeholder + an Integrated-Security connection string — neither is a value).
