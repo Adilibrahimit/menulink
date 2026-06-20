@@ -75,3 +75,11 @@ docs/clients-menu/ITEMS_PHOTO/
 /.graph/
 docs/pormpts/
 docs/screenshots-tsests/
+
+# --- Phase 1.5: keep KNOWN dev credentials off the `git add -A` surface ---
+# These untracked trees/doc carry documented dev creds (SQL sa-login, linked-server
+# login, POS PIN, web passwords). Redacting the runnable operate scripts would break
+# them, so ignore now; un-ignore + redact prose + keep scripts local-only in Phase 2/3.
+/.claude/skills/punnelifosys-pos/
+/.claude/skills/punnelifosys-pos-operate/
+/docs/REPO-CLEANUP-PLAN.md
