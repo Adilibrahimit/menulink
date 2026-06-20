@@ -69,3 +69,9 @@ docs/clients-menu/ITEMS_PHOTO/
 
 # --- Office temp lock files ---
 **/~$*
+
+# --- Repo cleanup Phase 1 (regenerable graph output, secret quarantine, typo/junk dirs) ---
+/secrets-quarantine/
+/.graph/
+docs/pormpts/
+docs/screenshots-tsests/
