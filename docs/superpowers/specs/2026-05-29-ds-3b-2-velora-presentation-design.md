@@ -10,7 +10,7 @@
 
 ## Goal
 
-Match the Velora brand-board menu mockup (`docs/clients-menu/Design-template`) on the live
+Match the Velora brand-board menu mockup (`docs/clients/Design-template`) on the live
 ordering menu by adding two **flag-gated** presentation treatments — a `velora-hero` header and
 `premium-lounge` item cards — branched into the existing components and turned on only by a
 profile whose menu-page-template sets those flags. KO-KO/RzRz/Mazaj are unaffected.

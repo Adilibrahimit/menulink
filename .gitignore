@@ -65,7 +65,7 @@ build/
 *.tgz
 
 # --- Client raw photo library (460 MB source dump — photos live in Supabase Storage) ---
-docs/clients-menu/ITEMS_PHOTO/
+docs/clients/ITEMS_PHOTO/
 
 # --- Office temp lock files ---
 **/~$*

@@ -7,7 +7,7 @@ const { chromium } = require('D:\\menulink\\apps\\web\\node_modules\\playwright'
 
 const URL = process.argv[2] || 'http://localhost:3100/m/mazaj-almosafer';
 const PREFIX = process.argv[3] || 'preview';
-const OUT = 'D:\\menulink\\docs\\clients-menu\\almosafer\\new-photos';
+const OUT = 'D:\\menulink\\docs\\clients\\almosafer\\new-photos';
 
 let browser;
 for (const opts of [{ channel: 'chrome' }, {}]) {

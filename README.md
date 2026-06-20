@@ -56,13 +56,12 @@ menulink/
 │       └── supabase/
 │           └── migrations/  ← 8 SQL migrations applied to cloud
 │
-├── current-state/
-│   └── pwa-starter/         ← v6 legacy PWA (still in repo, redirects to v7)
-│
 ├── docs/                    ← strategy · architecture · pos · proofs · design-print-studio · 00-start-here
 ├── .claude/skills/          ← menulink-integration skill (POS knowledge)
 ├── .graph/                  ← graphify knowledge graph (Obsidian)
-└── version-history/         ← نسخ v1-v5 للأرشيف
+└── archive/legacy-pwa/      ← legacy v6 PWA + v1-v5 history (redirects to v7)
+    ├── pwa-starter/         ← v6 legacy PWA (still in repo, redirects to v7)
+    └── version-history/     ← نسخ v1-v5 للأرشيف
 ```
 
 ## النشر السحابي

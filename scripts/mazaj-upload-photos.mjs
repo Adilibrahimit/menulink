@@ -28,7 +28,7 @@ if (!SERVICE_ROLE_KEY || !SUPABASE_PAT) {
 }
 const PROJECT_REF = 'dhmjrrsynfvomlzhggvu';
 const BUCKET = 'menu-images';
-const PHOTO_DIR = String.raw`D:\menulink\docs\clients-menu\ITEMS_PHOTO\OneDrive_2026-05-25\Menu Pics`;
+const PHOTO_DIR = String.raw`D:\menulink\docs\clients\ITEMS_PHOTO\OneDrive_2026-05-25\Menu Pics`;
 
 const STORAGE_PATH_PREFIX = `${RESTAURANT_ID}/menu`;
 const PUBLIC_URL_PREFIX = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${STORAGE_PATH_PREFIX}`;

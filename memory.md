@@ -255,13 +255,14 @@ D:\menulink\
 │               ├── 0037_branch_foundation.sql … 0045_fix_submit_order_session_id.sql
 │               └── 0046_rzrz_test_clone.sql  ← latest
 │
-├── current-state/
-│   └── pwa-starter/                       ← Legacy v6 static PWA (still in repo, now redirects)
-│       ├── koko-menu-v6.html              ← 1500+ LOC, single-file HTML PWA. Still has the wired Supabase submit_order.
-│       ├── manifest.json
-│       ├── service-worker.js              ← v1.3.0 (network-first HTML after our fix)
-│       ├── icon-*.png                     ← 11 PWA icons
-│       └── README-DEPLOY.md
+├── archive/legacy-pwa/                    ← legacy v6 PWA + v1-v5 history (redirects to v7)
+│   ├── pwa-starter/                       ← Legacy v6 static PWA (still in repo, now redirects)
+│   │   ├── koko-menu-v6.html              ← 1500+ LOC, single-file HTML PWA. Still has the wired Supabase submit_order.
+│   │   ├── manifest.json
+│   │   ├── service-worker.js              ← v1.3.0 (network-first HTML after our fix)
+│   │   ├── icon-*.png                     ← 11 PWA icons
+│   │   └── README-DEPLOY.md
+│   └── version-history/                   ← v1-v5 archived HTML for reference
 │
 ├── design-docs/
 │   ├── ROADMAP.md
@@ -269,8 +270,6 @@ D:\menulink\
 │   ├── pos-integration.html
 │   ├── pos-universal-integration.html
 │   └── tenant-config-example.js
-│
-├── version-history/                       ← v1-v5 archived HTML for reference
 │
 ├── .scripts/
 │   └── extract-koko-images.py             ← One-shot: decoded v6 base64 → real JPEGs
@@ -1084,20 +1083,20 @@ Onboarded the **6th tenant: مقهى مزاج المسافر (Mazaj Almosafer)**
 | `0058_mazaj_almosafer_tenant.sql` | Idempotent DO block. Creates restaurant (display_only_mode=true, colors #0F2D26/#F4E8D4, tagline قهوة·حلى·شيشة, IG almusaferlounge) + 13 categories + 176 items + 176 variants (data-driven from embedded JSON) + subscription (yearly, pending_payment, amount 0) + default branch. Null-price items get a `single` variant labeled `اسأل` at price 0. |
 
 ### Heritage list menu design (matches client's HTML template)
-- New `apps/web/app/m/[slug]/heritage-list-menu.tsx` — reproduces `docs/clients-menu/almosafer/index.html` 1:1: dark emerald hero + dallah SVG + ornamental dividers, cream body with radial-dot texture, list rows (56px thumb + name + serif price), gold scroll-spy category pills (IntersectionObserver), footer. Shows multiple variants as pills + 🔥 calorie badges.
+- New `apps/web/app/m/[slug]/heritage-list-menu.tsx` — reproduces `docs/clients/almosafer/index.html` 1:1: dark emerald hero + dallah SVG + ornamental dividers, cream body with radial-dot texture, list rows (56px thumb + name + serif price), gold scroll-spy category pills (IntersectionObserver), footer. Shows multiple variants as pills + 🔥 calorie badges.
 - `ThemeConfig` gained two fields: `menuLayout: "card-grid" | "heritage-list"` and `posterStyle: "default" | "heritage-emerald"`. `MAZAJ_ALMOSAFER_THEME` registered in `lib/themes.ts` (Reem Kufi + Tajawal + Cormorant Garamond + Dancing Script fonts).
 - `page.tsx` dispatches display-only tenants to HeritageListMenu vs DisplayOnlyMenu by `theme.menuLayout`.
 - Refactored `display-only-menu.tsx` to use CSS variables instead of hardcoded `neutral-*` Tailwind — benefits all themed display-only tenants.
 
 ### Custom QR poster
 - Winning approach: composite the **real QR onto the client's exact design image** (palm leaf + "al musafer" script + gold ornamental frame), NOT redraw with canvas. Blank template committed at `apps/web/public/qr-templates/mazaj-almosafer.png`; `drawHeritagePoster()` in `lib/menu-qr-poster.ts` loads it and draws the QR into the frame region. Gated by `posterStyle: "heritage-emerald"`, threaded through `menu-qr.tsx` + admin/qr + admin/tables + ops tenant pages.
-- Print-ready poster: `docs/clients-menu/almosafer/mazaj-almosafer-qr-poster.png`.
+- Print-ready poster: `docs/clients/almosafer/mazaj-almosafer-qr-poster.png`.
 
 ### Photos
-- 148/176 items mapped from the **460MB photo library** at `docs/clients-menu/ITEMS_PHOTO/` (now gitignored — photos live in Storage). Optimized to WebP via sharp, uploaded to `menu-images/<rid>/menu/<slug>.webp`. 28 unmapped = mostly branded bottles (Pepsi/Sprite/Red Bull/Holsten) not in the library. Upload script: `scripts/mazaj-upload-photos.mjs` (secrets read from env, not hardcoded).
+- 148/176 items mapped from the **460MB photo library** at `docs/clients/ITEMS_PHOTO/` (now gitignored — photos live in Storage). Optimized to WebP via sharp, uploaded to `menu-images/<rid>/menu/<slug>.webp`. 28 unmapped = mostly branded bottles (Pepsi/Sprite/Red Bull/Holsten) not in the library. Upload script: `scripts/mazaj-upload-photos.mjs` (secrets read from env, not hardcoded).
 
 ### Calorie import (from client's printed menu)
-- Source: printed-menu photos in `docs/clients-menu/almosafer/Kal/`. **103/176 items now have `calories_kcal`.** Mojitos are per-base (7UP 140, Sprite 160, Code Red 130, Red Bull 120). Shisha (56) has no calories on the print. Full mapping in `docs/clients-menu/almosafer/mazaj-calorie-mapping.xlsx`.
+- Source: printed-menu photos in `docs/clients/almosafer/Kal/`. **103/176 items now have `calories_kcal`.** Mojitos are per-base (7UP 140, Sprite 160, Code Red 130, Red Bull 120). Shisha (56) has no calories on the print. Full mapping in `docs/clients/almosafer/mazaj-calorie-mapping.xlsx`.
 - كيكة ماربل set to **160** (print value) — overrode an earlier owner-entered 500, confirmed by user.
 - Owner-set values preserved for items not on the print (كيكة عسل 718, لافا مولتن 544, بودينج 612, مكسرات 800, + 2 new dessert items).
 

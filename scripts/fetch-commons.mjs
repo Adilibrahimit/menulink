@@ -7,7 +7,7 @@ import fs from 'fs';
 import path from 'path';
 
 const q = process.argv[2] || 'dallah arabic coffee';
-const out = process.argv[3] || 'D:/menulink/docs/clients-menu/almosafer/new-photos/commons';
+const out = process.argv[3] || 'D:/menulink/docs/clients/almosafer/new-photos/commons';
 const n = parseInt(process.argv[4] || '12', 10);
 
 const api = `https://commons.wikimedia.org/w/api.php?action=query&format=json&generator=search`

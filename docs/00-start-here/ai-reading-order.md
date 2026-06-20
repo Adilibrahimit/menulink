@@ -27,7 +27,7 @@
 - Deep POS app knowledge: the `.claude/skills/punnelifosys-*` skills (gitignored / local-only — carry dev creds, do not commit)
 
 ## **Customer-specific** task (a named restaurant)
-- `docs/clients-menu/<client>/` — menus, photos, posters, mappings
+- `docs/clients/<client>/` — menus, photos, posters, mappings
 - [`/.claude/skills/menulink-integration/customers/<client>.md`](../../.claude/skills/menulink-integration/customers/) — canonical dossier (KO-KO, RzRz, Mazaj Almosafer, …)
 
 ## **Code navigation** / "where is X implemented"

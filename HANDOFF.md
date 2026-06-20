@@ -55,7 +55,7 @@
 
 | Phase | Original Plan | Actual Status |
 |---|---|---|
-| 1. PWA | ✅ مكتمل | v6 PWA في `current-state/`، الآن يـ redirect لـ v7 |
+| 1. PWA | ✅ مكتمل | v6 PWA في `archive/legacy-pwa/pwa-starter/`، الآن يـ redirect لـ v7 |
 | 2. Backend | كان قادم | ✅ مكتمل — Supabase Cloud في Singapore، 6 tables + 6 views + 5 RPCs، Auth، Storage، Realtime |
 | 3. Push + Marketing | قادم | ⏳ لسا — أحد ثلاثة خيارات للمرحلة القادمة |
 | 4. POS Integration | قادم | ⏳ لسا — RzRz testbed موجود، Bridge App لم يُبن |
@@ -78,7 +78,7 @@
 ## 3️⃣bis الحالة الأصلية (للأرشيف · Phase 1 · مكتمل)
 
 ### ما تم بناؤه
-**PWA v6 شغّال وجاهز للنشر** في `current-state/pwa-starter/`
+**PWA v6 شغّال وجاهز للنشر** في `archive/legacy-pwa/pwa-starter/`
 
 **العميل الأول الدافع:** **KO-KO Chicky Licky** — مطعم بروستد حقيقي في الرياض (حي الروضة، طريق عبد الرحمن الغافقي). طلب نسختين من MenuLink. **العميل الأول الفعلي اللي طلب الخدمة بنفسه** (lead مباشر، مش outreach منّا).
 
@@ -107,7 +107,7 @@
 - ظلال ناعمة، حواف مستديرة
 
 ### تاريخ النسخ (v1 → v6)
-موجود في `version-history/` للمرجع. الـ v6 هو النسخة المعتمدة. النسخ القديمة محفوظة لأن:
+موجود في `archive/legacy-pwa/version-history/` للمرجع. الـ v6 هو النسخة المعتمدة. النسخ القديمة محفوظة لأن:
 - التطور تدريجي ومفيد للفهم
 - لو لحقت مشكلة في v6، ممكن الرجوع لنسخة أقدم
 
@@ -184,7 +184,7 @@ menulink-bundle/
 ├── PRICING.md                    ← تفاصيل التسعير الكاملة
 ├── CLAUDE.md                     ← تعليمات مختصرة لـ Claude Code
 │
-├── current-state/
+├── archive/legacy-pwa/
 │   └── pwa-starter/              ← 🎯 v6 PWA · جاهز للنشر
 │       ├── koko-menu-v6.html
 │       ├── manifest.json
@@ -201,7 +201,7 @@ menulink-bundle/
 │   ├── auth-rls-bridge-trace.md  ← تتبّع Auth/RLS ↔ Bridge
 │   └── tenant-config-example.js  ← مثال Multi-tenant config
 │
-└── version-history/              ← 📜 v1-v5 للمرجع فقط
+└── archive/legacy-pwa/version-history/  ← 📜 v1-v5 للمرجع فقط
     ├── koko-menu.html (v1 dark)
     ├── koko-menu-v2.html (light theme)
     ├── koko-menu-v3.html (base64 images)

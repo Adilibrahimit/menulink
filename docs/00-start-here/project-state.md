@@ -14,7 +14,7 @@ Arabic-first SaaS for Saudi restaurants: digital menus + WhatsApp ordering + cus
 - `migrations/0072_*` — `digital_invoice_send_queue` + service_role RPCs the Bridge polls
 - `apps/web/app/api/bridge/heartbeat` + `/invoice-status` — inbound Bridge calls
 
-## Customers (dossiers in `.claude/skills/menulink-integration/customers/` + `docs/clients-menu/`)
+## Customers (dossiers in `.claude/skills/menulink-integration/customers/` + `docs/clients/`)
 KO-KO Chicky Licky (first paying), RzRz (POS test/integration partner), Mazaj Almosafer (menu-only), and others — see `/memory.md` for the current roster and status.
 
 ## Active workstream

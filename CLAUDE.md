@@ -65,7 +65,7 @@
 | السياق الاستراتيجي الأصلي | `HANDOFF.md` |
 | قواعد التصميم (Stitch-ready) | `DESIGN.md` |
 | كود v7 الحالي (Next.js multi-tenant) | `apps/web/app/m/[slug]/` و `apps/web/app/admin/` و `apps/web/app/ops/` |
-| كود PWA v6 (legacy، يـ redirect) | `current-state/pwa-starter/` |
+| كود PWA v6 (legacy، يـ redirect) | `archive/legacy-pwa/pwa-starter/` |
 | Schema migrations + RPCs | `apps/web/supabase/migrations/` |
 | خارطة الطريق | `docs/strategy/ROADMAP.md` |
 | استراتيجية POS (RzRz/Foodics) | `docs/strategy/pos-universal-integration.html` |
@@ -73,7 +73,7 @@
 | توثيق POS الاختياري (digital-invoice، gateway، RZRZ ai_memory) | `docs/pos/` |
 | **تكامل RzRz / عميل جديد / debugging** | `.claude/skills/menulink-integration/` ⭐ |
 | دلائل الإثبات (proofs) | `docs/proofs/` |
-| نسخ سابقة (مرجع فقط) | `version-history/` |
+| نسخ سابقة (مرجع فقط) | `archive/legacy-pwa/version-history/` |
 
 ## المهمة التالية المقترحة
 

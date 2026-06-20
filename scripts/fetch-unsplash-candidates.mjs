@@ -19,7 +19,7 @@ const KEY = env.UNSPLASH_ACCESS_KEY;
 if (!KEY) throw new Error('UNSPLASH_ACCESS_KEY not found in .env.local');
 
 const query = process.argv[2] || 'mango juice';
-const outDir = process.argv[3] || String.raw`D:\menulink\docs\clients-menu\almosafer\new-photos`;
+const outDir = process.argv[3] || String.raw`D:\menulink\docs\clients\almosafer\new-photos`;
 const n = parseInt(process.argv[4] || '8', 10);
 
 const res = await fetch(

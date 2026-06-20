@@ -12,7 +12,7 @@
 
 **Branch:** `ds-3b-2-velora-presentation` (off `main`; spec commit there).
 
-**Reference:** spec `docs/superpowers/specs/2026-05-29-ds-3b-2-velora-presentation-design.md`; mockup `docs/clients-menu/Design-template`.
+**Reference:** spec `docs/superpowers/specs/2026-05-29-ds-3b-2-velora-presentation-design.md`; mockup `docs/clients/Design-template`.
 
 ---
 
