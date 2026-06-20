@@ -40,9 +40,16 @@ owner approval** — it rewrites SHAs and breaks every existing clone/PR. Rotati
 history scrub is optional hardening.
 
 ## Still-pending redactions (working tree, not yet placeholdered)
-These tracked files still carry values in the working tree and were deferred this pass because they
-had unstaged pre-existing edits or are protected paths — redact when next safely editable:
-`memory.md`, `.claude/skills/menulink-integration/learnings.md`,
-`.claude/skills/menulink-integration/references/rzrz-deep-dive.md`,
-`.claude/skills/menulink-integration/SKILL.md` (dirty); `apps/web/README.md`,
-`bridge-app/README.md` (protected runtime paths).
+`memory.md` — ☑ redacted in Phase 3b (12 owner/ops/test passwords → `<OWNER_TEST_PASSWORD>`; POS
+state split to `docs/pos/POS-STATE.md`, already placeholdered).
+
+These tracked files still carry values in the working tree and were **deferred** this pass —
+each with reason; redact when next safely editable:
+- `.claude/skills/menulink-integration/learnings.md` (6 hits) — carries unrelated, uncommitted
+  skill WIP (+39 lines of new LRN entries); cred lines sit *inside* the new WIP, so redaction
+  cannot be isolated from the WIP under whole-file staging (rules 9/10).
+- `.claude/skills/menulink-integration/references/rzrz-deep-dive.md` (1 hit) — same: unrelated
+  WIP (+50 lines) entangled with the cred line.
+- `.claude/skills/menulink-integration/SKILL.md` (dirty) — unrelated WIP.
+- `apps/web/README.md` (3 hits), `bridge-app/README.md` — protected runtime paths, outside the
+  Phase-3b allowed-file set.

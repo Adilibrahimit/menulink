@@ -18,6 +18,17 @@ The original v6 static HTML PWA at `menulink-eight.vercel.app` now 302-redirects
 
 ---
 
+## 🧭 Where to read next (routing)
+
+- **POS / RzRz / Punnelifosys** work (Samer's POS, Digital-Invoice→WhatsApp, RzRz integration) → **[`docs/pos/POS-STATE.md`](docs/pos/POS-STATE.md)**
+- **AI reading order / decision map** → [`docs/00-start-here/`](docs/00-start-here/)
+- **Credential rotation** (postponed; labels only) → [`docs/security/credential-rotation-plan.md`](docs/security/credential-rotation-plan.md)
+- **Branch/status:** cleanup on `chore/repo-cleanup-phase-1` (Phases 1 → 3b committed; Phase 4 not started)
+
+> This file (`memory.md`) is the **MenuLink Core** live state + history. POS state was split out to `docs/pos/POS-STATE.md` (Phase 3b).
+
+---
+
 ## 🌐 Live URLs
 
 | URL | Serves | Status |
@@ -52,8 +63,8 @@ The original v6 static HTML PWA at `menulink-eight.vercel.app` now 302-redirects
 ## 🔐 Credentials & Tokens
 
 ### Accounts
-- **KO-KO owner (PRODUCTION):** `id.koko.owner@gmail.com` / `Koko2026!` — shared with client, they should change after first login
-- **Platform ops:** `id.menulink@gmail.com` / `OpsMenuLink2026!`
+- **KO-KO owner (PRODUCTION):** `id.koko.owner@gmail.com` / `<OWNER_TEST_PASSWORD>` — shared with client, they should change after first login
+- **Platform ops:** `id.menulink@gmail.com` / `<OWNER_TEST_PASSWORD>`
 
 ### Tokens used during build sessions (all in earlier chat history)
 These all need rotating before final production. Locations:
@@ -394,8 +405,8 @@ cd apps/web
 npm install                   # if first time
 npm run dev                   # http://localhost:3000
 
-# Sign in as test owner: koko-owner@menulink.test / KokoMenuLink2026!
-# Sign in as test ops:   id.menulink@gmail.com / OpsMenuLink2026!
+# Sign in as test owner: koko-owner@menulink.test / <OWNER_TEST_PASSWORD>
+# Sign in as test ops:   id.menulink@gmail.com / <OWNER_TEST_PASSWORD>
 
 # Apply a new SQL migration to cloud (no Docker required)
 # Use the same Management API pattern we used: PowerShell + Invoke-RestMethod
@@ -410,34 +421,11 @@ git push                      # Vercel auto-deploys both projects
 
 ---
 
-## 🔌 RzRz POS Integration — Phase 1 Results (2026-05-20)
+## 🔌 RzRz POS Integration — Phase 1 Results → see `docs/pos/POS-STATE.md`
 
-**Restaurant:** RZRZ BUKHARI / رزرز بخاري · Company: Itaqn w Jowdah (إتقان وجودة) · 2 branches (Alazizah, Almalaz).
-
-**Strategic context:** the user is Samer Cefalu's BUSINESS PARTNER in the POS software venture (Punnelifosys ResApp / RzRz POS). Schema changes + proc modifications are on the table. Co-branded "RzRz POS + MenuLink" rollout to all Punnelifosys customers is the endgame, achievable in months not years.
-
-**Almalaz branch infra:**
-- Server: `DESKTOP-8Q7DQKA` (LAN `PUNNELIFOSYS`), LAN IP `192.168.1.113`
-- SQL Server 2022 Express, **DB name `client`** (not `samer910_Cefalu` — that was a stale config). Integrated Security + sa both available.
-- Accounting DB: `samer910_accreef` (local + synced to central `192.250.231.22`)
-- Kitchen printers (LAN): KETCHIN `192.168.1.177` (master), BBQ `192.168.1.175`, DESERT `192.168.1.179`, KABULE `192.168.1.181`. **Note typo in DB: printer name is `KETCHIN` not `KITCHEN`** — Windows printer must use the typo.
-
-**What was proven (full chain):**
-1. Inserted MenuLink as `OnlineCustomerID = 999, CommissionPercent = 0.00`
-2. The new MenuLink row shows up in the cashier UI's Online customer picker alongside HungerStation/Jahez/Keeta
-3. Cashier can manually create + pay a MenuLink order — works end to end with kitchen print
-4. Direct `EXEC InsertInvoice` from SQL produces identical DB state — same `InvoiceType=11`, same `OnlineCommission=0.00`, same `InvoiceDetails` rows, same `KitichenOrderForPrint` rows
-5. Held → Finalize transition works via re-EXEC with same InvoiceID + IsHold=0
-6. Kitchen printers fire correctly when the Windows printer name is `KETCHIN` (the typo)
-7. Print routing is fully data-driven via `ItemPrinters(ItemID, Printer, InvoiceTypeID)` — the Bridge App doesn't need to implement print routing, just write `InvoiceDetails` + `KitichenOrderForPrint`
-
-**Verified XML structure for InsertInvoice** (see `.claude/skills/menulink-integration/references/sql-patterns.md` for full reference): single self-closing `<Invoice ... />` for header, multiple sibling `<Items ... />` elements (NO outer wrapper) for line items.
-
-**Phase 2 (Bridge App) — in progress:**
-- `pos_outbox` + `pos_item_map` tables in Supabase (migration 0009, TBD)
-- .NET 10 Windows Service running on the cashier (primary) and server (monitor)
-- Realtime subscription primary + polling fallback
-- Multi-branch deployment via per-branch `appsettings.json`
+The RzRz POS integration results (Phase-1 proof chain, Almalaz branch infra, the `InsertInvoice`
+contract, and Phase-2 Bridge App status) were split out to
+**[`docs/pos/POS-STATE.md`](docs/pos/POS-STATE.md)** (Phase 3b).
 
 ---
 
@@ -466,7 +454,7 @@ These won't block anything but are worth knowing about:
 
 - The Vercel "GitHub user not found" warning is still showing because git commits are authored by `idxmac@gmail.com` which isn't verified on either the `Adilibrahimit` GitHub or the `id.menulink@gmail.com` Vercel account. Fix: `git config --global user.email "Adilibrahimit@users.noreply.github.com"` then push one new commit. Cosmetic — deploys aren't blocked.
 - ~~KO-KO subscription pending~~ **RESOLVED 2026-05-24:** KO-KO paid 499 SAR, subscription active until 2027-05-24. All test data cleared.
-- KO-KO owner: `id.koko.owner@gmail.com` / `Koko2026!` — password shared with client, needs rotation after they log in.
+- KO-KO owner: `id.koko.owner@gmail.com` / `<OWNER_TEST_PASSWORD>` — password shared with client, needs rotation after they log in.
 - KO-KO WhatsApp: `+966501100057` (production, live orders go here)
 - All tokens used during the build (Vercel, Supabase access, Supabase service_role, and the temporary Supabase PAT used to apply 0008 on 2026-05-19) are in chat history and should be rotated. The PAT used for 0008 was already flagged for rotation when applied — confirm it's revoked at https://supabase.com/dashboard/account/tokens.
 - `react-chartjs-2` semver moved to ^5.3.1 and `chart.js` to ^4.5.1 after `npm install` (initial package.json wrote ^5.2.0 / ^4.4.4 — npm chose newer compatible versions). Lockfile committed; nothing to do.
@@ -510,7 +498,7 @@ These won't block anything but are worth knowing about:
 
 ### RzRz Bukhari owner can now log in
 - Email: `rzrzbukhari@gmail.com`
-- Password: `RzRz2026Temp!` (must change after first login)
+- Password: `<OWNER_TEST_PASSWORD>` (must change after first login)
 - URL: `https://menulink-admin-five.vercel.app/admin/login`
 - Password was set via `UPDATE auth.users SET encrypted_password = crypt('…', gen_salt('bf'))` directly through the Supabase Management API SQL endpoint (the bcrypt escape hatch)
 
@@ -534,7 +522,7 @@ These won't block anything but are worth knowing about:
 - Forest-green Tier-2 palette, Aptos Narrow font, RTL Arabic sheet view, SAR currency formats, formula-first (zero hardcoded computed values)
 
 ### Pinned for next session
-- **KO-KO is LIVE — monitor first real orders.** Customer-facing menu at `/m/koko`, orders go to WhatsApp +966501100057. Owner logged in at `id.koko.owner@gmail.com`. Tell owner to change password from `Koko2026!` after first login.
+- **KO-KO is LIVE — monitor first real orders.** Customer-facing menu at `/m/koko`, orders go to WhatsApp +966501100057. Owner logged in at `id.koko.owner@gmail.com`. Tell owner to change password from `<OWNER_TEST_PASSWORD>` after first login.
 - **Push marketing (OneSignal)** — broadcast to dormant RFM segments from `/admin/customers`. Auto-push when order status changes to "ready". The addon framework (`push_marketing` catalog row, 29 ر.س, 14-day trial) is already in place; just needs the OneSignal integration + UI.
 - **Payment gateway (Moyasar)** — automate 499 ر.س collection. Webhook flips subscription to active. Receipt PDFs. Minimal ZATCA compliance.
 - **Samer .NET workflow patch** — the only thing blocking re-enable of per-type InvoiceType. When Samer modifies the cashier UI to skip the driver/customer dispatch workflow on bridge-originated invoices, flip `pos_settings.invoice_type_map` back to `{"delivery":3,"dine_in":1,"pickup":0,"car":10}` and the printer icons differentiate by order type automatically.
@@ -685,7 +673,7 @@ These won't block anything but are worth knowing about:
 ### KO-KO activated to production
 - **First paying customer is LIVE.** Subscription: yearly, 499 SAR, expires 2027-05-24.
 - WhatsApp: `+966501100057`
-- Owner email: `id.koko.owner@gmail.com` / password `Koko2026!` (shared with client)
+- Owner email: `id.koko.owner@gmail.com` / password `<OWNER_TEST_PASSWORD>` (shared with client)
 - All test data (orders, customers, order_items) deleted — clean slate
 - Menu (7 categories, 33 items) remains intact
 
@@ -876,7 +864,7 @@ Massive infrastructure session: implemented the full Global Operations Core plan
 - Name: "RzRz Bukhari TEST", tagline: "⚠️ نسخة تجريبية — الطلبات لا تُرسل للمطعم"
 - Dummy WhatsApp: `966500000000` — test orders never reach real restaurant
 - Full menu cloned: 10 categories, 62 items, 88 variants (image URLs by reference)
-- **Dedicated test owner:** `rzrz.test@menulink.test` / `TestRzRz2026!` (separate from live RzRz owner)
+- **Dedicated test owner:** `rzrz.test@menulink.test` / `<OWNER_TEST_PASSWORD>` (separate from live RzRz owner)
 - **All 9 addons enabled INCLUDING `pos_bridge`** — full POS integration testing enabled
 - 1 default branch, 6 cancellation reasons, active subscription
 - KO-KO and live RzRz confirmed untouched
@@ -888,8 +876,8 @@ Massive infrastructure session: implemented the full Global Operations Core plan
 - **Ready for Bridge App testing:** pos_outbox trigger active (pos_bridge enabled), item mappings in place, POS settings configured. Submit order on `/m/rzrz-bukhari-test` → outbox row created → Bridge App picks up → InsertInvoice on local RZRZCLIENT.
 
 ### Ops team accounts
-- **Platform ops (original):** `id.menulink@gmail.com` / `OpsMenuLink2026!`
-- **Samer Cefalu (ops):** `samer@menulink.com` / `SamerOps2026!` — added 2026-05-25, can manage all tenants from `/ops`
+- **Platform ops (original):** `id.menulink@gmail.com` / `<OWNER_TEST_PASSWORD>`
+- **Samer Cefalu (ops):** `samer@menulink.com` / `<OWNER_TEST_PASSWORD>` — added 2026-05-25, can manage all tenants from `/ops`
 
 ### POS sync monitoring dashboard (POSMON-1)
 - `/admin/pos` gated by `pos_bridge` addon, nav item (🔄 نقاط البيع)
@@ -1114,7 +1102,7 @@ Onboarded the **6th tenant: مقهى مزاج المسافر (Mazaj Almosafer)**
 - Owner-set values preserved for items not on the print (كيكة عسل 718, لافا مولتن 544, بودينج 612, مكسرات 800, + 2 new dessert items).
 
 ### Owner account
-- `mazaj.almosafer@gmail.com` / `Mazaj2026!` (placeholder email until client provides real one). **Gotcha hit:** creating an auth user via raw SQL with NULL token columns caused GoTrue "Database error querying schema" on login — fixed by setting `confirmation_token`/`recovery_token`/`email_change*`/etc. to `''` (empty string, not NULL) + `email_verified:true` in raw_user_meta_data. See learnings.md.
+- `mazaj.almosafer@gmail.com` / `<OWNER_TEST_PASSWORD>` (placeholder email until client provides real one). **Gotcha hit:** creating an auth user via raw SQL with NULL token columns caused GoTrue "Database error querying schema" on login — fixed by setting `confirmation_token`/`recovery_token`/`email_change*`/etc. to `''` (empty string, not NULL) + `email_verified:true` in raw_user_meta_data. See learnings.md.
 
 ### 9 printed-menu items NOT in DB (pending owner approval, not added)
 تونا، كروسان جبن، كروسان زعتر، كاليتا، ايس دريب، لاتيه بارد، سقنتشر بارد، قهوه سعودية، كبوس. Also note printed prices differ from DB for sandwiches (25 vs 15) and several drinks — left unchanged.

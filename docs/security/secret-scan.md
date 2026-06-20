@@ -32,5 +32,10 @@ Left opt-in deliberately so the guard never silently disrupts the repo for other
 
 ## Current known baseline
 Tracked warnings are expected until redaction + rotation finish (customer dossiers — being
-redacted; plus `memory.md`, `learnings.md`, `rzrz-deep-dive.md`, `apps/web/README.md` still pending —
-see the rotation plan's "still-pending redactions"). The **add surface must stay at zero**.
+redacted; plus `learnings.md`, `rzrz-deep-dive.md`, `apps/web/README.md` still pending —
+see the rotation plan's "still-pending redactions"). `memory.md` was redacted in Phase 3b
+(now 0 tracked hits). The **add surface must stay at zero**.
+
+> Note: the scanner's `known-dev-cred` rule lists only a few literal tokens, so it under-counts.
+> Phase 3b also redacted owner/ops passwords it does not pattern-match (e.g. the `*Ops2026!` /
+> `*MenuLink2026!` shapes) by sweeping the credential shape in `memory.md`.
