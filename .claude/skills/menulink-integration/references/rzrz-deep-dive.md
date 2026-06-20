@@ -1,6 +1,8 @@
 # RzRz / Punnelifosys ResApp · Technical Reference
 
 > Read this file when working on anything RzRz-specific.
+>
+> 🔗 **Deeper, source-grounded reference now exists.** The full app was decompiled and mapped into the **`punnelifosys-pos`** skill (architecture, the DAL→284-sproc contract, ZATCA, printing, sync, schema) — load it for depth. To **build features INTO the POS** (co-owned with Samer), use **`punnelifosys-feature-dev`**. This file stays the *integration-focused* quick reference; where it disagrees with `punnelifosys-pos` or `learnings.md`, those win (a few legacy guesses below have been corrected — see ⚠️ markers).
 
 ## Identity
 
@@ -19,7 +21,7 @@
 | Layer | Tech |
 |-------|------|
 | Runtime | .NET Framework **4.7.2** (NOT .NET Core) |
-| ORM | Entity Framework (classic, not Core) |
+| Data access | ⚠️ **Stored procedures + ADO.NET**, NOT an ORM. `CommonDAL` wraps `SqlHelper.FillDatatable(... "[dbo].[Sproc]")` and returns `DataTable`. (`EntityFramework.dll` ships in the bin folder but the real data path is sprocs — see `punnelifosys-pos/references/data-access-patterns.md`.) |
 | Database | SQL Server |
 | Reports | Microsoft Report Viewer (RDLC) |
 | Barcodes/QR | ZXing.dll |
@@ -35,11 +37,11 @@
 │   └── samer910_accreef  ← accounting DB        │
 │                                                │
 │  Credentials in .exe.config (PLAIN TEXT ⚠️)    │
-│  User: samer910_jopaul                         │
-│  Pass: jopaul477                               │
+│  User: <REMOTE_SQL_USER>                         │
+│  Pass: <REMOTE_SQL_PASSWORD>                               │
 └────────────────────────────────────────────────┘
               ▲
-              │ Entity Framework
+              │ ADO.NET + stored procedures (not EF)
               │
 ┌─────────────┴──────────────────────────────────┐
 │  SERVER application                            │
@@ -57,12 +59,14 @@
 └────────────────────────────────────────────────┘
 ```
 
-**Key insight:** Each branch has its OWN local SQL Server (LocalDB .mdf file). Sync to central happens via flags. This means:
+**Key insight:** Each branch can have its OWN local SQL Server; sync to central happens via the dynamic sproc list (see `punnelifosys-pos/references/sync-and-topology.md`). This means:
 
 - **If customer DB is on central server (192.250.231.22):** Direct integration works
 - **If customer DB is local only:** Need Bridge App (cannot reach local DB from cloud)
 
 Always confirm which topology the customer uses before proposing an integration approach.
+
+> ⚠️ **The "RZRZCLIENT.mdf (LocalDB)" detail above is from an early guess.** The *verified* Almalaz branch topology (learnings LRN-2026-05-20-almalaz-server-discovery) is **SQL Server 2022 Express, instance `PUNNELIFOSYS\SQLEXPRESS`, Integrated Security**, with local DBs `samer910_Cefalu` (ops), `samer910_accreef`, and `client`. Both production DBs end up named `client` on different machines — **always run `SELECT DB_NAME(), @@SERVERNAME;` and identify production by recent `dbo.Invoice` activity, never by DB name** (see the `menulink-data` skill).
 
 ## Critical Tables (samer910_rzrz schema)
 
@@ -104,16 +108,27 @@ See `sql-patterns.md` for full XML payload examples.
 
 ### InvoiceType Values
 
-| Value | Meaning |
-|-------|---------|
-| 1 | Regular sale (most common — use this for delivery/pickup) |
-| 5, 6, 7, 8 | Table-related (dine-in variants) |
-| 9 | Party/event booking |
+⚠️ **Corrected.** The earlier table here (`1 = Regular sale`, `delivery → 1`, `dinein → 5`) was a guess and is **WRONG**. The authoritative enum comes from the stored procedure **`GetInvoiceType`** (identical in both production DBs) and was confirmed in production by placing one test invoice per type:
 
-For MenuLink:
-- `delivery` → InvoiceType = 1
-- `pickup` → InvoiceType = 1
-- `dinein` → InvoiceType = 5 (and set TableID)
+| Value | Meaning (UI label) |
+|-------|--------------------|
+| `0` | TakeAway (سفري) — dominant historical type |
+| `1` | DineIn (محلي) |
+| `2` | DineInFamily |
+| `3` | Delivery (توصيل) — triggers driver-assignment workflow |
+| `4` | Telephone (هاتف) — phone pickup-later |
+| `5` | Table |
+| `6` | FamilyTable |
+| `7` | TakeAway-Table |
+| `8` | TakeAway-Family |
+| `9` | Party / event |
+| `10` | Car (سيارة) — curbside pickup-later |
+| **`11`** | **Online (موقع الكتروني)** — the value HungerStation/Jahez/Keeta/**MenuLink** orders carry |
+
+**For MenuLink** (this is nuanced — read `learnings.md` before choosing):
+- `Invoice.InvoiceType = 11` is the *correct* Online-channel value (verified on held aggregator invoices).
+- BUT setting `Invoice.OnlineCustomerID > 0` triggers a cashier-UI payment-type lock (hardcoded in the .NET source), and types `3`/`11` trip workflow side-effects. The **current production default** for MenuLink invoices is therefore to make them look like a plain walk-in (`OnlineCustomerID = 0`, a non-triggering type) — see `learnings.md` LRN-2026-05-23-online-customer-id-triggers-workflow and LRN-2026-05-23-pos-invoice-type-mapping. Fixing the lock in the .NET source (so true `InvoiceType=11` works) is a `punnelifosys-feature-dev` task.
+- Full enum + the `GetInvoiceType` proc: see `punnelifosys-pos/references/domain-and-schema.md`.
 
 ## What's in the Debug Folder
 
@@ -137,7 +152,7 @@ D:\Samer\RZRZ-CODE\SERVER\Debug\
 1. **DB credentials in plain text** in `PunnelifosysResAppServer.exe.config`
 2. **No encryption at rest** for the .mdf file
 3. **No IP allowlist** on the central SQL Server (assumed — verify with port scan)
-4. **Single shared SQL user** (`samer910_jopaul`) for all clients = no audit trail
+4. **Single shared SQL user** (`<REMOTE_SQL_USER>`) for all clients = no audit trail
 
 **Mitigation roadmap (for production rollout):**
 - [ ] Move credentials to Windows DPAPI or AWS/Azure Key Vault
@@ -193,3 +208,12 @@ These are inside the actual customer project at `D:\Samer\RZRZ-CODE\`:
 - `samer910_accreef.bak` — accounting DB backup (for reference)
 
 When you need a deeper look at the schema, ask the user to share specific stored procedures from these folders — don't read everything at once.
+
+### 🔗 Now decompiled + graphed (use these for depth)
+
+The full app source is decompiled and mapped — you no longer have to ask for individual files for *understanding* (you still build against Samer's real VS solution):
+
+- **`D:\Samer\research-output\decompiled\`** — full Branch + Server C# source (481 files). Grep it directly.
+- **`D:\Samer\research-output\graphify-out\`** — knowledge graph (`graph.json` queryable via `graphify query "…"`, `graph-semantic.html`, `GRAPH_REPORT.md`).
+- **`D:\Samer\research-output\0*.md`** — 5 research write-ups (architecture / domain / features / stack / new-POS design).
+- **`punnelifosys-pos`** skill — the curated, source-grounded reference (load it). **`punnelifosys-feature-dev`** — building features into the POS. **`menulink-data`** — the two DBs + extracted procs.

@@ -31,11 +31,10 @@ node scripts/secret-scan.mjs --staged || { echo "secret-scan blocked the commit"
 Left opt-in deliberately so the guard never silently disrupts the repo for other contributors.
 
 ## Current known baseline
-Tracked warnings are expected until redaction + rotation finish (customer dossiers — being
-redacted; plus `learnings.md`, `rzrz-deep-dive.md` still pending —
-see the rotation plan's "still-pending redactions"). `memory.md` and `apps/web/README.md` were
-redacted (Phase 3b / protected-README pass); `bridge-app/README.md` verified clean. The **add
-surface must stay at zero**.
+**Tracked scanner warnings are now 0** — all known tracked credential values have been redacted to
+placeholders (`memory.md`, `apps/web/README.md`, `learnings.md`, `rzrz-deep-dive.md`;
+`bridge-app/README.md` verified clean; customer dossiers redacted earlier). The **add surface must
+stay at zero**, and the scanner should keep reporting `✅ no credential values`.
 
 > Note: the scanner's `known-dev-cred` rule lists only a few literal tokens, so it under-counts.
 > Phase 3b also redacted owner/ops passwords it does not pattern-match (e.g. the `*Ops2026!` /

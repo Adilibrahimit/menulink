@@ -43,14 +43,15 @@ history scrub is optional hardening.
 `memory.md` — ☑ redacted in Phase 3b (12 owner/ops/test passwords → `<OWNER_TEST_PASSWORD>`; POS
 state split to `docs/pos/POS-STATE.md`, already placeholdered).
 
-These tracked files still carry values in the working tree and were **deferred** this pass —
-each with reason; redact when next safely editable:
-- `.claude/skills/menulink-integration/learnings.md` (6 hits) — carries unrelated, uncommitted
-  skill WIP (+39 lines of new LRN entries); cred lines sit *inside* the new WIP, so redaction
-  cannot be isolated from the WIP under whole-file staging (rules 9/10).
-- `.claude/skills/menulink-integration/references/rzrz-deep-dive.md` (1 hit) — same: unrelated
-  WIP (+50 lines) entangled with the cred line.
-- `.claude/skills/menulink-integration/SKILL.md` (dirty) — unrelated WIP.
+Dirty-skill-file pass (done — WIP preserved, secrets placeholdered in the same commit):
+- `.claude/skills/menulink-integration/learnings.md` — ☑ redacted (`<LOCAL_SQL_PASSWORD>` /
+  `<LOCAL_SQL_USER>` / `<POS_PIN>`); the new LRN-entry WIP was committed alongside.
+- `.claude/skills/menulink-integration/references/rzrz-deep-dive.md` — ☑ redacted
+  (`<REMOTE_SQL_USER>` / `<REMOTE_SQL_PASSWORD>`); DB names `samer910_rzrz/accreef` kept (not creds).
+- `.claude/skills/menulink-integration/SKILL.md` — still has uncommitted WIP but **no scanner-flagged
+  credential** (nothing to redact).
+
+> **Tracked scanner surface = 0** after this pass (`node scripts/secret-scan.mjs` → `✅`).
 
 Protected-README pass (done):
 - `apps/web/README.md` — ☑ redacted (3 owner/ops/test passwords → `<OWNER_TEST_PASSWORD>`).
