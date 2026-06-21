@@ -122,7 +122,8 @@ Steps:
    ```
 4. **Get menu item mapping** — read `Items` from RzRz, map each to MenuLink products:
    ```sql
-   SELECT ItemID, ItemName, Rate FROM Items WHERE IsActive = 1
+   -- columns are ItemName_E / ItemName_A (NOT ItemName); no verified IsActive — filter real items thus:
+   SELECT ItemID, ItemName_E, ItemName_A, Rate FROM Items WHERE ItemParent <> 0 AND ItemName_A <> '-'
    ```
    Store the mapping in `menu_items.pos_item_id` field.
 5. **Deploy Edge Function** `sync-order-to-rzrz` — see `sql-patterns.md` for code

@@ -41,11 +41,16 @@ Load only the file relevant to the current task:
 
 | Working on... | Read |
 |--------------|------|
-| RzRz/.NET POS internals, schema, stored procedures | `references/rzrz-deep-dive.md` |
+| RzRz/.NET POS internals, schema, stored procedures (quick integration ref) | `references/rzrz-deep-dive.md` |
+| **DEEP** RzRz internals — architecture, the DAL→284-sproc contract, ZATCA, printing, sync, full schema | load the **`punnelifosys-pos`** skill |
+| **Building a feature INTO the RzRz POS source** (co-owned with Samer — schema/sproc/.NET edits) | load the **`punnelifosys-feature-dev`** skill |
+| Querying the two POS databases by schema (entities, procs, query hygiene) | load the **`menulink-data`** skill |
 | Onboarding a brand new restaurant client | `references/onboarding-playbook.md` |
 | Building XML for InsertInvoice, mapping items | `references/sql-patterns.md` |
 | Something is broken — orders not flowing | `references/debugging-playbook.md` |
 | Adding a NEW POS integration (not RzRz/Foodics) | `references/adapter-pattern.md` |
+
+> **Skill family:** this skill integrates *around* a POS (orders → `InsertInvoice`, no source changes). `punnelifosys-pos` = understand the app. `punnelifosys-feature-dev` = change the app's source (allowed only because the RzRz POS is co-owned). The full source is now decompiled at `D:\Samer\research-output\decompiled\` + graphed at `…\graphify-out\`.
 
 ---
 

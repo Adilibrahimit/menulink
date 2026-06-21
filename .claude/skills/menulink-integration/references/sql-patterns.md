@@ -2,6 +2,22 @@
 
 > Read when building integration code that talks to RzRz or any SQL-based POS.
 > **Verified against production RzRz Bukhari (Almalaz branch, 2026-05-20) by capturing live cashier calls via Extended Events. The XML structure below is the GROUND TRUTH — don't trust prior versions of this doc.**
+>
+> ✅ **RE-VERIFIED LIVE 2026-06-06** (fresh trace of a real order on `client@DESKTOP-KUT35C6`, CounterID 6): the `@XmlInvoice` (single self-closing `<Invoice/>`) + `@XmlItems` (sibling `<Items/>`, **no wrapper**) + `TaxPercent="0"` + empty-GUID `InvoicePartyID`/`DishItemInvoiceID` shape is **unchanged and correct**. Two updates from that capture:
+> 1. ⚠️ **Leading-`N` quirk:** the live cashier sends the value with a stray leading `N` (`@XmlInvoice=N'N<Invoice …'`). The current proc tolerates/strips it; our bridge has worked WITHOUT it, so the proc accepts both — only match the `N` if a write ever fails XML parsing.
+> 2. ⭐ **Payment is a SEPARATE proc.** `InsertInvoice` writes the order (Invoice+InvoiceDetails+KitichenOrderForPrint) when the cashier leaves the sales screen; **`InsertPaymentDetails` records the payment at موافق** (see its contract below). HoldMode = call only `InsertInvoice` with `@IsHold=1` and let staff pay (which fires `InsertPaymentDetails`). Full captured sequence: `punnelifosys-pos-operate/references/captured-flows.md`.
+
+## `InsertPaymentDetails` — the payment write (captured live 2026-06-06)
+Only needed if the bridge records full payment itself (vs HoldMode, the default). Exact param set:
+```
+exec [dbo].[InsertPaymentDetails]
+ @InvoiceID=<guid from InsertInvoice>, @CounterID=6, @PaidAmount=40.00, @Discount=0.00,
+ @GivenAmount=0, @ChangeAmount=0.00, @Remark=N'', @Remark_A=N'', @CreatedBy=1,
+ @Cash=40.00, @Card=0.00, @OnlinePaymentType=0, @CardPaymentType=0,
+ @Waiter=0, @Person=0, @OnlineBillNo=N'', @XmlItems=N'',
+ @TobaccoVatAmount=0.00, @InvoiceDiscountPercentage=0, @Mobile=N'', @PointAmount=0
+```
+Tender split = `@Cash`+`@Card`; loyalty = `@Mobile`+`@PointAmount`; aggregator = `@OnlinePaymentType`+`@OnlineBillNo`; dine-in = `@Waiter`+`@Person`. For an Online/MenuLink full-payment you'd set `@Cash`/`@Card` to the total (or `@OnlinePaymentType`) — but **HoldMode (no payment write) remains the recommended default** so staff review before finalizing.
 
 ## The Two XML Inputs To `InsertInvoice`
 
@@ -137,7 +153,10 @@ interface MenuLinkOrder {
 }
 
 function buildInvoiceXml(order: MenuLinkOrder, config: any): string {
-  const invoiceType = order.order_type === "dinein" ? 5 : 1;
+  // InvoiceType 11 = Online (the verified value documented above). Drive from tenant config:
+  // production may force walk-in mode (OnlineCustomerID=0 + a non-triggering type) to avoid the
+  // cashier-UI payment-type lock — see learnings.md LRN-2026-05-23-online-customer-id-triggers-workflow.
+  const invoiceType = config.invoice_type ?? 11;
   const customerHeader = `${order.customer_name} · ${order.customer_phone}`;
   const fullNotes = order.notes_ar 
     ? `${customerHeader} · ${order.notes_ar}` 
@@ -162,20 +181,13 @@ function buildInvoiceXml(order: MenuLinkOrder, config: any): string {
 }
 
 function buildItemsXml(order: MenuLinkOrder): string {
-  const items = order.items.map((item, i) => `
-    <Items 
-      ItemID="${item.pos_item_id}"
-      Qty="${item.qty}"
-      Rate="${item.unit_price}"
-      Amount="${(item.qty * item.unit_price).toFixed(2)}"
-      DiscountAmount="0"
-      Notes=""
-      Notes_A="${escapeXml(item.notes_ar || '')}"
-      DisplayOrder="${i + 1}"
-      TaxPercent="15"
-    />`).join('');
-  
-  return `<Items>${items}</Items>`;
+  // ⚠️ NO outer <Items>…</Items> wrapper — emit multiple SIBLING <Items/> elements at the root
+  // (SQL Server CAST(string AS xml) CONTENT mode). A wrapper makes nodes('Items') match the root
+  // with NULL @ItemID → "Cannot insert NULL into column ItemID". Per-item TaxPercent="0" (the proc
+  // fills the real 15% from GeneralSettings.Tax). See the verified rules above + learnings.md.
+  return order.items.map((item, i) =>
+    `<Items ItemID="${item.pos_item_id}" Qty="${item.qty}" Rate="${item.unit_price}" Amount="${(item.qty * item.unit_price).toFixed(2)}" DiscountAmount="0" Notes="" Notes_A="${escapeXml(item.notes_ar || '')}" DisplayOrder="${i + 1}" TaxPercent="0" />`
+  ).join('');
 }
 
 function escapeXml(s: string): string {
@@ -230,7 +242,7 @@ serve(async (req) => {
       request.addParameter("XmlItems", TYPES.NVarChar, xmlItems);
       request.addParameter("IsHold", TYPES.Bit, 0);
       request.addParameter("SectionID", TYPES.Int, 0);
-      request.addParameter("InvoiceType", TYPES.Int, order.order_type === "dinein" ? 5 : 1);
+      request.addParameter("InvoiceType", TYPES.Int, config.proc_invoice_type ?? 1); // proc PARAMETER (1 normal, 9 party) — separate from XmlInvoice/@InvoiceType=11
       request.addParameter("AppendInvoiceIDS", TYPES.NVarChar, "");
       
       connection.callProcedure(request);
@@ -263,7 +275,7 @@ ORDER BY InvoiceDate DESC, InvoiceNo DESC;
 ### Confirm kitchen got the print job
 
 ```sql
-SELECT k.*, i.Item_A
+SELECT k.*, i.ItemName_A   -- (sic) table KitichenOrderForPrint; column is ItemName_A, not Item_A
 FROM KitichenOrderForPrint k
 JOIN Items i ON i.ItemID = k.ItemID
 WHERE k.InvoiceID = '<the-invoice-guid>'
@@ -285,9 +297,11 @@ ORDER BY i.InvoiceDate DESC;
 ### Find an item by Arabic name
 
 ```sql
-SELECT ItemID, Item, Item_A, Rate
+-- Columns are ItemName_E / ItemName_A (NOT Item / Item_A). Real sellable items are filtered
+-- by ItemParent <> 0 AND ItemName_A <> '-' (there is no verified IsActive column).
+SELECT ItemID, ItemName_E, ItemName_A, Rate
 FROM Items
-WHERE Item_A LIKE N'%بروستد%' AND IsActive = 1;
+WHERE ItemName_A LIKE N'%بروستد%' AND ItemParent <> 0 AND ItemName_A <> '-';
 ```
 
 ### Get the daily summary the way RzRz reports show it
