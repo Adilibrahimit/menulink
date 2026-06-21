@@ -29,7 +29,7 @@
 ## Credential Rules
 
 ### NEVER store in the repo:
-- SQL Server passwords (sa credentials, samer910_jopaul credentials)
+- SQL Server passwords (local `<LOCAL_SQL_USER>` credentials, remote `<REMOTE_SQL_USER>` credentials)
 - Supabase Personal Access Tokens (sbp_*)
 - Supabase service_role keys
 - Any production database credentials

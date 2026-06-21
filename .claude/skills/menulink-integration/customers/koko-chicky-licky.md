@@ -17,7 +17,7 @@ KO-KO is **the first customer who actually requested MenuLink** — not someone 
 ## 📋 Business Profile
 
 - **Owner email:** `id.koko.owner@gmail.com`
-- **Owner password:** `Koko2026!` (temp — should change after first login)
+- **Owner password:** `<OWNER_TEST_PASSWORD>` (temp — should change after first login)
 - **WhatsApp:** `+966501100057`
 - **City / District:** Riyadh — Al-Rawdah, Abdul Rahman Al-Ghafiqi Road
 - **Languages:** Arabic primary
@@ -58,7 +58,7 @@ KO-KO is **the first customer who actually requested MenuLink** — not someone 
 
 - **First paying customer** — handle with care
 - Owner originally asked for "2 instances" (نسختين) — never resolved. Currently has 1 instance. Revisit if they ask again.
-- Password `Koko2026!` is shared — once owner confirms login works, should reset to their own.
+- Password `<OWNER_TEST_PASSWORD>` is shared — once owner confirms login works, should reset to their own.
 
 ## 📜 Activity Log
 
@@ -76,7 +76,7 @@ KO-KO is **the first customer who actually requested MenuLink** — not someone 
 ### 2026-05-24 · GO LIVE ⭐
 - WhatsApp set to +966501100057
 - Owner email changed from test to `id.koko.owner@gmail.com`
-- Password reset to `Koko2026!`
+- Password reset to `<OWNER_TEST_PASSWORD>`
 - Payment logged (499 SAR bank transfer) → subscription activated
 - All test orders/customers/order_items deleted
 - **KO-KO is now receiving real customer orders**
