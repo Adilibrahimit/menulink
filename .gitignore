@@ -31,11 +31,8 @@ next-env.d.ts
 **/graphify-out/
 .graphify_*
 
-# --- Obsidian workspace (per-user UI state, not project content) ---
-.obsidian/workspace
-.obsidian/workspace.json
-.obsidian/workspace-mobile.json
-.obsidian/cache
+# --- Obsidian vault config (per-user editor state, not project content) ---
+.obsidian/
 
 # --- OS noise ---
 .DS_Store
@@ -83,3 +80,11 @@ docs/screenshots-tsests/
 /.claude/skills/punnelifosys-pos/
 /.claude/skills/punnelifosys-pos-operate/
 /docs/REPO-CLEANUP-PLAN.md
+
+# --- Installed generic skill trees (marketplace-installed, not MenuLink-owned; regenerable) ---
+/.claude/skills/brand-design-md/
+/.claude/skills/brand/
+/.claude/skills/design-system/
+/.claude/skills/slides/
+/.claude/skills/ui-styling/
+/.claude/skills/ui-ux-pro-max/
