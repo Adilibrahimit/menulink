@@ -63,6 +63,9 @@ build/
 
 # --- Client raw photo library (460 MB source dump — photos live in Supabase Storage) ---
 docs/clients/ITEMS_PHOTO/
+# --- Client working photo dirs (local image-tooling output; not committed) ---
+docs/clients/Design-template/
+docs/clients/almosafer/new-photos/
 
 # --- Office temp lock files ---
 **/~$*
@@ -79,6 +82,7 @@ docs/screenshots-tsests/
 # them, so ignore now; un-ignore + redact prose + keep scripts local-only in Phase 2/3.
 /.claude/skills/punnelifosys-pos/
 /.claude/skills/punnelifosys-pos-operate/
+/.claude/skills/punnelifosys-feature-dev/
 /docs/REPO-CLEANUP-PLAN.md
 
 # --- Installed generic skill trees (marketplace-installed, not MenuLink-owned; regenerable) ---
