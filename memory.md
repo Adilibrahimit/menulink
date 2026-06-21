@@ -887,7 +887,7 @@ Massive infrastructure session: implemented the full Global Operations Core plan
   3. **سجل المزامنة** — sync events table with manual refresh button, operation type Arabic labels
   4. **إعدادات POS** — read-only settings display (owner cannot edit)
   5. **ربط الأصناف** — progress bar, mapped/unmapped items (read-only in v1, no inline writes)
-- Proof file: `docs/proof/MENULINK_POS_SYNC_MONITORING_DASHBOARD_V1_PROOF.md`
+- Proof file: `docs/proofs/MENULINK_POS_SYNC_MONITORING_DASHBOARD_V1_PROOF.md`
 
 ### Push notification fix (2026-05-26)
 - **Root cause:** SW VERSION never bumped from v1.0.0 — all devices had stale cached service worker without push handler

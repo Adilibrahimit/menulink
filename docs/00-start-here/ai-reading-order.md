@@ -17,12 +17,11 @@
 
 ## **POS / RzRz / Punnelifosys / digital-invoice** task (the OPTIONAL layer)
 - [`../pos/`](../pos/) hub:
-  - `digital-invoice-background/ARCHITECTURE.md` → `STATUS.md` → `GO_LIVE_RUNBOOK.md` → `ROLLBACK.md`
-  - `digital-invoice-background/FOR-SAMER-*` (vendor-facing specs)
-  - `whatsapp-cloud-api-onboarding.md` · `whatsapp-invoice-send-design.md`
   - `ai_memory/RZRZ_*` (POS knowledge store)
-- `bridge-app/README.md` (.NET Bridge) · `services/whatsapp-invoice-gateway/` (Cloudflare Worker + D1)
-- Seam migrations: `apps/web/supabase/migrations/0009_*` (pos_outbox trigger) + `0072_*` (digital_invoice_send_queue)
+- `bridge-app/README.md` (.NET Bridge)
+- Seam migration: `apps/web/supabase/migrations/0009_*` (pos_outbox trigger)
+
+> **Background WhatsApp Invoice** docs and runtime are **intentionally excluded from this cleanup branch** — they live in the separate workstream branch `feat/background-whatsapp-invoice-2`: the `digital-invoice-background/*` docs (architecture/status/runbook + `FOR-SAMER-*` vendor specs), the `whatsapp-*` design docs, `services/whatsapp-invoice-gateway/` (Cloudflare worker), and migration `0072_digital_invoice_send_queue`.
 - Skill: [`/.claude/skills/menulink-integration/learnings.md`](../../.claude/skills/menulink-integration/learnings.md) — **read before any customer/POS work**
 - Deep POS app knowledge: the `.claude/skills/punnelifosys-*` skills (gitignored / local-only — carry dev creds, do not commit)
 
