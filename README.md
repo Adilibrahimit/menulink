@@ -11,7 +11,8 @@
 | 🎨 تبغى تفهم قواعد التصميم | [`DESIGN.md`](./DESIGN.md) — Stitch-ready design system |
 | 💼 التسعير | [`PRICING.md`](./PRICING.md) |
 | 💻 تبغى تشتغل على الـ admin / customer PWA / ops | [`apps/web/`](./apps/web/) |
-| 🛣️ خارطة الطريق | [`design-docs/ROADMAP.md`](./design-docs/ROADMAP.md) |
+| 🧭 خريطة قراءة AI + decision map | [`docs/00-start-here/`](./docs/00-start-here/) |
+| 🛣️ خارطة الطريق | [`docs/strategy/ROADMAP.md`](./docs/strategy/ROADMAP.md) |
 | 🍗 **تكامل POS / عميل جديد / debugging** | [`.claude/skills/menulink-integration/`](./.claude/skills/menulink-integration/) ⭐ |
 
 ## ملخص بـ ٣ نقاط
@@ -58,7 +59,7 @@ menulink/
 ├── current-state/
 │   └── pwa-starter/         ← v6 legacy PWA (still in repo, redirects to v7)
 │
-├── design-docs/             ← المعمارية والـ POS strategy
+├── docs/                    ← strategy · architecture · pos · proofs · design-print-studio · 00-start-here
 ├── .claude/skills/          ← menulink-integration skill (POS knowledge)
 ├── .graph/                  ← graphify knowledge graph (Obsidian)
 └── version-history/         ← نسخ v1-v5 للأرشيف

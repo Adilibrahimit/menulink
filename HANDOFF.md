@@ -115,7 +115,7 @@
 
 ## 4️⃣ خارطة الطريق (المراحل القادمة)
 
-تفاصيل كاملة في `design-docs/ROADMAP.md`. باختصار:
+تفاصيل كاملة في `docs/strategy/ROADMAP.md`. باختصار:
 
 | المرحلة | المدة | الحالة |
 |------|------|------|
@@ -169,7 +169,7 @@
 - MenuLink + RzRz Bridge = ٩٩ ريال/شهر أو ٨٩٩ ريال/سنة
 - يدفع المطعم فرق ٤٠ ريال شهرياً ويحصل على تكامل كامل بدلاً من إدخال يدوي
 
-تفاصيل تكامل POS الكامل (٥ مستويات + كود C# فعلي) في `design-docs/pos-universal-integration.html` ومهارة `menulink-integration` في `.claude/skills/`.
+تفاصيل تكامل POS الكامل (٥ مستويات + كود C# فعلي) في `docs/strategy/pos-universal-integration.html` ومهارة `menulink-integration` في `.claude/skills/`.
 
 **ملاحظة لـ Claude Code:** اقرأ `.claude/skills/menulink-integration/customers/rzrz-restaurant.md` للسياق الكامل عن العميل-المختبر. **لا تخلط بينه وبين KO-KO** — هما مطعمَان مختلفان.
 
@@ -192,11 +192,13 @@ menulink-bundle/
 │       ├── icon-*.png            ← ١١ أيقونة
 │       └── README-DEPLOY.md      ← دليل النشر على Manus/Netlify/Vercel
 │
-├── design-docs/                  ← 📐 كل قرارات المعمارية
+├── docs/strategy/                ← 📐 ROADMAP + POS strategy (نُقلت من design-docs/)
 │   ├── ROADMAP.md                ← الخارطة الكاملة بالعربي
-│   ├── system-design.html        ← Visual system design (٥ مخططات SVG)
 │   ├── pos-integration.html      ← استراتيجية تكامل POS عام
-│   ├── pos-universal-integration.html ← تكامل أي POS + كود .NET فعلي
+│   └── pos-universal-integration.html ← تكامل أي POS + كود .NET فعلي
+├── docs/architecture/            ← 📐 system design + auth/RLS↔Bridge trace
+│   ├── system-design.html        ← Visual system design (٥ مخططات SVG)
+│   ├── auth-rls-bridge-trace.md  ← تتبّع Auth/RLS ↔ Bridge
 │   └── tenant-config-example.js  ← مثال Multi-tenant config
 │
 └── version-history/              ← 📜 v1-v5 للمرجع فقط
