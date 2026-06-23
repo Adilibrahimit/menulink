@@ -8,7 +8,7 @@
 
 ## Goal
 
-Match the Velora menu mockup (`docs/clients-menu/Design-template`) on the live ordering menu via
+Match the Velora menu mockup (`docs/clients/Design-template`) on the live ordering menu via
 two flag-gated treatments: a `velora-hero` header and `premium-lounge` dark item cards.
 
 ## Files changed

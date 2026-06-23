@@ -55,7 +55,7 @@
 
 | Phase | Original Plan | Actual Status |
 |---|---|---|
-| 1. PWA | ✅ مكتمل | v6 PWA في `current-state/`، الآن يـ redirect لـ v7 |
+| 1. PWA | ✅ مكتمل | v6 PWA في `archive/legacy-pwa/pwa-starter/`، الآن يـ redirect لـ v7 |
 | 2. Backend | كان قادم | ✅ مكتمل — Supabase Cloud في Singapore، 6 tables + 6 views + 5 RPCs، Auth، Storage، Realtime |
 | 3. Push + Marketing | قادم | ⏳ لسا — أحد ثلاثة خيارات للمرحلة القادمة |
 | 4. POS Integration | قادم | ⏳ لسا — RzRz testbed موجود، Bridge App لم يُبن |
@@ -78,7 +78,7 @@
 ## 3️⃣bis الحالة الأصلية (للأرشيف · Phase 1 · مكتمل)
 
 ### ما تم بناؤه
-**PWA v6 شغّال وجاهز للنشر** في `current-state/pwa-starter/`
+**PWA v6 شغّال وجاهز للنشر** في `archive/legacy-pwa/pwa-starter/`
 
 **العميل الأول الدافع:** **KO-KO Chicky Licky** — مطعم بروستد حقيقي في الرياض (حي الروضة، طريق عبد الرحمن الغافقي). طلب نسختين من MenuLink. **العميل الأول الفعلي اللي طلب الخدمة بنفسه** (lead مباشر، مش outreach منّا).
 
@@ -107,7 +107,7 @@
 - ظلال ناعمة، حواف مستديرة
 
 ### تاريخ النسخ (v1 → v6)
-موجود في `version-history/` للمرجع. الـ v6 هو النسخة المعتمدة. النسخ القديمة محفوظة لأن:
+موجود في `archive/legacy-pwa/version-history/` للمرجع. الـ v6 هو النسخة المعتمدة. النسخ القديمة محفوظة لأن:
 - التطور تدريجي ومفيد للفهم
 - لو لحقت مشكلة في v6، ممكن الرجوع لنسخة أقدم
 
@@ -115,7 +115,7 @@
 
 ## 4️⃣ خارطة الطريق (المراحل القادمة)
 
-تفاصيل كاملة في `design-docs/ROADMAP.md`. باختصار:
+تفاصيل كاملة في `docs/strategy/ROADMAP.md`. باختصار:
 
 | المرحلة | المدة | الحالة |
 |------|------|------|
@@ -169,7 +169,7 @@
 - MenuLink + RzRz Bridge = ٩٩ ريال/شهر أو ٨٩٩ ريال/سنة
 - يدفع المطعم فرق ٤٠ ريال شهرياً ويحصل على تكامل كامل بدلاً من إدخال يدوي
 
-تفاصيل تكامل POS الكامل (٥ مستويات + كود C# فعلي) في `design-docs/pos-universal-integration.html` ومهارة `menulink-integration` في `.claude/skills/`.
+تفاصيل تكامل POS الكامل (٥ مستويات + كود C# فعلي) في `docs/strategy/pos-universal-integration.html` ومهارة `menulink-integration` في `.claude/skills/`.
 
 **ملاحظة لـ Claude Code:** اقرأ `.claude/skills/menulink-integration/customers/rzrz-restaurant.md` للسياق الكامل عن العميل-المختبر. **لا تخلط بينه وبين KO-KO** — هما مطعمَان مختلفان.
 
@@ -184,7 +184,7 @@ menulink-bundle/
 ├── PRICING.md                    ← تفاصيل التسعير الكاملة
 ├── CLAUDE.md                     ← تعليمات مختصرة لـ Claude Code
 │
-├── current-state/
+├── archive/legacy-pwa/
 │   └── pwa-starter/              ← 🎯 v6 PWA · جاهز للنشر
 │       ├── koko-menu-v6.html
 │       ├── manifest.json
@@ -192,14 +192,16 @@ menulink-bundle/
 │       ├── icon-*.png            ← ١١ أيقونة
 │       └── README-DEPLOY.md      ← دليل النشر على Manus/Netlify/Vercel
 │
-├── design-docs/                  ← 📐 كل قرارات المعمارية
+├── docs/strategy/                ← 📐 ROADMAP + POS strategy (نُقلت من design-docs/)
 │   ├── ROADMAP.md                ← الخارطة الكاملة بالعربي
-│   ├── system-design.html        ← Visual system design (٥ مخططات SVG)
 │   ├── pos-integration.html      ← استراتيجية تكامل POS عام
-│   ├── pos-universal-integration.html ← تكامل أي POS + كود .NET فعلي
+│   └── pos-universal-integration.html ← تكامل أي POS + كود .NET فعلي
+├── docs/architecture/            ← 📐 system design + auth/RLS↔Bridge trace
+│   ├── system-design.html        ← Visual system design (٥ مخططات SVG)
+│   ├── auth-rls-bridge-trace.md  ← تتبّع Auth/RLS ↔ Bridge
 │   └── tenant-config-example.js  ← مثال Multi-tenant config
 │
-└── version-history/              ← 📜 v1-v5 للمرجع فقط
+└── archive/legacy-pwa/version-history/  ← 📜 v1-v5 للمرجع فقط
     ├── koko-menu.html (v1 dark)
     ├── koko-menu-v2.html (light theme)
     ├── koko-menu-v3.html (base64 images)

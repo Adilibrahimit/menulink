@@ -1,0 +1,23 @@
+{
+  "name": "remotion-renderer",
+  "private": true,
+  "version": "0.0.1",
+  "license": "UNLICENSED",
+  "description": "MenuLink DS-8 motion assets — Remotion compositions (ItemSpotlight) rendered offline to MP4. NOT a dependency of apps/web.",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render"
+  },
+  "dependencies": {
+    "@remotion/bundler": "^4.0.469",
+    "@remotion/cli": "^4.0.469",
+    "@remotion/google-fonts": "^4.0.469",
+    "@remotion/renderer": "^4.0.469",
+    "@types/react": "18.3",
+    "@types/react-dom": "18.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.469",
+    "typescript": "^5.9.3"
+  }
+}

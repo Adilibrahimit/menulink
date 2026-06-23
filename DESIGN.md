@@ -252,7 +252,7 @@ Stitch will read this as authoritative. If a generated screen violates §7, rege
 
 ## 10. Living Document
 
-This file is the spec. The shipped code in `apps/web/` and `current-state/pwa-starter/` is the implementation. When they diverge, **the code is right and this file gets updated** — never the other way around. Commit DESIGN.md changes alongside the UI changes that drive them.
+This file is the spec. The shipped code in `apps/web/` and `archive/legacy-pwa/pwa-starter/` is the implementation. When they diverge, **the code is right and this file gets updated** — never the other way around. Commit DESIGN.md changes alongside the UI changes that drive them.
 
 Owner of design: split as of 2026-05-19.
 

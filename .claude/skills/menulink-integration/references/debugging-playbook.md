@@ -76,7 +76,8 @@ If the order is NOT there → integration side (Edge function or SQL).
 1. Find the unmapped item in MenuLink's `menu_items` table where `pos_item_id IS NULL`
 2. Run on RzRz DB:
    ```sql
-   SELECT ItemID, Item_A FROM Items WHERE Item_A LIKE N'%<item-name>%' AND IsActive = 1;
+   -- columns are ItemName_E / ItemName_A (NOT Item_A); real items: ItemParent <> 0 AND ItemName_A <> '-'
+   SELECT ItemID, ItemName_A FROM Items WHERE ItemName_A LIKE N'%<item-name>%' AND ItemParent <> 0 AND ItemName_A <> '-';
    ```
 3. Update `menu_items.pos_item_id` with the correct ID
 4. **Add to learnings.md** — was there a sync gap? Document it.
@@ -177,7 +178,7 @@ If the customer DID tap send and the restaurant didn't receive it → check rest
 
 **Fix:**
 1. Check `menu_items.is_active` in Supabase
-2. If syncing from RzRz: ensure the item has `IsActive=1` in RzRz `Items` table
+2. If syncing from RzRz: ensure the item is a real sellable row in RzRz `Items` (`ItemParent <> 0 AND ItemName_A <> '-'`) — there is no verified `IsActive` column; empty/placeholder slots have `Rate=0` or `ItemName_A='-'`
 3. Re-run the menu sync if needed
 
 ---

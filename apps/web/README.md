@@ -52,9 +52,9 @@ Components: `page.tsx` (server, RPC fetch) → `menu-experience.tsx` (client wra
 
 | Account | Email | Password | Notes |
 |---|---|---|---|
-| KO-KO owner | `id.koko.owner@gmail.com` | `Koko2026!` | PRODUCTION — first paying customer |
-| RzRz owner | `rzrzbukhari@gmail.com` | `RzRz2026Temp!` | Integration testbed |
-| Platform ops | `id.menulink@gmail.com` | `OpsMenuLink2026!` | |
+| KO-KO owner | `id.koko.owner@gmail.com` | `<OWNER_TEST_PASSWORD>` | PRODUCTION — first paying customer |
+| RzRz owner | `rzrzbukhari@gmail.com` | `<OWNER_TEST_PASSWORD>` | Integration testbed |
+| Platform ops | `id.menulink@gmail.com` | `<OWNER_TEST_PASSWORD>` | |
 
 ## Deployment
 

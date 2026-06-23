@@ -3,7 +3,7 @@ then regenerate apps/web/lib/koko-images.ts with URL paths instead of base64."""
 import re, base64, os
 from pathlib import Path
 
-html = Path("D:/menulink/current-state/pwa-starter/koko-menu-v6.html").read_text(encoding="utf-8")
+html = Path("D:/menulink/archive/legacy-pwa/pwa-starter/koko-menu-v6.html").read_text(encoding="utf-8")
 
 m = re.search(r"const IMG = \{(.*?)\};", html, re.DOTALL)
 if not m:

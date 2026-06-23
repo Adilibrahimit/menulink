@@ -102,7 +102,7 @@ This is **not** about revenue. This restaurant is our **engineering laboratory**
   - Restaurant style: Arabian / Saudi grilled meat (شواية)
 - **Alazizah branch:** presumed similar setup with its own LAN + own local DB. Not yet inspected.
 - **PunnelifosysResAppServer.exe location:** on this machine, alongside the `.exe.config` (user provided the config file)
-- **DB credentials:** Integrated Security on this machine — no plain-text DB password needed for local writes. Remote `accreef` connection still uses `samer910_jopaul / jopaul477` (plain text in config) — security debt for production.
+- **DB credentials:** Integrated Security on this machine — no plain-text DB password needed for local writes. Remote `accreef` connection still uses `<REMOTE_SQL_USER> / <REMOTE_SQL_PASSWORD>` (plain text in config) — security debt for production. (Values: see `docs/security/credential-rotation-plan.md`.)
 - **Kitchen printers (Almalaz LAN, TCP/IP):**
   - `192.168.1.175` BBQ — only BBQ section items
   - `192.168.1.177` **KETCHIN** (typo for "kitchen" — must match this name everywhere) — prints ALL items (master)

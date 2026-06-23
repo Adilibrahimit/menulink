@@ -31,11 +31,8 @@ next-env.d.ts
 **/graphify-out/
 .graphify_*
 
-# --- Obsidian workspace (per-user UI state, not project content) ---
-.obsidian/workspace
-.obsidian/workspace.json
-.obsidian/workspace-mobile.json
-.obsidian/cache
+# --- Obsidian vault config (per-user editor state, not project content) ---
+.obsidian/
 
 # --- OS noise ---
 .DS_Store
@@ -65,7 +62,33 @@ build/
 *.tgz
 
 # --- Client raw photo library (460 MB source dump — photos live in Supabase Storage) ---
-docs/clients-menu/ITEMS_PHOTO/
+docs/clients/ITEMS_PHOTO/
+# --- Client working photo dirs (local image-tooling output; not committed) ---
+docs/clients/Design-template/
+docs/clients/almosafer/new-photos/
 
 # --- Office temp lock files ---
 **/~$*
+
+# --- Repo cleanup Phase 1 (regenerable graph output, secret quarantine, typo/junk dirs) ---
+/secrets-quarantine/
+/.graph/
+docs/pormpts/
+docs/screenshots-tsests/
+
+# --- Phase 1.5: keep KNOWN dev credentials off the `git add -A` surface ---
+# These untracked trees/doc carry documented dev creds (SQL sa-login, linked-server
+# login, POS PIN, web passwords). Redacting the runnable operate scripts would break
+# them, so ignore now; un-ignore + redact prose + keep scripts local-only in Phase 2/3.
+/.claude/skills/punnelifosys-pos/
+/.claude/skills/punnelifosys-pos-operate/
+/.claude/skills/punnelifosys-feature-dev/
+/docs/REPO-CLEANUP-PLAN.md
+
+# --- Installed generic skill trees (marketplace-installed, not MenuLink-owned; regenerable) ---
+/.claude/skills/brand-design-md/
+/.claude/skills/brand/
+/.claude/skills/design-system/
+/.claude/skills/slides/
+/.claude/skills/ui-styling/
+/.claude/skills/ui-ux-pro-max/
