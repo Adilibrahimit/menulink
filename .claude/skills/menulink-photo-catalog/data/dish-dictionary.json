@@ -1,0 +1,7223 @@
+[
+ {
+  "key": "arugula-salad",
+  "name_ar": "سلطة جرجير",
+  "name_en": "Arugula Salad",
+  "category": "appetizers",
+  "slugs": [
+   "mezze-arugula-salad"
+  ],
+  "names_ar": [
+   "سلطة جرجير"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "hummus",
+  "name_ar": "حمص",
+  "name_en": "Hummus",
+  "category": "appetizers",
+  "slugs": [
+   "mezze-hummus"
+  ],
+  "names_ar": [
+   "حمص"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779646633534",
+  "name_ar": "طحينه",
+  "name_en": "",
+  "category": "appetizers",
+  "slugs": [
+   "item-1779646633534"
+  ],
+  "names_ar": [
+   "طحينه"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779646654664",
+  "name_ar": "سلطة حارة",
+  "name_en": "",
+  "category": "appetizers",
+  "slugs": [
+   "item-1779646654664"
+  ],
+  "names_ar": [
+   "سلطة حارة"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "mixed-salad",
+  "name_ar": "سلطة مشكل",
+  "name_en": "Mixed Salad",
+  "category": "appetizers",
+  "slugs": [
+   "mezze-mixed-salad"
+  ],
+  "names_ar": [
+   "سلطة مشكل"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "mutabbal",
+  "name_ar": "متبل",
+  "name_en": "Mutabbal",
+  "category": "appetizers",
+  "slugs": [
+   "mezze-mutabbal"
+  ],
+  "names_ar": [
+   "متبل"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "americano",
+  "name_ar": "امريكانو",
+  "name_en": "Americano",
+  "category": "coffee",
+  "slugs": [
+   "americano"
+  ],
+  "names_ar": [
+   "امريكانو"
+  ],
+  "tenants": [
+   "coffee-secret",
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "americano-with-milk",
+  "name_ar": "امريكانو مع الحليب",
+  "name_en": "Americano With Milk",
+  "category": "coffee",
+  "slugs": [
+   "americano-with-milk"
+  ],
+  "names_ar": [
+   "امريكانو مع الحليب"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "black-coffee",
+  "name_ar": "بلاك كوفي",
+  "name_en": "Black Coffee",
+  "category": "coffee",
+  "slugs": [
+   "black-coffee"
+  ],
+  "names_ar": [
+   "بلاك كوفي"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "cappuccino",
+  "name_ar": "كابتشينو",
+  "name_en": "Cappuccino",
+  "category": "coffee",
+  "slugs": [
+   "cappuccino"
+  ],
+  "names_ar": [
+   "كابتشينو"
+  ],
+  "tenants": [
+   "coffee-secret",
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "caramel-latte",
+  "name_ar": "كراميل لاتيه",
+  "name_en": "Caramel Latte",
+  "category": "coffee",
+  "slugs": [
+   "caramel-latte"
+  ],
+  "names_ar": [
+   "كراميل لاتيه"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "caramel-macchiato",
+  "name_ar": "كراميل ميكاتو",
+  "name_en": "Caramel Macchiato",
+  "category": "coffee",
+  "slugs": [
+   "caramel-macchiato"
+  ],
+  "names_ar": [
+   "كراميل ميكاتو"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "caramel-mocha",
+  "name_ar": "موكا كراميل",
+  "name_en": "Caramel Mocha",
+  "category": "coffee",
+  "slugs": [
+   "caramel-mocha"
+  ],
+  "names_ar": [
+   "موكا كراميل"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "cheese-kibbeh",
+  "name_ar": "كبة جبن",
+  "name_en": "Cheese Kibbeh",
+  "category": "coffee",
+  "slugs": [
+   "cheese-kibbeh"
+  ],
+  "names_ar": [
+   "كبة جبن"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "cheese-spring-roll",
+  "name_ar": "سبرينج رول جبن",
+  "name_en": "Cheese Spring Roll",
+  "category": "coffee",
+  "slugs": [
+   "cheese-spring-roll"
+  ],
+  "names_ar": [
+   "سبرينج رول جبن"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "chemex",
+  "name_ar": "كيمكس",
+  "name_en": "Chemex",
+  "category": "coffee",
+  "slugs": [
+   "chemex"
+  ],
+  "names_ar": [
+   "كيمكس"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "chicken-dynamite",
+  "name_ar": "ديناميت دجاج",
+  "name_en": "Chicken Dynamite",
+  "category": "coffee",
+  "slugs": [
+   "chicken-dynamite"
+  ],
+  "names_ar": [
+   "ديناميت دجاج"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "chicken-kibbeh",
+  "name_ar": "كبة دجاج",
+  "name_en": "Chicken Kibbeh",
+  "category": "coffee",
+  "slugs": [
+   "chicken-kibbeh"
+  ],
+  "names_ar": [
+   "كبة دجاج"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "chicken-nuggets",
+  "name_ar": "دجاج ناجت",
+  "name_en": "Chicken Nuggets",
+  "category": "coffee",
+  "slugs": [
+   "chicken-nuggets"
+  ],
+  "names_ar": [
+   "دجاج ناجت"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "chicken-with-cream",
+  "name_ar": "دجاج بالكريمة",
+  "name_en": "Chicken With Cream",
+  "category": "coffee",
+  "slugs": [
+   "chicken-with-cream"
+  ],
+  "names_ar": [
+   "دجاج بالكريمة"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "cinnamon-milk",
+  "name_ar": "قرفة حليب",
+  "name_en": "Cinnamon Milk",
+  "category": "coffee",
+  "slugs": [
+   "cinnamon-milk",
+   "cinnamon-milk-tea"
+  ],
+  "names_ar": [
+   "قرفة حليب",
+   "قرفه حليب"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "coffee-day",
+  "name_ar": "قهوة اليوم",
+  "name_en": "Coffee Day",
+  "category": "coffee",
+  "slugs": [
+   "coffee-day"
+  ],
+  "names_ar": [
+   "قهوة اليوم"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "cortado",
+  "name_ar": "كورتادو",
+  "name_en": "Cortado",
+  "category": "coffee",
+  "slugs": [
+   "cortado"
+  ],
+  "names_ar": [
+   "كورتادو"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "dj-chicken",
+  "name_ar": "دي. جي دجاج",
+  "name_en": "Dj Chicken",
+  "category": "coffee",
+  "slugs": [
+   "dj-chicken"
+  ],
+  "names_ar": [
+   "دي. جي دجاج"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "double-espresso",
+  "name_ar": "دبل اسبريسو",
+  "name_en": "Double Espresso",
+  "category": "coffee",
+  "slugs": [
+   "double-espresso"
+  ],
+  "names_ar": [
+   "دبل اسبريسو"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "double-macchiato",
+  "name_ar": "دبل ميكاتو",
+  "name_en": "Double Macchiato",
+  "category": "coffee",
+  "slugs": [
+   "double-macchiato"
+  ],
+  "names_ar": [
+   "دبل ميكاتو"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "double-turkish-coffee",
+  "name_ar": "قهوة تركية دبل",
+  "name_en": "Double Turkish Coffee",
+  "category": "coffee",
+  "slugs": [
+   "double-turkish-coffee"
+  ],
+  "names_ar": [
+   "قهوة تركية دبل"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "espresso",
+  "name_ar": "اسبريسو",
+  "name_en": "Espresso",
+  "category": "coffee",
+  "slugs": [
+   "espresso"
+  ],
+  "names_ar": [
+   "اسبريسو"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "espresso-double",
+  "name_ar": "اسبريسو دبل",
+  "name_en": "Espresso Double",
+  "category": "coffee",
+  "slugs": [
+   "espresso-double"
+  ],
+  "names_ar": [
+   "اسبريسو دبل"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "espresso-single",
+  "name_ar": "اسبريسو سنقل",
+  "name_en": "Espresso Single",
+  "category": "coffee",
+  "slugs": [
+   "espresso-single"
+  ],
+  "names_ar": [
+   "اسبريسو سنقل"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "fettuccine-pasta",
+  "name_ar": "فتوشيني باستا",
+  "name_en": "Fettuccine Pasta",
+  "category": "coffee",
+  "slugs": [
+   "fettuccine-pasta"
+  ],
+  "names_ar": [
+   "فتوشيني باستا"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "flat-white",
+  "name_ar": "فلات وايت",
+  "name_en": "Flat White",
+  "category": "coffee",
+  "slugs": [
+   "flat-white"
+  ],
+  "names_ar": [
+   "فلات وايت"
+  ],
+  "tenants": [
+   "coffee-secret",
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "french-coffee",
+  "name_ar": "قهوة فرنسية",
+  "name_en": "French Coffee",
+  "category": "coffee",
+  "slugs": [
+   "french-coffee"
+  ],
+  "names_ar": [
+   "قهوة فرنسية"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "french-fries",
+  "name_ar": "بطاطا مقلية",
+  "name_en": "French Fries",
+  "category": "coffee",
+  "slugs": [
+   "french-fries"
+  ],
+  "names_ar": [
+   "بطاطا مقلية"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "hazelnut-latte",
+  "name_ar": "لاتيه بندق",
+  "name_en": "Hazelnut Latte",
+  "category": "coffee",
+  "slugs": [
+   "hazelnut-latte"
+  ],
+  "names_ar": [
+   "لاتيه بندق"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "hot-chocolate",
+  "name_ar": "هوت شوكلت",
+  "name_en": "Hot Chocolate",
+  "category": "coffee",
+  "slugs": [
+   "hot-chocolate"
+  ],
+  "names_ar": [
+   "هوت شوكلت",
+   "هوت شوكليت"
+  ],
+  "tenants": [
+   "coffee-secret",
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "item-1779647290947",
+  "name_ar": "قهوة تركي",
+  "name_en": "",
+  "category": "coffee",
+  "slugs": [
+   "item-1779647290947"
+  ],
+  "names_ar": [
+   "قهوة تركي"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "latte",
+  "name_ar": "لاتيه",
+  "name_en": "Latte",
+  "category": "coffee",
+  "slugs": [
+   "latte"
+  ],
+  "names_ar": [
+   "لاتيه"
+  ],
+  "tenants": [
+   "coffee-secret",
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "macchiato",
+  "name_ar": "ميكاتو",
+  "name_en": "Macchiato",
+  "category": "coffee",
+  "slugs": [
+   "macchiato"
+  ],
+  "names_ar": [
+   "ميكاتو"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "meat-kibbeh",
+  "name_ar": "كبة لحم",
+  "name_en": "Meat Kibbeh",
+  "category": "coffee",
+  "slugs": [
+   "meat-kibbeh"
+  ],
+  "names_ar": [
+   "كبة لحم"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "mocha",
+  "name_ar": "موكا",
+  "name_en": "Mocha",
+  "category": "coffee",
+  "slugs": [
+   "mocha"
+  ],
+  "names_ar": [
+   "موكا"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "mochaccino",
+  "name_ar": "موكاتشينو",
+  "name_en": "Mochaccino",
+  "category": "coffee",
+  "slugs": [
+   "mochaccino"
+  ],
+  "names_ar": [
+   "موكاتشينو"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "nescafe",
+  "name_ar": "نسكافيه",
+  "name_en": "Nescafe",
+  "category": "coffee",
+  "slugs": [
+   "nescafe"
+  ],
+  "names_ar": [
+   "نسكافيه"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "nirvana",
+  "name_ar": "نيرفانا",
+  "name_en": "Nirvana",
+  "category": "coffee",
+  "slugs": [
+   "nirvana"
+  ],
+  "names_ar": [
+   "نيرفانا"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "pestachio",
+  "name_ar": "بستاشيو",
+  "name_en": "Pestachio",
+  "category": "coffee",
+  "slugs": [
+   "pestachio"
+  ],
+  "names_ar": [
+   "بستاشيو"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "pistachio-latte",
+  "name_ar": "بيستاشيو لاتيه",
+  "name_en": "Pistachio Latte",
+  "category": "coffee",
+  "slugs": [
+   "pistachio-latte"
+  ],
+  "names_ar": [
+   "بيستاشيو لاتيه",
+   "بيستاشو لاتيه"
+  ],
+  "tenants": [
+   "coffee-secret",
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "potato-dynamite",
+  "name_ar": "ديناميت بطاطا",
+  "name_en": "Potato Dynamite",
+  "category": "coffee",
+  "slugs": [
+   "potato-dynamite"
+  ],
+  "names_ar": [
+   "ديناميت بطاطا"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "red-velvet-latte",
+  "name_ar": "رد فيلفت لاتيه",
+  "name_en": "Red Velvet Latte",
+  "category": "coffee",
+  "slugs": [
+   "red-velvet-latte"
+  ],
+  "names_ar": [
+   "رد فيلفت لاتيه"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "ristretto",
+  "name_ar": "ريزيرتو",
+  "name_en": "Ristretto",
+  "category": "coffee",
+  "slugs": [
+   "ristretto"
+  ],
+  "names_ar": [
+   "ريزيرتو"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "salted-caramel-macchiato",
+  "name_ar": "كراميل سولتد ميكاتو",
+  "name_en": "Salted Caramel Macchiato",
+  "category": "coffee",
+  "slugs": [
+   "salted-caramel-macchiato"
+  ],
+  "names_ar": [
+   "كراميل سولتد ميكاتو"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "saudi-coffee",
+  "name_ar": "قهوة سعودية",
+  "name_en": "Saudi Coffee",
+  "category": "coffee",
+  "slugs": [
+   "qhwa-arby"
+  ],
+  "names_ar": [
+   "قهوة سعودية"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "shrimp-dynamite",
+  "name_ar": "ديناميت روبيان",
+  "name_en": "Shrimp Dynamite",
+  "category": "coffee",
+  "slugs": [
+   "shrimp-dynamite"
+  ],
+  "names_ar": [
+   "ديناميت روبيان"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "signature-49",
+  "name_ar": "سيجنتشر 49",
+  "name_en": "Signature 49",
+  "category": "coffee",
+  "slugs": [
+   "signature-49"
+  ],
+  "names_ar": [
+   "سيجنتشر 49"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "snack",
+  "name_ar": "وجبه",
+  "name_en": "Snack",
+  "category": "coffee",
+  "slugs": [
+   "snack"
+  ],
+  "names_ar": [
+   "وجبه"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "spanish-latte",
+  "name_ar": "سبانيش لاتيه",
+  "name_en": "Spanish Latte",
+  "category": "coffee",
+  "slugs": [
+   "spanish-latte"
+  ],
+  "names_ar": [
+   "سبانيش لاتيه"
+  ],
+  "tenants": [
+   "coffee-secret",
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "spicy-potato-cubes",
+  "name_ar": "بطاطا حره",
+  "name_en": "Spicy Potato Cubes",
+  "category": "coffee",
+  "slugs": [
+   "spicy-potato-cubes"
+  ],
+  "names_ar": [
+   "بطاطا حره"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "steak-mozzarella",
+  "name_ar": "موزاريلا ستيك",
+  "name_en": "Steak Mozzarella",
+  "category": "coffee",
+  "slugs": [
+   "steak-mozzarella"
+  ],
+  "names_ar": [
+   "موزاريلا ستيك"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "taifi",
+  "name_ar": "طائفي",
+  "name_en": "Taifi",
+  "category": "coffee",
+  "slugs": [
+   "taifi"
+  ],
+  "names_ar": [
+   "طائفي"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "toffee",
+  "name_ar": "توفي",
+  "name_en": "Toffee",
+  "category": "coffee",
+  "slugs": [
+   "toffee"
+  ],
+  "names_ar": [
+   "توفي"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "turkish-coffee",
+  "name_ar": "قهوة تركية",
+  "name_en": "Turkish Coffee",
+  "category": "coffee",
+  "slugs": [
+   "turkish-coffee"
+  ],
+  "names_ar": [
+   "قهوة تركية",
+   "قهوه تركي"
+  ],
+  "tenants": [
+   "coffee-secret",
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "turkish-milk",
+  "name_ar": "تركي حليب",
+  "name_en": "Turkish Milk",
+  "category": "coffee",
+  "slugs": [
+   "turkish-milk"
+  ],
+  "names_ar": [
+   "تركي حليب"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "v60",
+  "name_ar": "V60",
+  "name_en": "V60",
+  "category": "coffee",
+  "slugs": [
+   "v60"
+  ],
+  "names_ar": [
+   "V60",
+   "في ٦٠"
+  ],
+  "tenants": [
+   "coffee-secret",
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "white-mocha",
+  "name_ar": "وايت موكا",
+  "name_en": "White Mocha",
+  "category": "coffee",
+  "slugs": [
+   "white-mocha"
+  ],
+  "names_ar": [
+   "وايت موكا"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "7-up",
+  "name_ar": "سفن اب",
+  "name_en": "7 Up",
+  "category": "cold-drinks",
+  "slugs": [
+   "7-up"
+  ],
+  "names_ar": [
+   "سفن اب"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "7-up-diet",
+  "name_ar": "سفن اب دايت",
+  "name_en": "7 UP Diet",
+  "category": "cold-drinks",
+  "slugs": [
+   "7-up-diet"
+  ],
+  "names_ar": [
+   "سفن اب دايت"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "7up",
+  "name_ar": "سفن اب",
+  "name_en": "7up",
+  "category": "cold-drinks",
+  "slugs": [
+   "7up"
+  ],
+  "names_ar": [
+   "سفن اب"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "add-flavor",
+  "name_ar": "اضافه نكه",
+  "name_en": "Add Flavor",
+  "category": "cold-drinks",
+  "slugs": [
+   "add-flavor"
+  ],
+  "names_ar": [
+   "اضافه نكه"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "caramel-frappuccino",
+  "name_ar": "فراباتشينو كراميل",
+  "name_en": "Caramel Frappuccino",
+  "category": "cold-drinks",
+  "slugs": [
+   "caramel-frappuccino"
+  ],
+  "names_ar": [
+   "فراباتشينو كراميل"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "chocolate-crushed",
+  "name_ar": "شوكلت كراش",
+  "name_en": "Chocolate Crushed",
+  "category": "cold-drinks",
+  "slugs": [
+   "chocolate-crushed"
+  ],
+  "names_ar": [
+   "شوكلت كراش"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "chocolate-frappuccino",
+  "name_ar": "فراباتشينو شوكولاتة",
+  "name_en": "Chocolate Frappuccino",
+  "category": "cold-drinks",
+  "slugs": [
+   "chocolate-frappuccino"
+  ],
+  "names_ar": [
+   "فراباتشينو شوكولاتة"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "code-red",
+  "name_ar": "كود رد",
+  "name_en": "Code Red",
+  "category": "cold-drinks",
+  "slugs": [
+   "code-red"
+  ],
+  "names_ar": [
+   "كود رد",
+   "كود ريد"
+  ],
+  "tenants": [
+   "coffee-secret",
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "cold-brew",
+  "name_ar": "جولد برو",
+  "name_en": "Cold Brew",
+  "category": "cold-drinks",
+  "slugs": [
+   "cold-brew"
+  ],
+  "names_ar": [
+   "جولد برو"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "cup-of-ice",
+  "name_ar": "كاسة ثلج",
+  "name_en": "Cup Of Ice",
+  "category": "cold-drinks",
+  "slugs": [
+   "cup-of-ice"
+  ],
+  "names_ar": [
+   "كاسة ثلج"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "diet-7up",
+  "name_ar": "سفن اب دايت",
+  "name_en": "Diet 7up",
+  "category": "cold-drinks",
+  "slugs": [
+   "diet-7up"
+  ],
+  "names_ar": [
+   "سفن اب دايت"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "diet-pepsi",
+  "name_ar": "بيبسي دايت",
+  "name_en": "Diet Pepsi",
+  "category": "cold-drinks",
+  "slugs": [
+   "diet-pepsi"
+  ],
+  "names_ar": [
+   "بيبسي دايت"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "holliston",
+  "name_ar": "هوليستون شعير",
+  "name_en": "Holliston",
+  "category": "cold-drinks",
+  "slugs": [
+   "holliston"
+  ],
+  "names_ar": [
+   "هوليستون شعير"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "holliston-apple",
+  "name_ar": "هوليستون تفاح",
+  "name_en": "Holliston Apple",
+  "category": "cold-drinks",
+  "slugs": [
+   "holliston-apple"
+  ],
+  "names_ar": [
+   "هوليستون تفاح"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "holliston-cranberry",
+  "name_ar": "هوليستون توت بري",
+  "name_en": "Holliston Cranberry",
+  "category": "cold-drinks",
+  "slugs": [
+   "holliston-cranberry"
+  ],
+  "names_ar": [
+   "هوليستون توت بري"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "holliston-pomegranate",
+  "name_ar": "هوليستون رمان",
+  "name_en": "Holliston Pomegranate",
+  "category": "cold-drinks",
+  "slugs": [
+   "holliston-pomegranate"
+  ],
+  "names_ar": [
+   "هوليستون رمان"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "holliston-strawberry",
+  "name_ar": "هوليستون فراولة",
+  "name_en": "Holliston Strawberry",
+  "category": "cold-drinks",
+  "slugs": [
+   "holliston-strawberry"
+  ],
+  "names_ar": [
+   "هوليستون فراولة"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "holsten-black",
+  "name_ar": "هولستن عنب اسود",
+  "name_en": "Holsten Black",
+  "category": "cold-drinks",
+  "slugs": [
+   "holsten-black"
+  ],
+  "names_ar": [
+   "هولستن عنب اسود"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "ice-v60",
+  "name_ar": "ايس في 60",
+  "name_en": "Ice V60",
+  "category": "cold-drinks",
+  "slugs": [
+   "ice-v60"
+  ],
+  "names_ar": [
+   "ايس في 60"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "iced-americano",
+  "name_ar": "ايس امريكانو",
+  "name_en": "Iced Americano",
+  "category": "cold-drinks",
+  "slugs": [
+   "iced-americano"
+  ],
+  "names_ar": [
+   "ايس امريكانو"
+  ],
+  "tenants": [
+   "coffee-secret",
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "iced-americano-wl-milk",
+  "name_ar": "ايس امريكانو بالحليب",
+  "name_en": "Iced Americano Wl Milk",
+  "category": "cold-drinks",
+  "slugs": [
+   "iced-americano-wl-milk"
+  ],
+  "names_ar": [
+   "ايس امريكانو بالحليب"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "iced-cappuccino",
+  "name_ar": "ايس كابتشينو",
+  "name_en": "Iced Cappuccino",
+  "category": "cold-drinks",
+  "slugs": [
+   "iced-cappuccino"
+  ],
+  "names_ar": [
+   "ايس كابتشينو"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "iced-caramel-latte",
+  "name_ar": "ايس كراميل لاتيه",
+  "name_en": "Iced Caramel Latte",
+  "category": "cold-drinks",
+  "slugs": [
+   "iced-caramel-latte"
+  ],
+  "names_ar": [
+   "ايس كراميل لاتيه"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "iced-caramel-macchiato",
+  "name_ar": "ايس كراميل مكاياتو",
+  "name_en": "Iced Caramel Macchiato",
+  "category": "cold-drinks",
+  "slugs": [
+   "iced-caramel-macchiato"
+  ],
+  "names_ar": [
+   "ايس كراميل مكاياتو"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "iced-latte",
+  "name_ar": "ايس لاتيه",
+  "name_en": "Iced Latte",
+  "category": "cold-drinks",
+  "slugs": [
+   "iced-latte"
+  ],
+  "names_ar": [
+   "ايس لاتيه"
+  ],
+  "tenants": [
+   "coffee-secret",
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "iced-mocha",
+  "name_ar": "ايس موكا",
+  "name_en": "Iced Mocha",
+  "category": "cold-drinks",
+  "slugs": [
+   "iced-mocha"
+  ],
+  "names_ar": [
+   "ايس موكا"
+  ],
+  "tenants": [
+   "coffee-secret",
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "iced-pistachio-latte",
+  "name_ar": "ايس بيستاشيو لاتيه",
+  "name_en": "Iced Pistachio Latte",
+  "category": "cold-drinks",
+  "slugs": [
+   "iced-pistachio-latte"
+  ],
+  "names_ar": [
+   "ايس بيستاشيو لاتيه"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "iced-red-velvet-latte",
+  "name_ar": "ايس رد فيلفت لاتيه",
+  "name_en": "Iced Red Velvet Latte",
+  "category": "cold-drinks",
+  "slugs": [
+   "iced-red-velvet-latte"
+  ],
+  "names_ar": [
+   "ايس رد فيلفت لاتيه"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "iced-salted-caramel-macchiato",
+  "name_ar": "ايس ميكاتو سولتد كراميل",
+  "name_en": "Iced Salted Caramel Macchiato",
+  "category": "cold-drinks",
+  "slugs": [
+   "iced-salted-caramel-macchiato"
+  ],
+  "names_ar": [
+   "ايس ميكاتو سولتد كراميل"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "iced-shaken-mocha-hazelnut",
+  "name_ar": "ايس شيكن موكا بالبندق",
+  "name_en": "Iced Shaken Mocha Hazelnut",
+  "category": "cold-drinks",
+  "slugs": [
+   "iced-shaken-mocha-hazelnut"
+  ],
+  "names_ar": [
+   "ايس شيكن موكا بالبندق"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "iced-shaken-white-mocha",
+  "name_ar": "ايس شيكن وايت موكا",
+  "name_en": "Iced Shaken White Mocha",
+  "category": "cold-drinks",
+  "slugs": [
+   "iced-shaken-white-mocha"
+  ],
+  "names_ar": [
+   "ايس شيكن وايت موكا"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "iced-spanish-latte",
+  "name_ar": "ايس سبانيش لاتيه",
+  "name_en": "Iced Spanish Latte",
+  "category": "cold-drinks",
+  "slugs": [
+   "iced-spanish-latte"
+  ],
+  "names_ar": [
+   "ايس سبانيش لاتيه"
+  ],
+  "tenants": [
+   "coffee-secret",
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "iced-v60",
+  "name_ar": "ايس في 60",
+  "name_en": "Iced V60",
+  "category": "cold-drinks",
+  "slugs": [
+   "iced-v60"
+  ],
+  "names_ar": [
+   "ايس في 60"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "item-1779646992486",
+  "name_ar": "بيبسي",
+  "name_en": "",
+  "category": "cold-drinks",
+  "slugs": [
+   "item-1779646992486"
+  ],
+  "names_ar": [
+   "بيبسي"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779647081330",
+  "name_ar": "سفن اب",
+  "name_en": "",
+  "category": "cold-drinks",
+  "slugs": [
+   "item-1779647081330"
+  ],
+  "names_ar": [
+   "سفن اب"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779647123558",
+  "name_ar": "بيبسي دايت",
+  "name_en": "",
+  "category": "cold-drinks",
+  "slugs": [
+   "item-1779647123558"
+  ],
+  "names_ar": [
+   "بيبسي دايت"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779647147652",
+  "name_ar": "سفن اب دايت",
+  "name_en": "",
+  "category": "cold-drinks",
+  "slugs": [
+   "item-1779647147652"
+  ],
+  "names_ar": [
+   "سفن اب دايت"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "mineral-water",
+  "name_ar": "مياه",
+  "name_en": "Mineral Water",
+  "category": "cold-drinks",
+  "slugs": [
+   "mineral-water"
+  ],
+  "names_ar": [
+   "مياه"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "pepsi",
+  "name_ar": "بيبسي",
+  "name_en": "Pepsi",
+  "category": "cold-drinks",
+  "slugs": [
+   "pepsi"
+  ],
+  "names_ar": [
+   "بيبسي"
+  ],
+  "tenants": [
+   "coffee-secret",
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "red-bull",
+  "name_ar": "رد بول",
+  "name_en": "Red Bull",
+  "category": "cold-drinks",
+  "slugs": [
+   "red-bull"
+  ],
+  "names_ar": [
+   "رد بول",
+   "ريد بول"
+  ],
+  "tenants": [
+   "coffee-secret",
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "soda",
+  "name_ar": "صودا",
+  "name_en": "Soda",
+  "category": "cold-drinks",
+  "slugs": [
+   "soda"
+  ],
+  "names_ar": [
+   "صودا"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "vanilla-frappuccino",
+  "name_ar": "فراباتشينو فانيلا",
+  "name_en": "Vanilla Frappuccino",
+  "category": "cold-drinks",
+  "slugs": [
+   "vanilla-frappuccino"
+  ],
+  "names_ar": [
+   "فراباتشينو فانيلا"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "awlkr-kyk",
+  "name_ar": "أولكر كيك",
+  "name_en": "",
+  "category": "desserts",
+  "slugs": [
+   "awlkr-kyk"
+  ],
+  "names_ar": [
+   "أولكر كيك"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "brownie-cheesecake",
+  "name_ar": "براوني تشيز كيك",
+  "name_en": "Brownie Cheesecake",
+  "category": "desserts",
+  "slugs": [
+   "brownie-cheesecake"
+  ],
+  "names_ar": [
+   "براوني تشيز كيك"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "bsbwsa",
+  "name_ar": "بسبوسة",
+  "name_en": "",
+  "category": "desserts",
+  "slugs": [
+   "bsbwsa"
+  ],
+  "names_ar": [
+   "بسبوسة"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "bwdynj-alshwkwlath-balbndq",
+  "name_ar": "بودينج الشوكولاته بالبندق",
+  "name_en": "",
+  "category": "desserts",
+  "slugs": [
+   "bwdynj-alshwkwlath-balbndq"
+  ],
+  "names_ar": [
+   "بودينج الشوكولاته بالبندق"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "cake-with-lotus",
+  "name_ar": "كيكة باللوتس",
+  "name_en": "Cake With Lotus",
+  "category": "desserts",
+  "slugs": [
+   "cake-with-lotus"
+  ],
+  "names_ar": [
+   "كيكة باللوتس"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "caramel-nut-cake",
+  "name_ar": "كيك كراميل بالمكسرات",
+  "name_en": "Caramel Nut Cake",
+  "category": "desserts",
+  "slugs": [
+   "caramel-nut-cake"
+  ],
+  "names_ar": [
+   "كيك كراميل بالمكسرات"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "carrot-cake",
+  "name_ar": "كيك جزر",
+  "name_en": "Carrot Cake",
+  "category": "desserts",
+  "slugs": [
+   "carrot-cake"
+  ],
+  "names_ar": [
+   "كيك جزر"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "cheesecake",
+  "name_ar": "تشيز كيك",
+  "name_en": "Cheesecake",
+  "category": "desserts",
+  "slugs": [
+   "cheesecake"
+  ],
+  "names_ar": [
+   "تشيز كيك"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "cheesecake-de-leche",
+  "name_ar": "تشيزكيك دولسي دي ليتشي",
+  "name_en": "Cheesecake De Leche",
+  "category": "desserts",
+  "slugs": [
+   "cheesecake-de-leche"
+  ],
+  "names_ar": [
+   "تشيزكيك دولسي دي ليتشي"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "cheesecake-oreo",
+  "name_ar": "كوكيز ان كريم",
+  "name_en": "Cheesecake Oreo",
+  "category": "desserts",
+  "slugs": [
+   "cheesecake-oreo"
+  ],
+  "names_ar": [
+   "كوكيز ان كريم"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "cheesecake-raspberry",
+  "name_ar": "تشيزكيك بالشوكولاتة البيضاء والتوت الاحمر",
+  "name_en": "Cheesecake Raspberry",
+  "category": "desserts",
+  "slugs": [
+   "cheesecake-raspberry"
+  ],
+  "names_ar": [
+   "تشيزكيك بالشوكولاتة البيضاء والتوت الاحمر"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "cheesecake-strawberry",
+  "name_ar": "تشيز كيك فراولة",
+  "name_en": "Cheesecake Strawberry",
+  "category": "desserts",
+  "slugs": [
+   "cheesecake-strawberry"
+  ],
+  "names_ar": [
+   "تشيز كيك فراولة"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "choco-cake",
+  "name_ar": "كيكة بالشوكولا",
+  "name_en": "Choco Cake",
+  "category": "desserts",
+  "slugs": [
+   "choco-cake"
+  ],
+  "names_ar": [
+   "كيكة بالشوكولا"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "choco-coockies",
+  "name_ar": "كوكيز الشوكولاتة",
+  "name_en": "Choco Coockies",
+  "category": "desserts",
+  "slugs": [
+   "choco-coockies"
+  ],
+  "names_ar": [
+   "كوكيز الشوكولاتة"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "chocolate-cake",
+  "name_ar": "كيك تشوكليت",
+  "name_en": "Chocolate Cake",
+  "category": "desserts",
+  "slugs": [
+   "chocolate-cake"
+  ],
+  "names_ar": [
+   "كيك تشوكليت"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "creme-brulee",
+  "name_ar": "كريم بروليه",
+  "name_en": "Creme Brulee",
+  "category": "desserts",
+  "slugs": [
+   "creme-brulee"
+  ],
+  "names_ar": [
+   "كريم بروليه"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "crepe-lotus",
+  "name_ar": "كريب لوتس",
+  "name_en": "Crepe Lotus",
+  "category": "desserts",
+  "slugs": [
+   "crepe-lotus"
+  ],
+  "names_ar": [
+   "كريب لوتس"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "crepe-nutella",
+  "name_ar": "كريب نوتيلا",
+  "name_en": "Crepe Nutella",
+  "category": "desserts",
+  "slugs": [
+   "crepe-nutella"
+  ],
+  "names_ar": [
+   "كريب نوتيلا"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "crepe-pistachio",
+  "name_ar": "كريب فستق",
+  "name_en": "Crepe Pistachio",
+  "category": "desserts",
+  "slugs": [
+   "crepe-pistachio"
+  ],
+  "names_ar": [
+   "كريب فستق"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "crepe-special",
+  "name_ar": "كريب سبيشل",
+  "name_en": "Crepe Special",
+  "category": "desserts",
+  "slugs": [
+   "crepe-special"
+  ],
+  "names_ar": [
+   "كريب سبيشل"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "custard",
+  "name_ar": "كاسترد",
+  "name_en": "Custard",
+  "category": "desserts",
+  "slugs": [
+   "custard"
+  ],
+  "names_ar": [
+   "كاسترد"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "date-cake",
+  "name_ar": "كيكة التمر",
+  "name_en": "Date Cake",
+  "category": "desserts",
+  "slugs": [
+   "date-cake"
+  ],
+  "names_ar": [
+   "كيكة التمر"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "donat-shoklit",
+  "name_ar": "دونات شوكلا",
+  "name_en": "Donat Shoklit",
+  "category": "desserts",
+  "slugs": [
+   "donat-shoklit"
+  ],
+  "names_ar": [
+   "دونات شوكلا"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "fondo-galaxy",
+  "name_ar": "بندق شوكولاته",
+  "name_en": "Fondo Galaxy",
+  "category": "desserts",
+  "slugs": [
+   "fondo-galaxy"
+  ],
+  "names_ar": [
+   "بندق شوكولاته"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "halloumi",
+  "name_ar": "حلوم",
+  "name_en": "Halloumi",
+  "category": "desserts",
+  "slugs": [
+   "halloumi"
+  ],
+  "names_ar": [
+   "حلوم",
+   "حلومي"
+  ],
+  "tenants": [
+   "coffee-secret",
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "honey-cake",
+  "name_ar": "كيك عسل",
+  "name_en": "Honey Cake",
+  "category": "desserts",
+  "slugs": [
+   "honey-cake"
+  ],
+  "names_ar": [
+   "كيك عسل"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "item-1779646681040",
+  "name_ar": "كريمة",
+  "name_en": "",
+  "category": "desserts",
+  "slugs": [
+   "item-1779646681040"
+  ],
+  "names_ar": [
+   "كريمة"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779646700206",
+  "name_ar": "جيلي",
+  "name_en": "",
+  "category": "desserts",
+  "slugs": [
+   "item-1779646700206"
+  ],
+  "names_ar": [
+   "جيلي"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779646719962",
+  "name_ar": "مهلبيه",
+  "name_en": "",
+  "category": "desserts",
+  "slugs": [
+   "item-1779646719962"
+  ],
+  "names_ar": [
+   "مهلبيه"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779839851668",
+  "name_ar": "كيك انجليزي شوكولاته",
+  "name_en": "",
+  "category": "desserts",
+  "slugs": [
+   "item-1779839851668"
+  ],
+  "names_ar": [
+   "كيك انجليزي شوكولاته"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "item-1779839882297",
+  "name_ar": "كوكيز بالشوكولاته",
+  "name_en": "",
+  "category": "desserts",
+  "slugs": [
+   "item-1779839882297"
+  ],
+  "names_ar": [
+   "كوكيز بالشوكولاته"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "klawdy-kyk",
+  "name_ar": "کلاودي كيك",
+  "name_en": "",
+  "category": "desserts",
+  "slugs": [
+   "klawdy-kyk"
+  ],
+  "names_ar": [
+   "کلاودي كيك"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "kranshy-shwklyt",
+  "name_ar": "كرانشي شوكليت",
+  "name_en": "",
+  "category": "desserts",
+  "slugs": [
+   "kranshy-shwklyt"
+  ],
+  "names_ar": [
+   "كرانشي شوكليت"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "kranshy-shwklyt-rwz-byry",
+  "name_ar": "كرانشي شوكليت روز بيري",
+  "name_en": "",
+  "category": "desserts",
+  "slugs": [
+   "kranshy-shwklyt-rwz-byry"
+  ],
+  "names_ar": [
+   "كرانشي شوكليت روز بيري"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "kunafa",
+  "name_ar": "كنافه",
+  "name_en": "Kunafa",
+  "category": "desserts",
+  "slugs": [
+   "kunafa"
+  ],
+  "names_ar": [
+   "كنافه"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "kunafa-with-cream",
+  "name_ar": "كنافة بالقشطة",
+  "name_en": "Kunafa with Cream",
+  "category": "desserts",
+  "slugs": [
+   "sweets-kunafa-with-cream"
+  ],
+  "names_ar": [
+   "كنافة بالقشطة"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "kyk-kramyl",
+  "name_ar": "كيك كراميل",
+  "name_en": "",
+  "category": "desserts",
+  "slugs": [
+   "kyk-kramyl"
+  ],
+  "names_ar": [
+   "كيك كراميل"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "kyka-allymwn",
+  "name_ar": "كيكة الليمون",
+  "name_en": "",
+  "category": "desserts",
+  "slugs": [
+   "kyka-allymwn"
+  ],
+  "names_ar": [
+   "كيكة الليمون"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "kyka-asl",
+  "name_ar": "كيكة عسل",
+  "name_en": "",
+  "category": "desserts",
+  "slugs": [
+   "kyka-asl"
+  ],
+  "names_ar": [
+   "كيكة عسل"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "kyka-marbl",
+  "name_ar": "کیكة ماربل",
+  "name_en": "",
+  "category": "desserts",
+  "slugs": [
+   "kyka-marbl"
+  ],
+  "names_ar": [
+   "کیكة ماربل"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "lafa-mwltn-kyk",
+  "name_ar": "لافا مولتن كيك",
+  "name_en": "",
+  "category": "desserts",
+  "slugs": [
+   "lafa-mwltn-kyk"
+  ],
+  "names_ar": [
+   "لافا مولتن كيك"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "layrz-kyk",
+  "name_ar": "لايرز كيك",
+  "name_en": "",
+  "category": "desserts",
+  "slugs": [
+   "layrz-kyk"
+  ],
+  "names_ar": [
+   "لايرز كيك"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "molten-chocolate-cake",
+  "name_ar": "مولتن الشوكولاتة لافا كيك",
+  "name_en": "Molten Chocolate Cake",
+  "category": "desserts",
+  "slugs": [
+   "molten-chocolate-cake"
+  ],
+  "names_ar": [
+   "مولتن الشوكولاتة لافا كيك"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "muhallebi",
+  "name_ar": "مهلبية",
+  "name_en": "Muhallebi",
+  "category": "desserts",
+  "slugs": [
+   "muhallebi"
+  ],
+  "names_ar": [
+   "مهلبية"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "nutella-miracle",
+  "name_ar": "ميركل نوتيلا",
+  "name_en": "Nutella Miracle",
+  "category": "desserts",
+  "slugs": [
+   "miracle-nutella"
+  ],
+  "names_ar": [
+   "ميركل نوتيلا"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "nuts",
+  "name_ar": "مكسرات",
+  "name_en": "Nuts",
+  "category": "desserts",
+  "slugs": [
+   "nuts-10-sr"
+  ],
+  "names_ar": [
+   "مكسرات"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "om-ali",
+  "name_ar": "أم علي",
+  "name_en": "Om Ali",
+  "category": "desserts",
+  "slugs": [
+   "sweets-om-ali"
+  ],
+  "names_ar": [
+   "أم علي"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "pancake-lous",
+  "name_ar": "بان كيك لوتس",
+  "name_en": "Pancake Lous",
+  "category": "desserts",
+  "slugs": [
+   "pancake-lous"
+  ],
+  "names_ar": [
+   "بان كيك لوتس"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "pancake-nutella",
+  "name_ar": "بان كيك نوتيلا",
+  "name_en": "Pancake Nutella",
+  "category": "desserts",
+  "slugs": [
+   "pancake-nutella"
+  ],
+  "names_ar": [
+   "بان كيك نوتيلا"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "pancake-pistachio",
+  "name_ar": "بان كيك فستق",
+  "name_en": "Pancake Pistachio",
+  "category": "desserts",
+  "slugs": [
+   "pancake-pistachio"
+  ],
+  "names_ar": [
+   "بان كيك فستق"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "pistachio-cake",
+  "name_ar": "كيكة بالفستق",
+  "name_en": "Pistachio Cake",
+  "category": "desserts",
+  "slugs": [
+   "pistachio-cake"
+  ],
+  "names_ar": [
+   "كيكة بالفستق",
+   "كيكة بيستاشيو"
+  ],
+  "tenants": [
+   "coffee-secret",
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "red-velvet",
+  "name_ar": "رد فيلفت",
+  "name_en": "Red Velvet",
+  "category": "desserts",
+  "slugs": [
+   "red-velvet"
+  ],
+  "names_ar": [
+   "رد فيلفت"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "rice-pudding",
+  "name_ar": "أرز بالحليب",
+  "name_en": "Rice Pudding",
+  "category": "desserts",
+  "slugs": [
+   "sweets-rice-pudding"
+  ],
+  "names_ar": [
+   "أرز بالحليب"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "rice-with-milk",
+  "name_ar": "رز بالحليب",
+  "name_en": "Rice With Milk",
+  "category": "desserts",
+  "slugs": [
+   "rice-with-milk"
+  ],
+  "names_ar": [
+   "رز بالحليب"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "san-sbastyan",
+  "name_ar": "سان سباستيان",
+  "name_en": "",
+  "category": "desserts",
+  "slugs": [
+   "san-sbastyan"
+  ],
+  "names_ar": [
+   "سان سباستيان"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "san-sebastian",
+  "name_ar": "سانسي باستيان",
+  "name_en": "San Sebastian",
+  "category": "desserts",
+  "slugs": [
+   "san-sebastian"
+  ],
+  "names_ar": [
+   "سانسي باستيان",
+   "سان سباستيان"
+  ],
+  "tenants": [
+   "coffee-secret",
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "sd-chf",
+  "name_ar": "تشيز فرايز",
+  "name_en": "",
+  "category": "desserts",
+  "slugs": [
+   "sd-chf"
+  ],
+  "names_ar": [
+   "تشيز فرايز"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "souffle",
+  "name_ar": "سوفلي",
+  "name_en": "Souffle",
+  "category": "desserts",
+  "slugs": [
+   "souffle"
+  ],
+  "names_ar": [
+   "سوفلي"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "tiramisu",
+  "name_ar": "تيراميسو",
+  "name_en": "Tiramisu",
+  "category": "desserts",
+  "slugs": [
+   "tiramisu"
+  ],
+  "names_ar": [
+   "تيراميسو"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "tramysw",
+  "name_ar": "تراميسو",
+  "name_en": "",
+  "category": "desserts",
+  "slugs": [
+   "tramysw"
+  ],
+  "names_ar": [
+   "تراميسو"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "turkish-cake",
+  "name_ar": "كيكة تركية سادة",
+  "name_en": "Turkish Cake",
+  "category": "desserts",
+  "slugs": [
+   "turkish-cake"
+  ],
+  "names_ar": [
+   "كيكة تركية سادة"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "turkish-cake-with-white-chocolate",
+  "name_ar": "كيكة تركية بالشوكولاتة البيضاء",
+  "name_en": "Turkish Cake With White Chocolate",
+  "category": "desserts",
+  "slugs": [
+   "turkish-cake-with-white-chocolate"
+  ],
+  "names_ar": [
+   "كيكة تركية بالشوكولاتة البيضاء"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "vanilla-cookies",
+  "name_ar": "كوكيز فانيليا",
+  "name_en": "Vanilla Cookies",
+  "category": "desserts",
+  "slugs": [
+   "vanilla-cookies"
+  ],
+  "names_ar": [
+   "كوكيز فانيليا"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "waffles-lous",
+  "name_ar": "وافل لوتس",
+  "name_en": "Waffles Lous",
+  "category": "desserts",
+  "slugs": [
+   "waffles-lous"
+  ],
+  "names_ar": [
+   "وافل لوتس"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "waffles-nutella",
+  "name_ar": "وافل نوتيلا",
+  "name_en": "Waffles Nutella",
+  "category": "desserts",
+  "slugs": [
+   "waffles-nutella"
+  ],
+  "names_ar": [
+   "وافل نوتيلا"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "waffles-pistachio",
+  "name_ar": "وافل فستق",
+  "name_en": "Waffles Pistachio",
+  "category": "desserts",
+  "slugs": [
+   "waffles-pistachio"
+  ],
+  "names_ar": [
+   "وافل فستق"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "waffles-special",
+  "name_ar": "وافل سبيشل",
+  "name_en": "Waffles Special",
+  "category": "desserts",
+  "slugs": [
+   "waffles-special"
+  ],
+  "names_ar": [
+   "وافل سبيشل"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "zafron-cake",
+  "name_ar": "كيك زعفران",
+  "name_en": "Zafron Cake",
+  "category": "desserts",
+  "slugs": [
+   "zafron-cake"
+  ],
+  "names_ar": [
+   "كيك زعفران"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "azaan-avocado-special",
+  "name_ar": "آزان أفوكادو سبيشل",
+  "name_en": "Azaan Avocado Special",
+  "category": "fruit-salads",
+  "slugs": [
+   "azaan-avocado-special"
+  ],
+  "names_ar": [
+   "آزان أفوكادو سبيشل"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "azan-emperor",
+  "name_ar": "آزان امبراطور",
+  "name_en": "Azan Emperor",
+  "category": "fruit-salads",
+  "slugs": [
+   "azan-emperor"
+  ],
+  "names_ar": [
+   "آزان امبراطور"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "cream-honey-and-nuts",
+  "name_ar": "قشاطي عسل ومكسرات",
+  "name_en": "Cream Honey And Nuts",
+  "category": "fruit-salads",
+  "slugs": [
+   "cream-honey-and-nuts"
+  ],
+  "names_ar": [
+   "قشاطي عسل ومكسرات"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "crunch-salad",
+  "name_ar": "سلطة كرانش",
+  "name_en": "Crunch Salad",
+  "category": "fruit-salads",
+  "slugs": [
+   "crunch-salad"
+  ],
+  "names_ar": [
+   "سلطة كرانش"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "drink-dessert",
+  "name_ar": "مشروب+حلى",
+  "name_en": "Drink+dessert",
+  "category": "fruit-salads",
+  "slugs": [
+   "drink-dessert"
+  ],
+  "names_ar": [
+   "مشروب+حلى"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "ice-cream-with-fruits",
+  "name_ar": "بوظة بالفواكه",
+  "name_en": "Ice Cream With Fruits",
+  "category": "fruit-salads",
+  "slugs": [
+   "ice-cream-with-fruits"
+  ],
+  "names_ar": [
+   "بوظة بالفواكه"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "march-fruit-salad",
+  "name_ar": "سلطة فواكه مارس",
+  "name_en": "March Fruit Salad",
+  "category": "fruit-salads",
+  "slugs": [
+   "march-fruit-salad"
+  ],
+  "names_ar": [
+   "سلطة فواكه مارس"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "nutella-fruit-cream",
+  "name_ar": "قشاطي نوتيلا فواكه",
+  "name_en": "Nutella Fruit Cream",
+  "category": "fruit-salads",
+  "slugs": [
+   "nutella-fruit-cream"
+  ],
+  "names_ar": [
+   "قشاطي نوتيلا فواكه"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "nutella-salad",
+  "name_ar": "سلطة نوتيلا",
+  "name_en": "Nutella Salad",
+  "category": "fruit-salads",
+  "slugs": [
+   "nutella-salad"
+  ],
+  "names_ar": [
+   "سلطة نوتيلا"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "oreo-fruit-salad",
+  "name_ar": "سلطة فواكه أوريو",
+  "name_en": "Oreo Fruit Salad",
+  "category": "fruit-salads",
+  "slugs": [
+   "oreo-fruit-salad"
+  ],
+  "names_ar": [
+   "سلطة فواكه أوريو"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "shami-fruit-salad",
+  "name_ar": "سلطة فواكه شامية",
+  "name_en": "Shami Fruit Salad",
+  "category": "fruit-salads",
+  "slugs": [
+   "shami-fruit-salad"
+  ],
+  "names_ar": [
+   "سلطة فواكه شامية"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "shuklamo",
+  "name_ar": "شوكلامو",
+  "name_en": "Shuklamo",
+  "category": "fruit-salads",
+  "slugs": [
+   "shuklamo"
+  ],
+  "names_ar": [
+   "شوكلامو"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "special-fruit-salad",
+  "name_ar": "سلطة فواكه سبيشل",
+  "name_en": "Special Fruit Salad",
+  "category": "fruit-salads",
+  "slugs": [
+   "special-fruit-salad"
+  ],
+  "names_ar": [
+   "سلطة فواكه سبيشل"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "tutti-frutti",
+  "name_ar": "توتي فروتي",
+  "name_en": "Tutti Frutti",
+  "category": "fruit-salads",
+  "slugs": [
+   "tutti-frutti"
+  ],
+  "names_ar": [
+   "توتي فروتي"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "twix-salad",
+  "name_ar": "سلطة تويكس",
+  "name_en": "Twix Salad",
+  "category": "fruit-salads",
+  "slugs": [
+   "twix-salad"
+  ],
+  "names_ar": [
+   "سلطة تويكس"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "arabic-ice-cream",
+  "name_ar": "بوظة عربية بالفستق والقشطة",
+  "name_en": "Arabic Ice Cream",
+  "category": "ice-cream",
+  "slugs": [
+   "arabic-ice-cream"
+  ],
+  "names_ar": [
+   "بوظة عربية بالفستق والقشطة"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "banana-ice-cream",
+  "name_ar": "ايس كريم موز",
+  "name_en": "Banana Ice Cream",
+  "category": "ice-cream",
+  "slugs": [
+   "banana-ice-cream"
+  ],
+  "names_ar": [
+   "ايس كريم موز"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "berry-ice-cream",
+  "name_ar": "ايس كريم توت",
+  "name_en": "Berry Ice Cream",
+  "category": "ice-cream",
+  "slugs": [
+   "berry-ice-cream"
+  ],
+  "names_ar": [
+   "ايس كريم توت"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "cherry-ice-cream",
+  "name_ar": "ايس كريم كرز",
+  "name_en": "Cherry Ice Cream",
+  "category": "ice-cream",
+  "slugs": [
+   "cherry-ice-cream"
+  ],
+  "names_ar": [
+   "ايس كريم كرز"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "chocolamou-ice-cream",
+  "name_ar": "ايس كريم شكلامو",
+  "name_en": "Chocolamou Ice Cream",
+  "category": "ice-cream",
+  "slugs": [
+   "chocolamou-ice-cream"
+  ],
+  "names_ar": [
+   "ايس كريم شكلامو"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "chocolate-ice-cream",
+  "name_ar": "ايس كريم شوكولاتة",
+  "name_en": "Chocolate Ice Cream",
+  "category": "ice-cream",
+  "slugs": [
+   "chocolate-ice-cream"
+  ],
+  "names_ar": [
+   "ايس كريم شوكولاتة"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "hazelnut-ice-cream",
+  "name_ar": "ايس كريم بندق",
+  "name_en": "Hazelnut Ice Cream",
+  "category": "ice-cream",
+  "slugs": [
+   "hazelnut-ice-cream"
+  ],
+  "names_ar": [
+   "ايس كريم بندق"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "item-1779839660564",
+  "name_ar": "ايسكريم شوكلت فانيليا",
+  "name_en": "",
+  "category": "ice-cream",
+  "slugs": [
+   "item-1779839660564"
+  ],
+  "names_ar": [
+   "ايسكريم شوكلت فانيليا"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "lemon-ice-cream",
+  "name_ar": "ايس كريم ليمون",
+  "name_en": "Lemon Ice Cream",
+  "category": "ice-cream",
+  "slugs": [
+   "lemon-ice-cream"
+  ],
+  "names_ar": [
+   "ايس كريم ليمون"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "mango-ice-cream",
+  "name_ar": "ايس كريم مانجا",
+  "name_en": "Mango Ice Cream",
+  "category": "ice-cream",
+  "slugs": [
+   "mango-ice-cream"
+  ],
+  "names_ar": [
+   "ايس كريم مانجا"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "mastic-and-cream-ice-cream",
+  "name_ar": "ايس كريم مستكة وقشطة",
+  "name_en": "Mastic & Cream Ice Cream",
+  "category": "ice-cream",
+  "slugs": [
+   "mastic-and-cream-ice-cream"
+  ],
+  "names_ar": [
+   "ايس كريم مستكة وقشطة"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "oreo-ice-cream",
+  "name_ar": "ايس كريم اوريو",
+  "name_en": "Oreo Ice Cream",
+  "category": "ice-cream",
+  "slugs": [
+   "oreo-ice-cream"
+  ],
+  "names_ar": [
+   "ايس كريم اوريو"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "strawberry-ice-cream",
+  "name_ar": "ايس كريم فراولة",
+  "name_en": "Strawberry Ice Cream",
+  "category": "ice-cream",
+  "slugs": [
+   "strawberry-ice-cream"
+  ],
+  "names_ar": [
+   "ايس كريم فراولة"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "apples",
+  "name_ar": "عصير تفاح اخضر",
+  "name_en": "Apples",
+  "category": "juices",
+  "slugs": [
+   "apples"
+  ],
+  "names_ar": [
+   "عصير تفاح اخضر"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "asyr-brtqal",
+  "name_ar": "عصير برتقال",
+  "name_en": "",
+  "category": "juices",
+  "slugs": [
+   "asyr-brtqal"
+  ],
+  "names_ar": [
+   "عصير برتقال"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "asyr-btykh",
+  "name_ar": "عصير بطيخ",
+  "name_en": "",
+  "category": "juices",
+  "slugs": [
+   "asyr-btykh"
+  ],
+  "names_ar": [
+   "عصير بطيخ"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "asyr-lymwn-nanaa",
+  "name_ar": "عصير ليمون نعناع",
+  "name_en": "",
+  "category": "juices",
+  "slugs": [
+   "asyr-lymwn-nanaa"
+  ],
+  "names_ar": [
+   "عصير ليمون نعناع"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "asyr-tbyay-20",
+  "name_ar": "عصير طبيعي 20",
+  "name_en": "",
+  "category": "juices",
+  "slugs": [
+   "asyr-tbyay-20"
+  ],
+  "names_ar": [
+   "عصير طبيعي 20"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "avocado-milk",
+  "name_ar": "افاكادوحليب",
+  "name_en": "Avocado Milk",
+  "category": "juices",
+  "slugs": [
+   "avocado-milk"
+  ],
+  "names_ar": [
+   "افاكادوحليب"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "avocado-milk-and-cream",
+  "name_ar": "افوكادو بالحليب والقشطة",
+  "name_en": "Avocado Milk & Cream",
+  "category": "juices",
+  "slugs": [
+   "avocado-milk-gishda"
+  ],
+  "names_ar": [
+   "افوكادو بالحليب والقشطة"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "awar-qalp",
+  "name_ar": "عصير عوار قلب",
+  "name_en": "Awar Qalp",
+  "category": "juices",
+  "slugs": [
+   "awar-qalp"
+  ],
+  "names_ar": [
+   "عصير عوار قلب"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "banana-milk",
+  "name_ar": "موز حليب",
+  "name_en": "Banana Milk",
+  "category": "juices",
+  "slugs": [
+   "banana-milk"
+  ],
+  "names_ar": [
+   "موز حليب"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "carrots",
+  "name_ar": "عصير جزر",
+  "name_en": "Carrots",
+  "category": "juices",
+  "slugs": [
+   "carrots"
+  ],
+  "names_ar": [
+   "عصير جزر"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "dr-oj-l",
+  "name_ar": "عصير برتقال",
+  "name_en": "",
+  "category": "juices",
+  "slugs": [
+   "dr-oj-l"
+  ],
+  "names_ar": [
+   "عصير برتقال"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "dr-oj-s",
+  "name_ar": "عصير برتقال",
+  "name_en": "",
+  "category": "juices",
+  "slugs": [
+   "dr-oj-s"
+  ],
+  "names_ar": [
+   "عصير برتقال"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "fakhfakhina",
+  "name_ar": "عصير فخفخينا",
+  "name_en": "Fakhfakhina",
+  "category": "juices",
+  "slugs": [
+   "fakhfakhina"
+  ],
+  "names_ar": [
+   "عصير فخفخينا"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "four-season",
+  "name_ar": "فورسي صول",
+  "name_en": "Four Season",
+  "category": "juices",
+  "slugs": [
+   "four-season"
+  ],
+  "names_ar": [
+   "فورسي صول"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "item-1779647416565",
+  "name_ar": "عصير توت",
+  "name_en": "",
+  "category": "juices",
+  "slugs": [
+   "item-1779647416565"
+  ],
+  "names_ar": [
+   "عصير توت"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779647449011",
+  "name_ar": "عصير رمان",
+  "name_en": "",
+  "category": "juices",
+  "slugs": [
+   "item-1779647449011"
+  ],
+  "names_ar": [
+   "عصير رمان"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "kiwi",
+  "name_ar": "عصير كيوي",
+  "name_en": "Kiwi",
+  "category": "juices",
+  "slugs": [
+   "kiwi"
+  ],
+  "names_ar": [
+   "عصير كيوي"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "lemon-and-mint",
+  "name_ar": "عصير ليمون ونعناع",
+  "name_en": "Lemon & Mint",
+  "category": "juices",
+  "slugs": [
+   "lemon-and-mint"
+  ],
+  "names_ar": [
+   "عصير ليمون ونعناع"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "lemonade",
+  "name_ar": "ليموناضة",
+  "name_en": "Lemonade",
+  "category": "juices",
+  "slugs": [
+   "lemonade"
+  ],
+  "names_ar": [
+   "ليموناضة"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "mango",
+  "name_ar": "عصير مانجا",
+  "name_en": "Mango",
+  "category": "juices",
+  "slugs": [
+   "mango"
+  ],
+  "names_ar": [
+   "عصير مانجا"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "mango-juice",
+  "name_ar": "عصير مانجا",
+  "name_en": "Mango Juice",
+  "category": "juices",
+  "slugs": [
+   "asyr-manja"
+  ],
+  "names_ar": [
+   "عصير مانجا"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mix-berry",
+  "name_ar": "مكس بيري",
+  "name_en": "Mix Berry",
+  "category": "juices",
+  "slugs": [
+   "mix-berry"
+  ],
+  "names_ar": [
+   "مكس بيري"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "mix-fruit",
+  "name_ar": "عصير كوكتيل",
+  "name_en": "Mix Fruit",
+  "category": "juices",
+  "slugs": [
+   "mix-fruit"
+  ],
+  "names_ar": [
+   "عصير كوكتيل"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "orange",
+  "name_ar": "عصير برتقال",
+  "name_en": "Orange",
+  "category": "juices",
+  "slugs": [
+   "orange"
+  ],
+  "names_ar": [
+   "عصير برتقال"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "pineapple",
+  "name_ar": "عصير اناناس",
+  "name_en": "Pineapple",
+  "category": "juices",
+  "slugs": [
+   "pineapple"
+  ],
+  "names_ar": [
+   "عصير اناناس"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "smoothy-blueberry",
+  "name_ar": "سموزي بلوبيري",
+  "name_en": "Smoothy Blueberry",
+  "category": "juices",
+  "slugs": [
+   "smoothy-blueberry"
+  ],
+  "names_ar": [
+   "سموزي بلوبيري"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "smoothy-mango",
+  "name_ar": "سموزي مانجو",
+  "name_en": "Smoothy Mango",
+  "category": "juices",
+  "slugs": [
+   "smoothy-mango"
+  ],
+  "names_ar": [
+   "سموزي مانجو"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "smoothy-passion-fruit",
+  "name_ar": "سموزي باشن فروت",
+  "name_en": "Smoothy Passion Fruit",
+  "category": "juices",
+  "slugs": [
+   "smoothy-passion-fruit"
+  ],
+  "names_ar": [
+   "سموزي باشن فروت"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "smoothy-strawberry",
+  "name_ar": "سموزي فراولة",
+  "name_en": "Smoothy Strawberry",
+  "category": "juices",
+  "slugs": [
+   "smoothy-strawberry"
+  ],
+  "names_ar": [
+   "سموزي فراولة"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "strawberries",
+  "name_ar": "عصير فراولة",
+  "name_en": "Strawberries",
+  "category": "juices",
+  "slugs": [
+   "strawberries"
+  ],
+  "names_ar": [
+   "عصير فراولة"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "watermelon",
+  "name_ar": "عصير بطيخ",
+  "name_en": "Watermelon",
+  "category": "juices",
+  "slugs": [
+   "watermelon"
+  ],
+  "names_ar": [
+   "عصير بطيخ"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "yogurt-with-honey",
+  "name_ar": "زبادي عسل",
+  "name_en": "Yogurt With Honey",
+  "category": "juices",
+  "slugs": [
+   "yogurt-with-honey"
+  ],
+  "names_ar": [
+   "زبادي عسل"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "bukhari-charcoal",
+  "name_ar": "فحم بخاري",
+  "name_en": "Bukhari Charcoal",
+  "category": "mains",
+  "slugs": [
+   "fahem-bukhari-charcoal"
+  ],
+  "names_ar": [
+   "فحم بخاري"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "bukhari-grilled",
+  "name_ar": "شواية بخاري",
+  "name_en": "Bukhari Grilled",
+  "category": "mains",
+  "slugs": [
+   "shawaya-bukhari-grilled"
+  ],
+  "names_ar": [
+   "شواية بخاري"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "bukhari-rice",
+  "name_ar": "رز بخاري",
+  "name_en": "Bukhari Rice",
+  "category": "mains",
+  "slugs": [
+   "rice-bukhari-rice"
+  ],
+  "names_ar": [
+   "رز بخاري"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "chicken-kebab",
+  "name_ar": "كباب دجاج",
+  "name_en": "Chicken Kebab",
+  "category": "mains",
+  "slugs": [
+   "mashawi-chicken-kebab"
+  ],
+  "names_ar": [
+   "كباب دجاج"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "chicken-madghoot",
+  "name_ar": "مضغوط دجاج",
+  "name_en": "Chicken Madghoot",
+  "category": "mains",
+  "slugs": [
+   "madghoot-chicken-madghoot"
+  ],
+  "names_ar": [
+   "مضغوط دجاج"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "chicken-saleeq",
+  "name_ar": "سليق دجاج",
+  "name_en": "Chicken Saleeq",
+  "category": "mains",
+  "slugs": [
+   "madghoot-chicken-saleeq"
+  ],
+  "names_ar": [
+   "سليق دجاج"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779636043350",
+  "name_ar": "ربع كبسة لحم كابلي",
+  "name_en": "",
+  "category": "mains",
+  "slugs": [
+   "item-1779636043350"
+  ],
+  "names_ar": [
+   "ربع كبسة لحم كابلي"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779646568485",
+  "name_ar": "رز مبهر",
+  "name_en": "",
+  "category": "mains",
+  "slugs": [
+   "item-1779646568485"
+  ],
+  "names_ar": [
+   "رز مبهر"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779646586614",
+  "name_ar": "رز مشكل",
+  "name_en": "",
+  "category": "mains",
+  "slugs": [
+   "item-1779646586614"
+  ],
+  "names_ar": [
+   "رز مشكل"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779653456261",
+  "name_ar": "دجاج كراي",
+  "name_en": "",
+  "category": "mains",
+  "slugs": [
+   "item-1779653456261"
+  ],
+  "names_ar": [
+   "دجاج كراي"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779653478718",
+  "name_ar": "لحم كراي",
+  "name_en": "",
+  "category": "mains",
+  "slugs": [
+   "item-1779653478718"
+  ],
+  "names_ar": [
+   "لحم كراي"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "kabli-grilled",
+  "name_ar": "شواية كابلي",
+  "name_en": "Kabli Grilled",
+  "category": "mains",
+  "slugs": [
+   "shawaya-kabli-grilled"
+  ],
+  "names_ar": [
+   "شواية كابلي"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "kabli-meat-kabsa",
+  "name_ar": "كبسة لحم كابلي",
+  "name_en": "Kabli Meat Kabsa",
+  "category": "mains",
+  "slugs": [
+   "kabsa-kabli-meat-kabsa"
+  ],
+  "names_ar": [
+   "كبسة لحم كابلي"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "kabli-rice",
+  "name_ar": "رز كابلي",
+  "name_en": "Kabli Rice",
+  "category": "mains",
+  "slugs": [
+   "rice-kabli-rice"
+  ],
+  "names_ar": [
+   "رز كابلي"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "meat-awsal",
+  "name_ar": "أوصال لحم",
+  "name_en": "Meat Awsal",
+  "category": "mains",
+  "slugs": [
+   "mashawi-meat-awsal"
+  ],
+  "names_ar": [
+   "أوصال لحم"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "meat-kebab",
+  "name_ar": "كباب لحم",
+  "name_en": "Meat Kebab",
+  "category": "mains",
+  "slugs": [
+   "mashawi-meat-kebab"
+  ],
+  "names_ar": [
+   "كباب لحم"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "mebahar-grilled",
+  "name_ar": "شواية مبهر",
+  "name_en": "Mebahar Grilled",
+  "category": "mains",
+  "slugs": [
+   "shawaya-mebahar-grilled"
+  ],
+  "names_ar": [
+   "شواية مبهر"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "mixed-grill",
+  "name_ar": "مشوي مشكل",
+  "name_en": "Mixed Grill",
+  "category": "mains",
+  "slugs": [
+   "mashawi-mixed-grill"
+  ],
+  "names_ar": [
+   "مشوي مشكل"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "mixed-grilled",
+  "name_ar": "شواية مشكل",
+  "name_en": "Mixed Grilled",
+  "category": "mains",
+  "slugs": [
+   "shawaya-mixed-grilled"
+  ],
+  "names_ar": [
+   "شواية مشكل"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "plain-grilled",
+  "name_ar": "شواية سادة",
+  "name_en": "Plain Grilled",
+  "category": "mains",
+  "slugs": [
+   "shawaya-plain-grilled"
+  ],
+  "names_ar": [
+   "شواية سادة"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "red-grilled",
+  "name_ar": "شواية أحمر",
+  "name_en": "Red Grilled",
+  "category": "mains",
+  "slugs": [
+   "shawaya-red-grilled"
+  ],
+  "names_ar": [
+   "شواية أحمر"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "red-rice",
+  "name_ar": "رز أحمر",
+  "name_en": "Red Rice",
+  "category": "mains",
+  "slugs": [
+   "rice-red-rice"
+  ],
+  "names_ar": [
+   "رز أحمر"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "banana-milkshake",
+  "name_ar": "ميلك شيك موز",
+  "name_en": "Banana Milkshake",
+  "category": "milkshakes",
+  "slugs": [
+   "banana-milkshake"
+  ],
+  "names_ar": [
+   "ميلك شيك موز"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "chocolate-mlkshake",
+  "name_ar": "ميلك شيك شوكولاتة",
+  "name_en": "Chocolate Mlkshake",
+  "category": "milkshakes",
+  "slugs": [
+   "chocolate-mlkshake"
+  ],
+  "names_ar": [
+   "ميلك شيك شوكولاتة"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "mango-milk-shake",
+  "name_ar": "ميلك شيك مانجا",
+  "name_en": "Mango Milk Shake",
+  "category": "milkshakes",
+  "slugs": [
+   "mango-milk-shake"
+  ],
+  "names_ar": [
+   "ميلك شيك مانجا"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "oreo-mlkshake",
+  "name_ar": "ميلك شيك اوريو",
+  "name_en": "Oreo Mlkshake",
+  "category": "milkshakes",
+  "slugs": [
+   "oreo-mlkshake"
+  ],
+  "names_ar": [
+   "ميلك شيك اوريو"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "snickers-milkshake",
+  "name_ar": "ميلك شيك سنكيرز",
+  "name_en": "Snickers Milkshake",
+  "category": "milkshakes",
+  "slugs": [
+   "snickers-milkshake"
+  ],
+  "names_ar": [
+   "ميلك شيك سنكيرز"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "strawberry-milkshake",
+  "name_ar": "ميلك شيك فراولة",
+  "name_en": "Strawberry Milkshake",
+  "category": "milkshakes",
+  "slugs": [
+   "strawberry-milkshake"
+  ],
+  "names_ar": [
+   "ميلك شيك فراولة"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "vanilla-milkshake",
+  "name_ar": "ميلك شيك فانيلا",
+  "name_en": "Vanilla Milkshake",
+  "category": "milkshakes",
+  "slugs": [
+   "vanilla-milkshake"
+  ],
+  "names_ar": [
+   "ميلك شيك فانيلا"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "cola-diet",
+  "name_ar": "كولا دايت",
+  "name_en": "Cola Diet",
+  "category": "misc",
+  "slugs": [
+   "cola-diet"
+  ],
+  "names_ar": [
+   "كولا دايت"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "dr-cola-l",
+  "name_ar": "كولا",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "dr-cola-l"
+  ],
+  "names_ar": [
+   "كولا"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "dr-cola-s",
+  "name_ar": "كولا",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "dr-cola-s"
+  ],
+  "names_ar": [
+   "كولا"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "dr-water",
+  "name_ar": "ماء",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "dr-water"
+  ],
+  "names_ar": [
+   "ماء"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "houlsten-apple",
+  "name_ar": "هولستن تفاح",
+  "name_en": "Houlsten Apple",
+  "category": "misc",
+  "slugs": [
+   "houlsten-apple"
+  ],
+  "names_ar": [
+   "هولستن تفاح"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "houlsten-barley",
+  "name_ar": "هولستن شعير",
+  "name_en": "Houlsten Barley",
+  "category": "misc",
+  "slugs": [
+   "houlsten-barley"
+  ],
+  "names_ar": [
+   "هولستن شعير"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "houlsten-black-grape",
+  "name_ar": "هولستن عنب اسود",
+  "name_en": "Houlsten Black Grape",
+  "category": "misc",
+  "slugs": [
+   "houlsten-black-grape"
+  ],
+  "names_ar": [
+   "هولستن عنب اسود"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "houlsten-lemon-mint",
+  "name_ar": "هولستن ليمون نعناع",
+  "name_en": "Houlsten Lemon Mint",
+  "category": "misc",
+  "slugs": [
+   "houlsten-lemon-mint"
+  ],
+  "names_ar": [
+   "هولستن ليمون نعناع"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "houlsten-strawberry",
+  "name_ar": "هولستن فراولة",
+  "name_en": "Houlsten Strawberry",
+  "category": "misc",
+  "slugs": [
+   "houlsten-strawberry"
+  ],
+  "names_ar": [
+   "هولستن فراولة"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "houlsten-wild-berry",
+  "name_ar": "هولستن توت بري",
+  "name_en": "Houlsten Wild Berry",
+  "category": "misc",
+  "slugs": [
+   "houlsten-wild-berry"
+  ],
+  "names_ar": [
+   "هولستن توت بري"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "item-1779646819723",
+  "name_ar": "بامية",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "item-1779646819723"
+  ],
+  "names_ar": [
+   "بامية"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779646840368",
+  "name_ar": "ملوخيه",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "item-1779646840368"
+  ],
+  "names_ar": [
+   "ملوخيه"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779646890430",
+  "name_ar": "ايدام مشكل",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "item-1779646890430"
+  ],
+  "names_ar": [
+   "ايدام مشكل"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779646915232",
+  "name_ar": "مصقعه",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "item-1779646915232"
+  ],
+  "names_ar": [
+   "مصقعه"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779646934254",
+  "name_ar": "مشكل فرن",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "item-1779646934254"
+  ],
+  "names_ar": [
+   "مشكل فرن"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779646952538",
+  "name_ar": "جريش",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "item-1779646952538"
+  ],
+  "names_ar": [
+   "جريش"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779647038182",
+  "name_ar": "حمضيات",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "item-1779647038182"
+  ],
+  "names_ar": [
+   "حمضيات"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779647104043",
+  "name_ar": "ديو",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "item-1779647104043"
+  ],
+  "names_ar": [
+   "ديو"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779647179761",
+  "name_ar": "لبن",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "item-1779647179761"
+  ],
+  "names_ar": [
+   "لبن"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779647196842",
+  "name_ar": "زبادي",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "item-1779647196842"
+  ],
+  "names_ar": [
+   "زبادي"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779647252997",
+  "name_ar": "شاهي",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "item-1779647252997"
+  ],
+  "names_ar": [
+   "شاهي"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "item-1779649670876",
+  "name_ar": "ماء",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "item-1779649670876"
+  ],
+  "names_ar": [
+   "ماء"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "kabli-charcoal",
+  "name_ar": "فحم كابلي",
+  "name_en": "Kabli Charcoal",
+  "category": "misc",
+  "slugs": [
+   "fahem-kabli-charcoal"
+  ],
+  "names_ar": [
+   "فحم كابلي"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "mebahar-charcoal",
+  "name_ar": "فحم مبهر",
+  "name_en": "Mebahar Charcoal",
+  "category": "misc",
+  "slugs": [
+   "fahem-mebahar-charcoal"
+  ],
+  "names_ar": [
+   "فحم مبهر"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "mixed-charcoal",
+  "name_ar": "فحم مشكل",
+  "name_en": "Mixed Charcoal",
+  "category": "misc",
+  "slugs": [
+   "fahem-mixed-charcoal"
+  ],
+  "names_ar": [
+   "فحم مشكل"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "orange-miranda",
+  "name_ar": "ميريندا برقال",
+  "name_en": "Orange Miranda",
+  "category": "misc",
+  "slugs": [
+   "orange-miranda"
+  ],
+  "names_ar": [
+   "ميريندا برقال"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "plain-charcoal",
+  "name_ar": "فحم سادة",
+  "name_en": "Plain Charcoal",
+  "category": "misc",
+  "slugs": [
+   "fahem-plain-charcoal"
+  ],
+  "names_ar": [
+   "فحم سادة"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "plain-water",
+  "name_ar": "مياه عاديه",
+  "name_en": "Plain Water",
+  "category": "misc",
+  "slugs": [
+   "plain-water"
+  ],
+  "names_ar": [
+   "مياه عاديه"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "red-charcoal",
+  "name_ar": "فحم أحمر",
+  "name_en": "Red Charcoal",
+  "category": "misc",
+  "slugs": [
+   "fahem-red-charcoal"
+  ],
+  "names_ar": [
+   "فحم أحمر"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "sc-bbq",
+  "name_ar": "باربكيو صوص",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "sc-bbq"
+  ],
+  "names_ar": [
+   "باربكيو صوص"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "sc-ched",
+  "name_ar": "شيدر صوص",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "sc-ched"
+  ],
+  "names_ar": [
+   "شيدر صوص"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "sc-garlic",
+  "name_ar": "صوص ثوم",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "sc-garlic"
+  ],
+  "names_ar": [
+   "صوص ثوم"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "sc-hummus",
+  "name_ar": "حمص",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "sc-hummus"
+  ],
+  "names_ar": [
+   "حمص"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "sc-jal",
+  "name_ar": "لهاليبو صوص",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "sc-jal"
+  ],
+  "names_ar": [
+   "لهاليبو صوص"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "sc-koko",
+  "name_ar": "كوكو صوص",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "sc-koko"
+  ],
+  "names_ar": [
+   "كوكو صوص"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "sc-ranch",
+  "name_ar": "رانش صوص",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "sc-ranch"
+  ],
+  "names_ar": [
+   "رانش صوص"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "sc-spec",
+  "name_ar": "سبيشل صوص",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "sc-spec"
+  ],
+  "names_ar": [
+   "سبيشل صوص"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "sd-cb",
+  "name_ar": "تشيكن بايتس",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "sd-cb"
+  ],
+  "names_ar": [
+   "تشيكن بايتس"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "sd-cf",
+  "name_ar": "تشيكن فرايز",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "sd-cf"
+  ],
+  "names_ar": [
+   "تشيكن فرايز"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "sd-fries",
+  "name_ar": "فرايز",
+  "name_en": "",
+  "category": "misc",
+  "slugs": [
+   "sd-fries"
+  ],
+  "names_ar": [
+   "فرايز"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "sparkling-water",
+  "name_ar": "مياه غازية",
+  "name_en": "Sparkling water",
+  "category": "misc",
+  "slugs": [
+   "sparkling-water"
+  ],
+  "names_ar": [
+   "مياه غازية"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "sprite",
+  "name_ar": "سبرايت",
+  "name_en": "Sprite",
+  "category": "misc",
+  "slugs": [
+   "sprite"
+  ],
+  "names_ar": [
+   "سبرايت"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "blackberry-mojito",
+  "name_ar": "توت اسود موهيتو",
+  "name_en": "Blackberry Mojito",
+  "category": "mojito",
+  "slugs": [
+   "blackberry-mojito"
+  ],
+  "names_ar": [
+   "توت اسود موهيتو"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "blueberry-mojito",
+  "name_ar": "توت ازرق موهيتو",
+  "name_en": "Blueberry Mojito",
+  "category": "mojito",
+  "slugs": [
+   "blueberry-mojito"
+  ],
+  "names_ar": [
+   "توت ازرق موهيتو"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "fruits-mojito",
+  "name_ar": "فواكه موهيتو",
+  "name_en": "Fruits Mojito",
+  "category": "mojito",
+  "slugs": [
+   "fruits-mojito"
+  ],
+  "names_ar": [
+   "فواكه موهيتو"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "mojito-7up-blackberry",
+  "name_ar": "موهيتو سفن اب توت أسود",
+  "name_en": "Mojito 7UP Blackberry",
+  "category": "mojito",
+  "slugs": [
+   "mojito-7up-blackberry"
+  ],
+  "names_ar": [
+   "موهيتو سفن اب توت أسود"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-7up-blueberry",
+  "name_ar": "موهيتو سفن اب بلو",
+  "name_en": "Mojito 7UP Blueberry",
+  "category": "mojito",
+  "slugs": [
+   "mojito-7up-blueberry"
+  ],
+  "names_ar": [
+   "موهيتو سفن اب بلو"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-7up-lemon",
+  "name_ar": "موهيتو سفن اب ليمون",
+  "name_en": "Mojito 7UP Lemon",
+  "category": "mojito",
+  "slugs": [
+   "mojito-7up-lemon"
+  ],
+  "names_ar": [
+   "موهيتو سفن اب ليمون"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-7up-mixed-berry",
+  "name_ar": "موهيتو سفن اب مكس بيري",
+  "name_en": "Mojito 7UP Mixed Berry",
+  "category": "mojito",
+  "slugs": [
+   "mojito-7up-mixed-berry"
+  ],
+  "names_ar": [
+   "موهيتو سفن اب مكس بيري"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-7up-passion-fruit",
+  "name_ar": "موهيتو سفن اب باشن فروت",
+  "name_en": "Mojito 7UP Passion Fruit",
+  "category": "mojito",
+  "slugs": [
+   "mojito-7up-passion-fruit"
+  ],
+  "names_ar": [
+   "موهيتو سفن اب باشن فروت"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-7up-peach",
+  "name_ar": "موهيتو سفن اب خوخ",
+  "name_en": "Mojito 7UP Peach",
+  "category": "mojito",
+  "slugs": [
+   "mojito-7up-peach"
+  ],
+  "names_ar": [
+   "موهيتو سفن اب خوخ"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-7up-pomegranate",
+  "name_ar": "موهيتو سفن اب رمان",
+  "name_en": "Mojito 7UP Pomegranate",
+  "category": "mojito",
+  "slugs": [
+   "mojito-7up-pomegranate"
+  ],
+  "names_ar": [
+   "موهيتو سفن اب رمان"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-7up-raspberry",
+  "name_ar": "موهيتو سفن اب توت أحمر",
+  "name_en": "Mojito 7UP Raspberry",
+  "category": "mojito",
+  "slugs": [
+   "mojito-7up-raspberry"
+  ],
+  "names_ar": [
+   "موهيتو سفن اب توت أحمر"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-7up-strawberry",
+  "name_ar": "موهيتو سفن اب فراولة",
+  "name_en": "Mojito 7UP Strawberry",
+  "category": "mojito",
+  "slugs": [
+   "mojito-7up-strawberry"
+  ],
+  "names_ar": [
+   "موهيتو سفن اب فراولة"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-7up-watermelon",
+  "name_ar": "موهيتو سفن اب بطيخ",
+  "name_en": "Mojito 7UP Watermelon",
+  "category": "mojito",
+  "slugs": [
+   "mojito-7up-watermelon"
+  ],
+  "names_ar": [
+   "موهيتو سفن اب بطيخ"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-code-red-blackberry",
+  "name_ar": "موهيتو كود رد توت أسود",
+  "name_en": "Mojito Code Red Blackberry",
+  "category": "mojito",
+  "slugs": [
+   "mojito-code-red-blackberry"
+  ],
+  "names_ar": [
+   "موهيتو كود رد توت أسود"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-code-red-blueberry",
+  "name_ar": "موهيتو كود رد بلو",
+  "name_en": "Mojito Code Red Blueberry",
+  "category": "mojito",
+  "slugs": [
+   "mojito-code-red-blueberry"
+  ],
+  "names_ar": [
+   "موهيتو كود رد بلو"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-code-red-lemon",
+  "name_ar": "موهيتو كود رد ليمون",
+  "name_en": "Mojito Code Red Lemon",
+  "category": "mojito",
+  "slugs": [
+   "mojito-code-red-lemon"
+  ],
+  "names_ar": [
+   "موهيتو كود رد ليمون"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-code-red-mixed-berry",
+  "name_ar": "موهيتو كود رد مكس بيري",
+  "name_en": "Mojito Code Red Mixed Berry",
+  "category": "mojito",
+  "slugs": [
+   "mojito-code-red-mixed-berry"
+  ],
+  "names_ar": [
+   "موهيتو كود رد مكس بيري"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-code-red-passion-fruit",
+  "name_ar": "موهيتو كود رد باشن فروت",
+  "name_en": "Mojito Code Red Passion Fruit",
+  "category": "mojito",
+  "slugs": [
+   "mojito-code-red-passion-fruit"
+  ],
+  "names_ar": [
+   "موهيتو كود رد باشن فروت"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-code-red-peach",
+  "name_ar": "موهيتو كود رد خوخ",
+  "name_en": "Mojito Code Red Peach",
+  "category": "mojito",
+  "slugs": [
+   "mojito-code-red-peach"
+  ],
+  "names_ar": [
+   "موهيتو كود رد خوخ"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-code-red-pomegranate",
+  "name_ar": "موهيتو كود رد رمان",
+  "name_en": "Mojito Code Red Pomegranate",
+  "category": "mojito",
+  "slugs": [
+   "mojito-code-red-pomegranate"
+  ],
+  "names_ar": [
+   "موهيتو كود رد رمان"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-code-red-raspberry",
+  "name_ar": "موهيتو كود رد توت أحمر",
+  "name_en": "Mojito Code Red Raspberry",
+  "category": "mojito",
+  "slugs": [
+   "mojito-code-red-raspberry"
+  ],
+  "names_ar": [
+   "موهيتو كود رد توت أحمر"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-code-red-strawberry",
+  "name_ar": "موهيتو كود رد فراولة",
+  "name_en": "Mojito Code Red Strawberry",
+  "category": "mojito",
+  "slugs": [
+   "mojito-code-red-strawberry"
+  ],
+  "names_ar": [
+   "موهيتو كود رد فراولة"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-code-red-watermelon",
+  "name_ar": "موهيتو كود رد بطيخ",
+  "name_en": "Mojito Code Red Watermelon",
+  "category": "mojito",
+  "slugs": [
+   "mojito-code-red-watermelon"
+  ],
+  "names_ar": [
+   "موهيتو كود رد بطيخ"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-red-bull-blackberry",
+  "name_ar": "موهيتو رد بول توت أسود",
+  "name_en": "Mojito Red Bull Blackberry",
+  "category": "mojito",
+  "slugs": [
+   "mojito-red-bull-blackberry"
+  ],
+  "names_ar": [
+   "موهيتو رد بول توت أسود"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-red-bull-blueberry",
+  "name_ar": "موهيتو رد بول بلو",
+  "name_en": "Mojito Red Bull Blueberry",
+  "category": "mojito",
+  "slugs": [
+   "mojito-red-bull-blueberry"
+  ],
+  "names_ar": [
+   "موهيتو رد بول بلو"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-red-bull-lemon",
+  "name_ar": "موهيتو رد بول ليمون",
+  "name_en": "Mojito Red Bull Lemon",
+  "category": "mojito",
+  "slugs": [
+   "mojito-red-bull-lemon"
+  ],
+  "names_ar": [
+   "موهيتو رد بول ليمون"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-red-bull-mixed-berry",
+  "name_ar": "موهيتو رد بول مكس بيري",
+  "name_en": "Mojito Red Bull Mixed Berry",
+  "category": "mojito",
+  "slugs": [
+   "mojito-red-bull-mixed-berry"
+  ],
+  "names_ar": [
+   "موهيتو رد بول مكس بيري"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-red-bull-passion-fruit",
+  "name_ar": "موهيتو رد بول باشن فروت",
+  "name_en": "Mojito Red Bull Passion Fruit",
+  "category": "mojito",
+  "slugs": [
+   "mojito-red-bull-passion-fruit"
+  ],
+  "names_ar": [
+   "موهيتو رد بول باشن فروت"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-red-bull-peach",
+  "name_ar": "موهيتو رد بول خوخ",
+  "name_en": "Mojito Red Bull Peach",
+  "category": "mojito",
+  "slugs": [
+   "mojito-red-bull-peach"
+  ],
+  "names_ar": [
+   "موهيتو رد بول خوخ"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-red-bull-pomegranate",
+  "name_ar": "موهيتو رد بول رمان",
+  "name_en": "Mojito Red Bull Pomegranate",
+  "category": "mojito",
+  "slugs": [
+   "mojito-red-bull-pomegranate"
+  ],
+  "names_ar": [
+   "موهيتو رد بول رمان"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-red-bull-raspberry",
+  "name_ar": "موهيتو رد بول توت أحمر",
+  "name_en": "Mojito Red Bull Raspberry",
+  "category": "mojito",
+  "slugs": [
+   "mojito-red-bull-raspberry"
+  ],
+  "names_ar": [
+   "موهيتو رد بول توت أحمر"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-red-bull-strawberry",
+  "name_ar": "موهيتو رد بول فراولة",
+  "name_en": "Mojito Red Bull Strawberry",
+  "category": "mojito",
+  "slugs": [
+   "mojito-red-bull-strawberry"
+  ],
+  "names_ar": [
+   "موهيتو رد بول فراولة"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-red-bull-watermelon",
+  "name_ar": "موهيتو رد بول بطيخ",
+  "name_en": "Mojito Red Bull Watermelon",
+  "category": "mojito",
+  "slugs": [
+   "mojito-red-bull-watermelon"
+  ],
+  "names_ar": [
+   "موهيتو رد بول بطيخ"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-sprite-blackberry",
+  "name_ar": "موهيتو سبرايت توت أسود",
+  "name_en": "Mojito Sprite Blackberry",
+  "category": "mojito",
+  "slugs": [
+   "mojito-sprite-blackberry"
+  ],
+  "names_ar": [
+   "موهيتو سبرايت توت أسود"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-sprite-blueberry",
+  "name_ar": "موهيتو سبرايت بلو",
+  "name_en": "Mojito Sprite Blueberry",
+  "category": "mojito",
+  "slugs": [
+   "mojito-sprite-blueberry"
+  ],
+  "names_ar": [
+   "موهيتو سبرايت بلو"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-sprite-lemon",
+  "name_ar": "موهيتو سبرايت ليمون",
+  "name_en": "Mojito Sprite Lemon",
+  "category": "mojito",
+  "slugs": [
+   "mojito-sprite-lemon"
+  ],
+  "names_ar": [
+   "موهيتو سبرايت ليمون"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-sprite-mixed-berry",
+  "name_ar": "موهيتو سبرايت مكس بيري",
+  "name_en": "Mojito Sprite Mixed Berry",
+  "category": "mojito",
+  "slugs": [
+   "mojito-sprite-mixed-berry"
+  ],
+  "names_ar": [
+   "موهيتو سبرايت مكس بيري"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-sprite-passion-fruit",
+  "name_ar": "موهيتو سبرايت باشن فروت",
+  "name_en": "Mojito Sprite Passion Fruit",
+  "category": "mojito",
+  "slugs": [
+   "mojito-sprite-passion-fruit"
+  ],
+  "names_ar": [
+   "موهيتو سبرايت باشن فروت"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-sprite-peach",
+  "name_ar": "موهيتو سبرايت خوخ",
+  "name_en": "Mojito Sprite Peach",
+  "category": "mojito",
+  "slugs": [
+   "mojito-sprite-peach"
+  ],
+  "names_ar": [
+   "موهيتو سبرايت خوخ"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-sprite-pomegranate",
+  "name_ar": "موهيتو سبرايت رمان",
+  "name_en": "Mojito Sprite Pomegranate",
+  "category": "mojito",
+  "slugs": [
+   "mojito-sprite-pomegranate"
+  ],
+  "names_ar": [
+   "موهيتو سبرايت رمان"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-sprite-raspberry",
+  "name_ar": "موهيتو سبرايت توت أحمر",
+  "name_en": "Mojito Sprite Raspberry",
+  "category": "mojito",
+  "slugs": [
+   "mojito-sprite-raspberry"
+  ],
+  "names_ar": [
+   "موهيتو سبرايت توت أحمر"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-sprite-strawberry",
+  "name_ar": "موهيتو سبرايت فراولة",
+  "name_en": "Mojito Sprite Strawberry",
+  "category": "mojito",
+  "slugs": [
+   "mojito-sprite-strawberry"
+  ],
+  "names_ar": [
+   "موهيتو سبرايت فراولة"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mojito-sprite-watermelon",
+  "name_ar": "موهيتو سبرايت بطيخ",
+  "name_en": "Mojito Sprite Watermelon",
+  "category": "mojito",
+  "slugs": [
+   "mojito-sprite-watermelon"
+  ],
+  "names_ar": [
+   "موهيتو سبرايت بطيخ"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "pomegranate-mojito",
+  "name_ar": "رمان موهيتو",
+  "name_en": "Pomegranate Mojito",
+  "category": "mojito",
+  "slugs": [
+   "pomegranate-mojito"
+  ],
+  "names_ar": [
+   "رمان موهيتو"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "red-mulberry-mojito",
+  "name_ar": "توت احمر موهيتو",
+  "name_en": "Red Mulberry Mojito",
+  "category": "mojito",
+  "slugs": [
+   "red-mulberry-mojito"
+  ],
+  "names_ar": [
+   "توت احمر موهيتو"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "strawberry-mojito",
+  "name_ar": "فراولا موهيتو",
+  "name_en": "Strawberry Mojito",
+  "category": "mojito",
+  "slugs": [
+   "strawberry-mojito"
+  ],
+  "names_ar": [
+   "فراولا موهيتو"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "caesar-salad",
+  "name_ar": "سلطة سيزار",
+  "name_en": "Caesar Salad",
+  "category": "salads",
+  "slugs": [
+   "caesar-salad"
+  ],
+  "names_ar": [
+   "سلطة سيزار"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "fattoush",
+  "name_ar": "فتوش",
+  "name_en": "Fattoush",
+  "category": "salads",
+  "slugs": [
+   "fattoush"
+  ],
+  "names_ar": [
+   "فتوش"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "green-salad",
+  "name_ar": "سلطة خضراء",
+  "name_en": "Green Salad",
+  "category": "salads",
+  "slugs": [
+   "green-salad",
+   "mezze-green-salad"
+  ],
+  "names_ar": [
+   "سلطة خضراء"
+  ],
+  "tenants": [
+   "coffee-secret",
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "sd-slaw",
+  "name_ar": "سلطة ملفوف",
+  "name_en": "",
+  "category": "salads",
+  "slugs": [
+   "sd-slaw"
+  ],
+  "names_ar": [
+   "سلطة ملفوف"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "tabbouleh",
+  "name_ar": "تبولة",
+  "name_en": "Tabbouleh",
+  "category": "salads",
+  "slugs": [
+   "tabbouleh",
+   "mezze-tabbouleh"
+  ],
+  "names_ar": [
+   "تبولة"
+  ],
+  "tenants": [
+   "coffee-secret",
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "beef-burger",
+  "name_ar": "برغر لحم",
+  "name_en": "Beef Burger",
+  "category": "sandwiches",
+  "slugs": [
+   "beef-burger"
+  ],
+  "names_ar": [
+   "برغر لحم"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "beef-steak",
+  "name_ar": "ستيك ساندويتش",
+  "name_en": "Beef Steak",
+  "category": "sandwiches",
+  "slugs": [
+   "beef-steak"
+  ],
+  "names_ar": [
+   "ستيك ساندويتش"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "bg-crispy",
+  "name_ar": "كرسبي برجر",
+  "name_en": "",
+  "category": "sandwiches",
+  "slugs": [
+   "bg-crispy"
+  ],
+  "names_ar": [
+   "كرسبي برجر"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "bg-maple",
+  "name_ar": "ميبل برجر",
+  "name_en": "",
+  "category": "sandwiches",
+  "slugs": [
+   "bg-maple"
+  ],
+  "names_ar": [
+   "ميبل برجر"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "bg-nash",
+  "name_ar": "ناشفل برجر",
+  "name_en": "",
+  "category": "sandwiches",
+  "slugs": [
+   "bg-nash"
+  ],
+  "names_ar": [
+   "ناشفل برجر"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "br-hot",
+  "name_ar": "بروستد حار",
+  "name_en": "",
+  "category": "sandwiches",
+  "slugs": [
+   "br-hot"
+  ],
+  "names_ar": [
+   "بروستد حار"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "br-jal",
+  "name_ar": "بروستد لهاليبو",
+  "name_en": "",
+  "category": "sandwiches",
+  "slugs": [
+   "br-jal"
+  ],
+  "names_ar": [
+   "بروستد لهاليبو"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "br-nash",
+  "name_ar": "بروستد ناشفل",
+  "name_en": "",
+  "category": "sandwiches",
+  "slugs": [
+   "br-nash"
+  ],
+  "names_ar": [
+   "بروستد ناشفل"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "br-reg",
+  "name_ar": "بروستد عادي",
+  "name_en": "",
+  "category": "sandwiches",
+  "slugs": [
+   "br-reg"
+  ],
+  "names_ar": [
+   "بروستد عادي"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "ceaser-chicken",
+  "name_ar": "سيزار دجاج",
+  "name_en": "Ceaser Chicken",
+  "category": "sandwiches",
+  "slugs": [
+   "ceaser-chicken"
+  ],
+  "names_ar": [
+   "سيزار دجاج"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "chicken-breast-burger",
+  "name_ar": "برغر صدور الدجاج",
+  "name_en": "Chicken Breast Burger",
+  "category": "sandwiches",
+  "slugs": [
+   "chicken-breast-burger"
+  ],
+  "names_ar": [
+   "برغر صدور الدجاج"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "chicken-burger",
+  "name_ar": "برغر دجاج",
+  "name_en": "Chicken Burger",
+  "category": "sandwiches",
+  "slugs": [
+   "chicken-burger"
+  ],
+  "names_ar": [
+   "برغر دجاج"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "chicken-fajita",
+  "name_ar": "فاهيتا دجاج ساندويتش",
+  "name_en": "Chicken Fajita",
+  "category": "sandwiches",
+  "slugs": [
+   "chicken-fajita"
+  ],
+  "names_ar": [
+   "فاهيتا دجاج ساندويتش"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "chicken-grilled",
+  "name_ar": "جريل ساندويتش",
+  "name_en": "Chicken Grilled",
+  "category": "sandwiches",
+  "slugs": [
+   "chicken-grilled"
+  ],
+  "names_ar": [
+   "جريل ساندويتش"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "chicken-kabab",
+  "name_ar": "كباب دجاج",
+  "name_en": "Chicken Kabab",
+  "category": "sandwiches",
+  "slugs": [
+   "chicken-kabab"
+  ],
+  "names_ar": [
+   "كباب دجاج"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "chicken-mexicano",
+  "name_ar": "مكسيكانو دجاج",
+  "name_en": "Chicken Mexicano",
+  "category": "sandwiches",
+  "slugs": [
+   "chicken-mexicano"
+  ],
+  "names_ar": [
+   "مكسيكانو دجاج"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "chicken-quesadillas",
+  "name_ar": "كساديا دجاج",
+  "name_en": "Chicken Quesadillas",
+  "category": "sandwiches",
+  "slugs": [
+   "chicken-quesadillas"
+  ],
+  "names_ar": [
+   "كساديا دجاج"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "chicken-shawarma",
+  "name_ar": "شاورما دجاج",
+  "name_en": "Chicken Shawarma",
+  "category": "sandwiches",
+  "slugs": [
+   "chicken-shawarma"
+  ],
+  "names_ar": [
+   "شاورما دجاج"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "chicken-wrap",
+  "name_ar": "دجاج راب",
+  "name_en": "Chicken Wrap",
+  "category": "sandwiches",
+  "slugs": [
+   "chicken-wrap"
+  ],
+  "names_ar": [
+   "دجاج راب"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "fajita",
+  "name_ar": "فاهيتا",
+  "name_en": "Fajita",
+  "category": "sandwiches",
+  "slugs": [
+   "fajita"
+  ],
+  "names_ar": [
+   "فاهيتا"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "item-1779223803560",
+  "name_ar": "جبن زيادة",
+  "name_en": "",
+  "category": "sandwiches",
+  "slugs": [
+   "item-1779223803560"
+  ],
+  "names_ar": [
+   "جبن زيادة"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "lamb-kabab",
+  "name_ar": "كباب لحم",
+  "name_en": "Lamb Kabab",
+  "category": "sandwiches",
+  "slugs": [
+   "lamb-kabab"
+  ],
+  "names_ar": [
+   "كباب لحم"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "meal",
+  "name_ar": "وجبه",
+  "name_en": "Meal",
+  "category": "sandwiches",
+  "slugs": [
+   "meal"
+  ],
+  "names_ar": [
+   "وجبه"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "mexican",
+  "name_ar": "ماكسيكان",
+  "name_en": "Mexican",
+  "category": "sandwiches",
+  "slugs": [
+   "mexican"
+  ],
+  "names_ar": [
+   "ماكسيكان"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "potatoes",
+  "name_ar": "بطاطا",
+  "name_en": "Potatoes",
+  "category": "sandwiches",
+  "slugs": [
+   "potatoes"
+  ],
+  "names_ar": [
+   "بطاطا"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "shawarma-chicken",
+  "name_ar": "شاورما دجاج",
+  "name_en": "Shawarma Chicken",
+  "category": "sandwiches",
+  "slugs": [
+   "shawarma-chicken"
+  ],
+  "names_ar": [
+   "شاورما دجاج"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "tn-hot",
+  "name_ar": "تندر حار",
+  "name_en": "",
+  "category": "sandwiches",
+  "slugs": [
+   "tn-hot"
+  ],
+  "names_ar": [
+   "تندر حار"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "tn-jal",
+  "name_ar": "تندر لهاليبو",
+  "name_en": "",
+  "category": "sandwiches",
+  "slugs": [
+   "tn-jal"
+  ],
+  "names_ar": [
+   "تندر لهاليبو"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "tn-nash",
+  "name_ar": "تندر ناشفل",
+  "name_en": "",
+  "category": "sandwiches",
+  "slugs": [
+   "tn-nash"
+  ],
+  "names_ar": [
+   "تندر ناشفل"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "tn-reg",
+  "name_ar": "تندر عادي",
+  "name_en": "",
+  "category": "sandwiches",
+  "slugs": [
+   "tn-reg"
+  ],
+  "names_ar": [
+   "تندر عادي"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "tw-hot",
+  "name_ar": "تويستر حار",
+  "name_en": "",
+  "category": "sandwiches",
+  "slugs": [
+   "tw-hot"
+  ],
+  "names_ar": [
+   "تويستر حار"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "tw-maple",
+  "name_ar": "تويستر ميبل",
+  "name_en": "",
+  "category": "sandwiches",
+  "slugs": [
+   "tw-maple"
+  ],
+  "names_ar": [
+   "تويستر ميبل"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "tw-reg",
+  "name_ar": "تويستر",
+  "name_en": "",
+  "category": "sandwiches",
+  "slugs": [
+   "tw-reg"
+  ],
+  "names_ar": [
+   "تويستر"
+  ],
+  "tenants": [
+   "koko"
+  ]
+ },
+ {
+  "key": "zinger",
+  "name_ar": "زينجر",
+  "name_en": "Zinger",
+  "category": "sandwiches",
+  "slugs": [
+   "zinger"
+  ],
+  "names_ar": [
+   "زينجر"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "zinger-spicy",
+  "name_ar": "زينجر حار",
+  "name_en": "Zinger Spicy",
+  "category": "sandwiches",
+  "slugs": [
+   "zinger-spicy"
+  ],
+  "names_ar": [
+   "زينجر حار"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "add-customer",
+  "name_ar": "راس زبون",
+  "name_en": "Add Customer",
+  "category": "shisha",
+  "slugs": [
+   "add-customer"
+  ],
+  "names_ar": [
+   "راس زبون"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "add-elca-girfa",
+  "name_ar": "Add Elca Girfa",
+  "name_en": "Add Elca Girfa",
+  "category": "shisha",
+  "slugs": [
+   "add-elca-girfa"
+  ],
+  "names_ar": [
+   "Add Elca Girfa"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "add-elca-mint",
+  "name_ar": "Add Elca Mint",
+  "name_en": "Add Elca Mint",
+  "category": "shisha",
+  "slugs": [
+   "add-elca-mint"
+  ],
+  "names_ar": [
+   "Add Elca Mint"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "add-faker-head",
+  "name_ar": "اضافة راس فاخر",
+  "name_en": "Add Faker Head",
+  "category": "shisha",
+  "slugs": [
+   "add-faker-head"
+  ],
+  "names_ar": [
+   "اضافة راس فاخر"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "add-grape-head",
+  "name_ar": "اضافة راس عنب",
+  "name_en": "Add Grape Head",
+  "category": "shisha",
+  "slugs": [
+   "add-grape-head"
+  ],
+  "names_ar": [
+   "اضافة راس عنب"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "add-gref-rasbery-head",
+  "name_ar": "اضافة راس عنب توت",
+  "name_en": "Add Gref Rasbery Head",
+  "category": "shisha",
+  "slugs": [
+   "add-gref-rasbery-head"
+  ],
+  "names_ar": [
+   "اضافة راس عنب توت"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "add-lemon-mint-head",
+  "name_ar": "اضافة راس ليمون نعناع",
+  "name_en": "Add Lemon Mint Head",
+  "category": "shisha",
+  "slugs": [
+   "add-lemon-mint-head"
+  ],
+  "names_ar": [
+   "اضافة راس ليمون نعناع"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "add-mint-grapes-head",
+  "name_ar": "اضافة راس عنب نعناع",
+  "name_en": "Add Mint Grapes Head",
+  "category": "shisha",
+  "slugs": [
+   "add-mint-grapes-head"
+  ],
+  "names_ar": [
+   "اضافة راس عنب نعناع"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "add-mix-head",
+  "name_ar": "اضافة راس مكس",
+  "name_en": "Add Mix Head",
+  "category": "shisha",
+  "slugs": [
+   "add-mix-head"
+  ],
+  "names_ar": [
+   "اضافة راس مكس"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "add-mustaka-head",
+  "name_ar": "اضافة راس مستكه",
+  "name_en": "Add Mustaka Head",
+  "category": "shisha",
+  "slugs": [
+   "add-mustaka-head"
+  ],
+  "names_ar": [
+   "اضافة راس مستكه"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "add-palm-head",
+  "name_ar": "اضافة راس نخله",
+  "name_en": "Add Palm Head",
+  "category": "shisha",
+  "slugs": [
+   "add-palm-head"
+  ],
+  "names_ar": [
+   "اضافة راس نخله"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "add-water-melion-head",
+  "name_ar": "إضافة راس بطيخ",
+  "name_en": "Add Water Melion Head",
+  "category": "shisha",
+  "slugs": [
+   "add-water-melion-head"
+  ],
+  "names_ar": [
+   "إضافة راس بطيخ"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "almosfaer-mix",
+  "name_ar": "تفاحتين مكس",
+  "name_en": "Almosfaer Mix",
+  "category": "shisha",
+  "slugs": [
+   "almosfaer-mix",
+   "almosfaer-mix-shisha-pm",
+   "almosfaer-mix-shisha-39"
+  ],
+  "names_ar": [
+   "تفاحتين مكس",
+   "تجديد رأس تفاحتين مكس"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "blueberry",
+  "name_ar": "بلو بيري",
+  "name_en": "Blueberry",
+  "category": "shisha",
+  "slugs": [
+   "blueberry"
+  ],
+  "names_ar": [
+   "بلو بيري"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "candy",
+  "name_ar": "كاندي",
+  "name_en": "Candy",
+  "category": "shisha",
+  "slugs": [
+   "candy",
+   "candy-shisha-pm",
+   "candy-shisha-39"
+  ],
+  "names_ar": [
+   "كاندي",
+   "تجديد رأس كاندي"
+  ],
+  "tenants": [
+   "coffee-secret",
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "double-apple-premium",
+  "name_ar": "تفاحتين فاخر",
+  "name_en": "Double Apple Premium",
+  "category": "shisha",
+  "slugs": [
+   "double-apple-premium",
+   "double-apple-premium-shisha-pm",
+   "double-apple-premium-shisha-39"
+  ],
+  "names_ar": [
+   "تفاحتين فاخر",
+   "تجديد رأس تفاحتين فاخر"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "double-apples-palm",
+  "name_ar": "تفاحتين نخلة",
+  "name_en": "Double Apples Palm",
+  "category": "shisha",
+  "slugs": [
+   "double-apples-palm",
+   "double-apples-palm-shisha-pm",
+   "double-apples-palm-shisha-39"
+  ],
+  "names_ar": [
+   "تفاحتين نخلة",
+   "تجديد رأس تفاحتين نخلة"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "ealak-mustaka",
+  "name_ar": "علكة مستكة",
+  "name_en": "Ealak Mustaka",
+  "category": "shisha",
+  "slugs": [
+   "ealak-mustaka"
+  ],
+  "names_ar": [
+   "علكة مستكة"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "ealak-naenae",
+  "name_ar": "علكة نعناع",
+  "name_en": "Ealak Naenae",
+  "category": "shisha",
+  "slugs": [
+   "ealak-naenae"
+  ],
+  "names_ar": [
+   "علكة نعناع"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "ealak-qirfa",
+  "name_ar": "علكة قرفة",
+  "name_en": "Ealak Qirfa",
+  "category": "shisha",
+  "slugs": [
+   "ealak-qirfa"
+  ],
+  "names_ar": [
+   "علكة قرفة"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "faker",
+  "name_ar": "فاخر",
+  "name_en": "Faker",
+  "category": "shisha",
+  "slugs": [
+   "faker"
+  ],
+  "names_ar": [
+   "فاخر"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "glass-lai",
+  "name_ar": "لي زجاج",
+  "name_en": "Glass Lai",
+  "category": "shisha",
+  "slugs": [
+   "glass-lai",
+   "ly-qzaz"
+  ],
+  "names_ar": [
+   "لي زجاج",
+   "لي قزاز"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "grape",
+  "name_ar": "عنب",
+  "name_en": "Grape",
+  "category": "shisha",
+  "slugs": [
+   "grape"
+  ],
+  "names_ar": [
+   "عنب"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "grape-rasbery",
+  "name_ar": "عنب توت",
+  "name_en": "Grape Rasbery",
+  "category": "shisha",
+  "slugs": [
+   "grape-rasbery"
+  ],
+  "names_ar": [
+   "عنب توت"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "gum-premium",
+  "name_ar": "علكة فاخر",
+  "name_en": "Gum Premium",
+  "category": "shisha",
+  "slugs": [
+   "gum-premium",
+   "gum-premium-shisha-pm",
+   "gum-premium-shisha-39"
+  ],
+  "names_ar": [
+   "علكة فاخر",
+   "تجديد رأس علكة فاخر"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "lemon-mint",
+  "name_ar": "ليمون نعناع",
+  "name_en": "Lemon Mint",
+  "category": "shisha",
+  "slugs": [
+   "lemon-mint"
+  ],
+  "names_ar": [
+   "ليمون نعناع"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "max-mazaya",
+  "name_ar": "شيشة ماكس مزايا",
+  "name_en": "Max Mazaya",
+  "category": "shisha",
+  "slugs": [
+   "max-mazaya"
+  ],
+  "names_ar": [
+   "شيشة ماكس مزايا"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "mazaya-cinnamon-gum",
+  "name_ar": "مزايا علكة قرفة",
+  "name_en": "Mazaya Cinnamon Gum",
+  "category": "shisha",
+  "slugs": [
+   "mazaya-cinnamon-gum",
+   "mazaya-cinnamon-gum-shisha-pm",
+   "mazaya-cinnamon-gum-shisha-39"
+  ],
+  "names_ar": [
+   "مزايا علكة قرفة",
+   "تجديد رأس مزايا علكة قرفة"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "melon-mzaya",
+  "name_ar": "شمام مزايا",
+  "name_en": "Melon Mzaya",
+  "category": "shisha",
+  "slugs": [
+   "melon-mzaya",
+   "melon-mzaya-shisha-pm",
+   "melon-mzaya-shisha-39"
+  ],
+  "names_ar": [
+   "شمام مزايا",
+   "تجديد رأس شمام مزايا"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "mint-grapes",
+  "name_ar": "عنب نعناع",
+  "name_en": "Mint Grapes",
+  "category": "shisha",
+  "slugs": [
+   "mint-grapes"
+  ],
+  "names_ar": [
+   "عنب نعناع"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "mix",
+  "name_ar": "مكس",
+  "name_en": "Mix",
+  "category": "shisha",
+  "slugs": [
+   "mix"
+  ],
+  "names_ar": [
+   "مكس"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "palm",
+  "name_ar": "نخله",
+  "name_en": "Palm",
+  "category": "shisha",
+  "slugs": [
+   "palm"
+  ],
+  "names_ar": [
+   "نخله"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "premium-blueberry",
+  "name_ar": "بلوبيري فاخر",
+  "name_en": "Premium Blueberry",
+  "category": "shisha",
+  "slugs": [
+   "premium-blueberry",
+   "premium-blueberry-shisha-pm",
+   "premium-blueberry-shisha-39"
+  ],
+  "names_ar": [
+   "بلوبيري فاخر",
+   "تجديد رأس بلوبيري فاخر"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "premium-grape",
+  "name_ar": "عنب فاخر",
+  "name_en": "Premium Grape",
+  "category": "shisha",
+  "slugs": [
+   "premium-grape",
+   "premium-grape-shisha-pm",
+   "premium-grape-shisha-39"
+  ],
+  "names_ar": [
+   "عنب فاخر",
+   "تجديد رأس عنب فاخر"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "premium-grape-berry",
+  "name_ar": "عنب توت فاخر",
+  "name_en": "Premium Grape Berry",
+  "category": "shisha",
+  "slugs": [
+   "premium-grape-berry",
+   "premium-grape-berry-shisha-pm",
+   "premium-grape-berry-shisha-39"
+  ],
+  "names_ar": [
+   "عنب توت فاخر",
+   "تجديد رأس عنب توت فاخر"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "premium-grape-mint",
+  "name_ar": "عنب نعناع فاخر",
+  "name_en": "Premium Grape Mint",
+  "category": "shisha",
+  "slugs": [
+   "premium-grape-mint",
+   "premium-grape-mint-shisha-pm",
+   "premium-grape-mint-shisha-39"
+  ],
+  "names_ar": [
+   "عنب نعناع فاخر",
+   "تجديد رأس عنب نعناع فاخر"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "premium-lemon-mint",
+  "name_ar": "ليمون نعناع فاخر",
+  "name_en": "Premium Lemon Mint",
+  "category": "shisha",
+  "slugs": [
+   "premium-lemon-mint",
+   "premium-lemon-mint-shisha-pm",
+   "premium-lemon-mint-shisha-39"
+  ],
+  "names_ar": [
+   "ليمون نعناع فاخر",
+   "تجديد رأس ليمون نعناع فاخر"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "premium-mint",
+  "name_ar": "نعناع فاخر",
+  "name_en": "Premium Mint",
+  "category": "shisha",
+  "slugs": [
+   "premium-mint",
+   "premium-mint-shisha-pm",
+   "premium-mint-shisha-39"
+  ],
+  "names_ar": [
+   "نعناع فاخر",
+   "نتجديد رأس عناع فاخر"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "premium-musk-gum",
+  "name_ar": "علكة مستكه فاخر",
+  "name_en": "Premium Musk Gum",
+  "category": "shisha",
+  "slugs": [
+   "premium-musk-gum",
+   "premium-musk-gum-shisha-pm",
+   "premium-musk-gum-shisha-39"
+  ],
+  "names_ar": [
+   "علكة مستكه فاخر",
+   "تجديد رأس علكة مستكه فاخر"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "premium-watermelon",
+  "name_ar": "بطيخ فاخر",
+  "name_en": "Premium Watermelon",
+  "category": "shisha",
+  "slugs": [
+   "premium-watermelon",
+   "premium-watermelon-shisha-pm",
+   "premium-watermelon-shisha-39"
+  ],
+  "names_ar": [
+   "بطيخ فاخر",
+   "تجديد رأس بطيخ فاخر"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "ruby-crush",
+  "name_ar": "روبي كراش",
+  "name_en": "Ruby Crush",
+  "category": "shisha",
+  "slugs": [
+   "ruby-crush",
+   "ruby-crush-shisha-pm",
+   "ruby-crush-shisha-39"
+  ],
+  "names_ar": [
+   "روبي كراش",
+   "تجديد رأس روبي كراش"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "salum",
+  "name_ar": "SALUM",
+  "name_en": "Salum",
+  "category": "shisha",
+  "slugs": [
+   "salum",
+   "salum-shisha"
+  ],
+  "names_ar": [
+   "SALUM",
+   "Salum"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "shish-tawouk",
+  "name_ar": "شيش طاووق",
+  "name_en": "Shish Tawouk",
+  "category": "shisha",
+  "slugs": [
+   "mashawi-shish-tawouk"
+  ],
+  "names_ar": [
+   "شيش طاووق"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "shisha-3",
+  "name_ar": "3 شيشة",
+  "name_en": "SHISHA 3",
+  "category": "shisha",
+  "slugs": [
+   "shisha-3"
+  ],
+  "names_ar": [
+   "3 شيشة"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "shisha-49",
+  "name_ar": "49شيشة",
+  "name_en": "SHISHA 49",
+  "category": "shisha",
+  "slugs": [
+   "shisha-49"
+  ],
+  "names_ar": [
+   "49شيشة"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "strawberry-premium",
+  "name_ar": "فراولة فاخر",
+  "name_en": "Strawberry Premium",
+  "category": "shisha",
+  "slugs": [
+   "strawberry-premium",
+   "strawberry-premium-shisha-pm",
+   "strawberry-premium-shisha-39"
+  ],
+  "names_ar": [
+   "فراولة فاخر",
+   "تجديد رأس فراولة فاخر"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "water-melon",
+  "name_ar": "بطيخ نعناع",
+  "name_en": "Water Melon",
+  "category": "shisha",
+  "slugs": [
+   "water-melon"
+  ],
+  "names_ar": [
+   "بطيخ نعناع"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "watermelon-mint-premium",
+  "name_ar": "بطيخ نعناع فاخر",
+  "name_en": "Watermelon Mint Premium",
+  "category": "shisha",
+  "slugs": [
+   "watermelon-mint-premium",
+   "watermelon-mint-premium-shisha-pm",
+   "watermelon-mint-premium-shisha-39"
+  ],
+  "names_ar": [
+   "بطيخ نعناع فاخر",
+   "تجديد رأس بطيخ نعناع فاخر"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "anise",
+  "name_ar": "يانسون",
+  "name_en": "Anise",
+  "category": "tea",
+  "slugs": [
+   "anise"
+  ],
+  "names_ar": [
+   "يانسون"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "carcade",
+  "name_ar": "كركديه",
+  "name_en": "Carcade",
+  "category": "tea",
+  "slugs": [
+   "carcade"
+  ],
+  "names_ar": [
+   "كركديه"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "chamomile-flower",
+  "name_ar": "بابونج",
+  "name_en": "Chamomile Flower",
+  "category": "tea",
+  "slugs": [
+   "chamomile-flower"
+  ],
+  "names_ar": [
+   "بابونج"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "cinger-lemon-with-honey",
+  "name_ar": "زنجبيل ليمون مع عسل",
+  "name_en": "Cinger Lemon With Honey",
+  "category": "tea",
+  "slugs": [
+   "cinger-lemon-with-honey"
+  ],
+  "names_ar": [
+   "زنجبيل ليمون مع عسل"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "cumin-and-lemon",
+  "name_ar": "كمون وليمون",
+  "name_en": "Cumin & Lemon",
+  "category": "tea",
+  "slugs": [
+   "cumin-and-lemon"
+  ],
+  "names_ar": [
+   "كمون وليمون"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "ginger",
+  "name_ar": "زنجبيل",
+  "name_en": "Ginger",
+  "category": "tea",
+  "slugs": [
+   "ginger"
+  ],
+  "names_ar": [
+   "زنجبيل"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "ginger-milk-honey",
+  "name_ar": "زنجبيل بالحليب والعسل",
+  "name_en": "Ginger Milk Honey",
+  "category": "tea",
+  "slugs": [
+   "ginger-milk-honey"
+  ],
+  "names_ar": [
+   "زنجبيل بالحليب والعسل"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "ginger-tea",
+  "name_ar": "زنجبيل",
+  "name_en": "Ginger Tea",
+  "category": "tea",
+  "slugs": [
+   "ginger-tea"
+  ],
+  "names_ar": [
+   "زنجبيل"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "ginger-with-lemon",
+  "name_ar": "زنجبيل وليمون",
+  "name_en": "Ginger With Lemon",
+  "category": "tea",
+  "slugs": [
+   "ginger-with-lemon"
+  ],
+  "names_ar": [
+   "زنجبيل وليمون"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "green-tea",
+  "name_ar": "شاي اخضر",
+  "name_en": "Green Tea",
+  "category": "tea",
+  "slugs": [
+   "green-tea"
+  ],
+  "names_ar": [
+   "شاي اخضر"
+  ],
+  "tenants": [
+   "coffee-secret",
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "green-tea-mint",
+  "name_ar": "شاي اخضر نعنع",
+  "name_en": "Green Tea Mint",
+  "category": "tea",
+  "slugs": [
+   "green-tea-mint"
+  ],
+  "names_ar": [
+   "شاي اخضر نعنع"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "hot-mint",
+  "name_ar": "نعناع حار",
+  "name_en": "Hot Mint",
+  "category": "tea",
+  "slugs": [
+   "hot-mint"
+  ],
+  "names_ar": [
+   "نعناع حار"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "ice-carcade",
+  "name_ar": "كركديه بارد",
+  "name_en": "Ice Carcade",
+  "category": "tea",
+  "slugs": [
+   "ice-carcade"
+  ],
+  "names_ar": [
+   "كركديه بارد"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "ice-tea-mix",
+  "name_ar": "ايس تي مشكل",
+  "name_en": "Ice Tea Mix",
+  "category": "tea",
+  "slugs": [
+   "ice-tea-mix"
+  ],
+  "names_ar": [
+   "ايس تي مشكل"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "iced-tea-fruit",
+  "name_ar": "فواكه شاي مثلج",
+  "name_en": "Iced Tea Fruit",
+  "category": "tea",
+  "slugs": [
+   "iced-tea-fruit"
+  ],
+  "names_ar": [
+   "فواكه شاي مثلج"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "iced-tea-lemon",
+  "name_ar": "ليمون شاي مثلج",
+  "name_en": "Iced Tea Lemon",
+  "category": "tea",
+  "slugs": [
+   "iced-tea-lemon"
+  ],
+  "names_ar": [
+   "ليمون شاي مثلج"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "iced-tea-lemon-and-mint",
+  "name_ar": "ليمون ونعناع شاي مثلج",
+  "name_en": "Iced Tea Lemon & Mint",
+  "category": "tea",
+  "slugs": [
+   "iced-tea-lemon-and-mint"
+  ],
+  "names_ar": [
+   "ليمون ونعناع شاي مثلج"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "iced-tea-peach",
+  "name_ar": "خوخ شاي مثلج",
+  "name_en": "Iced Tea Peach",
+  "category": "tea",
+  "slugs": [
+   "iced-tea-peach"
+  ],
+  "names_ar": [
+   "خوخ شاي مثلج"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "iced-tea-raspberry",
+  "name_ar": "توت احمر شاي مثلج",
+  "name_en": "Iced Tea Raspberry",
+  "category": "tea",
+  "slugs": [
+   "iced-tea-raspberry"
+  ],
+  "names_ar": [
+   "توت احمر شاي مثلج"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "item-1779647493811",
+  "name_ar": "كركديه",
+  "name_en": "",
+  "category": "tea",
+  "slugs": [
+   "item-1779647493811"
+  ],
+  "names_ar": [
+   "كركديه"
+  ],
+  "tenants": [
+   "rzrz-bukhari"
+  ]
+ },
+ {
+  "key": "karak-tea",
+  "name_ar": "شاي كرك",
+  "name_en": "Karak Tea",
+  "category": "tea",
+  "slugs": [
+   "karak-tea"
+  ],
+  "names_ar": [
+   "شاي كرك"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "karak-tea-with-cinger",
+  "name_ar": "شاي كرك مع زنجبيل",
+  "name_en": "Karak Tea With Cinger",
+  "category": "tea",
+  "slugs": [
+   "karak-tea-with-cinger"
+  ],
+  "names_ar": [
+   "شاي كرك مع زنجبيل"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "kenya-tea",
+  "name_ar": "شاي كيني",
+  "name_en": "Kenya Tea",
+  "category": "tea",
+  "slugs": [
+   "kenya-tea"
+  ],
+  "names_ar": [
+   "شاي كيني"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "mint-tea",
+  "name_ar": "شاي نعناع",
+  "name_en": "Mint Tea",
+  "category": "tea",
+  "slugs": [
+   "mint-tea"
+  ],
+  "names_ar": [
+   "شاي نعناع"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "morocan-tea",
+  "name_ar": "شاي مغربي",
+  "name_en": "Morocan Tea",
+  "category": "tea",
+  "slugs": [
+   "morocan-tea"
+  ],
+  "names_ar": [
+   "شاي مغربي"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "peach-iced-tea",
+  "name_ar": "ايس تي خوخ",
+  "name_en": "Peach Iced Tea",
+  "category": "tea",
+  "slugs": [
+   "peach-iced-tea"
+  ],
+  "names_ar": [
+   "ايس تي خوخ"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "red-tea",
+  "name_ar": "شاي أحمر",
+  "name_en": "Red Tea",
+  "category": "tea",
+  "slugs": [
+   "red-tea"
+  ],
+  "names_ar": [
+   "شاي أحمر",
+   "شاي احمر"
+  ],
+  "tenants": [
+   "coffee-secret",
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "sahlab",
+  "name_ar": "سحلب",
+  "name_en": "Sahlab",
+  "category": "tea",
+  "slugs": [
+   "sahlab"
+  ],
+  "names_ar": [
+   "سحلب"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "tea-and-mint",
+  "name_ar": "شاي بالنعناع",
+  "name_en": "Tea & Mint",
+  "category": "tea",
+  "slugs": [
+   "tea-and-mint"
+  ],
+  "names_ar": [
+   "شاي بالنعناع"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "tea-kobus",
+  "name_ar": "شاي كابوس",
+  "name_en": "Tea Kobus",
+  "category": "tea",
+  "slugs": [
+   "tea-kobus"
+  ],
+  "names_ar": [
+   "شاي كابوس"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "tea-milk",
+  "name_ar": "شاي حليب",
+  "name_en": "Tea Milk",
+  "category": "tea",
+  "slugs": [
+   "tea-milk"
+  ],
+  "names_ar": [
+   "شاي حليب"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "tea-milk-with-cinger",
+  "name_ar": "شاي حليب مع زنجبيل",
+  "name_en": "Tea Milk With Cinger",
+  "category": "tea",
+  "slugs": [
+   "tea-milk-with-cinger"
+  ],
+  "names_ar": [
+   "شاي حليب مع زنجبيل"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "tea-pot-green",
+  "name_ar": "براد شاي اخضر",
+  "name_en": "Tea Pot Green",
+  "category": "tea",
+  "slugs": [
+   "tea-pot-green"
+  ],
+  "names_ar": [
+   "براد شاي اخضر"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "tea-pot-red",
+  "name_ar": "براد شاي احمر",
+  "name_en": "Tea Pot Red",
+  "category": "tea",
+  "slugs": [
+   "tea-pot-red"
+  ],
+  "names_ar": [
+   "براد شاي احمر"
+  ],
+  "tenants": [
+   "mazaj-almosafer"
+  ]
+ },
+ {
+  "key": "tea-with-lemon",
+  "name_ar": "شاي بالليمون",
+  "name_en": "Tea With Lemon",
+  "category": "tea",
+  "slugs": [
+   "tea-with-lemon"
+  ],
+  "names_ar": [
+   "شاي بالليمون"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "thyme",
+  "name_ar": "شاي زعتر",
+  "name_en": "Thyme",
+  "category": "tea",
+  "slugs": [
+   "thyme"
+  ],
+  "names_ar": [
+   "شاي زعتر"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ },
+ {
+  "key": "water-1-sr",
+  "name_ar": "ماء ريال",
+  "name_en": "Water 1 Sr",
+  "category": "tea",
+  "slugs": [
+   "water-1-sr"
+  ],
+  "names_ar": [
+   "ماء ريال"
+  ],
+  "tenants": [
+   "coffee-secret"
+  ]
+ }
+]

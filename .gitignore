@@ -68,6 +68,8 @@ docs/clients/Design-template/
 docs/clients/almosafer/new-photos/
 # --- Coffee Secret client raw data (POS financial xlsx, logo, working screenshots — photos live in Supabase Storage) ---
 docs/clients/coffe-secret/
+# --- Generated photo catalog (visual xlsx w/ embedded thumbnails — regenerate via scripts/catalog/build-photo-catalog.mjs) ---
+.claude/skills/menulink-photo-catalog/data/*.xlsx
 
 # --- Office temp lock files ---
 **/~$*
