@@ -63,6 +63,7 @@ export type PublicMenuItem = {
   id: string;
   slug: string;
   name_ar: string;
+  name_en: string | null;
   description_ar: string | null;
   image_url: string | null;
   sort: number;
@@ -80,6 +81,7 @@ export type PublicCategory = {
   id: string;
   slug: string;
   name_ar: string;
+  name_en: string | null;
   emoji: string | null;
   info_ar: string | null;
   sort: number;

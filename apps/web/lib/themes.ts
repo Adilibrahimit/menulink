@@ -1,5 +1,9 @@
 import type { CSSProperties } from "react";
 
+/** A single stat shown in the heritage-list hero info bar.
+ *  `value` of "__count__" resolves to the category count, "__items__" to the total item count. */
+export type HeroStat = { value: string; label_ar: string };
+
 export type ThemeConfig = {
   slug: string;
   cssVars: Record<string, string>;
@@ -18,6 +22,14 @@ export type ThemeConfig = {
   loginFlow: "google-first" | "default";
   posterStyle: "default" | "heritage-emerald";
   menuLayout: "card-grid" | "heritage-list" | "premium-epicurean";
+  // Optional heritage-list hero overrides. When unset, the component falls back to
+  // the original Mazaj literals so existing tenants render identically.
+  heroBrandMark?: "dallah" | "coffee-cup";
+  heroTaglineEn?: string | null; // explicit null hides the Latin tagline
+  heroStats?: HeroStat[];
+  // When true, the menu renders bilingual (English name_en under the Arabic name
+  // on item cards + section headers). Defaults to false so existing tenants stay Arabic-only.
+  bilingual?: boolean;
 };
 
 const DEFAULT_THEME: ThemeConfig = {
@@ -94,6 +106,9 @@ export const MAZAJ_ALMOSAFER_THEME: ThemeConfig = {
     "--calorie-text": "#A0813F",
     "--cta-bg": "#0F2D26",
     "--cta-text": "#C9A961",
+    // Heritage-list tokens (these literals were previously hardcoded in the component).
+    "--card-fallback-to": "#1A4A3F",
+    "--dot-color": "201,169,97",
   },
   fonts: {
     display: "Reem Kufi",
@@ -113,9 +128,59 @@ export const MAZAJ_ALMOSAFER_THEME: ThemeConfig = {
   menuLayout: "heritage-list",
 };
 
+export const COFFEE_SECRET_THEME: ThemeConfig = {
+  slug: "coffee-secret",
+  cssVars: {
+    "--brand": "#0C3B3C",
+    "--bg": "#F5ECDD",
+    "--ink": "#23201A",
+    "--accent-gold": "#C9A24B",
+    "--header-bg": "#0C3B3C",
+    "--header-text": "#F5ECDD",
+    "--price-color": "#0C3B3C",
+    "--card-bg": "#FBF6EC",
+    "--card-border": "#E2D6BE",
+    "--divider": "#E2D6BE",
+    "--text-secondary": "#5E5848",
+    "--calorie-bg": "#FBF6EC",
+    "--calorie-text": "#9A7B33",
+    "--cta-bg": "#0C3B3C",
+    "--cta-text": "#C9A24B",
+    // Heritage-list tokens (teal-tuned).
+    "--card-fallback-to": "#0A2F30",
+    "--dot-color": "201,162,75",
+  },
+  fonts: {
+    // Same stack as Mazaj minus Dancing Script (unused by the heritage layout) — no extra families loaded.
+    display: "Reem Kufi",
+    body: "Tajawal",
+    googleUrl:
+      "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Reem+Kufi:wght@400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap",
+  },
+  categoryStyle: "pills",
+  menuCardStyle: "default",
+  headerStyle: "dark-navy",
+  bottomNavItems: 3,
+  cartBarStyle: "brand-default",
+  hasItemDetailSheet: false,
+  checkoutStyle: "drawer",
+  loginFlow: "default",
+  posterStyle: "default",
+  menuLayout: "heritage-list",
+  heroBrandMark: "coffee-cup",
+  heroTaglineEn: "Where every cup tells a secret",
+  heroStats: [
+    { value: "+18", label_ar: "شيشة" },
+    { value: "__count__", label_ar: "قسم" },
+    { value: "__items__", label_ar: "صنف" },
+  ],
+  bilingual: true,
+};
+
 const THEMES: Record<string, ThemeConfig> = {
   "rzrz-bukhari": RZRZ_THEME,
   "mazaj-almosafer": MAZAJ_ALMOSAFER_THEME,
+  "coffee-secret": COFFEE_SECRET_THEME,
 };
 
 export function getTheme(slug: string): ThemeConfig {
