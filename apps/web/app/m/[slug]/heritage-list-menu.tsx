@@ -31,6 +31,8 @@ export default function HeritageListMenu({
       : v === "__items__"
       ? String(totalItems)
       : v;
+  // Bilingual menu (English under Arabic). Off by default → existing tenants stay Arabic-only.
+  const bilingual = theme.bilingual ?? false;
 
   const [activeId, setActiveId] = useState<string>(menu.categories[0]?.id ?? "");
   const pillRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -238,6 +240,14 @@ export default function HeritageListMenu({
                 }}
               >
                 {cat.name_ar}
+                {bilingual && cat.name_en && (
+                  <span
+                    className="block text-[11px] font-medium tracking-widest uppercase mt-0.5 opacity-60"
+                    style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+                  >
+                    {cat.name_en}
+                  </span>
+                )}
               </span>
               {/* Three-dot ornament */}
               <div className="flex justify-center items-center gap-1.5 mt-3">
@@ -250,7 +260,7 @@ export default function HeritageListMenu({
             {/* Items grid — two cards per row (RzRz-style, Mazaj theme) */}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3.5">
               {cat.items.map((item: PublicMenuItem) => (
-                <HeritageItem key={item.id} item={item} />
+                <HeritageItem key={item.id} item={item} bilingual={bilingual} />
               ))}
             </div>
           </section>
@@ -331,7 +341,7 @@ function BrandMark({ kind }: { kind: "dallah" | "coffee-cup" }) {
   );
 }
 
-function HeritageItem({ item }: { item: PublicMenuItem }) {
+function HeritageItem({ item, bilingual }: { item: PublicMenuItem; bilingual: boolean }) {
   const img = item.image_url ?? SLUG_TO_IMG[item.slug] ?? null;
   const subtitle = item.description_ar || null;
   const hasMultipleVariants = item.variants.length > 1;
@@ -375,6 +385,14 @@ function HeritageItem({ item }: { item: PublicMenuItem }) {
           style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}
         >
           {item.name_ar}
+          {bilingual && item.name_en && item.name_en !== item.name_ar && (
+            <span
+              className="block text-[11px] font-normal leading-snug mt-0.5"
+              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: "var(--text-secondary)" }}
+            >
+              {item.name_en}
+            </span>
+          )}
         </h3>
         {subtitle && (
           <p

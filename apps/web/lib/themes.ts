@@ -27,6 +27,9 @@ export type ThemeConfig = {
   heroBrandMark?: "dallah" | "coffee-cup";
   heroTaglineEn?: string | null; // explicit null hides the Latin tagline
   heroStats?: HeroStat[];
+  // When true, the menu renders bilingual (English name_en under the Arabic name
+  // on item cards + section headers). Defaults to false so existing tenants stay Arabic-only.
+  bilingual?: boolean;
 };
 
 const DEFAULT_THEME: ThemeConfig = {
@@ -171,6 +174,7 @@ export const COFFEE_SECRET_THEME: ThemeConfig = {
     { value: "__count__", label_ar: "قسم" },
     { value: "__items__", label_ar: "صنف" },
   ],
+  bilingual: true,
 };
 
 const THEMES: Record<string, ThemeConfig> = {
