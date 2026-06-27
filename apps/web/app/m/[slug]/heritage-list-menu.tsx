@@ -13,6 +13,25 @@ export default function HeritageListMenu({
   menu: PublicMenu;
   theme: ThemeConfig;
 }) {
+  // Hero overrides — default to the original Mazaj literals so existing tenants are unchanged.
+  const brandMark = theme.heroBrandMark ?? "dallah";
+  const taglineEn =
+    theme.heroTaglineEn === undefined
+      ? "Making memories, one cup at a time"
+      : theme.heroTaglineEn;
+  const totalItems = menu.categories.reduce((sum, c) => sum + c.items.length, 0);
+  const heroStats = theme.heroStats ?? [
+    { value: "24/7", label_ar: "مفتوح" },
+    { value: "+18", label_ar: "كبار" },
+    { value: "__count__", label_ar: "تصنيف" },
+  ];
+  const resolveStat = (v: string) =>
+    v === "__count__"
+      ? String(menu.categories.length)
+      : v === "__items__"
+      ? String(totalItems)
+      : v;
+
   const [activeId, setActiveId] = useState<string>(menu.categories[0]?.id ?? "");
   const pillRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -57,7 +76,7 @@ export default function HeritageListMenu({
         background: "var(--bg)",
         color: "var(--ink)",
         backgroundImage:
-          "radial-gradient(circle at 50% 50%, rgba(201,169,97,0.04) 1px, transparent 1px), radial-gradient(circle at 0% 0%, rgba(201,169,97,0.025) 1px, transparent 1px)",
+          "radial-gradient(circle at 50% 50%, rgba(var(--dot-color),0.04) 1px, transparent 1px), radial-gradient(circle at 0% 0%, rgba(var(--dot-color),0.025) 1px, transparent 1px)",
         backgroundSize: "32px 32px, 24px 24px",
         backgroundPosition: "0 0, 16px 16px",
       }}
@@ -78,28 +97,19 @@ export default function HeritageListMenu({
           className="absolute rounded-full pointer-events-none"
           style={{
             top: -100, right: -80, width: 280, height: 280, zIndex: 0,
-            background: "radial-gradient(circle, rgba(201,169,97,0.12) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(var(--dot-color),0.12) 0%, transparent 70%)",
           }}
         />
         <div
           className="absolute rounded-full pointer-events-none"
           style={{
             bottom: -120, left: -60, width: 240, height: 240, zIndex: 0,
-            background: "radial-gradient(circle, rgba(201,169,97,0.1) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(var(--dot-color),0.1) 0%, transparent 70%)",
           }}
         />
 
         <div className="relative z-10">
-          {/* Dallah SVG icon */}
-          <svg
-            className="mx-auto mb-3.5"
-            width="56" height="56" viewBox="0 0 100 100" fill="none"
-          >
-            <path
-              d="M 30 35 Q 30 25 40 25 L 55 25 Q 60 25 60 30 L 60 32 L 70 38 L 65 42 L 60 40 L 60 55 Q 60 70 50 75 L 35 75 Q 25 70 25 55 L 25 40 Q 25 35 30 35 Z"
-              stroke="var(--accent-gold)" strokeWidth="2.5" strokeLinejoin="round" fill="none"
-            />
-          </svg>
+          <BrandMark kind={brandMark} />
 
           <h1
             className="text-[28px] font-bold mb-1"
@@ -119,22 +129,24 @@ export default function HeritageListMenu({
               className="w-[5px] h-[5px] rounded-full"
               style={{
                 background: "var(--accent-gold)",
-                boxShadow: "0 0 0 3px rgba(201,169,97,0.15)",
+                boxShadow: "0 0 0 3px rgba(var(--dot-color),0.15)",
               }}
             />
             <span className="flex-1 h-px opacity-50" style={{ background: "var(--accent-gold)" }} />
           </div>
 
-          <p
-            className="text-sm italic mb-0.5"
-            style={{
-              fontFamily: "'Cormorant Garamond', Georgia, serif",
-              color: "var(--accent-gold)",
-              letterSpacing: "0.5px",
-            }}
-          >
-            Making memories, one cup at a time
-          </p>
+          {taglineEn && (
+            <p
+              className="text-sm italic mb-0.5"
+              style={{
+                fontFamily: "'Cormorant Garamond', Georgia, serif",
+                color: "var(--accent-gold)",
+                letterSpacing: "0.5px",
+              }}
+            >
+              {taglineEn}
+            </p>
+          )}
 
           {menu.restaurant.tagline_ar && (
             <p
@@ -148,35 +160,19 @@ export default function HeritageListMenu({
           {/* Info bar */}
           <div
             className="flex justify-center gap-7 mt-[22px] pt-[18px]"
-            style={{ borderTop: "1px solid rgba(201,169,97,0.2)" }}
+            style={{ borderTop: "1px solid rgba(var(--dot-color),0.2)" }}
           >
-            <div className="text-center">
-              <div
-                className="text-lg font-semibold leading-none"
-                style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: "var(--accent-gold)" }}
-              >
-                24/7
+            {heroStats.map((s, i) => (
+              <div key={i} className="text-center">
+                <div
+                  className="text-lg font-semibold leading-none"
+                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: "var(--accent-gold)" }}
+                >
+                  {resolveStat(s.value)}
+                </div>
+                <div className="text-[10px] tracking-widest opacity-70 mt-1 uppercase">{s.label_ar}</div>
               </div>
-              <div className="text-[10px] tracking-widest opacity-70 mt-1 uppercase">مفتوح</div>
-            </div>
-            <div className="text-center">
-              <div
-                className="text-lg font-semibold leading-none"
-                style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: "var(--accent-gold)" }}
-              >
-                +18
-              </div>
-              <div className="text-[10px] tracking-widest opacity-70 mt-1 uppercase">كبار</div>
-            </div>
-            <div className="text-center">
-              <div
-                className="text-lg font-semibold leading-none"
-                style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: "var(--accent-gold)" }}
-              >
-                {menu.categories.length}
-              </div>
-              <div className="text-[10px] tracking-widest opacity-70 mt-1 uppercase">تصنيف</div>
-            </div>
+            ))}
           </div>
         </div>
       </header>
@@ -208,10 +204,10 @@ export default function HeritageListMenu({
                   letterSpacing: "0.3px",
                   border: isActive
                     ? "1px solid var(--accent-gold)"
-                    : "1px solid rgba(201,169,97,0.4)",
+                    : "1px solid rgba(var(--dot-color),0.4)",
                   color: isActive ? "var(--header-bg)" : "var(--header-text)",
                   background: isActive ? "var(--accent-gold)" : "transparent",
-                  boxShadow: isActive ? "0 2px 8px rgba(201,169,97,0.3)" : "none",
+                  boxShadow: isActive ? "0 2px 8px rgba(var(--dot-color),0.3)" : "none",
                 }}
               >
                 {cat.name_ar}
@@ -280,22 +276,58 @@ export default function HeritageListMenu({
         <p className="text-xl font-bold mb-1.5" style={{ fontFamily: "var(--font-display)" }}>
           {menu.restaurant.name}
         </p>
-        <p
-          className="text-[13px] italic mb-6"
-          style={{
-            fontFamily: "'Cormorant Garamond', Georgia, serif",
-            color: "var(--accent-gold)",
-            letterSpacing: "0.5px",
-          }}
-        >
-          Making memories, one cup at a time
-        </p>
+        {taglineEn && (
+          <p
+            className="text-[13px] italic mb-6"
+            style={{
+              fontFamily: "'Cormorant Garamond', Georgia, serif",
+              color: "var(--accent-gold)",
+              letterSpacing: "0.5px",
+            }}
+          >
+            {taglineEn}
+          </p>
+        )}
         {menu.restaurant.address_ar && (
           <p className="text-xs opacity-60 mt-4">📍 {menu.restaurant.address_ar}</p>
         )}
         <p className="text-[10px] opacity-40 mt-6">Powered by MenuLink</p>
       </footer>
     </main>
+  );
+}
+
+function BrandMark({ kind }: { kind: "dallah" | "coffee-cup" }) {
+  if (kind === "coffee-cup") {
+    return (
+      <svg className="mx-auto mb-3.5" width="56" height="56" viewBox="0 0 100 100" fill="none">
+        {/* steam */}
+        <path
+          d="M 42 18 Q 38 24 42 30 M 52 16 Q 48 23 52 30 M 62 18 Q 58 24 62 30"
+          stroke="var(--accent-gold)" strokeWidth="2.2" strokeLinecap="round" fill="none" opacity="0.85"
+        />
+        {/* cup */}
+        <path
+          d="M 28 40 L 72 40 L 68 66 Q 66 74 56 74 L 44 74 Q 34 74 32 66 Z"
+          stroke="var(--accent-gold)" strokeWidth="2.5" strokeLinejoin="round" fill="none"
+        />
+        {/* handle */}
+        <path
+          d="M 72 46 Q 84 46 84 55 Q 84 63 70 62"
+          stroke="var(--accent-gold)" strokeWidth="2.5" strokeLinecap="round" fill="none"
+        />
+        {/* saucer */}
+        <path d="M 24 80 L 76 80" stroke="var(--accent-gold)" strokeWidth="2.5" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  return (
+    <svg className="mx-auto mb-3.5" width="56" height="56" viewBox="0 0 100 100" fill="none">
+      <path
+        d="M 30 35 Q 30 25 40 25 L 55 25 Q 60 25 60 30 L 60 32 L 70 38 L 65 42 L 60 40 L 60 55 Q 60 70 50 75 L 35 75 Q 25 70 25 55 L 25 40 Q 25 35 30 35 Z"
+        stroke="var(--accent-gold)" strokeWidth="2.5" strokeLinejoin="round" fill="none"
+      />
+    </svg>
   );
 }
 
@@ -318,7 +350,7 @@ function HeritageItem({ item }: { item: PublicMenuItem }) {
       {/* Image on top — large, square */}
       <div
         className="relative w-full aspect-square overflow-hidden grid place-items-center"
-        style={{ background: "linear-gradient(135deg, var(--header-bg) 0%, #1A4A3F 100%)" }}
+        style={{ background: "linear-gradient(135deg, var(--header-bg) 0%, var(--card-fallback-to) 100%)" }}
       >
         {img ? (
           // eslint-disable-next-line @next/next/no-img-element

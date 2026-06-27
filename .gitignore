@@ -66,6 +66,8 @@ docs/clients/ITEMS_PHOTO/
 # --- Client working photo dirs (local image-tooling output; not committed) ---
 docs/clients/Design-template/
 docs/clients/almosafer/new-photos/
+# --- Coffee Secret client raw data (POS financial xlsx, logo, working screenshots — photos live in Supabase Storage) ---
+docs/clients/coffe-secret/
 
 # --- Office temp lock files ---
 **/~$*
