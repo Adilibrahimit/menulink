@@ -12,6 +12,7 @@ import type { CSSProperties } from "react";
 import MenuExperience from "./menu-experience";
 import DisplayOnlyMenu from "./display-only-menu";
 import HeritageListMenu from "./heritage-list-menu";
+import WadiLoungeMenu from "./wadi-lounge-menu";
 import PwaBootstrap from "./pwa-bootstrap";
 import CustomerShell from "./customer-shell";
 import type { PublicMenu } from "./types";
@@ -130,7 +131,12 @@ export default async function CustomerMenuPage({
   }
 
   if (menu.restaurant.display_only_mode) {
-    const MenuComponent = theme.menuLayout === "heritage-list" ? HeritageListMenu : DisplayOnlyMenu;
+    const MenuComponent =
+      theme.menuLayout === "wadi-lounge"
+        ? WadiLoungeMenu
+        : theme.menuLayout === "heritage-list"
+        ? HeritageListMenu
+        : DisplayOnlyMenu;
     return (
       <div dir="rtl" style={cssVars} className="min-h-[100dvh]">
         {theme.fonts.googleUrl && (

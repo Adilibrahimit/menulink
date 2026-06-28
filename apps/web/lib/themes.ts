@@ -21,7 +21,7 @@ export type ThemeConfig = {
   checkoutStyle: "stepper" | "drawer";
   loginFlow: "google-first" | "default";
   posterStyle: "default" | "heritage-emerald";
-  menuLayout: "card-grid" | "heritage-list" | "premium-epicurean";
+  menuLayout: "card-grid" | "heritage-list" | "premium-epicurean" | "wadi-lounge";
   // Optional heritage-list hero overrides. When unset, the component falls back to
   // the original Mazaj literals so existing tenants render identically.
   heroBrandMark?: "dallah" | "coffee-cup";
@@ -187,11 +187,62 @@ export const MAZAJ_ALMOSAFER_RAWDAH_THEME: ThemeConfig = {
   bilingual: true,
 };
 
+// Wadi Almusafir — مقهى ولاونج (shisha lounge, Riyadh). A bespoke dark + ornate-gold
+// design faithful to the client's own poster: near-black canvas, warm metallic gold,
+// Arabesque-bordered cards, hexagonal price badges. Display-only + bilingual.
+// Rendered by the dedicated wadi-lounge-menu.tsx layout (menuLayout flag). NOT related
+// to Mazaj Almosafer despite the similar Arabic name.
+export const WADI_LOUNGE_THEME: ThemeConfig = {
+  slug: "wadi-almusafir",
+  cssVars: {
+    "--brand": "#D9B65C",
+    "--bg": "#0B0805",
+    "--ink": "#F3E9D6",
+    "--accent-gold": "#D9B65C",
+    "--header-bg": "#0B0805",
+    "--header-text": "#F3E9D6",
+    "--price-color": "#D9B65C",
+    "--card-bg": "#15110A",
+    "--card-border": "rgba(217,182,92,0.45)",
+    "--divider": "rgba(217,182,92,0.30)",
+    "--text-secondary": "#C9BCA3",
+    "--calorie-bg": "rgba(217,182,92,0.10)",
+    "--calorie-text": "#E2C674",
+    "--cta-bg": "#D9B65C",
+    "--cta-text": "#0B0805",
+    // ornate-card tokens
+    "--card-fallback-to": "#1C1408",
+    "--dot-color": "217,182,92",
+    "--gold-soft": "#E2C674",
+    "--gold-deep": "#B8923C",
+  },
+  fonts: {
+    display: "Reem Kufi",
+    body: "Tajawal",
+    googleUrl:
+      "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Reem+Kufi:wght@400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap",
+  },
+  categoryStyle: "pills",
+  menuCardStyle: "default",
+  headerStyle: "dark-navy",
+  bottomNavItems: 3,
+  cartBarStyle: "brand-default",
+  hasItemDetailSheet: false,
+  checkoutStyle: "drawer",
+  loginFlow: "default",
+  posterStyle: "default",
+  menuLayout: "wadi-lounge",
+  heroBrandMark: "coffee-cup",
+  heroTaglineEn: "Wadi Almusafir · Café & Lounge",
+  bilingual: true,
+};
+
 const THEMES: Record<string, ThemeConfig> = {
   "rzrz-bukhari": RZRZ_THEME,
   "mazaj-almosafer": MAZAJ_ALMOSAFER_THEME,
   "mazaj-almosafer-rawdah": MAZAJ_ALMOSAFER_RAWDAH_THEME,
   "coffee-secret": COFFEE_SECRET_THEME,
+  "wadi-almusafir": WADI_LOUNGE_THEME,
 };
 
 export function getTheme(slug: string): ThemeConfig {

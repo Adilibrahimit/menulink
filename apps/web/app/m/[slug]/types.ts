@@ -22,6 +22,9 @@ export type PublicRestaurant = {
   primary_color: string;
   background_color: string;
   display_only_mode?: boolean;
+  // Google Maps review link (set only for tenants on the google_review addon).
+  // When present, the menu shows a "rate us on Google" banner. Added in 0075.
+  google_review_url?: string | null;
 };
 
 export type PublicVariant = {

@@ -23,7 +23,8 @@ export type AddonKey =
   | "drivers"
   | "delivery_zones"
   | "advanced_reports"
-  | "notification_center";
+  | "notification_center"
+  | "google_review";
 
 export async function getEnabledAddons(restaurantId: string): Promise<Set<AddonKey>> {
   const sb = createClient();

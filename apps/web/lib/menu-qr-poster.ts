@@ -14,8 +14,13 @@ export type PosterOpts = {
   taglineAr: string | null;
   primaryColor: string;
   tableLabel?: string | null;
-  posterStyle?: "default" | "heritage-emerald";
+  posterStyle?: "default" | "heritage-emerald" | "wadi-dual";
   qrUrl?: string;
+  // wadi-dual extras: a second QR (Google review) shown beside the menu QR,
+  // plus contact lines for the printable lounge poster.
+  reviewUrl?: string;
+  addressAr?: string | null;
+  phone?: string | null;
 };
 
 export async function generatePosterDataUrl(opts: PosterOpts): Promise<{ dataUrl: string; url: string }> {
@@ -38,13 +43,142 @@ export async function generatePosterDataUrl(opts: PosterOpts): Promise<{ dataUrl
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("no 2d ctx");
 
-  if (opts.posterStyle === "heritage-emerald") {
+  if (opts.posterStyle === "wadi-dual") {
+    const menuUrl = `${origin}/m/${opts.slug}`;
+    await drawWadiDualPoster(ctx, W, H, menuUrl, opts);
+    return { dataUrl: canvas.toDataURL("image/png"), url: menuUrl };
+  } else if (opts.posterStyle === "heritage-emerald") {
     await drawHeritagePoster(ctx, W, H, url, opts);
   } else {
     await drawDefaultPoster(ctx, W, H, url, opts);
   }
 
   return { dataUrl: canvas.toDataURL("image/png"), url };
+}
+
+// Wadi Almusafir lounge poster — dark + gold, two QRs side by side
+// (المنيو + قيّمنا على Google), faithful to the client's own printed poster.
+async function drawWadiDualPoster(
+  ctx: CanvasRenderingContext2D, W: number, H: number,
+  menuUrl: string, opts: PosterOpts,
+) {
+  const GOLD = "#D9B65C";
+  const GOLD_SOFT = "#E2C674";
+  const DARK = "#0B0805";
+  const INK = "#F3E9D6";
+
+  // background + outer gold frame
+  ctx.fillStyle = DARK;
+  ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = GOLD;
+  ctx.lineWidth = 3;
+  roundRect(ctx, 36, 36, W - 72, H - 72, 28);
+  ctx.stroke();
+  ctx.lineWidth = 1;
+  roundRect(ctx, 50, 50, W - 100, H - 100, 22);
+  ctx.strokeStyle = "rgba(217,182,92,0.4)";
+  ctx.stroke();
+
+  let y = 150;
+  // logo or name
+  if (opts.logoUrl) {
+    try {
+      const img = await loadImage(opts.logoUrl);
+      const maxW = 360, maxH = 300;
+      const ratio = Math.min(maxW / img.naturalWidth, maxH / img.naturalHeight);
+      const w = img.naturalWidth * ratio, h = img.naturalHeight * ratio;
+      ctx.drawImage(img, (W - w) / 2, y, w, h);
+      y += h + 30;
+    } catch { /* fall through to text */ }
+  }
+  ctx.textAlign = "center";
+  ctx.textBaseline = "top";
+  ctx.direction = "rtl";
+  ctx.fillStyle = GOLD;
+  ctx.font = `700 76px "Reem Kufi", "Tajawal", system-ui, sans-serif`;
+  ctx.fillText(opts.restaurantName, W / 2, y);
+  y += 96;
+  if (opts.taglineAr) {
+    ctx.fillStyle = INK;
+    ctx.font = `400 34px "Tajawal", system-ui, sans-serif`;
+    ctx.fillText(opts.taglineAr, W / 2, y);
+    y += 64;
+  }
+
+  // session-duration pill
+  const pillW = 460, pillH = 96, px = (W - pillW) / 2;
+  ctx.strokeStyle = GOLD;
+  ctx.lineWidth = 2;
+  roundRect(ctx, px, y, pillW, pillH, 48);
+  ctx.stroke();
+  ctx.fillStyle = INK;
+  ctx.font = `500 36px "Tajawal", system-ui, sans-serif`;
+  ctx.fillText("مدة الجلسة", W / 2 + 70, y + 28);
+  ctx.fillStyle = GOLD;
+  ctx.font = `700 44px "Reem Kufi", "Tajawal", system-ui, sans-serif`;
+  ctx.fillText("ساعتين", W / 2 - 110, y + 24);
+  y += pillH + 70;
+
+  // two QR panels
+  const qrBox = 380;
+  const gap = 80;
+  const totalW = qrBox * 2 + gap;
+  const leftX = (W - totalW) / 2;
+  const rightX = leftX + qrBox + gap;
+  const labelY = y;
+  const panelY = y + 64;
+
+  // labels
+  ctx.fillStyle = GOLD_SOFT;
+  ctx.font = `700 42px "Reem Kufi", "Tajawal", system-ui, sans-serif`;
+  ctx.fillText("المنيو", leftX + qrBox / 2, labelY);
+  ctx.fillText("قيّمنا على Google", rightX + qrBox / 2, labelY);
+
+  await drawQrPanel(ctx, leftX, panelY, qrBox, menuUrl);
+  if (opts.reviewUrl) await drawQrPanel(ctx, rightX, panelY, qrBox, opts.reviewUrl);
+
+  y = panelY + qrBox + 90;
+
+  // footer lines
+  ctx.fillStyle = INK;
+  ctx.font = `500 34px "Tajawal", system-ui, sans-serif`;
+  ctx.fillText("نسعد بزيارتكم ورأيكم يهمنا", W / 2, y);
+  y += 62;
+  ctx.fillStyle = GOLD;
+  ctx.font = `400 30px "Tajawal", system-ui, sans-serif`;
+  if (opts.phone) {
+    ctx.direction = "ltr";
+    ctx.fillText(opts.phone, W / 2, y);
+    ctx.direction = "rtl";
+    y += 48;
+  }
+  if (opts.addressAr) {
+    ctx.fillStyle = INK;
+    ctx.fillText("📍 " + opts.addressAr, W / 2, y);
+  }
+}
+
+async function drawQrPanel(
+  ctx: CanvasRenderingContext2D, x: number, yTop: number, box: number, url: string,
+) {
+  // cream rounded panel behind the QR (so dark-on-light scans well)
+  ctx.fillStyle = "#F3E9D6";
+  roundRect(ctx, x, yTop, box, box, 22);
+  ctx.fill();
+  ctx.strokeStyle = "#D9B65C";
+  ctx.lineWidth = 2;
+  roundRect(ctx, x, yTop, box, box, 22);
+  ctx.stroke();
+
+  const qrCanvas = document.createElement("canvas");
+  const inner = box - 56;
+  await QRCode.toCanvas(qrCanvas, url, {
+    errorCorrectionLevel: "H",
+    margin: 1,
+    width: inner,
+    color: { dark: "#0B0805", light: "#F3E9D6" },
+  });
+  ctx.drawImage(qrCanvas, x + 28, yTop + 28, inner, inner);
 }
 
 async function drawDefaultPoster(

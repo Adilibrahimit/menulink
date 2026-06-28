@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import type { ThemeConfig } from "./themes";
-import { RZRZ_THEME, MAZAJ_ALMOSAFER_THEME } from "./themes";
+import { RZRZ_THEME, MAZAJ_ALMOSAFER_THEME, WADI_LOUNGE_THEME } from "./themes";
 
 // ============================================================================
 // MenuLink · Design Library
@@ -136,6 +136,12 @@ export const DESIGN_LIBRARY: DesignLibraryEntry[] = [
     name_ar: "تراثي — قائمة",
     description_ar: "أخضر تراثي بقائمة عمودية أنيقة (نمط مزاج المسافر).",
     theme: { ...MAZAJ_ALMOSAFER_THEME, slug: "almosafer-heritage" },
+  },
+  {
+    key: "wadi-lounge",
+    name_ar: "لاونج — داكن ذهبي مزخرف",
+    description_ar: "أسود فاخر مع ذهبي عربيسك، بطاقات بإطار مزخرف وشارات سعر سداسية (نمط وادي المسافر).",
+    theme: WADI_LOUNGE_THEME,
   },
 ];
 
