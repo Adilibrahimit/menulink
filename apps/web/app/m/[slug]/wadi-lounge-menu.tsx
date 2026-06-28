@@ -166,7 +166,7 @@ export default function WadiLoungeMenu({
             <SectionHeader cat={cat} bilingual={bilingual} />
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3.5">
               {cat.items.map((item: PublicMenuItem) => (
-                <WadiCard key={item.id} item={item} bilingual={bilingual} />
+                <WadiCard key={item.id} item={item} bilingual={bilingual} isShisha={cat.slug.startsWith("shisha")} />
               ))}
             </div>
           </section>
@@ -317,7 +317,7 @@ function SectionHeader({ cat, bilingual }: { cat: PublicCategory; bilingual: boo
 }
 
 /* ---------- item card (Arabesque-framed) ---------- */
-function WadiCard({ item, bilingual }: { item: PublicMenuItem; bilingual: boolean }) {
+function WadiCard({ item, bilingual, isShisha }: { item: PublicMenuItem; bilingual: boolean; isShisha?: boolean }) {
   const img = item.image_url ?? null;
   const v = item.variants[0];
   const price = v?.price ?? null;
@@ -356,6 +356,15 @@ function WadiCard({ item, bilingual }: { item: PublicMenuItem; bilingual: boolea
             }}
           >
             🔥 {item.calories_kcal}
+          </span>
+        )}
+        {isShisha && (
+          <span
+            className="absolute top-2 right-2 inline-flex items-center gap-1 text-[10.5px] font-bold px-2 py-[3px] rounded-full"
+            style={{ background: "var(--accent-gold)", color: "var(--cta-text)", boxShadow: "0 2px 8px rgba(0,0,0,0.45)" }}
+          >
+            <SmokeIcon />
+            معسّل
           </span>
         )}
       </div>
@@ -452,6 +461,16 @@ function ShishaMark({ small }: { small?: boolean }) {
       <path d="M36 84 Q50 70 64 84 Z" stroke="var(--accent-gold)" strokeWidth="3" strokeLinejoin="round" fill="none" />
       <path d="M50 64 L38 84 M50 64 L62 84" stroke="var(--accent-gold)" strokeWidth="3" strokeLinecap="round" />
       <path d="M64 30 Q78 32 76 46" stroke="var(--accent-gold)" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+    </svg>
+  );
+}
+
+/* tiny rising-smoke glyph for the «معسّل» (shisha flavor) badge */
+function SmokeIcon() {
+  return (
+    <svg width="9" height="11" viewBox="0 0 24 28" fill="none" aria-hidden>
+      <path d="M9 27c-2.5-3.2 2.2-4.5 0-7.6S11.2 15 9 11.8 11.2 7 9 3.8" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+      <path d="M16 27c-2.2-2.8 1.9-4 0-6.7s1.9-4 0-6.7" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" opacity="0.7" />
     </svg>
   );
 }
