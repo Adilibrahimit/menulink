@@ -242,8 +242,8 @@ export default function HeritageListMenu({
                 {cat.name_ar}
                 {bilingual && cat.name_en && (
                   <span
-                    className="block text-[12px] font-semibold tracking-widest uppercase mt-0.5 opacity-90"
-                    style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+                    className="block text-[15px] font-semibold tracking-[0.18em] uppercase mt-1"
+                    style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: "var(--accent-gold)" }}
                   >
                     {cat.name_en}
                   </span>
@@ -387,8 +387,8 @@ function HeritageItem({ item, bilingual }: { item: PublicMenuItem; bilingual: bo
           {item.name_ar}
           {bilingual && item.name_en && item.name_en !== item.name_ar && (
             <span
-              className="block text-[12.5px] font-semibold leading-snug mt-0.5"
-              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: "var(--header-bg)" }}
+              className="block text-[14.5px] font-bold leading-snug mt-1"
+              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: "var(--header-bg)", letterSpacing: "0.2px" }}
             >
               {item.name_en}
             </span>

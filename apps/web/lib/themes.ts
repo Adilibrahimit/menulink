@@ -177,9 +177,20 @@ export const COFFEE_SECRET_THEME: ThemeConfig = {
   bilingual: true,
 };
 
+// Mazaj Almosafer — Al-Rawdah branch (2nd branch, separate page). Identical design to
+// branch 1 (MAZAJ_ALMOSAFER_THEME), but bilingual: English shown under Arabic on items +
+// section headers, and the English brand name surfaced via the hero tagline slot.
+export const MAZAJ_ALMOSAFER_RAWDAH_THEME: ThemeConfig = {
+  ...MAZAJ_ALMOSAFER_THEME,
+  slug: "mazaj-almosafer-rawdah",
+  heroTaglineEn: "Mazaj Almosafer · Al-Rawdah",
+  bilingual: true,
+};
+
 const THEMES: Record<string, ThemeConfig> = {
   "rzrz-bukhari": RZRZ_THEME,
   "mazaj-almosafer": MAZAJ_ALMOSAFER_THEME,
+  "mazaj-almosafer-rawdah": MAZAJ_ALMOSAFER_RAWDAH_THEME,
   "coffee-secret": COFFEE_SECRET_THEME,
 };
 
