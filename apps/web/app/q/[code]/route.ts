@@ -13,5 +13,9 @@ export async function GET(request: NextRequest, { params }: { params: { code: st
     p_source_type: source,
   });
   const target = typeof destination === "string" && destination.length > 0 ? destination : "/";
-  return NextResponse.redirect(new URL(target, request.url), 302);
+  // resolve_qr_link already recorded this scan; mark the redirect so the menu
+  // page (logMenuView) skips logging it again and we don't double-count.
+  const url = new URL(target, request.url);
+  url.searchParams.set("qr", "1");
+  return NextResponse.redirect(url, 302);
 }
