@@ -1,7 +1,9 @@
 # MenuLink · Project Memory
 
 > **Read this first** when picking up the project in a new session.
-> Last saved: **2026-06-05 (session 10)** — Mazaj menu overhaul; 0 migrations (all via Management API), 1 deploy (PR #22 → main).
+> Last saved: **2026-06-30** — menu-view/QR-visit tracking shipped (migration 0077, `/ops/analytics`) + Coffee Secret & Wadi payments logged. **See the "What changed on 2026-06-30" section at the bottom.**
+> ⚠️ This file's interim history (sessions after 2026-06-05) is thin — tenant count is now **10 restaurants / 8 businesses** (added Coffee Secret, Wadi Almusafir, Mazaj-Rawdah branch). The freshest per-session state lives in the auto-memory index `C:\Users\USER\.claude\projects\d--menulink\memory\MEMORY.md`.
+> Earlier status line: **2026-06-05 (session 10)** — Mazaj menu overhaul; 0 migrations (all via Management API), 1 deploy (PR #22 → main).
 > Status line: **production SaaS, 6 tenants. Session 10 (2026-06-05) — Mazaj Almosafer menu overhaul (all live): (1) calories now 100% — every food/drink item has calories (120/176; the 56 shisha intentionally blank); (2) new item عصير مانجا (18 SAR, 111 kcal); (3) menu redesigned — heritage-list rows → a 2-col image-on-top card grid (md:3) with bigger square photos + the official SAMA Saudi Riyal symbol (U+20C1) replacing the ر.س text; scoped to heritage-list-menu.tsx (Mazaj only), shipped via PR #22 → main (merge afe7995), verified live; (4) photos: 5 sandwiches + Ulker (owner allora shots), mango (Unsplash), قهوة سعودية authentic dallah (Wikimedia Commons CC0); (5) مكسرات consolidated to one item/one size (10 SAR, 800 kcal); (6) قهوة عربي → قهوة سعودية. Data changes via the Management API (live immediately, no migration). The local rzrz-signature-steam branch's signature-menu WIP was stashed and restored UNTOUCHED throughout. Pending: قهوة سعودي vs سعودية spelling, add كيك انجليزي ماريل?, Mazaj branch-2 menu. (Session 9 details below at "What changed on 2026-05-29".)**
 
 ---
@@ -1156,3 +1158,37 @@ Full menu pass on **Mazaj Almosafer** (`/m/mazaj-almosafer`, rid `9f19fe0d-e1fd-
 - **كيك انجليزي ماريل** — owner-described new item (English marble cake, 10 SAR, ~500 kcal, photo at `ITEMS_PHOTO/كيك انجليزي ماريل.jpeg`) — NOT added yet, awaiting go-ahead.
 - **Mazaj branch-2 menu** — still pending client's original menu + second-branch info (billing already settled, see session 9).
 - `rzrz-signature-steam` still holds the DS-13 signature-menu WIP (koko-delivery + rzrz-signature + design-library, uncommitted) — design tests ONLY on `rzrz-bukhari-test`.
+
+---
+
+## 📍 What changed on 2026-06-30 (menu-view tracking + payments)
+
+### Feature: per-tenant menu-view / QR-visit tracking → `/ops/analytics`
+**Why:** owner asked "how many QR visitors per tenant?" The visit-tracking infra (`qr_scan_events` + `resolve_qr_link`) only fired on the dynamic short-link route `/q/[code]`, but the **printed client QRs point straight at `/m/[slug]`**, which logged nothing — so we had only 6 test rows. (Orders + Google-signups were answerable: 4 customers signed in via Google.)
+
+- **Migration `0077_menu_view_tracking.sql`** (applied live via Management API):
+  - widened `qr_scan_events.source_type` CHECK to add `'menu'`;
+  - `log_menu_view(slug,table,ua,referrer,ip_hash)` RPC — SECURITY DEFINER, best-effort (exception-swallow), `grant ... to anon, authenticated`;
+  - **`v_tenant_engagement`** view with **`security_invoker = true`** (granted `authenticated` only, never `anon`) — ops see all via `is_platform_admin()`, owners see only their own, anon nothing;
+  - composite index `(restaurant_id, scanned_at, source_type)`;
+  - **pg_cron** job `purge_qr_scan_events_90d` (PDPL retention; pg_cron 1.6.4 enabled this session).
+- **Server-side log** in `apps/web/app/m/[slug]/page.tsx` (`export const dynamic = "force-dynamic"`) via new `apps/web/lib/track-visit.ts`: bot/preview-UA filter (WhatsApp/Telegram/etc.), `ip_hash = sha256(ip|ua|Riyadh-date)` (no raw IP), skips when `?qr=1`. `/q/[code]` route now appends `?qr=1` to its redirect so resolved scans aren't double-counted.
+- **`/ops/analytics`** page (+ nav entry in `ops/layout.tsx`). Metric **`device_days`** (distinct device × Riyadh-day) — deliberately NOT "unique visitors" (Saudi carrier-NAT collapses people behind shared IPs); UI footnotes this. Live-verified on prod (real visit logs; bot + `?qr=1` skipped; dedup works).
+- **Council-reviewed first:** ran the LLM Council on the spec; verdict "ship with changes"; all 9 must-fixes folded in. Spec `docs/superpowers/specs/2026-06-29-menu-view-tracking-design.md`; report+transcript in `docs/superpowers/council/`. **Shipped via PR #29 → origin/main `61a79c4`**, Vercel auto-deployed.
+- **Deferred fast-follow** (per council): `v_qr_conversion` (scans→orders by `source_type`) as a renewal/upsell lever for menu-only tenants — build after honest counts accrue.
+
+### Payments logged (both dated from creation day)
+| Tenant | Subscription | Addon | Total | Period |
+|---|---|---|---|---|
+| Coffee Secret (`coffee-secret`) | 500 SAR/yr | — | **500** | 2026-06-27 → 2027-06-27 |
+| Wadi Almusafir (`wadi-almusafir`) | 500 SAR/yr | 100 (google_review) | **600** | 2026-06-28 → 2027-06-28 |
+
+Both subs now `active`. Wadi `google_review` addon enabled @100.
+
+⚠️ **Billing gotcha (new):** the `payments` AFTER-INSERT trigger `apply_payment_to_subscription()` computes the period from `now()` and **stacks onto the existing `current_period_end`** (which tenant-creation pre-seeds to created+1yr). So a first payment pushes the end out by another year. **Fix:** after inserting the payment row(s), run an explicit `UPDATE subscriptions SET current_period_start = created_at, current_period_end = created_at + interval '365 days', status='active', amount_sar=..., last_payment_at=...`. The ops form (`/ops/payments`) just inserts into `payments` (cols: subscription_id, amount_sar, method, reference, paid_at, notes).
+
+### New standing rule
+- **Council before features:** when adding a substantial new feature, proactively offer to run the design through the LLM Council (`/council`) before building. (User asked for this as a rule after seeing the 9 must-fixes it caught here.)
+
+### New skill
+- **`menulink-platform-ops`** — operating the `/ops` console: logging payments/subscriptions/addons (with the trigger gotcha) + reading the visit/QR analytics model. (Built this session.)
