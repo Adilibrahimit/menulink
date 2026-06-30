@@ -15,7 +15,13 @@ import HeritageListMenu from "./heritage-list-menu";
 import WadiLoungeMenu from "./wadi-lounge-menu";
 import PwaBootstrap from "./pwa-bootstrap";
 import CustomerShell from "./customer-shell";
+import { logMenuView } from "@/lib/track-visit";
 import type { PublicMenu } from "./types";
+
+// Force per-request rendering so the visit log (logMenuView, below) fires on
+// every open, not once per build/ISR-revalidation. Reading cookies() already
+// makes this dynamic today, but stating it removes the silent-zero failure mode.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const sb = createClient();
@@ -51,6 +57,14 @@ export default async function CustomerMenuPage({
   // sneaks through (`?table=5&table=6` → "5"). Trim whitespace.
   const raw = searchParams.table;
   const rawTableLabel = (Array.isArray(raw) ? raw[0] : raw)?.trim() || null;
+
+  // Best-effort visit log for EVERY tenant (ordering and menu-only — this runs
+  // before the display_only_mode branch below). `?qr=1` means the visit already
+  // came through /q/[code], which logged the scan itself — skip to avoid double-
+  // counting. Never blocks or breaks the render.
+  const rawQr = searchParams.qr;
+  const cameViaQr = (Array.isArray(rawQr) ? rawQr[0] : rawQr) != null;
+  await logMenuView(sb, params.slug, rawTableLabel, cameViaQr);
 
   // Soft-degrade: if the restaurant doesn't have the tables_qr addon enabled,
   // ignore the ?table= param. Old printed QRs keep scanning to a working

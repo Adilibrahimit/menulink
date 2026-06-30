@@ -8,12 +8,14 @@ const NAV_AR = [
   { href: "/ops",                label: "المطاعم",     icon: "🏪" },
   { href: "/ops/tenants/new",    label: "إضافة جديد",  icon: "➕" },
   { href: "/ops/payments",       label: "المدفوعات",   icon: "💳" },
+  { href: "/ops/analytics",      label: "التحليلات",   icon: "📊" },
 ];
 
 const NAV_EN = [
   { href: "/ops",                label: "Restaurants",   icon: "🏪" },
   { href: "/ops/tenants/new",    label: "Add New",       icon: "➕" },
   { href: "/ops/payments",       label: "Payments",      icon: "💳" },
+  { href: "/ops/analytics",      label: "Analytics",     icon: "📊" },
 ];
 
 export default async function OpsLayout({

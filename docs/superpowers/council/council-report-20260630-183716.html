@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Council Verdict — Menu-View Tracking Spec</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1d212b; --line:#272c38;
+    --ink:#e7e9ee; --mut:#9aa3b2; --soft:#c7ccd6;
+    --green:#34d399; --amber:#fbbf24; --red:#f87171; --blue:#60a5fa; --violet:#a78bfa;
+    --accent:#6ee7b7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;font-size:15px}
+  .wrap{max-width:880px;margin:0 auto;padding:40px 22px 80px}
+  header.top{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:28px}
+  .kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  h1{font-size:26px;margin:8px 0 6px;line-height:1.25}
+  .sub{color:var(--mut);font-size:14px}
+  .meta{margin-top:14px;font-size:12.5px;color:var(--mut);display:flex;gap:18px;flex-wrap:wrap}
+  .meta code{background:var(--panel2);padding:2px 7px;border-radius:6px;color:var(--soft);font-size:12px}
+
+  .note{background:#1a1606;border:1px solid #3a3410;border-radius:10px;padding:12px 14px;margin:22px 0;font-size:13px;color:#e8d9a6}
+  .note b{color:#ffe9a8}
+
+  h2.sec{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);
+    margin:38px 0 14px;border-top:1px solid var(--line);padding-top:22px}
+
+  /* verdict card */
+  .verdict{background:linear-gradient(180deg,#161a22,#13161c);border:1px solid var(--line);
+    border-radius:16px;padding:6px 26px 22px}
+  .verdict .md h2{font-size:16px;margin:24px 0 8px;color:#fff;
+    border-left:3px solid var(--accent);padding-left:10px}
+  .verdict .md h3{font-size:14px;margin:16px 0 6px;color:var(--soft)}
+  .md p{margin:9px 0;color:var(--soft)}
+  .md strong{color:#fff}
+  .md em{color:#cdd3de}
+  .md code{background:#0c0e12;border:1px solid var(--line);padding:1.5px 6px;border-radius:5px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;color:#9ae6b4}
+  .md ol,.md ul{margin:8px 0 8px 0;padding-left:22px;color:var(--soft)}
+  .md li{margin:5px 0}
+
+  /* stance grid */
+  .grid{display:grid;grid-template-columns:1fr;gap:10px;margin:6px 0 4px}
+  @media(min-width:620px){.grid{grid-template-columns:1fr 1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .card .who{font-weight:700;font-size:14px;display:flex;align-items:center;gap:8px}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+  .card .stance{font-size:12px;margin-top:3px;font-weight:600}
+  .card .line{font-size:12.5px;color:var(--mut);margin-top:7px}
+  .ship .stance{color:var(--green)} .ship .dot{background:var(--green)}
+  .warn .stance{color:var(--amber)} .warn .dot{background:var(--amber)}
+  .stop .stance{color:var(--red)} .stop .dot{background:var(--red)}
+
+  .tag{font-size:10.5px;padding:2px 7px;border-radius:20px;border:1px solid var(--line);color:var(--mut);margin-left:auto}
+  .tag.best{color:#0c0e12;background:var(--green);border-color:var(--green);font-weight:700}
+  .tag.blind{color:#0c0e12;background:var(--amber);border-color:var(--amber);font-weight:700}
+
+  /* fixes checklist */
+  .fixes{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 18px}
+  .fixes ol{padding-left:20px} .fixes li{margin:8px 0;color:var(--soft)}
+  .fixes li b{color:#fff}
+
+  details{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin:10px 0;overflow:hidden}
+  details[open]{background:var(--panel2)}
+  summary{cursor:pointer;padding:13px 16px;font-weight:600;font-size:14px;list-style:none;
+    display:flex;align-items:center;gap:9px}
+  summary::-webkit-details-marker{display:none}
+  summary .chev{margin-left:auto;color:var(--mut);transition:transform .15s}
+  details[open] summary .chev{transform:rotate(90deg)}
+  .body{padding:2px 18px 16px}
+
+  .first{background:#0d1714;border:1px solid #1f3a32;border-radius:12px;padding:16px 18px;margin:6px 0}
+  .first .lbl{color:var(--accent);font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+  .first p{margin:7px 0 0;color:#dbe7e2}
+
+  footer{margin-top:48px;border-top:1px solid var(--line);padding-top:18px;color:var(--mut);font-size:12px}
+  a{color:var(--blue)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">LLM Council · Verdict</div>
+    <h1>Menu-View / QR-Visit Tracking — design spec review</h1>
+    <div class="sub">Should we build per-tenant menu-visit tracking (incl. menu-only tenants) as the spec describes?</div>
+    <div class="meta">
+      <span>🗓 2026-06-30 18:37</span>
+      <span>📄 <code>specs/2026-06-29-menu-view-tracking-design.md</code></span>
+      <span>🤖 5 advisors → peer review → chairman · Opus 4.8</span>
+    </div>
+  </header>
+
+  <div class="note">
+    <b>Run note:</b> the inline spec text didn't reach the advisors (a workflow <code>args</code> wiring bug — the prompt block was <code>undefined</code>). Because each advisor had the real file paths and was told to inspect the repo, they read the actual code (<code>0059</code>, <code>0065</code>, <code>0002</code>, <code>page.tsx</code>) and the committed spec directly — so the critiques are grounded in the real implementation. The Contrarian leaned on the missing block and partly misread which code path is being patched (peers caught it).
+  </div>
+
+  <h2 class="sec">The bottom line</h2>
+  <div class="first">
+    <div class="lbl">Recommendation</div>
+    <p><b>Ship — but with changes.</b> Not as-is, and not a full rethink. It's a ~1-day, low-risk build on infrastructure that already exists (<code>ip_hash</code> column is already there) — but the spec verbatim produces a counter that is <em>wrong, slowly self-degrading, and embarrassing to quote to a client</em>. Nine must-fixes below.</p>
+    <div class="lbl" style="margin-top:14px">Do this first</div>
+    <p>Run <code>\d qr_scan_events</code> on a Supabase branch to confirm the exact CHECK-constraint name, then write + test the <code>DROP CONSTRAINT IF EXISTS … ADD CONSTRAINT … CHECK (… 'menu')</code> migration there. It's the single most likely thing to silently break the migration, and it gates everything else.</p>
+  </div>
+
+  <h2 class="sec">Where the five advisors landed</h2>
+  <div class="grid">
+    <div class="card ship">
+      <div class="who"><span class="dot"></span>The Executor <span class="tag best">Strongest (5/5 peers)</span></div>
+      <div class="stance">✅ Ship with fixes — ~1 day, low risk</div>
+      <div class="line">Caught the real blocker: the inline <em>unnamed</em> CHECK needs DROP+ADD (no <code>ALTER CONSTRAINT</code>); view RLS-bypass; <code>headers()</code> not <code>request.ip</code>; add <code>force-dynamic</code>.</div>
+    </div>
+    <div class="card ship">
+      <div class="who"><span class="dot"></span>The Expansionist <span class="tag blind">Blind spot (4/5 peers)</span></div>
+      <div class="stance">✅ Ship + build the funnel</div>
+      <div class="line">Views→orders conversion by <code>source_type</code> = QR-ROI proof + a renewal weapon for menu-only tenants. But sells a funnel on counts the others show are inflated.</div>
+    </div>
+    <div class="card warn">
+      <div class="who"><span class="dot"></span>The Outsider</div>
+      <div class="stance">⚠️ Fix naming + prove "dynamic" first</div>
+      <div class="line">"unique_visitors" reads as <em>unique people</em> but it's daily device-buckets. And <code>force-dynamic</code> is missing — logs could silently drop to zero.</div>
+    </div>
+    <div class="card stop">
+      <div class="who"><span class="dot"></span>First Principles</div>
+      <div class="stance">❌ Rethink the primitive</div>
+      <div class="line">A scan table isn't a pageview table. NAT collapses "unique." Real target = scan→engaged-session→order, via a client beacon + a separate views event.</div>
+    </div>
+    <div class="card stop">
+      <div class="who"><span class="dot"></span>The Contrarian</div>
+      <div class="stance">❌ Counts inflated &amp; forgeable</div>
+      <div class="line">Bot/preview inflation + silent <code>exception…null</code> survive. But misread the code path (attacked <code>resolve_qr_link</code>; <code>ip_hash</code> already exists) — discount the DoS/dedup-impossible claims.</div>
+    </div>
+  </div>
+
+  <h2 class="sec">Must-fix before implementation</h2>
+  <div class="fixes">
+    <ol>
+      <li><b>Write the CHECK-widen DDL.</b> <code>DROP CONSTRAINT IF EXISTS qr_scan_events_source_type_check … ADD … CHECK (source_type IN (…, 'menu'))</code>. Verify name with <code>\d</code> first. Test on a branch.</li>
+      <li><b>Add <code>export const dynamic = "force-dynamic"</code></b> to <code>/m/[slug]/page.tsx</code> — kills the silent-zero failure.</li>
+      <li><b>Rename the metric</b> <code>unique_visitors</code> → <code>daily_devices</code> (or footnote). Never market as analytics-grade.</li>
+      <li><b>Make the view <code>security_invoker = true</code></b>, don't grant to <code>anon</code>, comment the <code>requireOps()</code> gating.</li>
+      <li><b>Add composite index</b> <code>(restaurant_id, scanned_at, source_type)</code> on <code>qr_scan_events</code>.</li>
+      <li><b>Daily boundary → Asia/Riyadh</b> in the salt and Ops bucketing (UTC splits the dinner rush across 2 days).</li>
+      <li><b>Resolve the double-write</b> — <code>page.tsx</code> logs <code>'menu'</code> for direct/bookmarked hits only; exclude resolved-QR (<code>/q/[code]</code>) traffic so the two paths never double-count.</li>
+      <li><b>Filter bot/preview UAs</b> (Googlebot, WhatsApp/Telegram/Slack link-preview crawlers) before insert — WhatsApp is the main share channel.</li>
+      <li><b>PDPL retention policy</b> — e.g. a 90-day deletion job for <code>ip_hash</code>/UA rows.</li>
+    </ol>
+  </div>
+
+  <h2 class="sec">Full chairman verdict</h2>
+  <div class="verdict"><div class="md" data-src="verdict"></div></div>
+
+  <h2 class="sec">Advisor responses (full)</h2>
+  <details><summary>🔴 The Contrarian — counts inflated, unauditable, forgeable <span class="chev">›</span></summary><div class="body md" data-src="contrarian"></div></details>
+  <details><summary>🔵 The First Principles Thinker — wrong primitive; scan-log ≠ pageview-log <span class="chev">›</span></summary><div class="body md" data-src="firstPrinciples"></div></details>
+  <details><summary>🟣 The Expansionist — don't ship a counter, ship the funnel <span class="chev">›</span></summary><div class="body md" data-src="expansionist"></div></details>
+  <details><summary>🟡 The Outsider — the word "visitor" lies; prove the route is dynamic <span class="chev">›</span></summary><div class="body md" data-src="outsider"></div></details>
+  <details><summary>🟢 The Executor — buildable in ~1 day; here's what bites <span class="chev">›</span></summary><div class="body md" data-src="executor"></div></details>
+
+  <h2 class="sec">Peer review highlights</h2>
+  <details><summary>5 anonymized peer reviews (A–E) <span class="chev">›</span></summary><div class="body md" data-src="reviews"></div></details>
+
+  <footer>
+    Generated by the LLM Council skill · methodology by Andrej Karpathy · run on Claude Opus 4.8.<br/>
+    Counciled <code>docs/superpowers/specs/2026-06-29-menu-view-tracking-design.md</code> · full transcript:
+    <code>council-transcript-20260630-183716.md</code>
+  </footer>
+</div>
+
+<!-- raw markdown payloads (script tags are not HTML-parsed) -->
+<script type="text/markdown" id="src-verdict">
+## Where the Council Agrees
+
+Five advisors converged independently on three things, and the peer reviews ratified them.
+
+1. **The metric name lies.** "unique_visitors" is not unique people — it's a daily-salted `sha256(ip|ua|date)` bucket that collapses Saudi carrier-NAT traffic into one "visitor," splits one real person across two days/networks, and resets at midnight. Rename to `daily_devices` or footnote it.
+2. **The "page is dynamic" claim is load-bearing and unverified.** `/m/[slug]/page.tsx` has no `export const dynamic = "force-dynamic"`. It's dynamic *today* only incidentally because `supabase-server.ts` calls `cookies()`. Add `unstable_cache` or let it get statically optimized and logging silently drops to near-zero. One-line fix.
+3. **The view bypasses RLS unless it's `security_invoker`.** A plain Postgres view runs as its owner and reads through base-table RLS — any `authenticated` user could read all-tenant counts. Acceptable only because `requireOps()` gates the Ops page, and it must **not** `grant select` to `anon`.
+
+## Where the Council Clashes
+
+**Is the existing infrastructure trustworthy enough to build on?**
+
+- **Contrarian & First Principles say no** — counts inflated/unauditable before you start (WhatsApp preview crawlers, double-logging, NAT collapse, bots).
+- **Expansionist says yes, enthusiastically** — build the conversion funnel; it's the renewal weapon for menu-only tenants.
+- **Executor says yes, soberly** — buildable in ~1 day, low risk; just don't market the unique count as analytics-grade.
+
+They answer different questions: *is this number true?* vs *does the migration run?* vs *what's it worth if it works?* Four of five reviews named the Expansionist's pitch as the biggest blind spot — it sells a funnel built on counts the others proved inflated.
+
+**Which code path is patched?** The Contrarian built its review around `resolve_qr_link` and "no IP exists." Every peer reviewer flagged this as the biggest error: the new logging is in `page.tsx` against `qr_scan_events`, and `ip_hash` *already exists* (0059:196). Discount the DoS/forgery/"dedup impossible" alarms — but the bot/preview-fetch and `exception when others then null` points survive.
+
+## Blind Spots the Council Caught (via peer review)
+
+1. **Write cost on the hot path** — every render does a blocking-but-fail-open INSERT; no batching/sampling.
+2. **No index for the read path** — `(restaurant_id, scanned_at, source_type)` missing → widening seq-scan as the append-only table grows.
+3. **Timezone corrupts every daily metric** — salt + Ops buckets are UTC; Riyadh is UTC+3, so midnight UTC splits an evening dinner rush across two days.
+4. **PDPL / retention** — `ip_hash` + UA tied to behavioral data with no retention window or lawful basis is a compliance exposure.
+
+## The Recommendation
+
+**Ship — but with changes. Do not ship as-is, and do not rethink the whole thing.** ~1-day, low-risk build on real infrastructure, but the current spec verbatim produces a counter that is wrong, slow-degrading, and quotable-but-embarrassing. See the nine must-fixes above. Defer the Expansionist's funnel view (`v_qr_conversion`, `/ops` surfacing) to a fast-follow — right instinct, but only after the counts are honest.
+
+## The One Thing to Do First
+
+Run `\d qr_scan_events` against a Supabase branch to confirm the exact constraint name, then write and test the `DROP CONSTRAINT IF EXISTS … ADD CONSTRAINT … CHECK (… 'menu')` migration there.
+</script>
+
+<script type="text/markdown" id="src-contrarian">
+The fatal flaw is in **0065_resolve_qr_link.sql** (the existing logger): append-only with **zero dedup, zero bot filtering, and an exception swallow that hides corruption**.
+
+1. **Double-count by design.** Browsers issue duplicate GETs (prefetch, Safari speculative loads, WhatsApp/Telegram/Slack link-preview crawlers hit the link before a human taps). Each INSERTs a row. WhatsApp is the primary distribution channel — every shared link gets a preview fetch that inflates "scans" before anyone scans.
+2. **No IP, so no dedup is even possible** (on the old path). If it adds raw IP, that's a PDPL problem with no retention policy shown.
+3. **`exception when others then null`** silently eats *every* failure — constraint violations, type errors, a future NOT NULL column. The verification plan sees redirects work and assumes tracking works while events vanish. Untestable by black-box.
+4. **SECURITY DEFINER + `grant to anon`** — any anonymous caller invokes the RPC directly via PostgREST in a loop → unbounded write amplification, no rate limit. A DoS / count-poisoning vector.
+
+Net: counts are inflated, unauditable, and forgeable.
+
+*(Peer note: points 2 & 4 misread the new design — `ip_hash` already exists on `qr_scan_events` and the new write is in `page.tsx`. Points 1 & 3 survive.)*
+</script>
+
+<script type="text/markdown" id="src-firstPrinciples">
+Strip the surface request. The owner does not want "page views." No restaurant owner in Riyadh asks "how many times was my menu HTML rendered?" They want: *are my printed QR posters working, which dishes get attention, and how many lookers become orders?* The spec answers none of these well by dumping page-views into `qr_scan_events`.
+
+**Fatal conflation — the table is a scan log, not a pageview log.** `qr_scan_events` (0059) exists to attribute a *physical QR scan* to a `qr_link_id` and `source_type` ('table','poster','sticker'). That semantic is its entire value. A server-component log in `page.tsx` has no `qr_link_id` and no real `source_type` — every row is `qr_link_id = NULL`. You drown the one signal the table is designed to carry (poster-level attribution) under a flood of nulls. And the clean visit already flows through `resolve_qr_link` (0065) — logging *again* in `page.tsx` double-counts every scanned visit.
+
+**"Unique by ip+ua+day hash" is a fabricated metric.** Saudi mobile traffic is overwhelmingly carrier-NAT'd — thousands of users behind a handful of STC/Mobily egress IPs with near-identical iOS Safari UAs. That hash collapses real diners into one "unique visitor." You're measuring NAT pools, not people.
+
+**Right primitive:** keep `qr_scan_events` for scans only. Add a separate, honest `menu_views` event from a client beacon, and define success as **scan → engaged-session → order**, joinable to `orders` (0002 views) — the number the owner pays 59 SAR to see.
+</script>
+
+<script type="text/markdown" id="src-expansionist">
+This spec undersells what it unlocks because it stops at "count menu views." What's *already wired*: `0002_analytics_views.sql` joins `orders→customers`; `0065` already stamps every scan with `source_type in ('table','poster','sticker','offer','category','item')` + `referrer` + `restaurant_id`. The conversion funnel is one JOIN away: `qr_scan_events` (top) → `orders` (bottom). Add a `v_qr_conversion` view bucketing scans-to-orders by `source_type` and you can tell a tenant "your *table* QRs convert at 22%, your *poster* QRs at 3%" — printed-poster ROI, not a vanity counter.
+
+The biggest win: **this is your renewal weapon for menu-only tenants.** Mazaj, Coffee Secret, Wadi pay setup+renewal with zero order data — today you renew on faith. With per-`source_type` view counts you walk in with "11,400 menu views this quarter" to justify the 499. The `'offer'/'item'` granularity already in the CHECK constraint lets you prove *which dish photo* drives scans — feeding the photo-catalog upsell.
+
+One cheap step away: a `scanned_at` time-series → weekly trend chart in `/ops`, and the cleanest upsell trigger you have — a menu-only tenant with high views + an `'item'` spike is your ranked list of who to convert to WhatsApp ordering. Don't ship a counter; ship the funnel.
+</script>
+
+<script type="text/markdown" id="src-outsider">
+**The headline word is the problem: "visitor."** An owner — and a new engineer — reads `unique_visitors` as *unique people*. It counts unique `sha256(ip|ua|date)` tuples, re-salted daily. One customer on hotel Wi-Fi today + cellular tomorrow = 2 "visitors"; a family of five behind one router IP with identical phones collapses toward 1; and it resets every midnight, so `unique_30d` silently means "sum of daily-unique device-buckets," not unique people over the month. Defensible to an engineer, *wrong* to whoever reads the Ops table. Rename `daily_devices` or footnote it.
+
+**The load-bearing assumption is unverified.** The spec claims the page "runs every request; dynamic via cookies." But `/m/[slug]/page.tsx` has **no `export const dynamic = "force-dynamic"`** and no `revalidate`. If Next caches the route, `log_menu_view` fires once per build, not per visit — and the feature reports near-zero. That needs a one-line proof, not an aside.
+
+**"Best-effort but awaited" is a contradiction.** The spec `await`s the insert on the render path while promising "never blocks." A blocking awaited RPC *is* a block; it just fails open. Say "adds one round-trip to TTFB."
+
+Rename the metric and prove the route is dynamic before building.
+</script>
+
+<script type="text/markdown" id="src-executor">
+**The single most likely thing to break the migration:** the constraint at `0059:195` is an **inline unnamed CHECK** → Postgres auto-names it `qr_scan_events_source_type_check`. There is no `ALTER … ALTER CONSTRAINT` for CHECKs — you must `DROP CONSTRAINT qr_scan_events_source_type_check, ADD CONSTRAINT … CHECK (source_type IN (…, 'menu'))`. Verify the name first (`\d qr_scan_events`), make the DROP `IF EXISTS`.
+
+Buildable and unusually concrete — `ip_hash` already exists (`0059:196`), no column add. Four things bite:
+
+1. **CHECK widen has no first step** (see above). Test on a Supabase branch, not prod.
+2. **"Dynamic via cookies" is incidental, not guaranteed.** `supabase-server.ts` calls `cookies()` which opts into dynamic today — but add `unstable_cache` or let it statically optimize and logging silently stops. Add `export const dynamic = "force-dynamic"`. One line.
+3. **IP extraction on Vercel.** `x-forwarded-for` is a comma list; "first hop" is correct but client-spoofable → soft counts. Use `headers()` from `next/headers` (Server Component), not `request.ip`.
+4. **View RLS reality check.** A plain (non-`security_invoker`) view runs as its owner and **bypasses base-table RLS** — any `authenticated` user could read all-tenant counts. The Ops page gates with `requireOps()`, so acceptable, but state it and don't `grant select` to `anon`.
+
+Net: ~1 day, low risk once the constraint DDL is written out.
+</script>
+
+<script type="text/markdown" id="src-reviews">
+**Verdict was near-unanimous on quality:** all 5 peers ranked the **Executor** strongest — the only review grounded in real line numbers (`0059:195`, `0059:196`) with the literal DROP/ADD DDL, the `security_invoker` RLS-bypass, and `headers()` vs `request.ip`.
+
+**Biggest blind spots flagged:**
+- **The Contrarian** (3 peers) — argued from the absence of a pasted spec, attacked `resolve_qr_link`, and claimed "no IP / dedup impossible" when `ip_hash` already exists.
+- **The Expansionist** (2 peers) — a sales pitch that assumes the data is trustworthy; sells a funnel built on counts the others proved inflated.
+
+**What ALL five missed (only surfaced in peer review):**
+1. **Write cost** of a per-render INSERT on the hot path (no batching/sampling).
+2. **No index** on `(restaurant_id, scanned_at, source_type)` → the Ops aggregation seq-scans a growing append-only table.
+3. **Timezone** — UTC daily boundary vs Asia/Riyadh (+3) splits one evening service across two days, corrupting every "daily" number.
+4. **PDPL / retention** — no deletion window or lawful basis for storing `ip_hash` + UA.
+</script>
+
+<script>
+(function(){
+  function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+  function inline(s){
+    s = esc(s);
+    s = s.replace(/`([^`]+)`/g,'<code>$1</code>');
+    s = s.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+    s = s.replace(/(^|[^*])\*([^*]+)\*/g,'$1<em>$2</em>');
+    return s;
+  }
+  function render(md){
+    var lines = md.replace(/\r/g,'').split('\n');
+    var html='', i=0;
+    while(i<lines.length){
+      var ln=lines[i];
+      if(/^\s*$/.test(ln)){i++;continue;}
+      var h=ln.match(/^(#{2,4})\s+(.*)$/);
+      if(h){var lvl=h[1].length;html+='<h'+lvl+'>'+inline(h[2])+'</h'+lvl+'>';i++;continue;}
+      if(/^\s*\d+\.\s+/.test(ln)){
+        html+='<ol>';
+        while(i<lines.length && /^\s*\d+\.\s+/.test(lines[i])){
+          html+='<li>'+inline(lines[i].replace(/^\s*\d+\.\s+/,''))+'</li>';i++;
+        }
+        html+='</ol>';continue;
+      }
+      if(/^\s*[-*]\s+/.test(ln)){
+        html+='<ul>';
+        while(i<lines.length && /^\s*[-*]\s+/.test(lines[i])){
+          html+='<li>'+inline(lines[i].replace(/^\s*[-*]\s+/,''))+'</li>';i++;
+        }
+        html+='</ul>';continue;
+      }
+      var para=ln;i++;
+      while(i<lines.length && !/^\s*$/.test(lines[i]) && !/^(#{2,4})\s/.test(lines[i]) && !/^\s*(\d+\.|[-*])\s/.test(lines[i])){
+        para+=' '+lines[i];i++;
+      }
+      html+='<p>'+inline(para)+'</p>';
+    }
+    return html;
+  }
+  document.querySelectorAll('.md[data-src]').forEach(function(el){
+    var src=document.getElementById('src-'+el.getAttribute('data-src'));
+    if(src) el.innerHTML=render(src.textContent.trim());
+  });
+})();
+</script>
+</body>
+</html>
