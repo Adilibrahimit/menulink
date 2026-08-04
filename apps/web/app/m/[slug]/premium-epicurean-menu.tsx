@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { SLUG_TO_IMG } from "@/lib/koko-images";
-import { IMG, sizedImage } from "@/lib/image-url";
+import { IMG, sizedImage, fallbackToOriginal } from "@/lib/image-url";
 import { toArabicDigits } from "@/lib/arabic";
 import SarSymbol from "./sar-symbol";
 import MenuItemCard from "./menu-item";
@@ -168,6 +168,7 @@ export default function PremiumEpicureanMenu({
                   alt={featured.name_ar}
                   className="w-full h-full object-cover"
                   style={{ filter: "brightness(0.62)" }}
+                  onError={fallbackToOriginal}
                 />
               ) : (
                 <div className="w-full h-full" style={{ background: "var(--surface-elevated)" }} />

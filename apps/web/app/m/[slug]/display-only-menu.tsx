@@ -2,7 +2,7 @@
 
 import { SLUG_TO_IMG } from "@/lib/koko-images";
 import { ALLERGEN_MAP } from "@/lib/allergens";
-import { IMG, sizedImage } from "@/lib/image-url";
+import { IMG, sizedImage, fallbackToOriginal } from "@/lib/image-url";
 import { toArabicDigits } from "@/lib/arabic";
 import SarSymbol from "./sar-symbol";
 import CategoryTabs from "./category-tabs";
@@ -63,8 +63,7 @@ export default function DisplayOnlyMenu({
               src={sizedImage(menu.restaurant.cover_image_url, IMG.hero)!}
               alt=""
               decoding="async"
-              className="w-full h-full object-cover"
-            />
+              className="w-full h-full object-cover" onError={fallbackToOriginal} />
             <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/30 to-black/10" />
             <div className="absolute inset-x-0 bottom-0 p-5 flex items-end gap-3">
               {menu.restaurant.logo_url && (
@@ -169,8 +168,7 @@ function DisplayCard({ item }: { item: PublicMenuItem }) {
             decoding="async"
             width={400}
             height={400}
-            className="w-full h-full object-cover"
-          />
+            className="w-full h-full object-cover" onError={fallbackToOriginal} />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-5xl text-[var(--text-secondary,#d4d4d4)] opacity-40">
             🍽️

@@ -23,7 +23,10 @@ function localNow(at, tz) {
 }
 function parseWindow(w) {
   const m = w.match(/^(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})$/);
-  return m ? [Number(m[1]) * 60 + Number(m[2]), Number(m[3]) * 60 + Number(m[4])] : null;
+  if (!m) return null;
+  const [oh, om, ch, cm] = [Number(m[1]), Number(m[2]), Number(m[3]), Number(m[4])];
+  if (oh > 24 || ch > 24 || om > 59 || cm > 59) return null; // typo -> fail open
+  return [oh * 60 + om, ch * 60 + cm];
 }
 function windowOpen(win, minutes) {
   const w = win.toLowerCase();
@@ -38,7 +41,11 @@ function isOpen(hours, tz, at) {
   if (!hours || typeof hours !== "object") return true;
   const { day, minutes } = localNow(at, tz);
   if (hours[day] == null) return true;
-  const wins = (Array.isArray(hours[day]) ? hours[day] : [hours[day]]).map(String);
+  const wins = (Array.isArray(hours[day]) ? hours[day] : [hours[day]])
+    .map((w) => String(w).trim())
+    .filter(Boolean);
+  // Nothing usable listed = unconfigured = open, matching is_within_hours.
+  if (wins.length === 0) return true;
   return wins.some((w) => windowOpen(w, minutes));
 }
 
@@ -51,6 +58,19 @@ const RIY = "Asia/Riyadh";
 assert.equal(isOpen(null, RIY, sunAfternoon), true, "null hours must be open");
 assert.equal(isOpen({}, RIY, sunAfternoon), true, "empty hours must be open");
 assert.equal(isOpen({ mon: "closed" }, RIY, sunAfternoon), true, "unlisted day must be open");
+
+// An empty entry is UNCONFIGURED, not closed — and must agree with the SQL half
+// (is_within_hours). These two disagreed: the menu showed closed while the API
+// kept accepting orders. Only the literal "closed" closes a day.
+assert.equal(isOpen({ sun: "" }, RIY, sunAfternoon), true, "empty string day must be open");
+assert.equal(isOpen({ sun: [] }, RIY, sunAfternoon), true, "empty array day must be open");
+assert.equal(isOpen({ sun: "   " }, RIY, sunAfternoon), true, "blank day must be open");
+
+// A typo must not take the restaurant offline (the SQL side raised on these,
+// which rejected every order for the tenant until someone noticed).
+assert.equal(isOpen({ sun: "25:00-26:00" }, RIY, sunAfternoon), true, "out-of-range hour fails open");
+assert.equal(isOpen({ sun: "12:60-14:00" }, RIY, sunAfternoon), true, "out-of-range minute fails open");
+assert.equal(isOpen({ sun: "nonsense" }, RIY, sunAfternoon), true, "garbage fails open");
 
 // single window
 assert.equal(isOpen({ sun: "12:00-23:00" }, RIY, sunAfternoon), true);

@@ -8,7 +8,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import QRCode from "qrcode";
-import { IMG, sizedImage } from "@/lib/image-url";
+import { IMG, sizedImage, fallbackToOriginal } from "@/lib/image-url";
 import type { PublicMenu, PublicMenuItem, PublicCategory } from "./types";
 import type { ThemeConfig } from "@/lib/themes";
 
@@ -342,7 +342,7 @@ function WadiCard({ item, bilingual, isShisha }: { item: PublicMenuItem; bilingu
       >
         {img ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={img} alt={item.name_ar} loading="lazy" decoding="async" width={400} height={400} className="w-full h-full object-cover" />
+          <img src={img} alt={item.name_ar} loading="lazy" decoding="async" width={400} height={400} className="w-full h-full object-cover" onError={fallbackToOriginal} />
         ) : (
           <span className="text-3xl opacity-30" style={{ color: "var(--accent-gold)" }}>۞</span>
         )}

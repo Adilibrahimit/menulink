@@ -57,9 +57,19 @@ export default function HoursEditor({
     else setDay(day, windowsOf(hours[day])[0]);
   }
 
-  function setWindow(day: string, idx: number, win: string) {
+  /**
+   * Never writes a half-empty window.
+   *
+   * Clearing one of the two <input type="time"> fields used to save "14:00-" or
+   * "-23:00". Nothing in the stack can parse those, and unparseable means OPEN
+   * (the deliberate fail-open rule) — so an owner who fumbled a field got a
+   * restaurant that silently never closes, which is the exact opposite of what
+   * they were trying to configure. Keep the previous side instead.
+   */
+  function setWindow(day: string, idx: number, from: string, to: string) {
     const wins = [...windowsOf(hours[day])];
-    wins[idx] = win;
+    const [prevFrom = "", prevTo = ""] = (wins[idx] ?? "").split("-").map((s) => s.trim());
+    wins[idx] = `${from || prevFrom}-${to || prevTo}`;
     setDay(day, wins.length === 1 ? wins[0] : wins);
   }
 
@@ -149,14 +159,14 @@ export default function HoursEditor({
                       <input
                         type="time"
                         value={from}
-                        onChange={(e) => setWindow(day, i, `${e.target.value}-${to}`)}
+                        onChange={(e) => setWindow(day, i, e.target.value, to)}
                         className="h-9 rounded-lg border border-neutral-300 px-1.5 text-sm"
                       />
                       <span className="text-neutral-400 text-xs">→</span>
                       <input
                         type="time"
                         value={to}
-                        onChange={(e) => setWindow(day, i, `${from}-${e.target.value}`)}
+                        onChange={(e) => setWindow(day, i, from, e.target.value)}
                         className="h-9 rounded-lg border border-neutral-300 px-1.5 text-sm"
                       />
                       {wins.length > 1 && (

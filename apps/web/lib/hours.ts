@@ -50,7 +50,14 @@ function localNow(at: Date, tz: string): { day: string; minutes: number } {
 function parseWindow(win: string): [number, number] | null {
   const m = win.match(/^(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})$/);
   if (!m) return null;
-  return [Number(m[1]) * 60 + Number(m[2]), Number(m[3]) * 60 + Number(m[4])];
+  const [oh, om, ch, cm] = [Number(m[1]), Number(m[2]), Number(m[3]), Number(m[4])];
+  // Out of range means a typo, and a typo must fail OPEN (windowOpen treats null
+  // as open). Returning the arithmetic instead produced a window no clock can be
+  // inside — "25:00-26:00" spans minutes 1500-1560 while a day only reaches
+  // 1439 — so a fumbled digit closed the restaurant permanently. 24:00 is a
+  // legitimate way to write end-of-day and stays as 1440.
+  if (oh > 24 || ch > 24 || om > 59 || cm > 59) return null;
+  return [oh * 60 + om, ch * 60 + cm];
 }
 
 /** Normalize a day entry to a list of window strings. */
@@ -101,8 +108,14 @@ export function getOpenState(
   const { day, minutes } = localNow(at, tz);
   const todayWindows = windowsFor(hours[day]);
 
-  // Day not listed at all -> open.
-  if (hours[day] == null) return { open: true, today: [], nextOpenLabel: null };
+  // Day not listed, or listed with nothing usable ("" / []), means UNCONFIGURED
+  // and therefore open — same as is_within_hours. Only the literal "closed"
+  // closes a day. Without the second half of this test an empty string read as
+  // closed here and as open on the server, so the customer saw a closed menu
+  // while the API happily took orders.
+  if (hours[day] == null || todayWindows.length === 0) {
+    return { open: true, today: [], nextOpenLabel: null };
+  }
 
   const open = todayWindows.some((w) => windowOpen(w, minutes));
   if (open) return { open: true, today: todayWindows, nextOpenLabel: null };

@@ -48,3 +48,21 @@ export function sizedImage(url: string | null | undefined, width: number): strin
 
   return base.replace(OBJECT_PATH, RENDER_PATH) + "?" + params.toString();
 }
+
+/**
+ * `onError` for any <img> whose src came from sizedImage.
+ *
+ * Image transformation is a paid Supabase feature and a separate service from
+ * plain object serving. Without this, a plan change or a transform outage would
+ * show a broken image on every card of every tenant at once, even though the
+ * original file is fine — so fall back to the untransformed object URL, which is
+ * always there. Costs more bytes; beats an empty menu.
+ *
+ * Self-disarming: the fallback URL no longer contains the render path, so if it
+ * fails too the handler stops rather than looping.
+ */
+export function fallbackToOriginal(e: { currentTarget: HTMLImageElement }): void {
+  const img = e.currentTarget;
+  if (!img.src.includes(RENDER_PATH)) return;
+  img.src = img.src.replace(RENDER_PATH, OBJECT_PATH).split("?")[0];
+}

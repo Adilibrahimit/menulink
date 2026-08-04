@@ -2,7 +2,7 @@
 
 import { SLUG_TO_IMG } from "@/lib/koko-images";
 import { ALLERGEN_MAP } from "@/lib/allergens";
-import { IMG, sizedImage } from "@/lib/image-url";
+import { IMG, sizedImage, fallbackToOriginal } from "@/lib/image-url";
 import { toArabicDigits } from "@/lib/arabic";
 import SarSymbol from "./sar-symbol";
 import type { PublicMenuItem, PublicVariant } from "./types";
@@ -49,8 +49,7 @@ export default function MenuItemCard({
               decoding="async"
               width={400}
               height={300}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onError={fallbackToOriginal} />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-5xl text-white/20">🍽️</div>
           )}
@@ -111,8 +110,7 @@ export default function MenuItemCard({
             decoding="async"
             width={400}
             height={400}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onError={fallbackToOriginal} />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-5xl text-neutral-300">
             🍽️

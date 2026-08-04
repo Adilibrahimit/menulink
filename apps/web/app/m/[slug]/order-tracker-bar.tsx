@@ -33,6 +33,11 @@ export default function OrderTrackerBar({
   version: number;
 }) {
   const [snaps, setSnaps] = useState<OrderStatusSnapshot[]>([]);
+  // Delivered / cancelled orders move here: no longer polled (and no longer in
+  // localStorage, so they don't come back on the next visit), but still on
+  // screen until the customer dismisses them. Without this the bar simply
+  // disappeared the moment an order was cancelled, with no explanation.
+  const [finished, setFinished] = useState<OrderStatusSnapshot[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
@@ -43,17 +48,45 @@ export default function OrderTrackerBar({
     }
     const results = await Promise.all(tracked.map((t) => fetchOrderStatus(t.orderId)));
     const live: OrderStatusSnapshot[] = [];
+    let anyUnreachable = false;
     results.forEach((snap, i) => {
-      if (!snap) {
-        // Order vanished (or the id is bad) — stop asking about it.
+      // undefined = we couldn't reach the RPC. Keep the order and try again next
+      // tick; forgetting it here meant one dropped request (a lift, a tunnel)
+      // permanently erased the customer's only handle on their order.
+      if (snap === undefined) {
+        anyUnreachable = true;
+        return;
+      }
+      if (snap === null) {
+        // The RPC answered: this order really is gone.
         untrackOrder(restaurantId, tracked[i].orderId);
         return;
       }
-      if (isActive(snap.status)) live.push(snap);
-      else untrackOrder(restaurantId, snap.order_id); // delivered / cancelled: done
+      if (isActive(snap.status)) {
+        live.push(snap);
+        return;
+      }
+      // Reached its end: stop polling it, but hand it to `finished` so the
+      // customer actually sees "ملغي" / "تم التسليم" instead of the bar just
+      // disappearing.
+      untrackOrder(restaurantId, snap.order_id);
+      setFinished((prev) =>
+        prev.some((s) => s.order_id === snap.order_id) ? prev : [...prev, snap],
+      );
     });
+    // On a total outage keep showing the last known state rather than blanking.
+    if (anyUnreachable && live.length === 0) return;
     setSnaps(live);
   }, [restaurantId]);
+
+  const dismiss = useCallback(
+    (orderId: string) => {
+      untrackOrder(restaurantId, orderId);
+      setSnaps((prev) => prev.filter((s) => s.order_id !== orderId));
+      setFinished((prev) => prev.filter((s) => s.order_id !== orderId));
+    },
+    [restaurantId],
+  );
 
   useEffect(() => {
     let timer: ReturnType<typeof setInterval> | null = null;
@@ -68,7 +101,8 @@ export default function OrderTrackerBar({
     };
     const onVisibility = () => (document.visibilityState === "visible" ? start() : stop());
 
-    start();
+    // Don't start on a page restored into a background tab — wait to be shown.
+    if (document.visibilityState === "visible") start();
     document.addEventListener("visibilitychange", onVisibility);
     return () => {
       stop();
@@ -76,12 +110,13 @@ export default function OrderTrackerBar({
     };
   }, [refresh, version]);
 
-  if (snaps.length === 0) return null;
+  const shown = [...snaps, ...finished];
+  if (shown.length === 0) return null;
 
   return (
     <div className="fixed inset-x-0 bottom-16 z-40 px-3 pb-2 pointer-events-none" dir="rtl">
       <div className="mx-auto max-w-md space-y-2 pointer-events-auto">
-        {snaps.map((snap) => {
+        {shown.map((snap) => {
           const open = expandedId === snap.order_id;
           return (
             <div
@@ -109,10 +144,7 @@ export default function OrderTrackerBar({
                       صفحة تتبع الطلب
                     </Link>
                     <button
-                      onClick={() => {
-                        untrackOrder(restaurantId, snap.order_id);
-                        void refresh();
-                      }}
+                      onClick={() => dismiss(snap.order_id)}
                       className="h-10 px-3 rounded-xl border border-neutral-200 text-xs text-neutral-500"
                     >
                       إخفاء

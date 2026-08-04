@@ -7,7 +7,7 @@ import { toArabicDigits } from "@/lib/arabic";
 import LocationPicker from "./location-picker";
 import { useOrderContext } from "./order-context";
 import SarSymbol from "./sar-symbol";
-import { runCheckout, orderTypeLabel, vatIncluded, type OrderComposeInput } from "./checkout-core";
+import { runCheckout, newClientRef, orderTypeLabel, vatIncluded, type OrderComposeInput } from "./checkout-core";
 import type { PublicMenu, PublicBranch, CartLine, OrderType } from "./types";
 import type { TrackingState } from "./tracking-sheet";
 
@@ -90,10 +90,11 @@ export default function PremiumCheckoutFlow({
   const [pointsBalance, setPointsBalance] = useState(0);
   const [usePoints, setUsePoints] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [clientRef] = useState(newClientRef);
 
   const hasMultipleBranches = branches.length > 1;
   // Prefer the branch find_nearest_branch already resolved from the customer's
-  // location; the picker still allows an override. See cart-drawer for why.
+  // location. See cart-drawer for the full reasoning behind all of this.
   const defaultBranch =
     (deliveryCtx && branches.find((b) => b.id === deliveryCtx.branchId)) ??
     branches.find((b) => b.is_default) ??
@@ -101,12 +102,32 @@ export default function PremiumCheckoutFlow({
   const [selectedBranchId, setSelectedBranchId] = useState<string>(defaultBranch?.id ?? "");
   const nearestBranchId = deliveryCtx?.branchId ?? null;
 
+  // Delivery is routed by zone, not chosen: the fee and minimum below belong to
+  // deliveryCtx.branchId, so submitting to a different branch mixed the two.
+  const branchPinnedByZone = orderType === "delivery" && !!nearestBranchId;
+
+  const supportsOrderType = (b: PublicBranch) => {
+    if (orderType === "delivery") return b.supports_delivery;
+    if (orderType === "pickup") return b.supports_pickup;
+    if (orderType === "dine_in") return b.supports_dine_in;
+    if (orderType === "car") return b.supports_car;
+    return true;
+  };
+  const selectableBranches = branches.filter(supportsOrderType);
+
   const [branchTouched, setBranchTouched] = useState(false);
   useEffect(() => {
-    if (branchTouched || !nearestBranchId) return;
+    if (branchTouched || !nearestBranchId || orderType !== "delivery") return;
     if (!branches.some((b) => b.id === nearestBranchId)) return;
     setSelectedBranchId(nearestBranchId);
-  }, [nearestBranchId, branchTouched, branches]);
+  }, [nearestBranchId, branchTouched, branches, orderType]);
+
+  useEffect(() => {
+    if (branchPinnedByZone) return;
+    if (selectableBranches.length === 0) return;
+    if (selectableBranches.some((b) => b.id === selectedBranchId)) return;
+    setSelectedBranchId(selectableBranches[0].id);
+  }, [orderType, selectableBranches, selectedBranchId, branchPinnedByZone]);
 
   const minOrder = orderType === "delivery" && deliveryCtx ? deliveryCtx.minOrder : 0;
   const belowMinimum = minOrder > 0 && total < minOrder;
@@ -189,6 +210,9 @@ export default function PremiumCheckoutFlow({
     setSubmitError(null);
     setSubmitting(true);
 
+    // Claimed while the tap is still a user gesture — see openWhatsApp.
+    const waWindow = typeof window !== "undefined" ? window.open("", "_blank") : null;
+
     const input: OrderComposeInput = {
       restaurant,
       branches,
@@ -212,9 +236,10 @@ export default function PremiumCheckoutFlow({
       redeemPoints,
       discountAmount,
       finalTotal,
+      clientRef,
     };
 
-    const result = await runCheckout(input, { onCarOrderPlaced, onTableOrderPlaced });
+    const result = await runCheckout(input, { onCarOrderPlaced, onTableOrderPlaced }, waWindow);
     // Failure keeps the cart and reports why — see cart-drawer for the reasoning.
     if (!result.ok) {
       setSubmitError(result.message);
@@ -426,21 +451,27 @@ export default function PremiumCheckoutFlow({
                 </div>
               )}
 
-              {/* branch picker */}
-              {hasMultipleBranches && !lockedToTable && (
+              {/* branch: routed by zone for delivery, chosen otherwise */}
+              {hasMultipleBranches && !lockedToTable && branchPinnedByZone && (
+                <div className={card} style={cardStyle}>
+                  <p className={sectionTitle} style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}>
+                    🏢 الفرع الذي يخدم عنوانك
+                  </p>
+                  <p className="text-sm font-bold" style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}>
+                    {branches.find((b) => b.id === selectedBranchId)?.name_ar ?? deliveryCtx?.branchNameAr}
+                    <span className="text-[11px] font-normal mr-2" style={{ color: "var(--text-secondary)" }}>
+                      · {toArabicDigits(deliveryCtx!.distanceKm.toFixed(1))} كم
+                    </span>
+                  </p>
+                </div>
+              )}
+              {hasMultipleBranches && !lockedToTable && !branchPinnedByZone && (
                 <div className={card} style={cardStyle}>
                   <p className={sectionTitle} style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}>
                     🏢 {orderType === "pickup" ? "اختر فرع الاستلام" : "اختر الفرع"}
                   </p>
                   <div className="space-y-2">
-                    {branches
-                      .filter((b) => {
-                        if (orderType === "delivery") return b.supports_delivery;
-                        if (orderType === "pickup") return b.supports_pickup;
-                        if (orderType === "dine_in") return b.supports_dine_in;
-                        if (orderType === "car") return b.supports_car;
-                        return true;
-                      })
+                    {selectableBranches
                       .map((b) => {
                         const active = selectedBranchId === b.id;
                         return (

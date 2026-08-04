@@ -77,30 +77,39 @@ export default function CustomerShell({
     return () => subscription.unsubscribe();
   }, [googleFirst]);
 
+  // Restore order type and delivery zone TOGETHER.
+  //
+  // These used to be two effects, and only the delivery half had a TTL. A
+  // returning customer therefore kept orderType="delivery" forever while the
+  // zone expired after 6h, which skipped OrderTypeGate and left nothing to
+  // re-resolve the zone: deliveryFee and minOrder both silently fell back to 0
+  // and the order went through without paying for delivery — exactly the bug
+  // persisting the context was meant to fix. So a delivery order type may not
+  // outlive its zone: if the zone is gone, the gate runs again.
   useEffect(() => {
+    const rid = menu.restaurant.id;
+    let ctx: DeliveryContext | null = null;
+    try {
+      const raw = localStorage.getItem(deliveryKey(rid));
+      if (raw) {
+        const parsed = JSON.parse(raw) as { at: number; ctx: DeliveryContext };
+        if (Date.now() - parsed.at > DELIVERY_TTL_MS) localStorage.removeItem(deliveryKey(rid));
+        else ctx = parsed.ctx;
+      }
+    } catch {}
+    if (ctx) setDelivery(ctx);
+
     if (!googleFirst) return;
     try {
-      const stored = localStorage.getItem(orderTypeKey(menu.restaurant.id));
-      if (stored) setOrderType(stored as OrderType);
-    } catch {}
-  }, [googleFirst, menu.restaurant.id]);
-
-  // Restore the resolved delivery zone. Without this, orderType survived a
-  // refresh but the delivery context did not — so the fee silently reverted to
-  // 0 and the customer checked out without paying for delivery. Time-boxed so a
-  // stale address from days ago is not reused.
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(deliveryKey(menu.restaurant.id));
-      if (!raw) return;
-      const { at, ctx } = JSON.parse(raw) as { at: number; ctx: DeliveryContext };
-      if (Date.now() - at > DELIVERY_TTL_MS) {
-        localStorage.removeItem(deliveryKey(menu.restaurant.id));
+      const stored = localStorage.getItem(orderTypeKey(rid)) as OrderType | null;
+      if (!stored) return;
+      if (stored === "delivery" && !ctx) {
+        localStorage.removeItem(orderTypeKey(rid));
         return;
       }
-      setDelivery(ctx);
+      setOrderType(stored);
     } catch {}
-  }, [menu.restaurant.id]);
+  }, [googleFirst, menu.restaurant.id]);
 
   function handleDelivery(d: DeliveryContext | null) {
     setDelivery(d);

@@ -129,12 +129,27 @@ export default function MenuExperience({
     return [slug, variantKey, modPart, notePart].filter(Boolean).join("::");
   }
 
+  // Which hours apply right now. 0080 lets a BRANCH override the restaurant's
+  // hours (رزرز's two branches keep different ones) and the server trigger
+  // evaluates the branch, so checking only the restaurant here meant the client
+  // could invite an order the server then refused — or block one it would have
+  // taken. Falls back to the restaurant whenever a branch sets no hours of its
+  // own, exactly like is_within_hours does.
+  const activeBranch =
+    (delivery && branches.find((b) => b.id === delivery.branchId)) ??
+    branches.find((b) => b.is_default) ??
+    branches[0];
+  const activeHours =
+    activeBranch && activeBranch.hours_json
+      ? { hours: activeBranch.hours_json, tz: activeBranch.timezone ?? menu.restaurant.timezone }
+      : { hours: menu.restaurant.hours_json, tz: menu.restaurant.timezone };
+
   function openCustomizer(
     item: PublicMenuItem,
     variant: PublicVariant | null,
     category: PublicCategory,
   ) {
-    const { open } = isRestaurantOpen(menu.restaurant.hours_json, menu.restaurant.timezone);
+    const { open } = isRestaurantOpen(activeHours.hours, activeHours.tz);
     if (!open) {
       setClosedPopup(true);
       return;
@@ -144,7 +159,7 @@ export default function MenuExperience({
   }
 
   function addToCartSimple(item: PublicMenuItem, variant: PublicVariant) {
-    const { open } = isRestaurantOpen(menu.restaurant.hours_json, menu.restaurant.timezone);
+    const { open } = isRestaurantOpen(activeHours.hours, activeHours.tz);
     if (!open) {
       setClosedPopup(true);
       return;
@@ -602,10 +617,10 @@ export default function MenuExperience({
       )}
 
       {/* GUEST ORDER TRACKER — live status for every order placed on this
-          device, guest included. Suppressed while the cart bar or the
-          car-curbside bar is up, so only one bar is ever docked. Car orders
-          keep their own bar because it carries the "I've arrived" action. */}
-      {count === 0 && !tracking && (
+          device, guest included. Only one bar is ever docked, so this yields to
+          the cart bar, the car-curbside bar (it carries the "I've arrived"
+          action) and the table session bar (it carries the running tab). */}
+      {count === 0 && !tracking && !tableSessionId && (
         <OrderTrackerBar
           restaurantId={menu.restaurant.id}
           slug={menu.restaurant.slug}
@@ -638,8 +653,8 @@ export default function MenuExperience({
       {closedPopup && (
         <ClosedPopup
           restaurantName={menu.restaurant.name}
-          hoursJson={menu.restaurant.hours_json}
-          timezone={menu.restaurant.timezone}
+          hoursJson={activeHours.hours}
+          timezone={activeHours.tz}
           onClose={() => setClosedPopup(false)}
         />
       )}

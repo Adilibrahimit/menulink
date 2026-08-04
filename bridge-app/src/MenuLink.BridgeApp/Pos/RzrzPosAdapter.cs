@@ -108,7 +108,18 @@ public sealed class RzrzPosAdapter : IPosAdapter
         // Layer 2 alone was not enough: BillNo 33946 AND 33947 both carry
         // "توصيل · MenuLink #128" on the clone, i.e. a duplicate already got
         // through in production-like conditions.
+        //
+        // Layer 2 is also NOT tenant-scoped — the tag carries only the invoice
+        // number, and one POS database serves several MenuLink tenants whose
+        // numbering collides (rzrz-bukhari and rzrz-bukhari-test both live on
+        // the clone). Tenant A's "MenuLink #128" would otherwise satisfy tenant
+        // B's #128 on its first attempt, and B's order would be marked synced
+        // against A's invoice — never actually reaching the POS. A POS invoice
+        // cannot predate the MenuLink order it came from, so a created-at floor
+        // rules out every older tenant's invoice. Small clock skew between this
+        // machine and SQL Server is absorbed by the grace window.
         var tagPattern = $"%MenuLink #{menuLinkInvoiceNo} %";
+        var notBefore = payload.Order.CreatedAt.ToLocalTime().AddMinutes(-5);
         Guid posInvoiceGuid;
         long posInvoiceNo;
         long posBillNo;
@@ -126,6 +137,7 @@ public sealed class RzrzPosAdapter : IPosAdapter
             select top 1 InvoiceID, InvoiceNo, BillNo, TaxAmount
             from Invoice
             where OnlineCustomerID = @ocid and InvoiceNotes_A like @tag
+              and CreatedDate >= @notBefore
               and not exists (select 1 from dbo.MenuLinkInvoiceMap m2
                               where m2.RestaurantId = @rid and m2.MenuLinkInvoiceNo = @mlno);", conn))
         {
@@ -133,6 +145,7 @@ public sealed class RzrzPosAdapter : IPosAdapter
             precheck.Parameters.Add("@mlno", SqlDbType.BigInt).Value = menuLinkInvoiceNo;
             precheck.Parameters.Add("@ocid", SqlDbType.BigInt).Value = onlineCustomer;
             precheck.Parameters.Add("@tag", SqlDbType.NVarChar, 200).Value = tagPattern;
+            precheck.Parameters.Add("@notBefore", SqlDbType.DateTime2).Value = notBefore;
             await using var rdr = await precheck.ExecuteReaderAsync(ct);
             if (await rdr.ReadAsync(ct))
             {

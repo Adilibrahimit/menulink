@@ -60,7 +60,25 @@ export type OrderComposeInput = {
   redeemPoints: number;
   discountAmount: number;
   finalTotal: number;
+  /** Stable for one checkout attempt-set, so a retry after an ambiguous failure
+   *  returns the original order instead of creating a second one (0083). */
+  clientRef: string;
 };
+
+/**
+ * Id for one checkout attempt-set: generated once per open checkout, reused by
+ * every retry of it, so submit_order can recognise a retry and hand back the
+ * original order instead of creating a second one (0083).
+ *
+ * crypto.randomUUID needs a secure context and is missing on Safari < 15.4,
+ * which is still in the field here — the fallback only has to be unique per
+ * device, since the server scopes the key by restaurant.
+ */
+export function newClientRef(): string {
+  const c = globalThis.crypto;
+  if (c && typeof c.randomUUID === "function") return c.randomUUID();
+  return `cr-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+}
 
 // VAT portion already contained in a VAT-inclusive amount. Informational only.
 export function vatIncluded(amount: number): number {
@@ -140,12 +158,13 @@ export function buildSubmitPayload(input: OrderComposeInput) {
   const {
     restaurant, selectedBranchId, lines, orderType, name, phone, address,
     location, carPlate, carColor, notes, tableLabel, sessionId, subtotal,
-    deliveryFee, redeemPoints,
+    deliveryFee, redeemPoints, clientRef,
   } = input;
 
   return {
     restaurant_id: restaurant.id,
     branch_id: selectedBranchId || null,
+    client_ref: clientRef,
     phone,
     name: name || null,
     address: orderType === "delivery" ? (address || null) : null,
@@ -191,6 +210,31 @@ export type RunCheckoutHandlers = {
   onTableOrderPlaced: (sessionId: string) => void;
 };
 
+/**
+ * Hand the composed order over to WhatsApp.
+ *
+ * `window.open` only succeeds while the browser still considers the tap
+ * "active". runCheckout deliberately awaits submit_order first, and iOS Safari
+ * drops that activation across the await — so opening from here is blocked
+ * essentially every time, and Chrome blocks it too whenever the RPC outruns its
+ * ~5s activation window. The order still saved, so the customer saw success
+ * while the restaurant got nothing.
+ *
+ * Callers therefore open a blank tab synchronously inside the click handler and
+ * pass the handle in; here we only point it at the URL. The two fallbacks cover
+ * a caller that didn't (or a tab the browser killed anyway): a plain open, then
+ * a same-tab navigation, which is never popup-blocked. Leaving the menu page is
+ * safe — the order is already persisted, and wa.me hands off to the app.
+ */
+export function openWhatsApp(url: string, pre?: Window | null): void {
+  if (pre && !pre.closed) {
+    pre.location.href = url;
+    return;
+  }
+  if (window.open(url, "_blank")) return;
+  window.location.href = url;
+}
+
 export type CheckoutErrorKind = "points" | "closed" | "min_order" | "failed";
 
 export type RunCheckoutResult =
@@ -219,11 +263,13 @@ function classifyError(err: unknown): { error: CheckoutErrorKind; message: strin
  * happen is the worst outcome here, so a failure now blocks and reports.
  *
  * WhatsApp still opens automatically afterwards: it remains the channel the
- * restaurant actually watches.
+ * restaurant actually watches. `waWindow` is a blank tab the caller opened
+ * synchronously in the click handler — see openWhatsApp for why that matters.
  */
 export async function runCheckout(
   input: OrderComposeInput,
   handlers: RunCheckoutHandlers,
+  waWindow?: Window | null,
 ): Promise<RunCheckoutResult> {
   const { lockedToTable, orderType, redeemPoints, tableLabel, name, phone } = input;
 
@@ -252,6 +298,8 @@ export async function runCheckout(
     saved = await persistOrder(payloadInput);
   } catch (err) {
     console.error("[MenuLink v7] submit_order failed:", err);
+    // Nothing was saved, so don't leave the placeholder tab sitting there.
+    if (waWindow && !waWindow.closed) waWindow.close();
     return { ok: false, ...classifyError(err) };
   }
 
@@ -264,7 +312,7 @@ export async function runCheckout(
   const selectedBranch = input.branches.find((b) => b.id === input.selectedBranchId);
   const branchWa = selectedBranch?.whatsapp;
   const waNumber = String(branchWa || input.restaurant.whatsapp_phone).replace(/\D/g, "");
-  window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`, "_blank");
+  openWhatsApp(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`, waWindow);
 
   if (orderType === "car" && saved.orderId) {
     handlers.onCarOrderPlaced({ orderId: saved.orderId, plate: input.carPlate, color: input.carColor, arrived: false });

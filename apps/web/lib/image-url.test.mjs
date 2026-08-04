@@ -58,4 +58,33 @@ assert.equal(new URL(sizedImage(`${SB}${OBJECT_PATH}b/c.webp`, 1200)).searchPara
   assert.equal(sizedImage(once, 400), once, "already-rendered URL must be left alone");
 }
 
+// --- fallbackToOriginal --------------------------------------------------
+// Same hand-kept mirror as above.
+function fallbackToOriginal(e) {
+  const img = e.currentTarget;
+  if (!img.src.includes(RENDER_PATH)) return;
+  img.src = img.src.replace(RENDER_PATH, OBJECT_PATH).split("?")[0];
+}
+
+// a failed transform falls back to the original object URL, params dropped
+{
+  const img = { src: `${SB}${RENDER_PATH}menu-images/rid/a.jpg?width=400&quality=70` };
+  fallbackToOriginal({ currentTarget: img });
+  assert.equal(img.src, `${SB}${OBJECT_PATH}menu-images/rid/a.jpg`);
+}
+
+// and it must NOT loop: a second failure on the fallback URL is a no-op
+{
+  const img = { src: `${SB}${OBJECT_PATH}menu-images/rid/a.jpg` };
+  fallbackToOriginal({ currentTarget: img });
+  assert.equal(img.src, `${SB}${OBJECT_PATH}menu-images/rid/a.jpg`, "must be idempotent");
+}
+
+// a local/non-Supabase image that fails is left alone (nothing to fall back to)
+{
+  const img = { src: "/menu/koko/broasted_regular.jpeg" };
+  fallbackToOriginal({ currentTarget: img });
+  assert.equal(img.src, "/menu/koko/broasted_regular.jpeg");
+}
+
 console.log("image-url self-check: all assertions passed");

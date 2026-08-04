@@ -75,13 +75,29 @@ export type OrderStatusSnapshot = {
   events: { new_status: string; created_at: string }[];
 };
 
-export async function fetchOrderStatus(orderId: string): Promise<OrderStatusSnapshot | null> {
+/**
+ * `null` means the RPC answered and the order genuinely isn't there.
+ * `undefined` means we couldn't ask (offline, 5xx, DNS…).
+ *
+ * The difference matters: supabase-js resolves network failures as
+ * `{ data: null, error }` rather than throwing, so collapsing both into `null`
+ * made one dropped request look identical to a deleted order — and the caller
+ * responded by forgetting the order permanently.
+ */
+export async function fetchOrderStatus(
+  orderId: string,
+): Promise<OrderStatusSnapshot | null | undefined> {
   const { createClient } = await import("./supabase-browser");
   const sb = createClient();
-  const { data, error } = await sb.rpc("get_order_status", { p_order_id: orderId });
-  if (error) {
-    console.error("[MenuLink] get_order_status failed:", error);
-    return null;
+  try {
+    const { data, error } = await sb.rpc("get_order_status", { p_order_id: orderId });
+    if (error) {
+      console.error("[MenuLink] get_order_status failed:", error);
+      return undefined;
+    }
+    return (data as OrderStatusSnapshot | null) ?? null;
+  } catch (err) {
+    console.error("[MenuLink] get_order_status threw:", err);
+    return undefined;
   }
-  return (data as OrderStatusSnapshot | null) ?? null;
 }
