@@ -17,6 +17,18 @@ type AuthState =
 
 const GUEST_KEY = "menulink:guest";
 
+/** The guest identity this device already gave us, if any. */
+function storedGuest(): AuthState | null {
+  try {
+    const raw = localStorage.getItem(GUEST_KEY);
+    if (!raw) return null;
+    const { phone, name } = JSON.parse(raw);
+    return phone ? { kind: "guest", phone, name: name || "" } : null;
+  } catch {
+    return null;
+  }
+}
+
 function orderTypeKey(restaurantId: string) {
   return `menulink:orderType:${restaurantId}`;
 }
@@ -54,24 +66,19 @@ export default function CustomerShell({
         setAuth({ kind: "signed_in", userId: session.user.id });
         return;
       }
-      const stored = localStorage.getItem(GUEST_KEY);
-      if (stored) {
-        try {
-          const { phone, name } = JSON.parse(stored);
-          if (phone) {
-            setAuth({ kind: "guest", phone, name: name || "" });
-            return;
-          }
-        } catch { /* invalid JSON */ }
-      }
-      setAuth({ kind: "gate" });
+      setAuth(storedGuest() ?? { kind: "gate" });
     });
 
+    // A guest has no Supabase session, so every auth event arrives with
+    // session = null — including the INITIAL_SESSION one fired right after we
+    // subscribe. Sending that straight to "gate" threw guests back to the login
+    // wall at random, depending on which of the two callbacks landed last.
+    // Fall back to the stored guest identity instead of assuming logged-out.
     const { data: { subscription } } = sb.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         setAuth({ kind: "signed_in", userId: session.user.id });
       } else {
-        setAuth({ kind: "gate" });
+        setAuth(storedGuest() ?? { kind: "gate" });
       }
     });
     return () => subscription.unsubscribe();
