@@ -17,9 +17,29 @@ type AuthState =
 
 const GUEST_KEY = "menulink:guest";
 
+/** The guest identity this device already gave us, if any. */
+function storedGuest(): AuthState | null {
+  try {
+    const raw = localStorage.getItem(GUEST_KEY);
+    if (!raw) return null;
+    const { phone, name } = JSON.parse(raw);
+    return phone ? { kind: "guest", phone, name: name || "" } : null;
+  } catch {
+    return null;
+  }
+}
+
 function orderTypeKey(restaurantId: string) {
   return `menulink:orderType:${restaurantId}`;
 }
+
+function deliveryKey(restaurantId: string) {
+  return `menulink:delivery:${restaurantId}`;
+}
+
+/** A resolved delivery zone older than this is discarded — the customer has
+ *  probably moved, and a stale fee/address is worse than asking again. */
+const DELIVERY_TTL_MS = 6 * 60 * 60 * 1000;
 
 export default function CustomerShell({
   menu,
@@ -46,36 +66,66 @@ export default function CustomerShell({
         setAuth({ kind: "signed_in", userId: session.user.id });
         return;
       }
-      const stored = localStorage.getItem(GUEST_KEY);
-      if (stored) {
-        try {
-          const { phone, name } = JSON.parse(stored);
-          if (phone) {
-            setAuth({ kind: "guest", phone, name: name || "" });
-            return;
-          }
-        } catch { /* invalid JSON */ }
-      }
-      setAuth({ kind: "gate" });
+      setAuth(storedGuest() ?? { kind: "gate" });
     });
 
+    // A guest has no Supabase session, so every auth event arrives with
+    // session = null — including the INITIAL_SESSION one fired right after we
+    // subscribe. Sending that straight to "gate" threw guests back to the login
+    // wall at random, depending on which of the two callbacks landed last.
+    // Fall back to the stored guest identity instead of assuming logged-out.
     const { data: { subscription } } = sb.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         setAuth({ kind: "signed_in", userId: session.user.id });
       } else {
-        setAuth({ kind: "gate" });
+        setAuth(storedGuest() ?? { kind: "gate" });
       }
     });
     return () => subscription.unsubscribe();
   }, [googleFirst]);
 
+  // Restore order type and delivery zone TOGETHER.
+  //
+  // These used to be two effects, and only the delivery half had a TTL. A
+  // returning customer therefore kept orderType="delivery" forever while the
+  // zone expired after 6h, which skipped OrderTypeGate and left nothing to
+  // re-resolve the zone: deliveryFee and minOrder both silently fell back to 0
+  // and the order went through without paying for delivery — exactly the bug
+  // persisting the context was meant to fix. So a delivery order type may not
+  // outlive its zone: if the zone is gone, the gate runs again.
   useEffect(() => {
+    const rid = menu.restaurant.id;
+    let ctx: DeliveryContext | null = null;
+    try {
+      const raw = localStorage.getItem(deliveryKey(rid));
+      if (raw) {
+        const parsed = JSON.parse(raw) as { at: number; ctx: DeliveryContext };
+        if (Date.now() - parsed.at > DELIVERY_TTL_MS) localStorage.removeItem(deliveryKey(rid));
+        else ctx = parsed.ctx;
+      }
+    } catch {}
+    if (ctx) setDelivery(ctx);
+
     if (!googleFirst) return;
     try {
-      const stored = localStorage.getItem(orderTypeKey(menu.restaurant.id));
-      if (stored) setOrderType(stored as OrderType);
+      const stored = localStorage.getItem(orderTypeKey(rid)) as OrderType | null;
+      if (!stored) return;
+      if (stored === "delivery" && !ctx) {
+        localStorage.removeItem(orderTypeKey(rid));
+        return;
+      }
+      setOrderType(stored);
     } catch {}
   }, [googleFirst, menu.restaurant.id]);
+
+  function handleDelivery(d: DeliveryContext | null) {
+    setDelivery(d);
+    try {
+      const key = deliveryKey(menu.restaurant.id);
+      if (d) localStorage.setItem(key, JSON.stringify({ at: Date.now(), ctx: d }));
+      else localStorage.removeItem(key);
+    } catch {}
+  }
 
   function handleGuest(phone: string, name: string) {
     localStorage.setItem(GUEST_KEY, JSON.stringify({ phone, name }));
@@ -84,7 +134,7 @@ export default function CustomerShell({
 
   function handleOrderType(type: OrderType) {
     setOrderType(type);
-    if (type !== "delivery") setDelivery(null);
+    if (type !== "delivery") handleDelivery(null);
     try {
       localStorage.setItem(orderTypeKey(menu.restaurant.id), type);
     } catch {}
@@ -125,7 +175,7 @@ export default function CustomerShell({
         restaurantName={menu.restaurant.name}
         logoUrl={menu.restaurant.logo_url}
         onSelect={handleOrderType}
-        onDeliveryConfirm={setDelivery}
+        onDeliveryConfirm={handleDelivery}
       />
     );
   }
@@ -135,7 +185,7 @@ export default function CustomerShell({
       orderType={orderType}
       setOrderType={handleOrderType}
       delivery={delivery}
-      setDelivery={setDelivery}
+      setDelivery={handleDelivery}
     >
       <div className="pb-16">{children}</div>
       <BottomNav slug={menu.restaurant.slug} navItems={theme.bottomNavItems} notifCenterEnabled={notifCenterEnabled} variant={theme.menuLayout === "premium-epicurean" ? "premium" : "light"} />

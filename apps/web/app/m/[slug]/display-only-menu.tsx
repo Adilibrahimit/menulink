@@ -2,6 +2,7 @@
 
 import { SLUG_TO_IMG } from "@/lib/koko-images";
 import { ALLERGEN_MAP } from "@/lib/allergens";
+import { IMG, sizedImage, fallbackToOriginal } from "@/lib/image-url";
 import { toArabicDigits } from "@/lib/arabic";
 import SarSymbol from "./sar-symbol";
 import CategoryTabs from "./category-tabs";
@@ -59,10 +60,10 @@ export default function DisplayOnlyMenu({
           <div className="relative w-full h-56 sm:h-72 overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={menu.restaurant.cover_image_url!}
+              src={sizedImage(menu.restaurant.cover_image_url, IMG.hero)!}
               alt=""
-              className="w-full h-full object-cover"
-            />
+              decoding="async"
+              className="w-full h-full object-cover" onError={fallbackToOriginal} />
             <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/30 to-black/10" />
             <div className="absolute inset-x-0 bottom-0 p-5 flex items-end gap-3">
               {menu.restaurant.logo_url && (
@@ -151,7 +152,7 @@ export default function DisplayOnlyMenu({
 }
 
 function DisplayCard({ item }: { item: PublicMenuItem }) {
-  const img = item.image_url ?? SLUG_TO_IMG[item.slug] ?? null;
+  const img = sizedImage(item.image_url ?? SLUG_TO_IMG[item.slug] ?? null, IMG.card);
   const isPremium = item.badges?.some((b) => b.type === "premium");
   const isHot = item.badges?.some((b) => b.type === "hot");
 
@@ -164,8 +165,10 @@ function DisplayCard({ item }: { item: PublicMenuItem }) {
             src={img}
             alt={item.name_ar}
             loading="lazy"
-            className="w-full h-full object-cover"
-          />
+            decoding="async"
+            width={400}
+            height={400}
+            className="w-full h-full object-cover" onError={fallbackToOriginal} />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-5xl text-[var(--text-secondary,#d4d4d4)] opacity-40">
             🍽️

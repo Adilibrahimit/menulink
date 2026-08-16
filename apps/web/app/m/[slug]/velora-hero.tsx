@@ -1,3 +1,4 @@
+import { IMG, sizedImage } from "@/lib/image-url";
 import type { PublicMenu } from "./types";
 
 // Velora "lounge" hero: centered monogram + serif wordmark + tagline on a dark
@@ -11,7 +12,7 @@ export default function VeloraHero({ menu }: { menu: PublicMenu }) {
       {r.cover_image_url && (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={r.cover_image_url} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" />
+          <img src={sizedImage(r.cover_image_url, IMG.hero)!} alt="" decoding="async" className="absolute inset-0 w-full h-full object-cover opacity-30" />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--header-bg)] via-[var(--header-bg)]/85 to-[var(--header-bg)]/55" />
         </>
       )}

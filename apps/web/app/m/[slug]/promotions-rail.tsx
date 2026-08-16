@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase-browser";
+import { IMG, sizedImage, fallbackToOriginal } from "@/lib/image-url";
 
 type Promo = {
   id: string; title_ar: string; subtitle_ar: string | null;
@@ -26,7 +27,7 @@ export default function PromotionsRail({ slug }: { slug: string }) {
           <div key={p.id} className="shrink-0 w-64 rounded-2xl overflow-hidden border border-[var(--card-border,rgba(0,0,0,0.06))] bg-[var(--card-bg,#fff)] shadow-sm">
             {p.image_url ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={p.image_url} alt="" className="w-full h-28 object-cover" />
+              <img src={sizedImage(p.image_url, IMG.card)!} alt="" loading="lazy" decoding="async" className="w-full h-28 object-cover" onError={fallbackToOriginal} />
             ) : null}
             <div className="p-3">
               {p.badge_text_ar ? (

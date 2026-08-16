@@ -83,7 +83,7 @@ export default async function CustomerMenuPage({
 
   const { data: branchRows } = await sb
     .from("restaurant_branches")
-    .select("id, name_ar, name_en, slug, whatsapp, address_ar, lat, lng, supports_delivery, supports_pickup, supports_dine_in, supports_car, is_default")
+    .select("id, name_ar, name_en, slug, whatsapp, address_ar, lat, lng, hours_json, timezone, supports_delivery, supports_pickup, supports_dine_in, supports_car, is_default")
     .eq("restaurant_id", menu.restaurant.id)
     .eq("is_active", true)
     .order("sort_order");

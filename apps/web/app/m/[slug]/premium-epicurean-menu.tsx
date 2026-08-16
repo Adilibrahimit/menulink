@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { SLUG_TO_IMG } from "@/lib/koko-images";
+import { IMG, sizedImage, fallbackToOriginal } from "@/lib/image-url";
 import { toArabicDigits } from "@/lib/arabic";
 import SarSymbol from "./sar-symbol";
 import MenuItemCard from "./menu-item";
@@ -18,8 +19,8 @@ import type { PublicMenu, PublicMenuItem, PublicVariant } from "./types";
 // this body receives the add-to-cart handler and renders functional slots
 // (push toggle, order-type controls, promotions) passed from the parent.
 
-function imgFor(item: PublicMenuItem): string | null {
-  return item.image_url ?? SLUG_TO_IMG[item.slug] ?? null;
+function imgFor(item: PublicMenuItem, width: number = IMG.card): string | null {
+  return sizedImage(item.image_url ?? SLUG_TO_IMG[item.slug] ?? null, width);
 }
 
 export default function PremiumEpicureanMenu({
@@ -56,7 +57,8 @@ export default function PremiumEpicureanMenu({
     return categories[0]?.items[0] ?? null;
   }, [categories]);
 
-  const featuredImg = featured ? imgFor(featured) : null;
+  // Hero fills the viewport width, so it gets the large variant, not the card one.
+  const featuredImg = featured ? imgFor(featured, IMG.hero) : null;
   const featuredVariant = featured?.variants[0] ?? null;
 
   // Active category tracking — same IntersectionObserver pattern as the
@@ -166,6 +168,7 @@ export default function PremiumEpicureanMenu({
                   alt={featured.name_ar}
                   className="w-full h-full object-cover"
                   style={{ filter: "brightness(0.62)" }}
+                  onError={fallbackToOriginal}
                 />
               ) : (
                 <div className="w-full h-full" style={{ background: "var(--surface-elevated)" }} />

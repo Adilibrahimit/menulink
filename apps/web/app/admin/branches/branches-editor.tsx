@@ -1,7 +1,17 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase-browser";
+import HoursEditor from "../hours-editor";
+import type { HoursJson } from "@/lib/hours";
+
+// Leaflet touches window on import, so it can't be server-rendered.
+// Reuses the map already built for the zones editor rather than a second one.
+const ZoneMap = dynamic(() => import("../zones/zone-map"), {
+  ssr: false,
+  loading: () => <div className="h-64 rounded-xl bg-neutral-100 animate-pulse" />,
+});
 
 type BranchRow = {
   id: string;
@@ -19,6 +29,7 @@ type BranchRow = {
   supports_pickup: boolean;
   supports_dine_in: boolean;
   supports_car: boolean;
+  hours_json: Record<string, string | string[] | null> | null;
   is_default: boolean;
   is_active: boolean;
   sort_order: number;
@@ -42,6 +53,13 @@ const EMPTY_FORM = {
   supports_pickup: true,
   supports_dine_in: false,
   supports_car: false,
+  // Coordinates used to be settable ONLY as a side-effect of saving a delivery
+  // zone, which sits behind the delivery_zones addon while this page sits
+  // behind multi_branch — so a tenant with only multi_branch could never
+  // geolocate a branch, and nearest-branch silently could not work for them.
+  lat: null as number | null,
+  lng: null as number | null,
+  hours_json: null as HoursJson,
 };
 
 type FormState = typeof EMPTY_FORM;
@@ -75,6 +93,9 @@ export default function BranchesEditor({ restaurantId, initialBranches }: Props)
       supports_pickup: b.supports_pickup,
       supports_dine_in: b.supports_dine_in,
       supports_car: b.supports_car,
+      lat: b.lat,
+      lng: b.lng,
+      hours_json: b.hours_json,
     });
     setError(null);
     setShowForm(true);
@@ -121,6 +142,12 @@ export default function BranchesEditor({ restaurantId, initialBranches }: Props)
       supports_pickup: form.supports_pickup,
       supports_dine_in: form.supports_dine_in,
       supports_car: form.supports_car,
+      // Written unconditionally (not `if (lat && lng)` like the zones editor)
+      // so coordinates can actually be cleared, and so a legitimate 0 isn't
+      // dropped by a truthiness check.
+      lat: form.lat,
+      lng: form.lng,
+      hours_json: form.hours_json ?? null,
     };
 
     if (editingId) {
@@ -484,6 +511,60 @@ export default function BranchesEditor({ restaurantId, initialBranches }: Props)
                     </label>
                   ))}
                 </div>
+              </div>
+
+              {/* Branch location — needed by find_nearest_branch. Without
+                  coordinates a branch is invisible to the radius arm of that
+                  RPC, so nearest-branch quietly never picks it. */}
+              <div>
+                <label className="block text-xs font-semibold text-neutral-700 mb-2">
+                  موقع الفرع على الخريطة
+                </label>
+                <ZoneMap
+                  branchLat={form.lat}
+                  branchLng={form.lng}
+                  areaType="radius"
+                  radiusKm={0}
+                  polygonGeoJson={null}
+                  onBranchLocationChange={(lat, lng) => {
+                    updateField("lat", lat as never);
+                    updateField("lng", lng as never);
+                  }}
+                  // Zones are edited on /admin/zones; here the map is only a
+                  // location picker, so polygon drawing is inert.
+                  onPolygonChange={() => {}}
+                />
+                <div className="flex items-center gap-2 mt-1.5">
+                  <p className="text-[11px] text-neutral-500">
+                    {form.lat != null && form.lng != null
+                      ? `📍 ${form.lat.toFixed(5)}, ${form.lng.toFixed(5)}`
+                      : "انقر على الخريطة لتحديد موقع الفرع — مطلوب لاقتراح أقرب فرع للعميل."}
+                  </p>
+                  {form.lat != null && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        updateField("lat", null as never);
+                        updateField("lng", null as never);
+                      }}
+                      className="text-[11px] text-neutral-500 underline mr-auto"
+                    >
+                      مسح الموقع
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Per-branch hours. Blank = inherit the restaurant's. */}
+              <div>
+                <label className="block text-xs font-semibold text-neutral-700 mb-2">
+                  أوقات عمل هذا الفرع
+                </label>
+                <HoursEditor
+                  value={form.hours_json}
+                  onChange={(next) => updateField("hours_json", next as never)}
+                  inheritLabel="يتبع أوقات عمل المطعم — حدّد أوقاتاً خاصة بهذا الفرع فقط إذا كانت مختلفة."
+                />
               </div>
 
               {error && (

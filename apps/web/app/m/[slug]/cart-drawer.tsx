@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase-browser";
 import { normalizePhone } from "@/lib/phone";
 import { toArabicDigits } from "@/lib/arabic";
+import { fallbackToOriginal } from "@/lib/image-url";
 import LocationPicker from "./location-picker";
 import { useOrderContext } from "./order-context";
 import SarSymbol from "./sar-symbol";
-import { runCheckout, type OrderComposeInput } from "./checkout-core";
+import { runCheckout, newClientRef, type OrderComposeInput } from "./checkout-core";
 import type { PublicMenu, PublicBranch, CartLine, OrderType } from "./types";
 import type { TrackingState } from "./tracking-sheet";
 
@@ -41,6 +42,7 @@ export default function CartDrawer({
   onClear,
   onCarOrderPlaced,
   onTableOrderPlaced,
+  onOrderPlaced,
 }: {
   restaurant: PublicMenu["restaurant"];
   branches: PublicBranch[];
@@ -55,6 +57,8 @@ export default function CartDrawer({
   onClear: () => void;
   onCarOrderPlaced: (t: TrackingState) => void;
   onTableOrderPlaced: (sessionId: string) => void;
+  /** Fired for EVERY successful order so the guest tracker can pick it up. */
+  onOrderPlaced?: (orderId: string | null, orderNumber: string) => void;
 }) {
   const { orderType: preselected, delivery: deliveryCtx } = useOrderContext();
   const lockedToTable = !!tableLabel;
@@ -78,10 +82,64 @@ export default function CartDrawer({
   const [pointsBalance, setPointsBalance] = useState(0);
   const [usePoints, setUsePoints] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  // One per open drawer: retries after a failure reuse it (so they dedup), while
+  // the next order gets a fresh drawer and therefore a fresh ref.
+  const [clientRef] = useState(newClientRef);
 
   const hasMultipleBranches = branches.length > 1;
-  const defaultBranch = branches.find((b) => b.is_default) ?? branches[0];
+  // find_nearest_branch already resolved a branch from the customer's location
+  // (multi-tier radius + polygon, migration 0052) and DeliveryContext has been
+  // carrying the answer all along — it just never reached checkout, which
+  // defaulted to is_default instead.
+  const defaultBranch =
+    (deliveryCtx && branches.find((b) => b.id === deliveryCtx.branchId)) ??
+    branches.find((b) => b.is_default) ??
+    branches[0];
   const [selectedBranchId, setSelectedBranchId] = useState<string>(defaultBranch?.id ?? "");
+  const nearestBranchId = deliveryCtx?.branchId ?? null;
+
+  // Delivery is ROUTED, not chosen: deliveryFee and minOrder below come from the
+  // zone resolved for deliveryCtx.branchId, so letting the customer submit to a
+  // different branch shipped that branch's order at this branch's fee and
+  // minimum. For delivery we therefore pin the resolved branch; for every other
+  // order type the customer picks freely. (When no zone has resolved yet,
+  // deliveryCtx is null and the picker stays open, so the cart is never stuck.)
+  const branchPinnedByZone = orderType === "delivery" && !!nearestBranchId;
+
+  const supportsOrderType = (b: PublicBranch) => {
+    if (orderType === "delivery") return b.supports_delivery;
+    if (orderType === "pickup") return b.supports_pickup;
+    if (orderType === "dine_in") return b.supports_dine_in;
+    if (orderType === "car") return b.supports_car;
+    return true;
+  };
+  const selectableBranches = branches.filter(supportsOrderType);
+
+  // Follow a zone that resolves while the drawer is open, unless the customer
+  // already chose by hand. Only meaningful for delivery — the resolved branch is
+  // the nearest to the DELIVERY ADDRESS, which says nothing about where someone
+  // wants to collect an order.
+  const [branchTouched, setBranchTouched] = useState(false);
+  useEffect(() => {
+    if (branchTouched || !nearestBranchId || orderType !== "delivery") return;
+    if (!branches.some((b) => b.id === nearestBranchId)) return;
+    setSelectedBranchId(nearestBranchId);
+  }, [nearestBranchId, branchTouched, branches, orderType]);
+
+  // Changing order type can strip the selected branch out of the list (it may
+  // not support the new type). Fall back so the payload never carries a branch
+  // the customer cannot see — the server rejects those anyway (0081).
+  useEffect(() => {
+    if (branchPinnedByZone) return; // the zone's answer wins for delivery
+    if (selectableBranches.length === 0) return;
+    if (selectableBranches.some((b) => b.id === selectedBranchId)) return;
+    setSelectedBranchId(selectableBranches[0].id);
+  }, [orderType, selectableBranches, selectedBranchId, branchPinnedByZone]);
+
+  // The zone's minimum was fetched into DeliveryContext and then ignored, so a
+  // 12 ر.س order sailed past a 35 ر.س minimum. Server re-checks it too.
+  const minOrder = orderType === "delivery" && deliveryCtx ? deliveryCtx.minOrder : 0;
+  const belowMinimum = minOrder > 0 && total < minOrder;
 
   // Auto-fill from customer record + load saved addresses
   useEffect(() => {
@@ -153,20 +211,25 @@ export default function CartDrawer({
   async function submit() {
     if (lines.length === 0) return;
     if (!rawPhone.trim()) {
-      alert("الرجاء إدخال رقم الجوال");
+      setSubmitError("الرجاء إدخال رقم الجوال");
       return;
     }
     if (orderType === "delivery") {
       if (!address.trim()) {
-        alert("الرجاء إدخال عنوان التوصيل");
+        setSubmitError("الرجاء إدخال عنوان التوصيل");
         return;
       }
       if (!location) {
-        alert("الرجاء تحديد موقع التوصيل على الخريطة (اضغط 'استخدم موقعي الحالي' أو اسحب الدبوس)");
+        setSubmitError("الرجاء تحديد موقع التوصيل على الخريطة (اضغط 'استخدم موقعي الحالي' أو اسحب الدبوس)");
         return;
       }
     }
     setSubmitting(true);
+
+    // Claim the tab NOW, while the tap still counts as a user gesture. Opening
+    // it after the awaits below is blocked on iOS Safari, which silently cost
+    // the restaurant the WhatsApp message. See openWhatsApp in checkout-core.
+    const waWindow = typeof window !== "undefined" ? window.open("", "_blank") : null;
 
     const input: OrderComposeInput = {
       restaurant,
@@ -191,16 +254,20 @@ export default function CartDrawer({
       redeemPoints,
       discountAmount,
       finalTotal,
+      clientRef,
     };
 
-    const result = await runCheckout(input, { onCarOrderPlaced, onTableOrderPlaced });
-    if (!result.ok && result.error === "points") {
-      setSubmitError("فشل خصم النقاط. حاول مرة أخرى.");
+    const result = await runCheckout(input, { onCarOrderPlaced, onTableOrderPlaced }, waWindow);
+    // Any failure now keeps the cart intact and reports why — the order was NOT
+    // saved, so clearing the cart and closing would be lying to the customer.
+    if (!result.ok) {
+      setSubmitError(result.message);
       setSubmitting(false);
       return;
     }
 
     setSubmitting(false);
+    onOrderPlaced?.(result.orderId, result.orderNumber);
     onClear();
     onClose();
   }
@@ -233,7 +300,7 @@ export default function CartDrawer({
             <div key={l.lineId} className="flex items-center gap-3 bg-neutral-50 rounded-xl p-2">
               {l.imageUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={l.imageUrl} alt={l.itemName} className="w-14 h-14 rounded-lg object-cover" />
+                <img src={l.imageUrl} alt={l.itemName} className="w-14 h-14 rounded-lg object-cover" onError={fallbackToOriginal} />
               ) : (
                 <div className="w-14 h-14 rounded-lg bg-neutral-200 flex items-center justify-center text-xl">🍽️</div>
               )}
@@ -340,26 +407,34 @@ export default function CartDrawer({
                 </fieldset>
               )}
 
-              {/* Branch picker — shown only for multi-branch restaurants */}
-              {hasMultipleBranches && !lockedToTable && (
+              {/* Branch picker — multi-branch restaurants only. For delivery the
+                  branch is decided by the customer's zone, so it is shown as a
+                  result rather than a choice. */}
+              {hasMultipleBranches && !lockedToTable && branchPinnedByZone && (
+                <div className="rounded-2xl bg-neutral-50 border border-neutral-200 px-3 py-3 flex items-center gap-2">
+                  <span className="text-2xl">🏢</span>
+                  <div className="flex-1 min-w-0 text-sm leading-snug">
+                    <div className="font-extrabold text-neutral-900" style={{ fontFamily: "var(--font-display)" }}>
+                      {branches.find((b) => b.id === selectedBranchId)?.name_ar ?? deliveryCtx?.branchNameAr}
+                    </div>
+                    <div className="text-[11px] text-neutral-500">
+                      الفرع الذي يخدم عنوانك · {toArabicDigits(deliveryCtx!.distanceKm.toFixed(1))} كم
+                    </div>
+                  </div>
+                </div>
+              )}
+              {hasMultipleBranches && !lockedToTable && !branchPinnedByZone && (
                 <fieldset className="space-y-2">
                   <legend className="text-xs font-extrabold text-neutral-700 mb-1">
                     {orderType === "pickup" ? "اختر فرع الاستلام" : "اختر الفرع"}
                   </legend>
                   <div className="space-y-1.5">
-                    {branches
-                      .filter((b) => {
-                        if (orderType === "delivery") return b.supports_delivery;
-                        if (orderType === "pickup") return b.supports_pickup;
-                        if (orderType === "dine_in") return b.supports_dine_in;
-                        if (orderType === "car") return b.supports_car;
-                        return true;
-                      })
+                    {selectableBranches
                       .map((b) => (
                         <button
                           key={b.id}
                           type="button"
-                          onClick={() => setSelectedBranchId(b.id)}
+                          onClick={() => { setBranchTouched(true); setSelectedBranchId(b.id); }}
                           className={
                             "w-full text-right rounded-xl border-2 px-3 py-2.5 transition-colors " +
                             (selectedBranchId === b.id
@@ -372,11 +447,15 @@ export default function CartDrawer({
                             <span className="text-sm font-bold text-neutral-800" style={{ fontFamily: "var(--font-display)" }}>
                               {b.name_ar}
                             </span>
-                            {b.is_default && (
+                            {b.id === nearestBranchId ? (
+                              <span className="text-[9px] bg-[var(--brand)]/10 text-[var(--brand)] font-bold rounded-full px-1.5 py-0.5">
+                                الأقرب لك · {toArabicDigits(deliveryCtx!.distanceKm.toFixed(1))} كم
+                              </span>
+                            ) : b.is_default ? (
                               <span className="text-[9px] bg-neutral-100 text-neutral-500 rounded-full px-1.5 py-0.5">
                                 رئيسي
                               </span>
-                            )}
+                            ) : null}
                           </div>
                           {b.address_ar && (
                             <p className="text-[11px] text-neutral-500 mt-0.5 mr-6 truncate">
@@ -595,14 +674,23 @@ export default function CartDrawer({
                 {submitError}
               </div>
             )}
+            {belowMinimum && (
+              <div className="mb-3 rounded-xl bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-800 font-bold text-center">
+                الحد الأدنى للتوصيل {toArabicDigits(String(minOrder))} ر.س — أضف{" "}
+                {toArabicDigits((minOrder - total).toFixed(2))} ر.س
+              </div>
+            )}
             <button
               onClick={() => { setSubmitError(null); submit(); }}
-              disabled={submitting}
+              disabled={submitting || belowMinimum}
               className="w-full h-12 rounded-2xl bg-[var(--brand)] text-white font-extrabold text-base hover:opacity-90 disabled:opacity-60 active:translate-y-px shadow-md"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              {submitting ? "جاري الإرسال..." : "إرسال الطلب عبر واتساب"}
+              {submitting ? "جاري التأكيد..." : "تأكيد الطلب"}
             </button>
+            <p className="mt-2 text-[11px] text-neutral-500 text-center">
+              بعد التأكيد سيُفتح واتساب لإرسال الطلب للمطعم
+            </p>
           </footer>
         )}
       </div>

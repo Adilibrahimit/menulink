@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { SLUG_TO_IMG } from "@/lib/koko-images";
+import { IMG, sizedImage, fallbackToOriginal } from "@/lib/image-url";
 import SarSymbol from "./sar-symbol";
 import type { PublicMenu, PublicMenuItem, PublicCategory } from "./types";
 import type { ThemeConfig } from "@/lib/themes";
@@ -342,7 +343,7 @@ function BrandMark({ kind }: { kind: "dallah" | "coffee-cup" }) {
 }
 
 function HeritageItem({ item, bilingual }: { item: PublicMenuItem; bilingual: boolean }) {
-  const img = item.image_url ?? SLUG_TO_IMG[item.slug] ?? null;
+  const img = sizedImage(item.image_url ?? SLUG_TO_IMG[item.slug] ?? null, IMG.card);
   const subtitle = item.description_ar || null;
   const hasMultipleVariants = item.variants.length > 1;
   const singleVariant = item.variants[0];
@@ -368,8 +369,10 @@ function HeritageItem({ item, bilingual }: { item: PublicMenuItem; bilingual: bo
             src={img}
             alt={item.name_ar}
             loading="lazy"
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
+            decoding="async"
+            width={400}
+            height={400}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onError={fallbackToOriginal} />
         ) : (
           <svg width="64" height="64" viewBox="0 0 32 32" fill="none" style={{ color: "var(--accent-gold)", opacity: 0.5 }}>
             <ellipse cx="16" cy="16" rx="9" ry="13" stroke="currentColor" strokeWidth="1.8" />
