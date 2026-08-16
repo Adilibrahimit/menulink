@@ -41,6 +41,7 @@ export default function CartDrawer({
   onClear,
   onCarOrderPlaced,
   onTableOrderPlaced,
+  onOrderPlaced,
 }: {
   restaurant: PublicMenu["restaurant"];
   branches: PublicBranch[];
@@ -55,6 +56,8 @@ export default function CartDrawer({
   onClear: () => void;
   onCarOrderPlaced: (t: TrackingState) => void;
   onTableOrderPlaced: (sessionId: string) => void;
+  /** Fired for EVERY successful order so the guest tracker can pick it up. */
+  onOrderPlaced?: (orderId: string | null, orderNumber: string) => void;
 }) {
   const { orderType: preselected, delivery: deliveryCtx } = useOrderContext();
   const lockedToTable = !!tableLabel;
@@ -80,8 +83,31 @@ export default function CartDrawer({
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const hasMultipleBranches = branches.length > 1;
-  const defaultBranch = branches.find((b) => b.is_default) ?? branches[0];
+  // find_nearest_branch already resolved a branch from the customer's location
+  // (multi-tier radius + polygon, migration 0052) and DeliveryContext has been
+  // carrying the answer all along — it just never reached checkout, which
+  // defaulted to is_default instead. Prefer the resolved one; the picker below
+  // still lets the customer override.
+  const defaultBranch =
+    (deliveryCtx && branches.find((b) => b.id === deliveryCtx.branchId)) ??
+    branches.find((b) => b.is_default) ??
+    branches[0];
   const [selectedBranchId, setSelectedBranchId] = useState<string>(defaultBranch?.id ?? "");
+  const nearestBranchId = deliveryCtx?.branchId ?? null;
+
+  // If the zone resolves after the drawer mounted (customer picks a location
+  // while it's open), follow it — unless they already chose a branch by hand.
+  const [branchTouched, setBranchTouched] = useState(false);
+  useEffect(() => {
+    if (branchTouched || !nearestBranchId) return;
+    if (!branches.some((b) => b.id === nearestBranchId)) return;
+    setSelectedBranchId(nearestBranchId);
+  }, [nearestBranchId, branchTouched, branches]);
+
+  // The zone's minimum was fetched into DeliveryContext and then ignored, so a
+  // 12 ر.س order sailed past a 35 ر.س minimum. Server re-checks it too.
+  const minOrder = orderType === "delivery" && deliveryCtx ? deliveryCtx.minOrder : 0;
+  const belowMinimum = minOrder > 0 && total < minOrder;
 
   // Auto-fill from customer record + load saved addresses
   useEffect(() => {
@@ -194,13 +220,16 @@ export default function CartDrawer({
     };
 
     const result = await runCheckout(input, { onCarOrderPlaced, onTableOrderPlaced });
-    if (!result.ok && result.error === "points") {
-      setSubmitError("فشل خصم النقاط. حاول مرة أخرى.");
+    // Any failure now keeps the cart intact and reports why — the order was NOT
+    // saved, so clearing the cart and closing would be lying to the customer.
+    if (!result.ok) {
+      setSubmitError(result.message);
       setSubmitting(false);
       return;
     }
 
     setSubmitting(false);
+    onOrderPlaced?.(result.orderId, result.orderNumber);
     onClear();
     onClose();
   }
@@ -359,7 +388,7 @@ export default function CartDrawer({
                         <button
                           key={b.id}
                           type="button"
-                          onClick={() => setSelectedBranchId(b.id)}
+                          onClick={() => { setBranchTouched(true); setSelectedBranchId(b.id); }}
                           className={
                             "w-full text-right rounded-xl border-2 px-3 py-2.5 transition-colors " +
                             (selectedBranchId === b.id
@@ -372,11 +401,15 @@ export default function CartDrawer({
                             <span className="text-sm font-bold text-neutral-800" style={{ fontFamily: "var(--font-display)" }}>
                               {b.name_ar}
                             </span>
-                            {b.is_default && (
+                            {b.id === nearestBranchId ? (
+                              <span className="text-[9px] bg-[var(--brand)]/10 text-[var(--brand)] font-bold rounded-full px-1.5 py-0.5">
+                                الأقرب لك · {toArabicDigits(deliveryCtx!.distanceKm.toFixed(1))} كم
+                              </span>
+                            ) : b.is_default ? (
                               <span className="text-[9px] bg-neutral-100 text-neutral-500 rounded-full px-1.5 py-0.5">
                                 رئيسي
                               </span>
-                            )}
+                            ) : null}
                           </div>
                           {b.address_ar && (
                             <p className="text-[11px] text-neutral-500 mt-0.5 mr-6 truncate">
@@ -595,14 +628,23 @@ export default function CartDrawer({
                 {submitError}
               </div>
             )}
+            {belowMinimum && (
+              <div className="mb-3 rounded-xl bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-800 font-bold text-center">
+                الحد الأدنى للتوصيل {toArabicDigits(String(minOrder))} ر.س — أضف{" "}
+                {toArabicDigits((minOrder - total).toFixed(2))} ر.س
+              </div>
+            )}
             <button
               onClick={() => { setSubmitError(null); submit(); }}
-              disabled={submitting}
+              disabled={submitting || belowMinimum}
               className="w-full h-12 rounded-2xl bg-[var(--brand)] text-white font-extrabold text-base hover:opacity-90 disabled:opacity-60 active:translate-y-px shadow-md"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              {submitting ? "جاري الإرسال..." : "إرسال الطلب عبر واتساب"}
+              {submitting ? "جاري التأكيد..." : "تأكيد الطلب"}
             </button>
+            <p className="mt-2 text-[11px] text-neutral-500 text-center">
+              بعد التأكيد سيُفتح واتساب لإرسال الطلب للمطعم
+            </p>
           </footer>
         )}
       </div>

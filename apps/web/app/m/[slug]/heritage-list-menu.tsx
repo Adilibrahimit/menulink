@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { SLUG_TO_IMG } from "@/lib/koko-images";
+import { IMG, sizedImage } from "@/lib/image-url";
 import SarSymbol from "./sar-symbol";
 import type { PublicMenu, PublicMenuItem, PublicCategory } from "./types";
 import type { ThemeConfig } from "@/lib/themes";
@@ -342,7 +343,7 @@ function BrandMark({ kind }: { kind: "dallah" | "coffee-cup" }) {
 }
 
 function HeritageItem({ item, bilingual }: { item: PublicMenuItem; bilingual: boolean }) {
-  const img = item.image_url ?? SLUG_TO_IMG[item.slug] ?? null;
+  const img = sizedImage(item.image_url ?? SLUG_TO_IMG[item.slug] ?? null, IMG.card);
   const subtitle = item.description_ar || null;
   const hasMultipleVariants = item.variants.length > 1;
   const singleVariant = item.variants[0];
@@ -368,6 +369,9 @@ function HeritageItem({ item, bilingual }: { item: PublicMenuItem; bilingual: bo
             src={img}
             alt={item.name_ar}
             loading="lazy"
+            decoding="async"
+            width={400}
+            height={400}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (

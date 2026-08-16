@@ -21,6 +21,14 @@ function orderTypeKey(restaurantId: string) {
   return `menulink:orderType:${restaurantId}`;
 }
 
+function deliveryKey(restaurantId: string) {
+  return `menulink:delivery:${restaurantId}`;
+}
+
+/** A resolved delivery zone older than this is discarded — the customer has
+ *  probably moved, and a stale fee/address is worse than asking again. */
+const DELIVERY_TTL_MS = 6 * 60 * 60 * 1000;
+
 export default function CustomerShell({
   menu,
   tableParam,
@@ -77,6 +85,32 @@ export default function CustomerShell({
     } catch {}
   }, [googleFirst, menu.restaurant.id]);
 
+  // Restore the resolved delivery zone. Without this, orderType survived a
+  // refresh but the delivery context did not — so the fee silently reverted to
+  // 0 and the customer checked out without paying for delivery. Time-boxed so a
+  // stale address from days ago is not reused.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(deliveryKey(menu.restaurant.id));
+      if (!raw) return;
+      const { at, ctx } = JSON.parse(raw) as { at: number; ctx: DeliveryContext };
+      if (Date.now() - at > DELIVERY_TTL_MS) {
+        localStorage.removeItem(deliveryKey(menu.restaurant.id));
+        return;
+      }
+      setDelivery(ctx);
+    } catch {}
+  }, [menu.restaurant.id]);
+
+  function handleDelivery(d: DeliveryContext | null) {
+    setDelivery(d);
+    try {
+      const key = deliveryKey(menu.restaurant.id);
+      if (d) localStorage.setItem(key, JSON.stringify({ at: Date.now(), ctx: d }));
+      else localStorage.removeItem(key);
+    } catch {}
+  }
+
   function handleGuest(phone: string, name: string) {
     localStorage.setItem(GUEST_KEY, JSON.stringify({ phone, name }));
     setAuth({ kind: "guest", phone, name });
@@ -84,7 +118,7 @@ export default function CustomerShell({
 
   function handleOrderType(type: OrderType) {
     setOrderType(type);
-    if (type !== "delivery") setDelivery(null);
+    if (type !== "delivery") handleDelivery(null);
     try {
       localStorage.setItem(orderTypeKey(menu.restaurant.id), type);
     } catch {}
@@ -125,7 +159,7 @@ export default function CustomerShell({
         restaurantName={menu.restaurant.name}
         logoUrl={menu.restaurant.logo_url}
         onSelect={handleOrderType}
-        onDeliveryConfirm={setDelivery}
+        onDeliveryConfirm={handleDelivery}
       />
     );
   }
@@ -135,7 +169,7 @@ export default function CustomerShell({
       orderType={orderType}
       setOrderType={handleOrderType}
       delivery={delivery}
-      setDelivery={setDelivery}
+      setDelivery={handleDelivery}
     >
       <div className="pb-16">{children}</div>
       <BottomNav slug={menu.restaurant.slug} navItems={theme.bottomNavItems} notifCenterEnabled={notifCenterEnabled} variant={theme.menuLayout === "premium-epicurean" ? "premium" : "light"} />

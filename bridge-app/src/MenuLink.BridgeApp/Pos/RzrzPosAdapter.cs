@@ -52,6 +52,17 @@ public sealed class RzrzPosAdapter : IPosAdapter
         _printer = printer;
     }
 
+    public string Kind => _opts.Kind;
+
+    public string DatabaseName
+    {
+        get
+        {
+            try { return new SqlConnectionStringBuilder(_opts.ConnectionString).InitialCatalog; }
+            catch { return "(unparseable)"; }
+        }
+    }
+
     public async Task<PosWriteResult> WriteOrderAsync(OutboxPayload payload, long menuLinkInvoiceNo, CancellationToken ct)
     {
         if (payload.Items.Count == 0)
@@ -80,12 +91,23 @@ public sealed class RzrzPosAdapter : IPosAdapter
         await using var conn = new SqlConnection(_opts.ConnectionString);
         await conn.OpenAsync(ct);
 
+        await EnsureInvoiceMapTableAsync(conn, ct);
+
         // ---- Idempotency precheck -------------------------------------------------
         // If a previous attempt already created the POS Invoice (and failed in a
         // later step), use that row instead of inserting another duplicate.
-        // Match by OnlineCustomerID + InvoiceNotes_A "MenuLink #N " substring.
-        // The leading "%" allows for v2.7's order-type-label prefix (توصيل / محلي /
-        // سفري / سيارة), and the trailing space ensures we don't false-match #141 on #14.
+        //
+        // Two layers, checked in order:
+        //   1. dbo.MenuLinkInvoiceMap — our own (RestaurantId, MenuLinkInvoiceNo)
+        //      -> InvoiceID key. A real primary key, invisible to the cashier UI
+        //      and impossible for it to edit.
+        //   2. the legacy InvoiceNotes_A "MenuLink #N " tag scan — still needed
+        //      for invoices written before this table existed, and as a backstop
+        //      if we crashed between InsertInvoice and the map write.
+        //
+        // Layer 2 alone was not enough: BillNo 33946 AND 33947 both carry
+        // "توصيل · MenuLink #128" on the clone, i.e. a duplicate already got
+        // through in production-like conditions.
         var tagPattern = $"%MenuLink #{menuLinkInvoiceNo} %";
         Guid posInvoiceGuid;
         long posInvoiceNo;
@@ -94,11 +116,21 @@ public sealed class RzrzPosAdapter : IPosAdapter
         bool invoiceAlreadyExisted;
 
         await using (var precheck = new SqlCommand(@"
+            -- layer 1: our own dedup key
+            select top 1 i.InvoiceID, i.InvoiceNo, i.BillNo, i.TaxAmount
+            from dbo.MenuLinkInvoiceMap m
+            join Invoice i on i.InvoiceID = m.InvoiceID
+            where m.RestaurantId = @rid and m.MenuLinkInvoiceNo = @mlno
+            union all
+            -- layer 2: legacy note tag (pre-map invoices / crash before map write)
             select top 1 InvoiceID, InvoiceNo, BillNo, TaxAmount
             from Invoice
             where OnlineCustomerID = @ocid and InvoiceNotes_A like @tag
-            order by CreatedDate desc;", conn))
+              and not exists (select 1 from dbo.MenuLinkInvoiceMap m2
+                              where m2.RestaurantId = @rid and m2.MenuLinkInvoiceNo = @mlno);", conn))
         {
+            precheck.Parameters.Add("@rid", SqlDbType.UniqueIdentifier).Value = payload.Order.RestaurantId;
+            precheck.Parameters.Add("@mlno", SqlDbType.BigInt).Value = menuLinkInvoiceNo;
             precheck.Parameters.Add("@ocid", SqlDbType.BigInt).Value = onlineCustomer;
             precheck.Parameters.Add("@tag", SqlDbType.NVarChar, 200).Value = tagPattern;
             await using var rdr = await precheck.ExecuteReaderAsync(ct);
@@ -161,6 +193,20 @@ public sealed class RzrzPosAdapter : IPosAdapter
             posInvoiceNo = rdr.GetInt64(1);
             posBillNo = rdr.GetInt64(2);
             taxAmount = rdr.IsDBNull(3) ? 0m : Convert.ToDecimal(rdr.GetValue(3));
+            await rdr.CloseAsync();
+
+            // Record the dedup key immediately. A crash after this point makes
+            // the next attempt find the invoice via layer 1 instead of guessing
+            // from the note text.
+            await using var remember = new SqlCommand(@"
+                if not exists (select 1 from dbo.MenuLinkInvoiceMap
+                               where RestaurantId = @rid and MenuLinkInvoiceNo = @mlno)
+                insert into dbo.MenuLinkInvoiceMap (RestaurantId, MenuLinkInvoiceNo, InvoiceID)
+                values (@rid, @mlno, @inv);", conn);
+            remember.Parameters.Add("@rid", SqlDbType.UniqueIdentifier).Value = payload.Order.RestaurantId;
+            remember.Parameters.Add("@mlno", SqlDbType.BigInt).Value = menuLinkInvoiceNo;
+            remember.Parameters.Add("@inv", SqlDbType.UniqueIdentifier).Value = posInvoiceGuid;
+            await remember.ExecuteNonQueryAsync(ct);
         }
 
         // ---------------------------------------------------------------------
@@ -246,6 +292,38 @@ public sealed class RzrzPosAdapter : IPosAdapter
 
         return new PosWriteResult(posInvoiceGuid.ToString(), posInvoiceNo, posBillNo);
     }
+
+    /// <summary>
+    /// Our own dedup key, kept in the POS database next to the invoices it
+    /// points at. Additive only: a new table, no change to any stored procedure
+    /// and no change to Samer's application — so it needs nothing from him and
+    /// cannot break an existing call site.
+    ///
+    /// RestaurantId is part of the key on purpose: one POS database legitimately
+    /// serves more than one MenuLink tenant (the laptop clone already holds
+    /// invoices from both rzrz-bukhari and rzrz-bukhari-test), and their
+    /// MenuLink invoice numbers are independent sequences that WILL collide.
+    ///
+    /// Created here rather than by hand so deploying the bridge stays a
+    /// file-copy. CREATE TABLE IF NOT EXISTS is cheap and idempotent.
+    /// </summary>
+    private async Task EnsureInvoiceMapTableAsync(SqlConnection conn, CancellationToken ct)
+    {
+        if (_invoiceMapReady) return;
+        await using var cmd = new SqlCommand(@"
+            if object_id('dbo.MenuLinkInvoiceMap', 'U') is null
+            create table dbo.MenuLinkInvoiceMap (
+              RestaurantId      uniqueidentifier not null,
+              MenuLinkInvoiceNo bigint           not null,
+              InvoiceID         uniqueidentifier not null,
+              CreatedAt         datetime2        not null constraint DF_MenuLinkInvoiceMap_CreatedAt default sysdatetime(),
+              constraint PK_MenuLinkInvoiceMap primary key (RestaurantId, MenuLinkInvoiceNo)
+            );", conn);
+        await cmd.ExecuteNonQueryAsync(ct);
+        _invoiceMapReady = true;
+    }
+
+    private bool _invoiceMapReady;
 
     private (string XmlInvoice, string XmlItems) BuildXml(
         OutboxPayload p,

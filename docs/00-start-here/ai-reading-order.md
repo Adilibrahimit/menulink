@@ -12,7 +12,7 @@
 ## General MenuLink **Core** task (menu, admin, ops, PWA, addons, schema)
 - [`/PRICING.md`](../../PRICING.md) (canonical 59/499) · [`/DESIGN.md`](../../DESIGN.md)
 - [`../strategy/ROADMAP.md`](../strategy/ROADMAP.md)
-- [`../architecture/system-design.html`](../architecture/system-design.html) · [`../architecture/auth-rls-bridge-trace.md`](../architecture/auth-rls-bridge-trace.md)
+- [`../architecture/TECH-DESIGN.md`](../architecture/TECH-DESIGN.md) — **full tech stack + technical design (architecture entry point)** · [`../architecture/system-design.html`](../architecture/system-design.html) · [`../architecture/auth-rls-bridge-trace.md`](../architecture/auth-rls-bridge-trace.md)
 - Runtime: `apps/web/` — `lib/addons.ts` (feature gating), `app/m/[slug]/` `app/admin/` `app/ops/`, `supabase/migrations/` (immutable, ordered)
 
 ## **POS / RzRz / Punnelifosys / digital-invoice** task (the OPTIONAL layer)

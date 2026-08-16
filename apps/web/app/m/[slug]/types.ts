@@ -15,7 +15,8 @@ export type PublicRestaurant = {
   contact_email: string | null;
   instagram_handle: string | null;
   tiktok_handle: string | null;
-  hours_json: Record<string, string> | null;
+  // string | string[] per day — a day can have split shifts. See lib/hours.ts.
+  hours_json: Record<string, string | string[] | null> | null;
   logo_url: string | null;
   cover_image_url: string | null;
   tagline_ar: string | null;
@@ -100,6 +101,9 @@ export type PublicBranch = {
   address_ar: string | null;
   lat: number | null;
   lng: number | null;
+  /** NULL = inherit the restaurant's hours. See lib/hours.ts. */
+  hours_json: Record<string, string | string[] | null> | null;
+  timezone: string | null;
   supports_delivery: boolean;
   supports_pickup: boolean;
   supports_dine_in: boolean;

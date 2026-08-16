@@ -1,12 +1,12 @@
-# CLAUDE.md · MenuLink Project
+# AGENTS.md · MenuLink Project
 
-> ملف توجيه مختصر لـ Claude Code.
+> ملف توجيه مختصر لـ Codex.
 >
 > **🆕 ابدأ هنا:** [`memory.md`](./memory.md) — حالة المشروع الحالية، URLs، credentials،
 > ما تم بناؤه، الـ gotchas، والمسار للجلسة الجديدة. اقرأها أولاً قبل أي شي.
 >
 > ثم: `HANDOFF.md` للسياق الاستراتيجي · `DESIGN.md` لقواعد التصميم ·
-> `.claude/skills/menulink-integration/learnings.md` لذاكرة المهارة.
+> `.Codex/skills/menulink-integration/learnings.md` لذاكرة المهارة.
 
 ## ما هذا المشروع؟
 
@@ -41,13 +41,13 @@
 3. **لا تبني ميزة قبل أن يطلبها ٣ عملاء حقيقيون.**
 4. **استخدم managed services**، لا تبني infrastructure من الصفر.
 5. **اسأل قبل اتخاذ قرارات معمارية كبيرة.**
-6. **لا تستخدم localStorage داخل Claude.ai artifacts** (يعمل عند النشر فقط).
+6. **لا تستخدم localStorage داخل Codex.ai artifacts** (يعمل عند النشر فقط).
 
 ## 🧠 المهارة الذاتية التطور
 
 عند العمل على تكامل POS، إضافة عميل جديد، أو حل مشكلة في تدفق الطلبات:
 
-📂 **`.claude/skills/menulink-integration/`** ← Claude Code يحمّلها تلقائياً
+📂 **`.Codex/skills/menulink-integration/`** ← Codex يحمّلها تلقائياً
 
 تحتوي على:
 - ذاكرة متراكمة (`learnings.md`) — اقرأها أولاً
@@ -72,7 +72,7 @@
 | 🏗️ **Tech Stack + Technical Design (الكامل، محدّث 2026-06-30)** | [`docs/architecture/TECH-DESIGN.md`](./docs/architecture/TECH-DESIGN.md) ⭐ |
 | المعمارية (system-design + auth/RLS↔Bridge trace) | `docs/architecture/` |
 | توثيق POS الاختياري (digital-invoice، gateway، RZRZ ai_memory) | `docs/pos/` |
-| **تكامل RzRz / عميل جديد / debugging** | `.claude/skills/menulink-integration/` ⭐ |
+| **تكامل RzRz / عميل جديد / debugging** | `.Codex/skills/menulink-integration/` ⭐ |
 | دلائل الإثبات (proofs) | `docs/proofs/` |
 | نسخ سابقة (مرجع فقط) | `archive/legacy-pwa/version-history/` |
 

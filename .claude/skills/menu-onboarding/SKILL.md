@@ -182,3 +182,19 @@ Menu Import: [Restaurant Name]
 4. **Trusting hand-prepped POS IDs** — wrong mapping. Verify against live POS.
 5. **Skipping calorie data** — SFDA non-compliance. Always estimate.
 6. **Missing allergens on breaded items** — at minimum gluten + eggs on every fried item.
+7. **Cross-category photo collision** — name-based photo matching (`apply-photos`) keys by dish NAME, not category, so a juice "Lemon Mint" grabs the shisha "Lemon Mint" hookah photo. **Screenshot every category after applying** and eyeball each photo; fix wrong ones (override `image_url` + correct the library folder) before publish.
+8. **Faint/tiny bilingual English** — if the theme is bilingual, the English name must render under the Arabic AND be legible on a phone (not a thin small serif). Verify on the live `/m/<slug>`.
+9. **Dirty POS names shipped verbatim** — exports carry OCR/typo garbage (`COIF kAs` = كوب قهوة سعودية), language in the wrong column, redundant tier numbers. Clean BOTH `name_ar` and `name_en` before insert; confirm ambiguous ones with the owner. See `references/saudi-cafe-glossary.md`.
+10. **Literal/Western reading of Saudi-café terms** — `براد` is a teapot not a cup; plain `شاي` is red tea not lemon; `هوت X` is a hot drink not a cookie; `حليب` on a drinks list is hot milk not bottles; `كركديه` is red iced tea not a flower; `موهيتو` is a halal mocktail (never a liquor cocktail). Pick photos by **meaning** — glossary above.
+11. **«معسّل» reads as fruit** — shisha cards using fruit imagery (to match a poster) must carry a «معسّل»/shisha badge so customers don't think it's real fruit or a fruit salad. (Owner-requested on Wadi.)
+12. **Alcohol in stock photos** — a "<fruit> drink/cocktail" stock query returns real cocktails with a liquor bottle in frame (a tequila bottle reached a كركديه card before review caught it). Use `gapfill-photos.mjs` (Pexels) and **Read its review montage** before `--apply`. Halal only.
+
+## Pre-publish checklist (run before flipping `is_published`)
+- [ ] Every food/drink item has `calories_kcal` (🔥 renders live); shisha/tobacco null/exempt.
+- [ ] Allergens on desserts/meals/milk-drinks/fried items.
+- [ ] Bilingual EN legible under AR on a phone-width screenshot (if bilingual).
+- [ ] **Screenshot every category** and eyeball each photo: right dish, right category (name
+      collisions), **no alcohol/bottles**, right form (drink not flower/cookie), Saudi-café terms
+      correct (teapot vs cup, hot vs cold). See `menulink-photo-catalog/references/image-search.md`.
+- [ ] Names cleaned (no POS garbage); prices correct; categories ordered.
+- [ ] SFDA daily-reference + allergen-disclaimer footer renders.

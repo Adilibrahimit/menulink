@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { SLUG_TO_IMG } from "@/lib/koko-images";
+import { IMG, sizedImage } from "@/lib/image-url";
+import { trackOrder } from "@/lib/order-tracking";
+import OrderTrackerBar from "./order-tracker-bar";
 import { toArabicDigits } from "@/lib/arabic";
 import type { ThemeConfig } from "@/lib/themes";
 import SarSymbol from "./sar-symbol";
@@ -60,6 +63,8 @@ export default function MenuExperience({
   const [tracking, setTracking] = useState<TrackingState | null>(null);
   const [trackingSheetOpen, setTrackingSheetOpen] = useState(false);
   const [closedPopup, setClosedPopup] = useState(false);
+  // Bumped after each successful order so the tracker bar re-reads localStorage.
+  const [trackedVersion, setTrackedVersion] = useState(0);
   const [customizerState, setCustomizerState] = useState<{
     item: PublicMenuItem;
     variant: PublicVariant | null;
@@ -129,7 +134,7 @@ export default function MenuExperience({
     variant: PublicVariant | null,
     category: PublicCategory,
   ) {
-    const { open } = isRestaurantOpen(menu.restaurant.hours_json);
+    const { open } = isRestaurantOpen(menu.restaurant.hours_json, menu.restaurant.timezone);
     if (!open) {
       setClosedPopup(true);
       return;
@@ -139,7 +144,7 @@ export default function MenuExperience({
   }
 
   function addToCartSimple(item: PublicMenuItem, variant: PublicVariant) {
-    const { open } = isRestaurantOpen(menu.restaurant.hours_json);
+    const { open } = isRestaurantOpen(menu.restaurant.hours_json, menu.restaurant.timezone);
     if (!open) {
       setClosedPopup(true);
       return;
@@ -160,7 +165,9 @@ export default function MenuExperience({
               variantLabel: variant.label || null,
               price: Number(variant.price),
               qty: 1,
-              imageUrl: item.image_url ?? SLUG_TO_IMG[item.slug] ?? null,
+              // Cart rows render a 56-64px thumb; size it once here so both the
+              // default drawer and the premium flow get the small variant.
+              imageUrl: sizedImage(item.image_url ?? SLUG_TO_IMG[item.slug] ?? null, IMG.cartThumb),
             },
       };
     });
@@ -191,7 +198,9 @@ export default function MenuExperience({
               variantLabel: variant.label || null,
               price: effectivePrice,
               qty,
-              imageUrl: item.image_url ?? SLUG_TO_IMG[item.slug] ?? null,
+              // Cart rows render a 56-64px thumb; size it once here so both the
+              // default drawer and the premium flow get the small variant.
+              imageUrl: sizedImage(item.image_url ?? SLUG_TO_IMG[item.slug] ?? null, IMG.cartThumb),
               modifiers: modifiers.length > 0 ? modifiers : undefined,
               itemNote: note || undefined,
             },
@@ -336,8 +345,9 @@ export default function MenuExperience({
           <div className="relative w-full h-56 sm:h-72 overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={menu.restaurant.cover_image_url!}
+              src={sizedImage(menu.restaurant.cover_image_url, IMG.hero)!}
               alt=""
+              decoding="async"
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/30 to-black/10" />
@@ -577,12 +587,29 @@ export default function MenuExperience({
           onAdjust={adjustQty}
           onClear={clearCart}
           onCarOrderPlaced={startTracking}
+          onOrderPlaced={(orderId, orderNumber) => {
+            if (!orderId) return;
+            trackOrder(menu.restaurant.id, orderId, orderNumber);
+            setTrackedVersion((v) => v + 1);
+          }}
           onTableOrderPlaced={(sid) => {
             setTableSessionId(sid);
             try {
               localStorage.setItem(`menulink:session:${menu.restaurant.id}:${tableLabel}`, sid);
             } catch {}
           }}
+        />
+      )}
+
+      {/* GUEST ORDER TRACKER — live status for every order placed on this
+          device, guest included. Suppressed while the cart bar or the
+          car-curbside bar is up, so only one bar is ever docked. Car orders
+          keep their own bar because it carries the "I've arrived" action. */}
+      {count === 0 && !tracking && (
+        <OrderTrackerBar
+          restaurantId={menu.restaurant.id}
+          slug={menu.restaurant.slug}
+          version={trackedVersion}
         />
       )}
 
@@ -612,6 +639,7 @@ export default function MenuExperience({
         <ClosedPopup
           restaurantName={menu.restaurant.name}
           hoursJson={menu.restaurant.hours_json}
+          timezone={menu.restaurant.timezone}
           onClose={() => setClosedPopup(false)}
         />
       )}

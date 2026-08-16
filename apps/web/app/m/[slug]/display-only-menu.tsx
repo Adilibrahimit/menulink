@@ -2,6 +2,7 @@
 
 import { SLUG_TO_IMG } from "@/lib/koko-images";
 import { ALLERGEN_MAP } from "@/lib/allergens";
+import { IMG, sizedImage } from "@/lib/image-url";
 import { toArabicDigits } from "@/lib/arabic";
 import SarSymbol from "./sar-symbol";
 import CategoryTabs from "./category-tabs";
@@ -59,8 +60,9 @@ export default function DisplayOnlyMenu({
           <div className="relative w-full h-56 sm:h-72 overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={menu.restaurant.cover_image_url!}
+              src={sizedImage(menu.restaurant.cover_image_url, IMG.hero)!}
               alt=""
+              decoding="async"
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/30 to-black/10" />
@@ -151,7 +153,7 @@ export default function DisplayOnlyMenu({
 }
 
 function DisplayCard({ item }: { item: PublicMenuItem }) {
-  const img = item.image_url ?? SLUG_TO_IMG[item.slug] ?? null;
+  const img = sizedImage(item.image_url ?? SLUG_TO_IMG[item.slug] ?? null, IMG.card);
   const isPremium = item.badges?.some((b) => b.type === "premium");
   const isHot = item.badges?.some((b) => b.type === "hot");
 
@@ -164,6 +166,9 @@ function DisplayCard({ item }: { item: PublicMenuItem }) {
             src={img}
             alt={item.name_ar}
             loading="lazy"
+            decoding="async"
+            width={400}
+            height={400}
             className="w-full h-full object-cover"
           />
         ) : (

@@ -14,7 +14,7 @@
  *  Bump VERSION on any meaningful SW change.
  * ========================================================================= */
 
-const VERSION = "menulink-sw-v1.1.0";
+const VERSION = "menulink-sw-v1.2.0";
 const HTML_CACHE = `menulink-html-${VERSION}`;
 const ASSET_CACHE = `menulink-assets-${VERSION}`;
 
@@ -50,7 +50,24 @@ self.addEventListener("fetch", (event) => {
 
   // Never intercept external services
   if (PASSTHROUGH_HOSTS.has(url.hostname)) return;
-  if (url.hostname.endsWith(".supabase.co")) return;
+
+  // Supabase: the API surface (rest / auth / realtime / functions) must never
+  // be cached. Storage IMAGES must be — Storage answers `Cache-Control:
+  // no-cache` on both the object and the render endpoint, and this SW used to
+  // skip the whole host, so menu photos had no cache at any layer. Scrolling
+  // down and back up re-fetched every photo, which is what showed up as images
+  // vanishing and reappearing. A photo's URL changes when the photo changes
+  // (new object path, or a ?v= bump per learnings LRN-2026-06-05), so a cached
+  // entry can never go stale under us.
+  if (url.hostname.endsWith(".supabase.co")) {
+    const isStorageImage =
+      url.pathname.startsWith("/storage/v1/object/public/") ||
+      url.pathname.startsWith("/storage/v1/render/image/public/");
+    if (!isStorageImage) return;
+    event.respondWith(cacheFirstAsset(req, { revalidate: false }));
+    return;
+  }
+
   if (url.hostname.endsWith(".tile.openstreetmap.org")) return;
   if (url.hostname.endsWith(".basemaps.cartocdn.com")) return;
   if (url.protocol === "tel:") return;
@@ -129,17 +146,22 @@ self.addEventListener("notificationclick", (event) => {
 
 // --- Caching strategies ---------------------------------------------------
 
-async function cacheFirstAsset(req) {
+// `revalidate: false` = pure cache-first, no background refetch. Used for
+// Storage images: their URL is effectively content-addressed, so a hit is
+// always correct, and revalidating would fire one needless request per photo
+// per page view (60-260 of them) on a mobile connection.
+async function cacheFirstAsset(req, { revalidate = true } = {}) {
   const cached = await caches.match(req);
   if (cached) {
-    // Background refresh
-    fetch(req)
-      .then((fresh) => {
-        if (fresh && fresh.ok) {
-          caches.open(ASSET_CACHE).then((c) => c.put(req, fresh.clone()));
-        }
-      })
-      .catch(() => {});
+    if (revalidate) {
+      fetch(req)
+        .then((fresh) => {
+          if (fresh && fresh.ok) {
+            caches.open(ASSET_CACHE).then((c) => c.put(req, fresh.clone()));
+          }
+        })
+        .catch(() => {});
+    }
     return cached;
   }
   const fresh = await fetch(req).catch(() => null);

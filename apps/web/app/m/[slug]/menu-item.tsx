@@ -2,6 +2,7 @@
 
 import { SLUG_TO_IMG } from "@/lib/koko-images";
 import { ALLERGEN_MAP } from "@/lib/allergens";
+import { IMG, sizedImage } from "@/lib/image-url";
 import { toArabicDigits } from "@/lib/arabic";
 import SarSymbol from "./sar-symbol";
 import type { PublicMenuItem, PublicVariant } from "./types";
@@ -24,7 +25,8 @@ export default function MenuItemCard({
   onTapCard?: () => void;
   premium?: boolean;
 }) {
-  const img = item.image_url ?? SLUG_TO_IMG[item.slug] ?? null;
+  // Card renders at ~170 CSS px (2-col mobile); IMG.card = 400 covers 2x DPR.
+  const img = sizedImage(item.image_url ?? SLUG_TO_IMG[item.slug] ?? null, IMG.card);
   const isPremium = item.badges?.some((b) => b.type === "premium");
   const isHot = item.badges?.some((b) => b.type === "hot");
 
@@ -44,6 +46,9 @@ export default function MenuItemCard({
               src={img}
               alt={item.name_ar}
               loading="lazy"
+              decoding="async"
+              width={400}
+              height={300}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
           ) : (
@@ -103,6 +108,9 @@ export default function MenuItemCard({
             src={img}
             alt={item.name_ar}
             loading="lazy"
+            decoding="async"
+            width={400}
+            height={400}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (

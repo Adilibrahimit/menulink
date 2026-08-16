@@ -48,6 +48,7 @@ export default function PremiumCheckoutFlow({
   onClear,
   onCarOrderPlaced,
   onTableOrderPlaced,
+  onOrderPlaced,
 }: {
   restaurant: PublicMenu["restaurant"];
   branches: PublicBranch[];
@@ -62,6 +63,8 @@ export default function PremiumCheckoutFlow({
   onClear: () => void;
   onCarOrderPlaced: (t: TrackingState) => void;
   onTableOrderPlaced: (sessionId: string) => void;
+  /** Fired for EVERY successful order so the guest tracker can pick it up. */
+  onOrderPlaced?: (orderId: string | null, orderNumber: string) => void;
 }) {
   const { orderType: preselected, delivery: deliveryCtx } = useOrderContext();
   const lockedToTable = !!tableLabel;
@@ -89,8 +92,24 @@ export default function PremiumCheckoutFlow({
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const hasMultipleBranches = branches.length > 1;
-  const defaultBranch = branches.find((b) => b.is_default) ?? branches[0];
+  // Prefer the branch find_nearest_branch already resolved from the customer's
+  // location; the picker still allows an override. See cart-drawer for why.
+  const defaultBranch =
+    (deliveryCtx && branches.find((b) => b.id === deliveryCtx.branchId)) ??
+    branches.find((b) => b.is_default) ??
+    branches[0];
   const [selectedBranchId, setSelectedBranchId] = useState<string>(defaultBranch?.id ?? "");
+  const nearestBranchId = deliveryCtx?.branchId ?? null;
+
+  const [branchTouched, setBranchTouched] = useState(false);
+  useEffect(() => {
+    if (branchTouched || !nearestBranchId) return;
+    if (!branches.some((b) => b.id === nearestBranchId)) return;
+    setSelectedBranchId(nearestBranchId);
+  }, [nearestBranchId, branchTouched, branches]);
+
+  const minOrder = orderType === "delivery" && deliveryCtx ? deliveryCtx.minOrder : 0;
+  const belowMinimum = minOrder > 0 && total < minOrder;
 
   // Auto-fill contact + saved addresses from the customer record (or guest).
   useEffect(() => {
@@ -196,13 +215,15 @@ export default function PremiumCheckoutFlow({
     };
 
     const result = await runCheckout(input, { onCarOrderPlaced, onTableOrderPlaced });
-    if (!result.ok && result.error === "points") {
-      setSubmitError("فشل خصم النقاط. حاول مرة أخرى.");
+    // Failure keeps the cart and reports why — see cart-drawer for the reasoning.
+    if (!result.ok) {
+      setSubmitError(result.message);
       setSubmitting(false);
       return;
     }
 
     setSubmitting(false);
+    onOrderPlaced?.(result.orderId, result.orderNumber);
     onClear();
     onClose();
   }
@@ -428,7 +449,7 @@ export default function PremiumCheckoutFlow({
                             type="button"
                             aria-label={`اختر فرع ${b.name_ar}`}
                             aria-pressed={active}
-                            onClick={() => setSelectedBranchId(b.id)}
+                            onClick={() => { setBranchTouched(true); setSelectedBranchId(b.id); }}
                             className="w-full text-right rounded-xl px-3 py-2.5 transition-colors"
                             style={{
                               border: `1px solid ${active ? "var(--accent-gold)" : "var(--card-border)"}`,
@@ -436,6 +457,11 @@ export default function PremiumCheckoutFlow({
                             }}
                           >
                             <span className="text-sm font-bold" style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}>{b.name_ar}</span>
+                            {b.id === nearestBranchId && (
+                              <span className="text-[10px] font-bold mr-2 rounded-full px-1.5 py-0.5" style={{ color: "var(--accent-gold)", border: "1px solid var(--accent-gold)" }}>
+                                الأقرب لك · {toArabicDigits(deliveryCtx!.distanceKm.toFixed(1))} كم
+                              </span>
+                            )}
                             {b.address_ar && <p className="text-[11px] mt-0.5" style={{ color: "var(--text-secondary)" }}>📍 {b.address_ar}</p>}
                           </button>
                         );
@@ -613,13 +639,24 @@ export default function PremiumCheckoutFlow({
           ) : (
             <button
               onClick={submit}
-              disabled={submitting}
+              disabled={submitting || belowMinimum}
               className="w-full py-3.5 rounded-2xl font-bold text-base active:translate-y-px disabled:opacity-60 flex items-center justify-center gap-2"
               style={{ background: "var(--cta-bg)", color: "var(--cta-text, #412d00)", fontFamily: "var(--font-display)" }}
             >
-              <span>{submitting ? "جاري الإرسال..." : "إرسال الطلب عبر واتساب"}</span>
-              {!submitting && <span>🟢</span>}
+              <span>{submitting ? "جاري التأكيد..." : "تأكيد الطلب"}</span>
+              {!submitting && <span>✓</span>}
             </button>
+          )}
+          {step === "checkout" && belowMinimum && (
+            <p className="mt-2 text-[11px] text-center font-bold" style={{ color: "var(--accent-gold)" }}>
+              الحد الأدنى للتوصيل {toArabicDigits(String(minOrder))} ر.س — أضف{" "}
+              {toArabicDigits((minOrder - total).toFixed(2))} ر.س
+            </p>
+          )}
+          {step === "checkout" && (
+            <p className="mt-2 text-[11px] text-center" style={{ color: "var(--text-secondary)" }}>
+              بعد التأكيد سيُفتح واتساب لإرسال الطلب للمطعم
+            </p>
           )}
         </footer>
       )}

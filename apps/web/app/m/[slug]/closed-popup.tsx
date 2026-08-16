@@ -1,39 +1,39 @@
 "use client";
 
-const DAY_LABELS: Record<string, string> = {
-  sun: "الأحد", mon: "الإثنين", tue: "الثلاثاء", wed: "الأربعاء",
-  thu: "الخميس", fri: "الجمعة", sat: "السبت",
-};
+import { DAY_KEYS, DAY_LABELS_AR, dayLabel, getOpenState, type HoursJson } from "@/lib/hours";
 
-export function isRestaurantOpen(hoursJson: Record<string, string> | null): { open: boolean; todayHours: string | null } {
-  if (!hoursJson) return { open: true, todayHours: null };
-  const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Riyadh" }));
-  const days = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
-  const day = days[now.getDay()];
-  const entry = hoursJson[day];
-  if (!entry) return { open: true, todayHours: null };
-  if (entry.toLowerCase() === "closed") return { open: false, todayHours: "مغلق" };
-  const match = entry.match(/^(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})$/);
-  if (!match) return { open: true, todayHours: entry };
-  const [, oh, om, ch, cm] = match;
-  const openMin = Number(oh) * 60 + Number(om);
-  const closeMin = Number(ch) * 60 + Number(cm);
-  const nowMin = now.getHours() * 60 + now.getMinutes();
-  const isOpen = closeMin > openMin
-    ? nowMin >= openMin && nowMin < closeMin
-    : nowMin >= openMin || nowMin < closeMin;
-  return { open: isOpen, todayHours: entry };
+/**
+ * Kept as a named re-export so existing call sites keep working. The parsing
+ * itself now lives in lib/hours.ts, shared with the branch picker and mirrored
+ * by public.is_within_hours() in migration 0080 (which is the real gate — this
+ * is only the UX).
+ */
+export function isRestaurantOpen(
+  hoursJson: HoursJson,
+  tz?: string,
+): { open: boolean; todayHours: string | null; nextOpenLabel: string | null } {
+  const s = getOpenState(hoursJson, tz);
+  return {
+    open: s.open,
+    todayHours: s.today.length ? dayLabel(s.today) : null,
+    nextOpenLabel: s.nextOpenLabel,
+  };
 }
 
 export default function ClosedPopup({
   restaurantName,
   hoursJson,
+  timezone,
   onClose,
 }: {
   restaurantName: string;
-  hoursJson: Record<string, string> | null;
+  hoursJson: HoursJson;
+  timezone?: string;
   onClose: () => void;
 }) {
+  const { nextOpenLabel } = getOpenState(hoursJson, timezone);
+  const todayKey = DAY_KEYS[new Date().getDay()];
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center" dir="rtl">
       <div onClick={onClose} className="absolute inset-0 bg-black/55 backdrop-blur-sm" />
@@ -46,6 +46,16 @@ export default function ClosedPopup({
           >
             {restaurantName} مغلق حالياً
           </h2>
+          {/* Telling them WHEN we open beats a bare "we're closed" — the data
+              is already here, so there's no reason not to. */}
+          {nextOpenLabel && (
+            <p
+              className="text-sm font-bold text-[var(--brand)] mt-1.5"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              {nextOpenLabel}
+            </p>
+          )}
           <p className="text-sm text-neutral-600 mt-1" style={{ fontFamily: "var(--font-display)" }}>
             لا يمكن إضافة أصناف للسلة خارج أوقات العمل
           </p>
@@ -56,20 +66,18 @@ export default function ClosedPopup({
             <h3 className="text-xs font-bold text-neutral-500 mb-1" style={{ fontFamily: "var(--font-display)" }}>
               أوقات العمل
             </h3>
-            {["sun", "mon", "tue", "wed", "thu", "fri", "sat"].map((d) => {
-              const val = hoursJson[d];
-              if (!val) return null;
-              const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Riyadh" }));
-              const days = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
-              const isToday = days[now.getDay()] === d;
+            {DAY_KEYS.map((d) => {
+              const entry = hoursJson[d];
+              if (entry == null) return null;
+              const isToday = todayKey === d;
               return (
                 <div
                   key={d}
                   className={`flex items-center justify-between text-sm py-0.5 ${isToday ? "font-bold text-[var(--brand)]" : "text-neutral-700"}`}
                 >
-                  <span>{DAY_LABELS[d]}</span>
+                  <span>{DAY_LABELS_AR[d]}</span>
                   <span dir="ltr" className="text-xs">
-                    {val.toLowerCase() === "closed" ? "مغلق" : val}
+                    {dayLabel(entry)}
                   </span>
                 </div>
               );

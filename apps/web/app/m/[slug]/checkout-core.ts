@@ -191,13 +191,36 @@ export type RunCheckoutHandlers = {
   onTableOrderPlaced: (sessionId: string) => void;
 };
 
-export type RunCheckoutResult = { ok: true } | { ok: false; error: "points" };
+export type CheckoutErrorKind = "points" | "closed" | "min_order" | "failed";
 
-// Orchestrates a submit using the pure builders above. Returns {ok:false,
-// error:"points"} when a points-redemption order failed to persist (caller
-// must surface that and NOT open WhatsApp). All other persist failures are
-// non-blocking (fail-open: WhatsApp still opens) — preserving CartDrawer's
-// original behavior.
+export type RunCheckoutResult =
+  | { ok: true; orderId: string | null; orderNumber: string }
+  | { ok: false; error: CheckoutErrorKind; message: string };
+
+/** Turn a Postgres error into something a customer can act on. */
+function classifyError(err: unknown): { error: CheckoutErrorKind; message: string } {
+  const raw = (err as { message?: string } | null)?.message ?? String(err ?? "");
+  if (raw.includes("restaurant_closed"))
+    return { error: "closed", message: "المطعم مغلق حالياً — لا يمكن استلام الطلب الآن." };
+  if (raw.includes("below_min_order"))
+    return { error: "min_order", message: "قيمة الطلب أقل من الحد الأدنى للتوصيل." };
+  if (raw.includes("insufficient points") || raw.includes("redemption"))
+    return { error: "points", message: "تعذّر استخدام النقاط. حدّث الصفحة وحاول مرة أخرى." };
+  return { error: "failed", message: "تعذّر إرسال الطلب. تأكد من الاتصال وحاول مرة أخرى." };
+}
+
+/**
+ * Orchestrates a submit using the pure builders above.
+ *
+ * The order is now ALWAYS saved before WhatsApp opens. Previously the save was
+ * fire-and-forget for delivery/pickup/dine-in, which meant a failed save still
+ * looked like success to the customer — and for a POS tenant, no order row
+ * means no outbox row means no held bill. Confirming something that didn't
+ * happen is the worst outcome here, so a failure now blocks and reports.
+ *
+ * WhatsApp still opens automatically afterwards: it remains the channel the
+ * restaurant actually watches.
+ */
 export async function runCheckout(
   input: OrderComposeInput,
   handlers: RunCheckoutHandlers,
@@ -224,26 +247,18 @@ export async function runCheckout(
 
   const payloadInput = { ...input, sessionId: activeSessionId };
 
-  // Await persist when redeeming points (confirm deduction before WhatsApp),
-  // car orders (need order_id for tracking) or table orders (session link).
-  let carOrderId: string | null = null;
-  const mustAwait = redeemPoints > 0 || orderType === "car" || lockedToTable;
-  if (mustAwait) {
-    try {
-      carOrderId = await persistOrder(payloadInput);
-    } catch (err) {
-      console.warn("[MenuLink v7] persist failed:", err);
-      if (redeemPoints > 0) {
-        return { ok: false, error: "points" };
-      }
-    }
-  } else {
-    persistOrder(payloadInput).catch((err) =>
-      console.warn("[MenuLink v7] persist failed:", err),
-    );
+  let saved: SavedOrder;
+  try {
+    saved = await persistOrder(payloadInput);
+  } catch (err) {
+    console.error("[MenuLink v7] submit_order failed:", err);
+    return { ok: false, ...classifyError(err) };
   }
 
-  const orderNum = Date.now().toString(36).toUpperCase().slice(-6);
+  // The real per-day order number from the DB, so the customer, /admin/orders
+  // and the POS note all quote the same thing. This used to be a throwaway
+  // timestamp hash while submit_order's actual number was discarded.
+  const orderNum = saved.orderNumber ?? "—";
   const msg = buildWhatsAppMessage(payloadInput, orderNum);
 
   const selectedBranch = input.branches.find((b) => b.id === input.selectedBranchId);
@@ -251,21 +266,27 @@ export async function runCheckout(
   const waNumber = String(branchWa || input.restaurant.whatsapp_phone).replace(/\D/g, "");
   window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`, "_blank");
 
-  if (orderType === "car" && carOrderId) {
-    handlers.onCarOrderPlaced({ orderId: carOrderId, plate: input.carPlate, color: input.carColor, arrived: false });
+  if (orderType === "car" && saved.orderId) {
+    handlers.onCarOrderPlaced({ orderId: saved.orderId, plate: input.carPlate, color: input.carColor, arrived: false });
   }
   if (lockedToTable && activeSessionId) {
     handlers.onTableOrderPlaced(activeSessionId);
   }
 
-  return { ok: true };
+  return { ok: true, orderId: saved.orderId, orderNumber: orderNum };
 }
 
-// Persists via the submit_order RPC. Returns the new order id (or null).
-export async function persistOrder(input: OrderComposeInput): Promise<string | null> {
+export type SavedOrder = { orderId: string | null; orderNumber: string | null };
+
+/** Persists via the submit_order RPC. Throws on any failure — the caller decides. */
+export async function persistOrder(input: OrderComposeInput): Promise<SavedOrder> {
   const { createClient } = await import("@/lib/supabase-browser");
   const sb = createClient();
   const { data, error } = await sb.rpc("submit_order", { p_order: buildSubmitPayload(input) });
   if (error) throw error;
-  return (data as { order_id?: string } | null)?.order_id ?? null;
+  const row = data as { order_id?: string; daily_order_number?: string | number } | null;
+  return {
+    orderId: row?.order_id ?? null,
+    orderNumber: row?.daily_order_number == null ? null : String(row.daily_order_number),
+  };
 }

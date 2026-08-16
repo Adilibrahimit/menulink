@@ -17,7 +17,8 @@ export type Restaurant = {
   contact_email: string | null;
   instagram_handle: string | null;
   tiktok_handle: string | null;
-  hours_json: Record<string, string> | null;
+  // string | string[] per day — a day can have split shifts. See lib/hours.ts.
+  hours_json: Record<string, string | string[] | null> | null;
   logo_url: string | null;
   cover_image_url: string | null;
   tagline_ar: string | null;

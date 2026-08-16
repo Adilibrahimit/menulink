@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase-server";
 import { toArabicDigits } from "@/lib/arabic";
 import { ALLERGEN_MAP } from "@/lib/allergens";
 import { SLUG_TO_IMG } from "@/lib/koko-images";
+import { DAY_KEYS, dayLabel } from "@/lib/hours";
 import { resolvePrintTokens } from "@/lib/print-design";
 import MenuPoster, { posterHasPhotos } from "./menu-poster";
 import PrintButton from "./print-button";
@@ -22,7 +23,7 @@ type PMenu = {
   restaurant: {
     name: string; tagline_ar: string | null; logo_url: string | null; primary_color: string;
     address_ar: string | null; city: string | null; instagram_handle: string | null;
-    hours_json: Record<string, string> | null;
+    hours_json: Record<string, string | string[] | null> | null;
   };
   categories: PCategory[];
 };
@@ -97,9 +98,11 @@ export default async function PrintMenuPage({ params }: { params: { slug: string
 
   const hoursToday = (() => {
     if (!r.hours_json) return null;
-    const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
-    const k = days[new Date().getDay()];
-    return r.hours_json[k] ?? null;
+    // Was indexing with "sunday"/"monday"…, but hours_json is keyed "sun"/"mon"
+    // (see lib/hours.ts + closed-popup) — so this always returned null. Nobody
+    // noticed because no tenant had hours set.
+    const entry = r.hours_json[DAY_KEYS[new Date().getDay()]];
+    return entry == null ? null : dayLabel(entry);
   })();
   const today = new Date().toLocaleDateString("ar-SA");
   const totalItems = menu.categories.reduce((s, c) => s + c.items.length, 0);

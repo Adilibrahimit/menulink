@@ -4,7 +4,7 @@
 
 ## Settled tech decisions
 - **Frontend:** Next.js 14 + Tailwind + shadcn/ui. **Backend:** Supabase (no custom server). **Hosting:** Vercel.
-- **Auth:** OTP via SMS (Supabase Auth + Unifonic). **Push:** OneSignal. **Maps:** Leaflet + OpenStreetMap.
+- **Auth:** email+password (staff) + Google OAuth (customers) via Supabase Auth — ⚠️ the original "OTP via SMS / Unifonic" was **never implemented**. **Push:** web-push / VAPID (self-hosted) — ⚠️ "OneSignal" was an early decision, **never built**. **Maps:** Leaflet + OpenStreetMap. (See [`TECH-DESIGN.md §8`](../architecture/TECH-DESIGN.md#8-honest-gaps--stale-doc-corrections).)
 - **Pricing:** 59 SAR/month or 499 SAR/year — `PRICING.md` is the single source of truth.
 - **Feature gating:** the addon framework (`apps/web/lib/addons.ts`) makes POS and other features optional (`pos_bridge`, delivery zones, notification center).
 

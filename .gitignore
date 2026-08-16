@@ -85,6 +85,10 @@ docs/screenshots-tsests/
 /.claude/skills/punnelifosys-pos/
 /.claude/skills/punnelifosys-pos-operate/
 /.claude/skills/punnelifosys-feature-dev/
+# Same class: the DigitalPrint skill + its skill-optimizer run logs quote the dev
+# SQL sa-login verbatim in runnable commands.
+/.claude/skills/punnelifosys-digitalprint/
+/.claude/skills/punnelifosys-digitalprint-workspace/
 /docs/REPO-CLEANUP-PLAN.md
 
 # --- Installed generic skill trees (marketplace-installed, not MenuLink-owned; regenerable) ---
@@ -94,3 +98,15 @@ docs/screenshots-tsests/
 /.claude/skills/slides/
 /.claude/skills/ui-styling/
 /.claude/skills/ui-ux-pro-max/
+
+# --- Photo-catalog audit reports (local working artifacts) ---
+reports/
+
+# --- Bridge App local config: carries the real service_role key + POS SQL login.
+# appsettings.json (tracked) holds placeholders only; the .Local override is where
+# the live values go and must never reach this PUBLIC repo.
+appsettings.Local.json
+
+# --- Local-only working trees / agent scratch ---
+/worktrees/
+/.agents/

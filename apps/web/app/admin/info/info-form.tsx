@@ -3,6 +3,8 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-browser";
+import HoursEditor from "../hours-editor";
+import type { HoursJson } from "@/lib/hours";
 import type { Restaurant } from "@/lib/types";
 
 type Editable = Pick<
@@ -29,6 +31,9 @@ export default function InfoForm({ initial }: { initial: Restaurant }) {
     tiktok_handle: initial.tiktok_handle,
     is_published: initial.is_published,
   });
+  // Kept out of `form` because it's a jsonb column edited by a custom control,
+  // not an <input> that onChange() can drive.
+  const [hours, setHours] = useState<HoursJson>(initial.hours_json);
   const [logoUrl, setLogoUrl] = useState<string | null>(initial.logo_url);
   const [coverUrl, setCoverUrl] = useState<string | null>(initial.cover_image_url);
   const [uploading, setUploading] = useState<"logo" | "cover" | null>(null);
@@ -49,7 +54,10 @@ export default function InfoForm({ initial }: { initial: Restaurant }) {
     setSaving(true);
     setMsg(null);
     const sb = createClient();
-    const { error } = await sb.from("restaurants").update(form).eq("id", initial.id);
+    const { error } = await sb
+      .from("restaurants")
+      .update({ ...form, hours_json: hours })
+      .eq("id", initial.id);
     setSaving(false);
     if (error) {
       setMsg({ kind: "err", text: error.message });
@@ -140,6 +148,15 @@ export default function InfoForm({ initial }: { initial: Restaurant }) {
         <h2 className="font-semibold text-neutral-900">العنوان</h2>
         <Field label="المدينة" value={form.city ?? ""} onChange={onChange("city")} />
         <Field label="العنوان (الحي · الشارع)" value={form.address_ar ?? ""} onChange={onChange("address_ar")} />
+      </section>
+
+      <section className="bg-white border border-neutral-200 rounded-xl p-4 space-y-3">
+        <h2 className="font-semibold text-neutral-900">أوقات العمل</h2>
+        <p className="text-xs text-neutral-500 leading-relaxed">
+          خارج هذه الأوقات لا يستطيع العميل إرسال طلب. إن كان لديك أكثر من فرع تقدر تحدّد
+          أوقات مختلفة لكل فرع من صفحة «الفروع».
+        </p>
+        <HoursEditor value={hours} onChange={setHours} />
       </section>
 
       <section className="bg-white border border-neutral-200 rounded-xl p-4 space-y-3">
