@@ -131,12 +131,9 @@ export default function AccountClient({
   if (!signedIn) return <SignedOutCard slug={slug} tenantName={tenantName} googleFirstFlow={googleFirstFlow} />;
 
   /* ---------------- signed in, no link ---------------- */
-  if (!customer) {
-    if (googleFirstFlow) {
-      return <GoogleLinkedCard slug={slug} userEmail={userEmail} userName={userName} />;
-    }
-    return <LinkPhoneCard slug={slug} userEmail={userEmail} userName={userName} />;
-  }
+  // A Google session alone is NOT a link: orders/addresses/loyalty all key off
+  // customers.auth_user_id, which only link_customer_account (below) ever sets.
+  if (!customer) return <LinkPhoneCard slug={slug} userEmail={userEmail} userName={userName} />;
 
   /* ---------------- signed in + linked ---------------- */
   return (
@@ -442,45 +439,6 @@ function LinkPhoneCard({ slug, userEmail, userName }: { slug: string; userEmail:
         لا نرسل أي رسائل ترويجية. الرقم يُستخدم فقط لمعرفة طلباتك.
       </p>
       <SignOutButton />
-    </div>
-  );
-}
-
-function GoogleLinkedCard({ slug, userEmail, userName }: { slug: string; userEmail: string | null; userName: string | null }) {
-  return (
-    <div className="space-y-4">
-      <div className="bg-white border border-neutral-200 rounded-2xl p-6 text-center space-y-3">
-        <div className="w-16 h-16 rounded-full bg-[var(--brand)] text-white flex items-center justify-center text-3xl font-bold mx-auto">
-          {(userName ?? userEmail ?? "?").slice(0, 1).toUpperCase()}
-        </div>
-        <div>
-          <div className="font-extrabold text-neutral-900 text-lg" style={{ fontFamily: "var(--font-display)" }}>
-            {userName ?? "مرحباً"}
-          </div>
-          {userEmail && (
-            <div className="text-sm text-neutral-500 mt-0.5" dir="ltr">{userEmail}</div>
-          )}
-        </div>
-        <div className="rounded-2xl bg-green-50 border border-green-200 px-4 py-3">
-          <div className="flex items-center justify-center gap-2">
-            <GoogleG />
-            <span className="text-sm font-bold text-green-800" style={{ fontFamily: "var(--font-display)" }}>
-              حسابك مربوط بـ Google
-            </span>
-          </div>
-          <p className="text-xs text-green-700 mt-1">
-            طلباتك ونقاطك ستُحفظ تلقائياً مع حسابك.
-          </p>
-        </div>
-        <a
-          href={`/m/${slug}`}
-          className="block w-full h-12 rounded-2xl bg-[var(--brand)] text-white text-center text-base font-extrabold leading-[3rem] active:translate-y-px shadow-md"
-          style={{ fontFamily: "var(--font-display)" }}
-        >
-          تصفح القائمة
-        </a>
-        <SignOutButton />
-      </div>
     </div>
   );
 }

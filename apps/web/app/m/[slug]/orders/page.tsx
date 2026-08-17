@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase-server";
 import { buildCssVars, getTheme } from "@/lib/themes";
 import OrdersClient from "./orders-client";
@@ -104,7 +105,7 @@ export default async function CustomerOrdersPage({
         <link rel="stylesheet" href={theme.fonts.googleUrl} />
       )}
       <header className="bg-[var(--brand)] text-white px-5 py-4 flex items-center gap-3">
-        <a href={`/m/${restaurant.slug}`} className="text-2xl">←</a>
+        <Link href={`/m/${restaurant.slug}`} className="text-2xl">←</Link>
         <h1
           className="font-extrabold text-lg leading-tight"
           style={{ fontFamily: "var(--font-display)" }}
