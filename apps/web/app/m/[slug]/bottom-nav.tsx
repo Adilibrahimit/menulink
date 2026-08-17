@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export default function BottomNav({ slug, navItems = 3, notifCenterEnabled = false, variant = "light" }: { slug: string; navItems?: 3 | 5; notifCenterEnabled?: boolean; variant?: "light" | "premium" }) {
@@ -59,7 +60,7 @@ export default function BottomNav({ slug, navItems = 3, notifCenterEnabled = fal
         {tabs.map((tab) => {
           const active = tab.match(pathname);
           return (
-            <a
+            <Link
               key={tab.href}
               href={tab.href}
               className={
@@ -82,7 +83,7 @@ export default function BottomNav({ slug, navItems = 3, notifCenterEnabled = fal
               >
                 {tab.label}
               </span>
-            </a>
+            </Link>
           );
         })}
       </div>
