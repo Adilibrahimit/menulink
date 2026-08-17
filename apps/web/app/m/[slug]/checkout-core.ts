@@ -309,8 +309,12 @@ export async function runCheckout(
   const orderNum = saved.orderNumber ?? "—";
   const msg = buildWhatsAppMessage(payloadInput, orderNum);
 
+  // Mirror the server's own branch fallback (submit_order -> get_default_branch_id)
+  // instead of dropping to the tenant-level number, which for multi-branch
+  // tenants is a stale leftover, not a real inbox anyone watches.
   const selectedBranch = input.branches.find((b) => b.id === input.selectedBranchId);
-  const branchWa = selectedBranch?.whatsapp;
+  const defaultBranch = input.branches.find((b) => b.is_default) ?? input.branches[0];
+  const branchWa = selectedBranch?.whatsapp || defaultBranch?.whatsapp;
   const waNumber = String(branchWa || input.restaurant.whatsapp_phone).replace(/\D/g, "");
   openWhatsApp(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`, waWindow);
 
